@@ -65,7 +65,7 @@ serve(async (req) => {
       );
     }
 
-    const apiKey = Deno.env.get("GOOGLE_MAPS_API_KEY");
+    const apiKey = Deno.env.get("VITE_GOOGLE_MAPS_API_KEY") || Deno.env.get("GOOGLE_MAPS_API_KEY");
     if (!apiKey) {
       return new Response(
         JSON.stringify({ error: "Google Maps API key not configured" }),
@@ -76,11 +76,15 @@ serve(async (req) => {
     // Fetch Street View image from Google
     const streetViewUrl = `https://maps.googleapis.com/maps/api/streetview?size=${size}&location=${lat},${lng}&heading=${heading}&pitch=${pitch}&fov=${fov}&key=${apiKey}`;
     
+    console.log(`Fetching Street View: size=${size}, location=${lat},${lng}`);
     const response = await fetch(streetViewUrl);
+    console.log(`Google Street View response status: ${response.status}`);
     
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`Street View API error: ${response.status} - ${errorText}`);
       return new Response(
-        JSON.stringify({ error: "Failed to fetch Street View" }),
+        JSON.stringify({ error: "Failed to fetch Street View", status: response.status, detail: errorText }),
         { status: response.status, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }

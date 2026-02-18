@@ -653,8 +653,8 @@ function ShipmentTrackerSection({ navigate }: { navigate: (path: string) => void
     // Kansas City position (middle of cross-country route)
     const position = { lat: 39.0997, lng: -94.5786 };
     
-    // Use edge function for Street View to avoid API key exposure
-    const streetViewUrl = `${SUPABASE_URL}/functions/v1/google-street-view?lat=${position.lat}&lng=${position.lng}&size=120x80&heading=90&pitch=0&fov=100`;
+    // Use Google Street View Static API directly (publishable key, same as route analysis)
+    const streetViewUrl = `https://maps.googleapis.com/maps/api/streetview?size=120x80&location=${position.lat},${position.lng}&heading=90&pitch=0&fov=100&key=AIzaSyCWDpAPlxVRXnl1w5rz0Df5S3vGsHY6Xoo`;
     
     if (error) return null;
     
