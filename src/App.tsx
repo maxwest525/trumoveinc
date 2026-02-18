@@ -24,6 +24,7 @@ import Classic from "./pages/Classic";
 import LiveTracking from "./pages/LiveTracking";
 import ElevenLabsTrudyWidget from "./components/ElevenLabsTrudyWidget";
 import CustomerService from "./pages/CustomerService";
+import AdminSupportTickets from "./pages/AdminSupportTickets";
 
 const queryClient = new QueryClient();
 
@@ -53,6 +54,7 @@ const App = () => (
             <Route path="/classic" element={<Classic />} />
             <Route path="/track" element={<LiveTracking />} />
             <Route path="/customer-service" element={<CustomerService />} />
+            <Route path="/admin/support-tickets" element={<AdminSupportTickets />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
