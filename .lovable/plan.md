@@ -1,32 +1,48 @@
 
 
-## Mobile CSS Spacing and Overlap Fixes
+## Comprehensive Mobile CSS Fix -- All Pages
 
-### Issues Identified
+### Issues Identified from Screenshots
 
-1. **Logo clipped at top-left** -- `.header-logo` has `margin-left: -100px`, pushing the logo off-screen on mobile.
-2. **Command Center strip overlaps hero content** -- Pages use `sticky top-[6.375rem]` or `sticky top-[102px]` for the dark tracking-header, but the mobile header is shorter (~4.5rem), causing misalignment.
-3. **Trudy chat widget overlaps page content** -- The floating "Chat with Trudy" bubble sits over text and CTAs on mobile.
-4. **Horizontal overflow on some sections** -- Text and cards bleed past viewport edge (visible on /book page).
-5. **Footer scrollbar/ticker strip cuts off** -- The trust ticker at the bottom is too wide.
+1. **Homepage -- AI Scanner section**: The 3-column grid (`tru-ai-header-row`) shows a vertical black line and huge empty space below "Scan Your Home" on mobile. The scanner center and detection right panels don't properly fill the viewport width.
+
+2. **Homepage -- Tracking section**: Maps show but the satellite/road map panels may not fill width properly, and the text content for "Track. Monitor. Arrive." section is cramped.
+
+3. **Book page -- Video consult header clipped**: The "TruMove Video Consult" header text is cut off on the left side. The video call toolbar icons ("Whiteboard", "Volume", etc.) overflow horizontally.
+
+4. **Book page -- Contact cards overflow**: The "Ready to Connect" section with Video Call, Voice Call, Email Us, Text Us cards bleeds past viewport edges.
+
+5. **Carrier Vetting page -- Large white gap**: Excessive whitespace between the header/trust strip and the "CARRIER VETTING" command center strip. The hero headline text is also clipped.
+
+6. **Online Estimate page -- Inventory builder sidebar**: The two-column sidebar + content layout is cramped at 390px. Room list and inventory grid overlap.
+
+7. **Chat widget**: Still overlapping form fields and CTA buttons on some pages despite previous fix.
 
 ### Plan
 
-All changes will be **mobile-only** using `@media (max-width: 768px)` or `@media (max-width: 1000px)` so desktop is completely unaffected.
+All changes scoped to `@media (max-width: 768px)` in `src/index.css` only. Desktop remains 100% untouched.
 
-**File: `src/index.css` (mobile section at bottom, ~line 33870+)**
+**File: `src/index.css`** (append to existing mobile block at ~line 34210)
 
-1. Fix logo clipping: Reset `.header-logo { margin-left: 0 }` inside the existing `max-width: 1000px` breakpoint (where mobile hamburger triggers).
-2. Fix Command Center sticky offset: Add `.sticky.top-\[6\.375rem\], .sticky.top-\[102px\]` targeting to use `top: 4.5rem` on mobile, matching the reduced header height.
-3. Fix Trudy chat widget overlap: Scale down and reposition the floating chat bubble on mobile (smaller size, tighter to corner).
-4. Fix horizontal overflow: Add `overflow-x: hidden` to the body/root on mobile to prevent bleed.
-5. Fix footer ticker: Constrain ticker strip width to viewport on mobile.
+1. **AI Scanner 3-column grid**: Force `tru-ai-header-row` to `display: flex; flex-direction: column` on mobile, with each child (`tru-ai-content-left`, `tru-ai-scanner-center`, `tru-ai-detection-right`) set to `width: 100%; max-width: 100%`. Set `tru-ai-live-scanner` to `aspect-ratio: 4/3; height: auto` instead of fixed min-height.
 
-**File: `src/components/layout/SiteShell.tsx`**
+2. **Book page video header**: Fix the `video-consult-header` overflow by adding `overflow: hidden; padding: 12px 16px` on mobile. Fix the video toolbar to wrap or scroll horizontally. Ensure the "TruMove Video Consult" title doesn't clip by resetting any negative margins or left offsets.
 
-6. Clean up the duplicate Tailwind classes (the current code has `pb-[25px] md:pb-[25px] pb-[12px]` which is redundant -- Tailwind uses the last value). Fix to proper mobile-first: `pb-3 md:pb-[25px]`.
+3. **Book page contact section**: The "Ready to Connect" cards use a grid that may overflow -- force single-column or 2-column constrained grid on mobile with `padding: 0 16px`.
+
+4. **Carrier Vetting white gap**: The gap comes from the SiteShell sticky header taking extra space plus the vetting hero section having large top padding. Reduce `tru-vetting-hero` top padding on mobile and ensure the command center strip (`sticky top-[6.375rem]`) uses the correct mobile offset.
+
+5. **Online Estimate inventory builder**: The `tru-qb-body` two-panel layout needs the sidebar to collapse or become a horizontal scrollable row on mobile. Force `flex-direction: column` if not already done, and limit the room list width.
+
+6. **Chat widget z-index and position**: Move the chat widget higher (`bottom: 80px`) to avoid overlapping form submit buttons, and reduce its width further on very small screens.
+
+7. **General section padding**: Add `padding-left: 16px; padding-right: 16px` to all major section containers to prevent content from touching viewport edges.
 
 ### Technical Details
 
-All fixes use CSS media queries scoped to mobile breakpoints only. No JavaScript changes except the minor SiteShell Tailwind class cleanup. Desktop layout remains completely untouched.
+- All CSS changes are `@media (max-width: 768px)` scoped
+- Using `!important` overrides where existing desktop styles use high specificity
+- No JavaScript or component file changes needed
+- Edits go into the existing mobile block at the end of `src/index.css` (around line 34210-34356)
+- Some fixes also need a `@media (max-width: 480px)` sub-breakpoint for extra-small phones
 
