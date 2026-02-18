@@ -142,10 +142,10 @@
 
 @keyframes hero-logo-glow {
   0% {
-    filter: drop-shadow(0 0 0 hsl(var(--primary) / 0));
+    filter: drop-shadow(0 0 0 hsl(var(--tm-ink) / 0));
   }
   100% {
-    filter: drop-shadow(0 0 8px hsl(var(--primary) / 0.5));
+    filter: drop-shadow(0 0 8px hsl(var(--tm-ink) / 0.25));
   }
 }
 
@@ -215,7 +215,7 @@
   padding: 24px;
   box-shadow: 
     0 8px 32px hsl(var(--tm-ink) / 0.12),
-    0 0 0 1px hsl(var(--primary) / 0.1),
+    0 0 0 1px hsl(var(--tm-ink) / 0.08),
     inset 0 1px 0 hsl(0 0% 100% / 0.05);
   animation: slideInRight 0.4s ease-out, glowPulse 3s ease-in-out infinite;
 }
@@ -269,12 +269,12 @@
   0%, 100% {
     box-shadow: 
       0 8px 32px hsl(var(--tm-ink) / 0.12),
-      0 0 0 1px hsl(var(--primary) / 0.1);
+      0 0 0 1px hsl(var(--tm-ink) / 0.06);
   }
   50% {
     box-shadow: 
       0 8px 32px hsl(var(--tm-ink) / 0.15),
-      0 0 16px hsl(var(--primary) / 0.15);
+      0 0 16px hsl(var(--tm-ink) / 0.08);
   }
 }
 
@@ -531,7 +531,7 @@
 }
 
 .tru-hero-inline-logo:hover {
-  filter: drop-shadow(0 0 10px hsl(var(--primary) / 0.7)) drop-shadow(0 0 20px hsl(var(--primary) / 0.4));
+  filter: drop-shadow(0 0 10px hsl(var(--tm-ink) / 0.3)) drop-shadow(0 0 20px hsl(var(--tm-ink) / 0.15));
 }
 
 .tru-hero-headline-line {
@@ -668,8 +668,8 @@
 }
 
 .tru-secondary-action-btn:hover {
-  border-color: hsl(var(--primary) / 0.4);
-  box-shadow: 0 0 6px hsl(var(--primary) / 0.08);
+  border-color: hsl(var(--border));
+  box-shadow: 0 2px 8px hsl(var(--tm-ink) / 0.1);
   transform: translateY(-1px);
 }
 
@@ -723,8 +723,8 @@
 }
 
 .tru-modal-secondary-btn:hover {
-  border-color: hsl(var(--primary) / 0.4);
-  box-shadow: 0 0 6px hsl(var(--primary) / 0.08);
+  border-color: hsl(var(--border));
+  box-shadow: 0 2px 8px hsl(var(--tm-ink) / 0.1);
   transform: translateY(-1px);
 }
 
@@ -1092,7 +1092,7 @@
 .tru-scan-library-analyze-btn:hover {
   background: hsl(var(--primary));
   color: hsl(var(--primary-foreground));
-  box-shadow: 0 4px 12px hsl(var(--primary) / 0.3);
+  box-shadow: 0 4px 12px hsl(var(--tm-ink) / 0.2);
 }
 
 /* Compact Library Styles */
@@ -1252,7 +1252,7 @@
 .tru-scan-lead-submit:hover {
   background: hsl(var(--primary-dark, var(--primary)));
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px hsl(var(--primary) / 0.3);
+  box-shadow: 0 8px 24px hsl(var(--tm-ink) / 0.2);
 }
 
 /* Locked Table State */
@@ -1294,7 +1294,7 @@
 
 .tru-scan-unlock-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px hsl(var(--primary) / 0.3);
+  box-shadow: 0 4px 12px hsl(var(--tm-ink) / 0.2);
 }
 
 .tru-scan-qty-disabled {
@@ -1666,11 +1666,11 @@
 }
 
 .tru-hero-call-btn:hover {
-  border-color: hsl(var(--primary) / 0.5);
+  border-color: hsl(0 0% 100% / 0.4);
   color: hsl(0 0% 100%);
   background: hsl(0 0% 0% / 0.5);
   transform: translateY(-2px);
-  box-shadow: 0 0 8px hsl(var(--primary) / 0.1);
+  box-shadow: 0 4px 12px hsl(0 0% 0% / 0.2);
 }
 
 .tru-hero-call-btn svg {
@@ -2373,11 +2373,11 @@
   transition: all 0.25s ease;
 }
 
-/* Override generic card hover - keep subtle glow instead of solid green */
+/* Override generic card hover - neutral shadow */
 .tru-hero-value-cards-open .tru-value-card-open:hover .tru-value-card-icon {
   background: hsl(var(--primary) / 0.25);
   border-color: hsl(var(--primary) / 0.4);
-  box-shadow: 0 0 12px hsl(var(--primary) / 0.3);
+  box-shadow: 0 2px 8px hsl(var(--tm-ink) / 0.12);
   transform: none;
 }
 
@@ -4608,7 +4608,7 @@
   border-color: hsl(var(--primary));
   background: hsl(var(--primary) / 0.05);
   transform: translateY(-2px);
-  box-shadow: 0 4px 16px hsl(var(--primary) / 0.15);
+  box-shadow: 0 4px 16px hsl(var(--tm-ink) / 0.12);
 }
 
 .tru-inventory-action-btn svg {
@@ -4802,7 +4802,7 @@
   border-radius: 2px;
   margin-top: 12px;
   margin-bottom: 14px;
-  box-shadow: 0 0 8px hsl(var(--primary) / 0.3);
+  box-shadow: 0 0 8px hsl(var(--tm-ink) / 0.15);
 }
 
 .tru-feature-section-card .tru-feature-section-header {
@@ -5139,8 +5139,8 @@
 }
 
 .tru-hero-value-prop:hover {
-  border-color: hsl(var(--primary) / 0.3);
-  box-shadow: 0 4px 20px hsl(var(--primary) / 0.1);
+  border-color: hsl(var(--tm-ink) / 0.15);
+  box-shadow: 0 4px 20px hsl(var(--tm-ink) / 0.1);
   transform: translateX(4px);
 }
 
@@ -5473,7 +5473,7 @@
   background: hsl(var(--primary) / 0.15);
   border-color: hsl(var(--primary) / 0.3);
   transform: scale(1.05);
-  box-shadow: 0 0 12px hsl(var(--primary) / 0.2);
+  box-shadow: 0 2px 12px hsl(var(--tm-ink) / 0.12);
 }
 
 .dark .tru-static-nav-logo {
@@ -5488,7 +5488,7 @@
 .dark .tru-static-nav-logo:hover {
   background: hsl(var(--primary) / 0.2);
   border-color: hsl(var(--primary) / 0.4);
-  box-shadow: 0 0 16px hsl(var(--primary) / 0.3);
+  box-shadow: 0 2px 16px hsl(0 0% 0% / 0.3);
 }
 
 .tru-static-nav-menu.icons-only .tru-static-nav-item {
@@ -5554,7 +5554,7 @@
   background: hsl(var(--primary) / 0.12);
   color: hsl(var(--foreground));
   border-color: hsl(var(--primary) / 0.3);
-  box-shadow: 0 2px 8px hsl(var(--primary) / 0.15);
+  box-shadow: 0 2px 8px hsl(var(--tm-ink) / 0.1);
 }
 
 .tru-static-nav-item.is-active::before {
@@ -5601,7 +5601,7 @@
   background: hsl(var(--primary) / 0.2);
   border-color: hsl(var(--primary) / 0.4);
   color: hsl(0 0% 100%);
-  box-shadow: 0 2px 12px hsl(var(--primary) / 0.25);
+  box-shadow: 0 2px 12px hsl(0 0% 0% / 0.3);
 }
 
 .dark .tru-static-nav-item.is-active svg {
@@ -6421,19 +6421,19 @@
   margin: 0 4px;
 }
 
-/* Input Focus Glow Animation */
+/* Input Focus Animation */
 @keyframes glow-pulse {
   0%, 100% { 
-    box-shadow: 0 0 0 1px hsl(var(--primary) / 0.06); 
+    box-shadow: 0 0 0 1px hsl(var(--tm-ink) / 0.06); 
   }
   50% { 
-    box-shadow: 0 0 0 2px hsl(var(--primary) / 0.08); 
+    box-shadow: 0 0 0 2px hsl(var(--tm-ink) / 0.08); 
   }
 }
 
 .tru-input-glow:focus {
   animation: glow-pulse 2s ease-in-out infinite;
-  border-color: hsl(var(--primary) / 0.35) !important;
+  border-color: hsl(var(--tm-ink) / 0.25) !important;
 }
 
 /* Pulsing origin marker for single-location map state */
@@ -6599,15 +6599,15 @@
   50% { opacity: 0.35; transform: scale(1.005); }
 }
 
-/* Green accent on icons - reduced glow */
+/* Accent on icons - no glow */
 .tru-qb-continue.tru-engine-btn .tru-btn-scan {
   color: hsl(var(--primary));
-  filter: drop-shadow(0 0 1px hsl(var(--primary) / 0.2));
+  filter: none;
 }
 
 .tru-qb-continue.tru-engine-btn .tru-btn-arrow {
   color: hsl(var(--primary));
-  filter: drop-shadow(0 0 1px hsl(var(--primary) / 0.2));
+  filter: none;
   transition: transform 0.2s ease;
 }
 
@@ -6741,11 +6741,11 @@
   0% { 
     opacity: 0; 
     transform: translateY(8px); 
-    border-color: hsl(var(--primary) / 0);
+    border-color: hsl(var(--tm-ink) / 0);
   }
   40% { 
-    border-color: hsl(var(--primary) / 0.5);
-    box-shadow: 0 0 20px hsl(var(--primary) / 0.15);
+    border-color: hsl(var(--tm-ink) / 0.2);
+    box-shadow: 0 4px 20px hsl(var(--tm-ink) / 0.1);
   }
   100% { 
     opacity: 1; 
@@ -6804,10 +6804,10 @@
 
 @keyframes pulse-indicator {
   0%, 100% { 
-    box-shadow: 0 0 0 0 hsl(var(--primary) / 0.3);
+    box-shadow: 0 0 0 0 hsl(var(--tm-ink) / 0.15);
   }
   50% { 
-    box-shadow: 0 0 0 6px hsl(var(--primary) / 0);
+    box-shadow: 0 0 0 6px hsl(var(--tm-ink) / 0);
   }
 }
 
@@ -7149,9 +7149,9 @@
     transform: scale(1);
   }
   40% {
-    background: hsl(var(--primary) / 0.15);
+    background: hsl(var(--muted) / 0.6);
     transform: scale(1.02);
-    box-shadow: 0 0 0 2px hsl(var(--primary) / 0.2);
+    box-shadow: 0 0 0 2px hsl(var(--tm-ink) / 0.1);
   }
   100% {
     background: hsl(var(--muted) / 0.4);
@@ -7165,8 +7165,8 @@
     background: hsl(var(--muted));
   }
   40% {
-    background: hsl(var(--primary) / 0.2);
-    box-shadow: 0 0 8px hsl(var(--primary) / 0.3);
+    background: hsl(var(--muted) / 0.8);
+    box-shadow: 0 2px 8px hsl(var(--tm-ink) / 0.12);
   }
   100% {
     background: hsl(var(--muted));
@@ -7240,7 +7240,7 @@
   }
   35% {
     transform: scale(1.06);
-    box-shadow: 0 4px 20px hsl(var(--primary) / 0.3), 0 0 0 3px hsl(var(--primary) / 0.15);
+    box-shadow: 0 4px 20px hsl(var(--tm-ink) / 0.15), 0 0 0 3px hsl(var(--tm-ink) / 0.08);
   }
   100% {
     transform: scale(1);
@@ -7510,13 +7510,13 @@
 /* Form content focus animation on load */
 @keyframes form-focus-glow {
   0% { 
-    box-shadow: inset 0 0 0 2px hsl(var(--primary) / 0);
+    box-shadow: inset 0 0 0 2px hsl(var(--tm-ink) / 0);
   }
   30% { 
-    box-shadow: inset 0 0 0 2px hsl(var(--primary) / 0.25);
+    box-shadow: inset 0 0 0 2px hsl(var(--tm-ink) / 0.12);
   }
   100% { 
-    box-shadow: inset 0 0 0 2px hsl(var(--primary) / 0);
+    box-shadow: inset 0 0 0 2px hsl(var(--tm-ink) / 0);
   }
 }
 
