@@ -1,11 +1,12 @@
-import { useState, useEffect } from 'react';
-import { Phone, Mail, MessageCircle, MapPin, Calculator, Calendar, HelpCircle, Send, Clock, Shield, Truck, ChevronDown } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
+import { Phone, Mail, MessageCircle, MapPin, Calculator, Calendar, HelpCircle, Send, Clock, Shield, Truck, History, User, Bot } from 'lucide-react';
 import SiteShell from '@/components/layout/SiteShell';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 import trudyAvatar from '@/assets/trudy-avatar.png';
 
 const helpCards = [
@@ -48,9 +49,16 @@ const faqItems = [
   },
 ];
 
+interface TranscriptMessage {
+  role: 'user' | 'agent';
+  text: string;
+  timestamp: Date;
+}
+
 export default function CustomerService() {
   const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [transcript, setTranscript] = useState<TranscriptMessage[]>([]);
 
   useEffect(() => {
     if (!document.querySelector('script[src*="elevenlabs/convai-widget-embed"]')) {
@@ -62,20 +70,66 @@ export default function CustomerService() {
     }
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Listen for ElevenLabs widget messages to build transcript
+  useEffect(() => {
+    const handleElevenLabsMessage = (event: MessageEvent) => {
+      if (!event.data || typeof event.data !== 'object') return;
+      
+      const { type } = event.data;
+      
+      if (type === 'user_transcript' && event.data.user_transcription_event?.user_transcript) {
+        setTranscript(prev => [...prev, {
+          role: 'user',
+          text: event.data.user_transcription_event.user_transcript,
+          timestamp: new Date(),
+        }]);
+      }
+      
+      if (type === 'agent_response' && event.data.agent_response_event?.agent_response) {
+        setTranscript(prev => [...prev, {
+          role: 'agent',
+          text: event.data.agent_response_event.agent_response,
+          timestamp: new Date(),
+        }]);
+      }
+    };
+
+    window.addEventListener('message', handleElevenLabsMessage);
+    return () => window.removeEventListener('message', handleElevenLabsMessage);
+  }, []);
+
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name.trim() || !formData.email.trim() || !formData.message.trim()) {
+    const name = formData.name.trim();
+    const email = formData.email.trim();
+    const message = formData.message.trim();
+    const subject = formData.subject.trim() || null;
+
+    if (!name || !email || !message) {
       toast({ title: 'Please fill in all required fields', variant: 'destructive' });
       return;
     }
+
     setIsSubmitting(true);
-    // Simulate submission
-    setTimeout(() => {
+    try {
+      const { error } = await supabase.from('support_tickets').insert({
+        name,
+        email,
+        subject,
+        message,
+      });
+
+      if (error) throw error;
+
       toast({ title: 'Message sent!', description: 'We\'ll get back to you within 24 hours.' });
       setFormData({ name: '', email: '', subject: '', message: '' });
+    } catch (err) {
+      console.error('Support ticket error:', err);
+      toast({ title: 'Something went wrong', description: 'Please try again or call us directly.', variant: 'destructive' });
+    } finally {
       setIsSubmitting(false);
-    }, 1200);
-  };
+    }
+  }, [formData]);
 
   return (
     <SiteShell>
@@ -119,6 +173,48 @@ export default function CustomerService() {
             </div>
           </div>
         </section>
+
+        {/* Live Chat Transcript */}
+        {transcript.length > 0 && (
+          <section className="py-16 px-4">
+            <div className="mx-auto max-w-3xl">
+              <div className="flex items-center justify-center gap-2 mb-8">
+                <History className="w-5 h-5 text-primary" />
+                <h2 className="text-2xl font-bold text-foreground">Conversation Transcript</h2>
+              </div>
+              <div className="rounded-2xl border border-border bg-card shadow-lg overflow-hidden">
+                <div className="max-h-96 overflow-y-auto p-6 space-y-4">
+                  {transcript.map((msg, i) => (
+                    <div
+                      key={i}
+                      className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}
+                    >
+                      <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
+                        msg.role === 'agent' ? 'bg-primary/10' : 'bg-muted'
+                      }`}>
+                        {msg.role === 'agent' ? (
+                          <Bot className="w-4 h-4 text-primary" />
+                        ) : (
+                          <User className="w-4 h-4 text-muted-foreground" />
+                        )}
+                      </div>
+                      <div className={`max-w-[75%] rounded-xl px-4 py-2.5 ${
+                        msg.role === 'agent'
+                          ? 'bg-muted text-foreground'
+                          : 'bg-primary text-primary-foreground'
+                      }`}>
+                        <p className="text-sm">{msg.text}</p>
+                        <span className="text-[10px] opacity-60 mt-1 block">
+                          {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* FAQ Accordion */}
         <section className="py-16 px-4 bg-muted/20">
