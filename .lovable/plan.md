@@ -1,70 +1,48 @@
 
+# Integrating Trudy's ElevenLabs Embed Widget
 
-## Comprehensive Mobile Fix -- Round 3
+## Overview
+Add Trudy's ElevenLabs conversational AI agent to the site in two ways:
+1. **Floating widget on all pages** -- replace or augment the current floating truck chat button
+2. **Dedicated customer service page** -- a new `/customer-service` route with a full-page Trudy experience
 
-This update addresses the remaining mobile issues across all pages: the initial form being cut off, proportional headers, trust bar pushing content down, maps sizing, the chat widget auto-minimizing after 3 seconds, and general spacing issues.
+## What We Need From You
+- Your ElevenLabs embed link or agent embed code (paste it in the next message after approving this plan)
 
-### Changes Overview
+---
 
-**1. Chat Widget Auto-Minimize on Mobile (3-second timer)**
-- File: `src/components/FloatingTruckChat.tsx`
-- Add a `useIsMobile()` check and a `useEffect` that auto-sets `isScrollMinimized = true` after 3 seconds on mobile devices
-- This means on mobile, the full pill shows briefly then collapses to the slim right-edge strip automatically
+## Part 1: Floating Widget (All Pages)
 
-**2. Homepage Hero Form Cutoff Fix**
-- File: `src/index.css` (mobile media query)
-- The `.tru-floating-form-card` has `min-height: 480px` on desktop which causes cutoff on mobile
-- Force `min-height: auto !important` and reduce internal padding
-- Reduce `.tru-hero.tru-hero-split` padding further and set `min-height: auto`
-- Make the hero headline smaller on mobile: `clamp(24px, 6.5vw, 36px)`
-- Reduce logo height to `48px` on mobile
-- Compact the form inputs: smaller font size, reduced padding, tighter spacing
-- Ensure the "Analyze Route" button is always visible without scrolling
+**Approach**: ElevenLabs provides an embeddable widget via a `<script>` tag or iframe snippet. We'll add this globally so it appears on every page.
 
-**3. Trust Strip Pushing Form Down**
-- File: `src/index.css` (mobile media query)
-- Reduce `.safer-trust-strip` `margin-top` from `8px` to `4px` and padding to `4px 8px`
-- Reduce `.safer-trust-item` font-size to `9px` on mobile
-- This recovers ~20px of vertical space
+- Create a new component `src/components/ElevenLabsTrudyWidget.tsx` that injects the ElevenLabs embed script/iframe
+- Add it to `src/App.tsx` alongside (or replacing) the existing `FloatingTruckChat` component
+- Style it to sit in the bottom-right corner, mobile-friendly, and not conflict with existing UI elements
+- The existing `FloatingTruckChat` truck button can either be removed or kept as a secondary element -- we can decide once we see how the ElevenLabs widget looks
 
-**4. SiteShell Header -- Tighter on Mobile**
-- File: `src/index.css` (mobile media query)
-- The sticky header `.bg-background` padding reduced to `4px 12px 6px`
-- The command center strip (`tracking-header`) also gets tighter padding
-- Sticky offset for command center: use `top: 3.5rem` instead of `4.5rem`
+## Part 2: Dedicated Customer Service Page
 
-**5. Map Panels -- Proper Mobile Sizing**
-- File: `src/index.css` (mobile media query)
-- `.tru-tracker-satellite-panel`: force `height: 180px` on mobile (not 200px)
-- `.tru-tracker-road-map`: force `height: 200px` on mobile (not 240px)
-- Both get `border-radius: 12px` and `overflow: hidden`
+**Approach**: Create a full-page experience at `/customer-service` featuring Trudy front and center.
 
-**6. Proportional Headers -- Responsive Sizing**
-- File: `src/index.css` (mobile media query)
-- `.tru-ai-main-headline`: `font-size: clamp(22px, 6vw, 32px)` on mobile
-- `.tru-ai-section-title`: `font-size: 12px` on mobile
-- `.tru-ai-subheadline`: `font-size: 13px` on mobile
-- `.tru-qb-question`: `font-size: 14px` on mobile
-- All section headings get `word-break: break-word` and controlled max widths
+- Create `src/pages/CustomerService.tsx` with:
+  - A hero section introducing Trudy as the virtual customer service rep
+  - The ElevenLabs embed widget displayed prominently (larger/centered)
+  - Info cards about what Trudy can help with (quotes, tracking, scheduling, FAQ)
+  - Fallback contact options (phone, email) below the widget
+- Add the route to `src/App.tsx`
+- Add a "Customer Service" link to the site navigation
 
-**7. Inventory Builder (Online Estimate) -- Mobile Refinement**
-- File: `src/index.css` (mobile media query)
-- Room list horizontal scroll already in place -- add scroll snap for better UX
-- Inventory grid items get smaller icons and tighter labels
+---
 
-**8. Extra-Small Breakpoint (< 375px)**
-- Further reduce hero headline to `22px`
-- Trust strip items to `8px` font
-- Form inputs get `height: 36px` and `font-size: 13px`
+## Technical Details
 
-### Technical Details
+### Files to create
+- `src/components/ElevenLabsTrudyWidget.tsx` -- wrapper component for the ElevenLabs embed
+- `src/pages/CustomerService.tsx` -- dedicated Trudy page
 
-- All CSS changes are within `@media (max-width: 768px)`, `@media (max-width: 480px)`, and `@media (max-width: 375px)` blocks
-- One component change: `FloatingTruckChat.tsx` gets a 3-second auto-minimize timer on mobile
-- No other JS/component changes needed
-- Desktop layout is completely untouched
+### Files to modify
+- `src/App.tsx` -- add widget globally + new route
+- `src/components/layout/Header.tsx` -- add nav link to Customer Service page
 
-### Files to Edit
-1. `src/index.css` -- Mobile media query additions/updates
-2. `src/components/FloatingTruckChat.tsx` -- Add auto-minimize timer for mobile
-
+### No backend changes needed
+The ElevenLabs embed is self-contained -- no edge function changes required since the embed handles its own authentication.
