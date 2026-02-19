@@ -21564,8 +21564,8 @@
   box-shadow: 
     0 4px 16px hsl(var(--tm-ink) / 0.12),
     0 8px 32px hsl(var(--tm-ink) / 0.08),
-    0 0 0 1px hsl(var(--primary) / 0.1),
-    0 8px 24px -4px hsl(var(--primary) / 0.15);
+    0 0 0 1px hsl(var(--tm-ink) / 0.06),
+    0 8px 24px -4px hsl(var(--tm-ink) / 0.1);
   transition: all 0.3s ease;
 }
 
@@ -21573,8 +21573,8 @@
   box-shadow: 
     0 4px 16px hsl(var(--tm-ink) / 0.15),
     0 8px 32px hsl(var(--tm-ink) / 0.10),
-    0 0 0 1px hsl(var(--primary) / 0.15),
-    0 12px 32px -4px hsl(var(--primary) / 0.25);
+    0 0 0 1px hsl(var(--tm-ink) / 0.1),
+    0 12px 32px -4px hsl(var(--tm-ink) / 0.15);
 }
 
 /* Summary-specific header adjustments */
@@ -21620,8 +21620,8 @@
   box-shadow: 
     0 4px 16px hsl(0 0% 0% / 0.3),
     0 8px 32px hsl(0 0% 0% / 0.2),
-    0 0 0 1px hsl(var(--primary) / 0.15),
-    0 8px 24px -4px hsl(var(--primary) / 0.2);
+    0 0 0 1px hsl(0 0% 100% / 0.08),
+    0 8px 24px -4px hsl(0 0% 0% / 0.2);
 }
 
 .dark .tru-qb-form-header-summary {
