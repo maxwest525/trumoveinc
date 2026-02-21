@@ -89,9 +89,10 @@ export default function AdminSupportTickets() {
       <div className="border-b border-border bg-card">
         <div className="mx-auto max-w-6xl px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+            <Button variant="ghost" size="icon" onClick={() => navigate('/agent-login')}>
               <ArrowLeft className="w-5 h-5" />
             </Button>
+            <a href="/" className="text-xs text-muted-foreground hover:text-foreground transition-colors">← Website</a>
             <div>
               <h1 className="text-xl font-bold text-foreground">Support Tickets</h1>
               <p className="text-sm text-muted-foreground">{tickets.length} total tickets</p>
