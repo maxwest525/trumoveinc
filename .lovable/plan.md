@@ -1,54 +1,35 @@
 
-# Fix Green Tint on Homepage Hero Form Card Border
+# Better Display of AI Scan & Manual Options in Estimator Nav Bar
 
-## Problem
-The hero form card on the homepage shows a subtle green tint/glow around its border edges. This is caused by the combination of:
+## What Changes
+Replace the trust indicator badges in the center of the AI Move Estimator's sticky header bar with two clear, interactive navigation tabs/buttons that let users switch between **AI Room Scanner** (`/scan-room`) and **Manual Builder** (`/online-estimate`).
 
-1. Semi-transparent background (`background: hsl(var(--background) / 0.98)`) at line 31005
-2. `backdrop-filter: blur(16px)` which blurs the content behind the card, including green elements like the "Move" text and truck logo
-3. The 2% transparency allows green light to bleed through at the rounded corners where anti-aliasing occurs
+## How It Will Look
+The sticky dark header bar currently shows: Logo | Trust Badges (AI-Powered, Instant Estimates, etc.) | Estimate ID
 
-## Fix
+It will become: Logo | **[AI Scan] [Manual Builder]** toggle buttons | Estimate ID
 
-### 1. Make the form card background fully opaque on the hero section
-Change `hsl(var(--background) / 0.98)` to `hsl(var(--background))` (fully opaque) at line 31005, and remove the backdrop-filter since it serves no purpose with an opaque background.
+- The active page gets a highlighted/accent style (filled button with glow)
+- The inactive option is a ghost/outline style
+- Each button includes an icon (Scan for AI, Package for Manual)
+- On mobile, the buttons shrink to icon-only with tooltips
 
-**File:** `src/index.css` (lines 31001-31006)
+## Technical Details
 
-Before:
-```css
-.tru-hero-form-panel .tru-floating-form-card {
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  background: hsl(var(--background) / 0.98);
-}
-```
+### File: `src/pages/OnlineEstimate.tsx`
+- Replace the center `tracking-header-trust` div (lines 322-347) with two `Link` buttons:
+  - **AI Scan** linking to `/scan-room` with `Scan` icon
+  - **Manual Builder** linking to `/online-estimate` with `Package` icon
+- Use `useLocation()` (already imported via react-router-dom) to highlight the active route
+- Style the active button with the existing `tru-qb-title-accent` / primary color treatment and a subtle glow
+- Style the inactive button as a ghost/outline variant
 
-After:
-```css
-.tru-hero-form-panel .tru-floating-form-card {
-  background: hsl(var(--background));
-}
-```
+### File: `src/pages/ScanRoom.tsx`
+- Add the same sticky header bar that currently exists on OnlineEstimate (the `tracking-header` pattern) if not already present, or update the existing header
+- Include the same two navigation buttons so users can toggle back to Manual Builder from the Scan page
+- The AI Scan button will be highlighted here instead
 
-### 2. Neutralize remaining green in tailwind.config.ts
-The `attention-pulse` animation still references `hsl(var(--primary))` (green). Replace with neutral `--tm-ink` tones.
-
-**File:** `tailwind.config.ts` (lines 93-101)
-
-Before:
-```css
-boxShadow: "0 8px 32px -4px hsl(var(--primary)/0.4), ..."
-```
-
-After:
-```css
-boxShadow: "0 8px 32px -4px hsl(var(--tm-ink)/0.4), ..."
-```
-
-### 3. Clean up remaining green references near the form
-- Line 31533: `.dark .tru-why-card-glow` uses `hsl(var(--primary) / 0.2)` -- neutralize to `--tm-ink`
-
-## Scope
-- 3 targeted fixes in 2 files
-- No visual regressions expected -- the glassmorphism effect was barely visible at 2% transparency anyway
+### Styling approach
+- Use existing CSS classes (`tracking-header`, etc.) for consistency
+- Add inline or utility styles for the toggle button states (active vs inactive)
+- Responsive: on small screens, hide label text and show icon-only with the existing Tooltip component
