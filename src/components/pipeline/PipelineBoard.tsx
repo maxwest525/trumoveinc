@@ -18,7 +18,8 @@ import { DealDetailPanel } from "./DealDetailPanel";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Loader2 } from "lucide-react";
+import { Loader2, Kanban, Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 
 function StageColumn({ stage, deals, onDealClick }: { stage: PipelineStage; deals: Deal[]; onDealClick: (d: Deal) => void }) {
@@ -49,7 +50,7 @@ function StageColumn({ stage, deals, onDealClick }: { stage: PipelineStage; deal
   );
 }
 
-export function PipelineBoard() {
+export function PipelineBoard({ onAddLead }: { onAddLead?: () => void }) {
   const [stages, setStages] = useState<PipelineStage[]>([]);
   const [deals, setDeals] = useState<Deal[]>([]);
   const [loading, setLoading] = useState(true);
@@ -153,6 +154,25 @@ export function PipelineBoard() {
     return (
       <div className="flex items-center justify-center h-64">
         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (deals.length === 0 && !loading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 px-4 text-center">
+        <div className="rounded-full bg-muted p-5 mb-4">
+          <Kanban className="h-10 w-10 text-muted-foreground" />
+        </div>
+        <h3 className="text-lg font-semibold text-foreground mb-1">No deals yet</h3>
+        <p className="text-sm text-muted-foreground max-w-xs mb-5">
+          Add your first lead to start tracking deals through your pipeline.
+        </p>
+        {onAddLead && (
+          <Button onClick={onAddLead} size="sm" className="gap-1.5">
+            <Plus className="h-3.5 w-3.5" /> New Lead
+          </Button>
+        )}
       </div>
     );
   }
