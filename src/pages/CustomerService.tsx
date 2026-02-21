@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
-import { Phone, Mail, Send, Clock, Shield, Truck, Calculator, MapPin, Calendar, HelpCircle, Package, ScanLine, Video, Sparkles, ArrowRight } from 'lucide-react';
+import { useConversation } from '@elevenlabs/react';
+import { Phone, PhoneOff, Mail, Send, Clock, Shield, Calculator, MapPin, Calendar, HelpCircle, Package, ScanLine, Video, Sparkles, Mic, Loader2 } from 'lucide-react';
 import SiteShell from '@/components/layout/SiteShell';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Input } from '@/components/ui/input';
@@ -9,6 +10,8 @@ import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import AIChatContainer from '@/components/chat/AIChatContainer';
 import trudyAvatar from '@/assets/trudy-avatar.png';
+
+const TRUDY_AGENT_ID = 'agent_0501khwa2t2pfj0s3echetmjhx4n';
 
 const capabilities = [
   { icon: Calculator, label: 'Instant Quotes', desc: 'Get a ballpark estimate in seconds' },
@@ -42,6 +45,148 @@ const trudyPageContext = {
   agentContext: "User is on the Meet Trudy page — they came here specifically to interact with you. Be confident, helpful, and proactive. You can handle quotes, scheduling, tracking, vetting, packing tips, and general questions. Only escalate to a human when genuinely necessary.",
 };
 
+/* ─── Inline Voice Call Section ─── */
+function TrudyVoiceHero() {
+  const [isConnecting, setIsConnecting] = useState(false);
+
+  const conversation = useConversation({
+    onConnect: () => console.log('Meet Trudy: connected'),
+    onDisconnect: () => console.log('Meet Trudy: disconnected'),
+    onError: (error) => {
+      console.error('Meet Trudy voice error:', error);
+      toast({ variant: 'destructive', title: 'Connection Error', description: 'Could not connect voice. Try again.' });
+    },
+  });
+
+  const startCall = useCallback(async () => {
+    if (isConnecting) return;
+    setIsConnecting(true);
+    try {
+      await navigator.mediaDevices.getUserMedia({ audio: true });
+      await conversation.startSession({ agentId: TRUDY_AGENT_ID, connectionType: 'webrtc' });
+    } catch (err: any) {
+      if (err.name === 'NotAllowedError') {
+        toast({ variant: 'destructive', title: 'Microphone Required', description: 'Allow mic access to talk with Trudy.' });
+      }
+    } finally {
+      setIsConnecting(false);
+    }
+  }, [conversation, isConnecting]);
+
+  const endCall = useCallback(async () => {
+    await conversation.endSession();
+  }, [conversation]);
+
+  const isConnected = conversation.status === 'connected';
+
+  return (
+    <div className="relative">
+      {/* Avatar + Voice orb */}
+      <div className="flex flex-col items-center">
+        <div className="relative mb-6">
+          {/* Outer glow rings */}
+          {isConnected && (
+            <>
+              <span className="absolute -inset-4 rounded-full border border-foreground/10 animate-pulse" />
+              <span className="absolute -inset-8 rounded-full border border-foreground/5 animate-pulse" style={{ animationDelay: '0.5s' }} />
+            </>
+          )}
+
+          {/* Avatar */}
+          <div className={`relative h-28 w-28 rounded-full border-2 transition-all duration-500 ${
+            isConnected ? 'border-foreground/30 shadow-[0_0_40px_hsl(var(--foreground)/0.15)]' : 'border-border shadow-lg'
+          }`}>
+            <img
+              src={trudyAvatar}
+              alt="Trudy – AI Assistant"
+              className="h-full w-full rounded-full object-cover"
+            />
+            <span className={`absolute bottom-1 right-1 h-4 w-4 rounded-full border-2 border-background transition-colors ${
+              isConnected ? 'bg-foreground' : 'bg-muted-foreground'
+            }`} />
+          </div>
+        </div>
+
+        <h1 className="text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl">
+          Meet Trudy
+        </h1>
+        <p className="mt-3 text-lg text-muted-foreground max-w-lg mx-auto">
+          Your AI move coordinator — available 24/7, faster than a phone call.
+        </p>
+
+        {/* Voice activity bar when connected */}
+        {isConnected && (
+          <div className="mt-6 flex items-center gap-3 rounded-full border border-border bg-card/80 backdrop-blur-sm px-6 py-3 shadow-lg animate-in fade-in slide-in-from-bottom-2">
+            <div className="flex items-center gap-0.5">
+              {[...Array(7)].map((_, i) => (
+                <span
+                  key={i}
+                  className="w-1 rounded-full bg-foreground/50 transition-all duration-150"
+                  style={{
+                    height: conversation.isSpeaking
+                      ? `${8 + Math.sin(Date.now() / 180 + i * 0.9) * 14}px`
+                      : '4px',
+                  }}
+                />
+              ))}
+            </div>
+            <span className="text-sm font-medium text-foreground">
+              {conversation.isSpeaking ? 'Trudy is speaking…' : 'Listening to you…'}
+            </span>
+            <div className="flex items-center gap-0.5">
+              {[...Array(7)].map((_, i) => (
+                <span
+                  key={i}
+                  className="w-1 rounded-full bg-foreground/50 transition-all duration-150"
+                  style={{
+                    height: !conversation.isSpeaking
+                      ? `${8 + Math.sin(Date.now() / 180 + i * 0.9) * 14}px`
+                      : '4px',
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Call-to-action */}
+        <div className="mt-6 flex items-center gap-3">
+          {!isConnected ? (
+            <button
+              onClick={startCall}
+              disabled={isConnecting}
+              className="group flex items-center gap-3 rounded-full bg-foreground text-background px-7 py-3.5 text-sm font-semibold shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl active:scale-95 disabled:opacity-50"
+            >
+              {isConnecting ? (
+                <Loader2 className="h-5 w-5 animate-spin" />
+              ) : (
+                <Mic className="h-5 w-5" />
+              )}
+              {isConnecting ? 'Connecting…' : 'Start Voice Call'}
+            </button>
+          ) : (
+            <button
+              onClick={endCall}
+              className="flex items-center gap-3 rounded-full bg-destructive text-destructive-foreground px-7 py-3.5 text-sm font-semibold shadow-xl transition-all duration-300 hover:scale-105 active:scale-95"
+            >
+              <PhoneOff className="h-5 w-5" />
+              End Call
+            </button>
+          )}
+        </div>
+
+        {!isConnected && (
+          <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-foreground/5 border border-border px-4 py-1.5 text-sm text-muted-foreground">
+            <Sparkles className="w-3.5 h-3.5 text-foreground" />
+            <span>Powered by conversational AI · Handles 95% of requests instantly</span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ─── Main Page ─── */
 export default function CustomerService() {
   const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -76,33 +221,18 @@ export default function CustomerService() {
   return (
     <SiteShell>
       <main className="min-h-screen bg-background">
-        {/* Hero + Chat */}
-        <section className="relative pt-28 pb-0">
-          <div className="mx-auto max-w-4xl px-4">
-            {/* Trudy intro */}
-            <div className="text-center mb-8">
-              <div className="relative mx-auto mb-5 h-24 w-24">
-                <img
-                  src={trudyAvatar}
-                  alt="Trudy – AI Assistant"
-                  className="h-24 w-24 rounded-full border-2 border-border shadow-lg object-cover"
-                />
-                <span className="absolute bottom-1 right-1 h-4 w-4 rounded-full bg-foreground border-2 border-background" />
-              </div>
-              <h1 className="text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl">
-                Meet Trudy
-              </h1>
-              <p className="mt-3 text-lg text-muted-foreground max-w-lg mx-auto">
-                Your AI move coordinator — available 24/7, faster than a phone call, and knows everything about your move.
-              </p>
-              <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-foreground/5 border border-border px-4 py-1.5 text-sm text-muted-foreground">
-                <Sparkles className="w-3.5 h-3.5 text-foreground" />
-                <span>Powered by conversational AI · Handles 95% of requests instantly</span>
-              </div>
-            </div>
+        {/* Hero — Voice-first */}
+        <section className="relative pt-28 pb-14">
+          <div className="mx-auto max-w-4xl px-4 text-center">
+            <TrudyVoiceHero />
+          </div>
+        </section>
 
-            {/* Embedded chat — the hero of the page */}
-            <div className="rounded-2xl border border-border bg-card shadow-xl overflow-hidden" style={{ height: '520px' }}>
+        {/* Or chat with text */}
+        <section className="pb-14 px-4">
+          <div className="mx-auto max-w-4xl">
+            <p className="text-center text-xs uppercase tracking-widest text-muted-foreground mb-4">Or type your question</p>
+            <div className="rounded-2xl border border-border bg-card shadow-xl overflow-hidden" style={{ height: '480px' }}>
               <AIChatContainer pageContext={trudyPageContext} />
             </div>
           </div>
