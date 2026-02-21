@@ -29,7 +29,7 @@ export default function AgentPipeline() {
             <TabsTrigger value="reports" className="gap-2"><BarChart3 className="h-4 w-4" />Reports</TabsTrigger>
           </TabsList>
           <TabsContent value="board">
-            <PipelineBoard key={refreshKey} />
+            <PipelineBoard key={refreshKey} onAddLead={() => setAddOpen(true)} />
           </TabsContent>
           <TabsContent value="reports">
             <PipelineReports />
