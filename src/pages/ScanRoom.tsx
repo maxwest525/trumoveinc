@@ -9,6 +9,8 @@ const useScrollToTop = () => {
 import { useNavigate, Link } from "react-router-dom";
 import SiteShell from "@/components/layout/SiteShell";
 import ScanIntroModal from "@/components/estimate/ScanIntroModal";
+import EstimatorNavToggle from "@/components/estimate/EstimatorNavToggle";
+import logoImg from "@/assets/logo.png";
 import { 
   Scan, Sparkles, ArrowRight, 
   Smartphone, Box, Clock, Shield, Zap, ChevronRight,
@@ -276,35 +278,26 @@ export default function ScanRoom() {
   };
 
   return (
-    <SiteShell>
+    <SiteShell hideTrustStrip>
       <div className="tru-scan-page">
-        {/* Trust Strip - Top */}
-        <section className="tru-scan-trust-strip-slim">
-          <div className="container max-w-6xl mx-auto px-4">
-            <div className="tru-scan-trust-row-slim tru-scan-trust-spread">
-              <div className="tru-scan-trust-item-slim">
-                <Smartphone className="w-3.5 h-3.5" />
-                <span>No App Required</span>
-              </div>
-              <div className="tru-scan-trust-item-slim">
-                <Zap className="w-3.5 h-3.5" />
-                <span>500+ Item Types</span>
-              </div>
-              <div className="tru-scan-trust-item-slim">
-                <Ruler className="w-3.5 h-3.5" />
-                <span>Auto Dimensions</span>
-              </div>
-              <div className="tru-scan-trust-item-slim">
-                <Clock className="w-3.5 h-3.5" />
-                <span>Save 30+ Minutes</span>
-              </div>
-              <div className="tru-scan-trust-item-slim">
-                <Shield className="w-3.5 h-3.5" />
-                <span>Secure & Private</span>
+        {/* Sticky Command Center Header - matches OnlineEstimate */}
+        <div className="sticky top-[102px] z-40">
+          <header className="tracking-header">
+            <div className="flex items-center gap-3">
+              <img src={logoImg} alt="TruMove" className="h-6 brightness-0 invert" />
+              <span className="text-[11px] font-bold tracking-[0.2em] uppercase text-white/90">
+                AI Move Estimator
+              </span>
+            </div>
+            <EstimatorNavToggle />
+            <div className="flex items-center gap-4">
+              <div className="text-right">
+                <div className="text-[11px] text-white/80 uppercase tracking-wider">AI Scanner</div>
+                <div className="text-sm font-mono text-white">Beta</div>
               </div>
             </div>
-          </div>
-        </section>
+          </header>
+        </div>
 
         {/* Centered Header Section */}
         <section className="tru-scan-header-section">
