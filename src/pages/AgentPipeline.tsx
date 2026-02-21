@@ -17,9 +17,14 @@ export default function AgentPipeline() {
       <div className="px-4 py-6 max-w-[1600px] mx-auto">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
-            <Link to="/agent-login">
-              <Button variant="ghost" size="icon"><ArrowLeft className="h-4 w-4" /></Button>
-            </Link>
+            <div className="flex items-center gap-2">
+              <Link to="/agent-login">
+                <Button variant="ghost" size="icon"><ArrowLeft className="h-4 w-4" /></Button>
+              </Link>
+              <Link to="/" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+                ← Website
+              </Link>
+            </div>
             <div>
               <h1 className="text-2xl font-bold text-foreground">Pipeline</h1>
               <p className="text-sm text-muted-foreground">Manage deals & track performance</p>
