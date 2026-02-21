@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import {
   DndContext,
   DragOverlay,
@@ -74,6 +74,13 @@ export function PipelineBoard() {
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
+  // Preload notification sound
+  const notificationSound = useMemo(() => {
+    const audio = new Audio("/sounds/notification.mp3");
+    audio.volume = 0.6;
+    return audio;
+  }, []);
+
   // Realtime subscription with toast notifications
   useEffect(() => {
     let currentUserId: string | null = null;
@@ -91,6 +98,10 @@ export function PipelineBoard() {
           const { data: lead } = await supabase.from("leads").select("first_name, last_name").eq("id", newRow.lead_id).single();
           const name = lead ? `${lead.first_name} ${lead.last_name}` : "A deal";
           const stageName = (newRow.stage as string).replace(/_/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase());
+
+          // Play notification sound
+          notificationSound.currentTime = 0;
+          notificationSound.play().catch(() => {});
 
           toast({
             title: "🔔 Deal Stage Updated",
