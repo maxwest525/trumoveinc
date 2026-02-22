@@ -22,7 +22,7 @@ interface ConversionReportData {
 // Brand colors
 const BRAND_PURPLE = [124, 58, 237] as const;
 const BRAND_PINK = [236, 72, 153] as const;
-const BRAND_GREEN = [16, 185, 129] as const;
+const BRAND_BLUE = [59, 130, 246] as const;
 
 export function generateABTestPDF(data: ABTestReportData): void {
   const doc = new jsPDF();
@@ -93,7 +93,7 @@ export function generateABTestPDF(data: ABTestReportData): void {
     doc.text(`${index + 1}. ${test.name}`, 20, yPos + 5);
     
     // Status badge
-    const statusColor = test.status === "running" ? BRAND_GREEN : BRAND_PURPLE;
+    const statusColor = test.status === "running" ? BRAND_BLUE : BRAND_PURPLE;
     doc.setFillColor(statusColor[0], statusColor[1], statusColor[2]);
     doc.roundedRect(pageWidth - 50, yPos - 2, 30, 10, 2, 2, "F");
     doc.setTextColor(255, 255, 255);
