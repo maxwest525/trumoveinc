@@ -26,6 +26,7 @@ import { Upload, MousePointerClick, PieChart, UserCheck, Map, TrendingDown, Lock
  import autoTable from "jspdf-autotable";
  import logoImg from "@/assets/logo.png";
 import DraggableModal from "@/components/ui/DraggableModal";
+import ScaledPreview from "@/components/ui/ScaledPreview";
 import { 
   TruMoveLogo, 
   PoweredByBadge, 
@@ -2843,50 +2844,49 @@ export function AILandingPageGenerator({ isGenerating, onGenerate, prefillData }
              </div>
            </div>
  
-           {/* Actual Landing Page Content */}
-           <div className="relative">
-             <ScrollArea className="h-[450px]">
-               <div className="relative min-h-[800px]">
-                 {renderSelectedTemplate()}
+           {/* Actual Landing Page Content - scaled to fit */}
+           <ScaledPreview className="h-[450px]">
+             <div className="relative">
+               {renderSelectedTemplate()}
                  
-                 {/* Heatmap Overlay - Inside ScrollArea to scroll with content */}
-                 {showHeatmapOverlay && importedData && (
-                   <div className="absolute inset-0 pointer-events-none z-20">
-                      {getCurrentHeatmapPositions().map((pos, i) => {
-                        const clickData = importedData.clickBehavior.find(c => 
-                          c.element.toLowerCase().includes(pos.element.toLowerCase().split(' ')[0])
-                        );
-                        const intensity = pos.intensity;
-                        const colors = {
-                          high: { bg: "rgba(239, 68, 68, 0.6)", shadow: "0 0 40px 20px rgba(239, 68, 68, 0.4)", badge: "bg-red-600" },
-                          medium: { bg: "rgba(249, 115, 22, 0.5)", shadow: "0 0 30px 15px rgba(249, 115, 22, 0.3)", badge: "bg-orange-500" },
-                          low: { bg: "rgba(59, 130, 246, 0.4)", shadow: "0 0 25px 10px rgba(59, 130, 246, 0.25)", badge: "bg-blue-500" },
-                        };
-                        const color = colors[intensity];
-                        
-                        return (
-                          <div 
-                            key={pos.id}
-                            className={`absolute -translate-x-1/2 -translate-y-1/2 rounded-lg ${intensity === 'high' ? 'animate-pulse' : ''}`}
-                            style={{ 
-                              top: pos.top,
-                              left: pos.left,
-                              width: pos.width,
-                              height: pos.height,
-                              background: `radial-gradient(ellipse, ${color.bg} 0%, ${color.bg.replace(/0\.[456]/g, '0.15')} 40%, transparent 70%)`,
-                              boxShadow: color.shadow
-                            }}
-                          >
-                            <div className={`absolute -top-6 left-1/2 -translate-x-1/2 ${color.badge} text-white text-[9px] px-2 py-0.5 rounded-full whitespace-nowrap font-medium`}>
-                              {intensity === 'high' ? '🔥' : intensity === 'medium' ? '⚡' : '❄️'} {clickData?.percentage || ((5 - i) * 8)}% • {pos.element}
-                            </div>
+               {/* Heatmap Overlay */}
+               {showHeatmapOverlay && importedData && (
+                 <div className="absolute inset-0 pointer-events-none z-20">
+                    {getCurrentHeatmapPositions().map((pos, i) => {
+                      const clickData = importedData.clickBehavior.find(c => 
+                        c.element.toLowerCase().includes(pos.element.toLowerCase().split(' ')[0])
+                      );
+                      const intensity = pos.intensity;
+                      const colors = {
+                        high: { bg: "rgba(239, 68, 68, 0.6)", shadow: "0 0 40px 20px rgba(239, 68, 68, 0.4)", badge: "bg-red-600" },
+                        medium: { bg: "rgba(249, 115, 22, 0.5)", shadow: "0 0 30px 15px rgba(249, 115, 22, 0.3)", badge: "bg-orange-500" },
+                        low: { bg: "rgba(59, 130, 246, 0.4)", shadow: "0 0 25px 10px rgba(59, 130, 246, 0.25)", badge: "bg-blue-500" },
+                      };
+                      const color = colors[intensity];
+                      
+                      return (
+                        <div 
+                          key={pos.id}
+                          className={`absolute -translate-x-1/2 -translate-y-1/2 rounded-lg ${intensity === 'high' ? 'animate-pulse' : ''}`}
+                          style={{ 
+                            top: pos.top,
+                            left: pos.left,
+                            width: pos.width,
+                            height: pos.height,
+                            background: `radial-gradient(ellipse, ${color.bg} 0%, ${color.bg.replace(/0\.[456]/g, '0.15')} 40%, transparent 70%)`,
+                            boxShadow: color.shadow
+                          }}
+                        >
+                          <div className={`absolute -top-6 left-1/2 -translate-x-1/2 ${color.badge} text-white text-[9px] px-2 py-0.5 rounded-full whitespace-nowrap font-medium`}>
+                            {intensity === 'high' ? '🔥' : intensity === 'medium' ? '⚡' : '❄️'} {clickData?.percentage || ((5 - i) * 8)}% • {pos.element}
                           </div>
-                        );
-                      })}
-                   </div>
-                 )}
-               </div>
-             </ScrollArea>
+                        </div>
+                      );
+                    })}
+                 </div>
+               )}
+             </div>
+           </ScaledPreview>
              
              {/* Heatmap Legend - Fixed position outside ScrollArea */}
              {showHeatmapOverlay && importedData && (
@@ -3403,7 +3403,6 @@ export function AILandingPageGenerator({ isGenerating, onGenerate, prefillData }
             </div>
           </div>
          </div>
-         </div>
       
        {/* Popout Modal using DraggableModal */}
        <DraggableModal
@@ -3789,9 +3788,9 @@ export function AILandingPageGenerator({ isGenerating, onGenerate, prefillData }
            <div className="flex flex-col lg:flex-row flex-1 overflow-hidden">
              {/* Landing Page Preview */}
              <div className="flex-1 border-r border-border relative">
-               <ScrollArea className="h-full">
-                 {renderSelectedTemplate()}
-               </ScrollArea>
+                <ScaledPreview className="h-full">
+                  {renderSelectedTemplate()}
+                </ScaledPreview>
                
                {/* Heatmap Overlay in side-by-side */}
                {showHeatmapOverlay && importedData && (
@@ -3958,17 +3957,17 @@ export function AILandingPageGenerator({ isGenerating, onGenerate, prefillData }
                 />
               </div>
               <div className="flex-1 overflow-hidden">
-                <ScrollArea className="h-full">
+                <ScaledPreview className="h-full">
                   {renderSelectedTemplate()}
-                </ScrollArea>
+                </ScaledPreview>
               </div>
             </div>
           ) : (
             /* Full width preview only */
             <div className="flex-1 overflow-hidden">
-              <ScrollArea className="h-full">
+              <ScaledPreview className="h-full">
                 {renderSelectedTemplate()}
-              </ScrollArea>
+              </ScaledPreview>
             </div>
           )}
        </DraggableModal>
