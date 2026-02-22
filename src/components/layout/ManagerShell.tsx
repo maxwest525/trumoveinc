@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   Home, Sun, Moon, Bell, LayoutDashboard, Users, CalendarCheck,
   Target, Headphones, AlertTriangle, CheckCircle, BarChart3,
-  RotateCcw, Gauge, Globe, Sparkles,
+  RotateCcw, Gauge, Globe, Sparkles, DollarSign,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useTheme } from "next-themes";
@@ -100,6 +100,13 @@ export default function ManagerShell({ children, breadcrumb = "" }: ManagerShell
           >
             <Sparkles className="w-4 h-4" />
             <span>Marketing Suite</span>
+          </Link>
+          <Link
+            to="/accounting/dashboard"
+            className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+          >
+            <DollarSign className="w-4 h-4" />
+            <span>Accounting</span>
           </Link>
           <div className="h-px bg-border/50 mx-2 my-1" />
           <button onClick={handleResetPreference} className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">

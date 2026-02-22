@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import SiteShell from "@/components/layout/SiteShell";
 import PortalAuthForm from "@/components/auth/PortalAuthForm";
-import { Users, BarChart3, Shield, Crown, ArrowRight, LogOut } from "lucide-react";
+import { Users, BarChart3, Shield, Crown, ArrowRight, LogOut, Sparkles, DollarSign } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { Session } from "@supabase/supabase-js";
 
@@ -35,6 +35,20 @@ const ROLES = [
     description: "Configure users, integrations, branding, and system settings.",
     icon: Shield,
     href: "/admin/dashboard",
+  },
+  {
+    id: "marketing",
+    title: "Marketing",
+    description: "AI-powered campaigns, landing pages, analytics, and A/B testing.",
+    icon: Sparkles,
+    href: "/marketing/dashboard",
+  },
+  {
+    id: "accounting",
+    title: "Accounting",
+    description: "Invoices, payroll, expenses, revenue reports, and financial tools.",
+    icon: DollarSign,
+    href: "/accounting/dashboard",
   },
 ];
 
