@@ -2,8 +2,7 @@ import { useState, useEffect, type ReactNode } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   Home, Sun, Moon, Bell, LayoutDashboard, Users, Link2, Package,
-  Globe, Sparkles, LineChart, Zap, ScrollText, RotateCcw,
-  MoreHorizontal, ChevronDown, ChevronUp, Gauge,
+  Globe, Zap, ScrollText, RotateCcw, Gauge, Sparkles,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useTheme } from "next-themes";
@@ -20,9 +19,6 @@ const NAV_ITEMS = [
 
 const ADVANCED_ITEMS = [
   { label: "Products & Pricing", icon: Package },
-  { label: "Website Builder", icon: Globe },
-  { label: "AI Marketing Suite", icon: Sparkles },
-  { label: "Analytics Setup", icon: LineChart },
   { label: "Automations", icon: Zap },
   { label: "Audit Log", icon: ScrollText },
 ];
@@ -97,6 +93,14 @@ export default function AdminShell({ children, breadcrumb = "" }: AdminShellProp
         </nav>
 
         <div className="px-2 pb-4 space-y-0.5">
+          <Link
+            to="/marketing/dashboard"
+            className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+          >
+            <Sparkles className="w-4 h-4" />
+            <span>Marketing Suite</span>
+          </Link>
+          <div className="h-px bg-border/50 mx-2 my-1" />
           <button
             onClick={handleResetPreference}
             className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
