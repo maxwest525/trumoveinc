@@ -1327,8 +1327,8 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 120 100% 54%;
-    --primary-text: 142 76% 36%; /* Readable forest green for text */
+    --primary: 221 83% 53%;
+    --primary-text: 221 83% 43%; /* Readable blue for text */
     --primary-foreground: 222 47% 11%;
 
     --secondary: 210 40% 96.1%;
@@ -1374,8 +1374,8 @@
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 120 100% 54%;
-    --primary-text: 142 76% 55%; /* Slightly brighter for dark backgrounds */
+    --primary: 221 83% 53%;
+    --primary-text: 221 83% 63%; /* Slightly brighter for dark backgrounds */
     --primary-foreground: 222 47% 11%;
 
     --secondary: 217.2 32.6% 17.5%;
@@ -8020,7 +8020,7 @@
   background: linear-gradient(
     135deg,
     hsl(var(--primary)) 0%,
-    hsl(145 80% 42%) 50%,
+    hsl(210 80% 42%) 50%,
     hsl(var(--primary)) 100%
   );
   background-size: 200% 200%;

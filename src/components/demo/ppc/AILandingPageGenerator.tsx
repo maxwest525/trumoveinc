@@ -200,7 +200,7 @@ const LANDING_PAGE_TEMPLATES = [
     name: "Quote Funnel", 
     description: "High-converting quote request page with urgency triggers",
     conversion: "12.4%",
-    style: "Dark hero, green CTAs"
+    style: "Dark hero, bold CTAs"
   },
   { 
     id: "comparison", 
@@ -849,10 +849,10 @@ export function AILandingPageGenerator({ isGenerating, onGenerate, prefillData }
          [239, 68, 68],    // red
          [249, 115, 22],   // orange
          [234, 179, 8],    // yellow
-         [34, 197, 94],    // green
-         [59, 130, 246],   // blue
-       ][i] as [number, number, number],
-       label: click.element
+          [59, 130, 246],   // blue
+          [139, 92, 246],   // purple
+        ][i] as [number, number, number],
+        label: click.element
      }));
      
      drawPieChart(doc, 50, 85, 30, pieData);
@@ -877,9 +877,9 @@ export function AILandingPageGenerator({ isGenerating, onGenerate, prefillData }
        value: demo.conversions,
        label: demo.segment.split(' ')[0],
        color: [
-         [34, 197, 94],    // green
-         [59, 130, 246],   // blue
-         [139, 92, 246],   // purple
+          [59, 130, 246],   // blue
+          [139, 92, 246],   // purple
+          [56, 189, 248],   // sky
          [245, 158, 11],   // amber
          [236, 72, 153],   // pink
        ][i] as [number, number, number]
@@ -2752,7 +2752,7 @@ export function AILandingPageGenerator({ isGenerating, onGenerate, prefillData }
          {/* Control Bar */}
           <div className="flex flex-col gap-3 p-3 rounded-xl border border-border bg-card">
             <div className="flex items-center gap-3 flex-wrap">
-              <Badge className="gap-1" style={{ background: "#10B98120", color: "#10B981" }}>
+              <Badge className="gap-1" style={{ background: "#3B82F620", color: "#3B82F6" }}>
                 <CheckCircle2 className="w-3 h-3" />
                 AI Generated
               </Badge>
@@ -3244,9 +3244,9 @@ export function AILandingPageGenerator({ isGenerating, onGenerate, prefillData }
                              className="w-10 h-10 rounded-lg flex items-center justify-center font-bold text-white"
                              style={{ 
                                background: `linear-gradient(135deg, ${
-                                 i === 0 ? '#22C55E' : i === 1 ? '#3B82F6' : i === 2 ? '#8B5CF6' : i === 3 ? '#F59E0B' : '#EC4899'
-                               } 0%, ${
-                                 i === 0 ? '#16A34A' : i === 1 ? '#1D4ED8' : i === 2 ? '#7C3AED' : i === 3 ? '#D97706' : '#DB2777'
+                                  i === 0 ? '#3B82F6' : i === 1 ? '#8B5CF6' : i === 2 ? '#EC4899' : i === 3 ? '#F59E0B' : '#06B6D4'
+                                } 0%, ${
+                                  i === 0 ? '#1D4ED8' : i === 1 ? '#7C3AED' : i === 2 ? '#DB2777' : i === 3 ? '#D97706' : '#0891B2'
                                } 100%)` 
                              }}
                            >
@@ -3396,8 +3396,8 @@ export function AILandingPageGenerator({ isGenerating, onGenerate, prefillData }
                   <Zap className="w-3.5 h-3.5" /> CTA Psychology
                 </div>
                 <p className="text-purple-700 dark:text-purple-400 text-xs">
-                  Green buttons on dark backgrounds have 21% higher CTR. 
-                  "Get My" uses possessive language increasing ownership feeling.
+                   Bold CTA buttons on dark backgrounds have 21% higher CTR. 
+                   "Get My" uses possessive language increasing ownership feeling.
                 </p>
               </div>
             </div>
@@ -3594,9 +3594,9 @@ export function AILandingPageGenerator({ isGenerating, onGenerate, prefillData }
                  </Button>
                </div>
                
-               <div className="p-3 rounded-lg bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800">
-                 <p className="text-xs font-medium text-green-700 dark:text-green-300 mb-1">🌐 Your page is live at:</p>
-                 <code className="text-sm font-mono text-green-600 dark:text-green-400">
+                <div className="p-3 rounded-lg bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800">
+                  <p className="text-xs font-medium text-blue-700 dark:text-blue-300 mb-1">🌐 Your page is live at:</p>
+                  <code className="text-sm font-mono text-blue-600 dark:text-blue-400">
                    https://{businessName.toLowerCase().replace(/\s/g, '')}.lovable.app/{selectedTemplate}
                  </code>
                </div>
@@ -3736,7 +3736,7 @@ export function AILandingPageGenerator({ isGenerating, onGenerate, prefillData }
                          </p>
                        </div>
                        <div className="flex flex-col items-end gap-2">
-                         <Badge className="bg-green-600 text-white text-lg px-4 py-1">
+                         <Badge className="bg-blue-600 text-white text-lg px-4 py-1">
                            {LANDING_PAGE_TEMPLATES.find(t => t.id === selectedTemplate)?.conversion} Conversion
                          </Badge>
                          <span className="text-white/50 text-sm">Avg. performance</span>
@@ -3850,7 +3850,7 @@ export function AILandingPageGenerator({ isGenerating, onGenerate, prefillData }
                          <p className="text-[10px] text-muted-foreground">Clicks</p>
                        </div>
                        <div className="p-2 rounded-lg bg-card border border-border text-center">
-                         <p className="text-lg font-bold text-green-600">{importedData.totalConversions.toLocaleString()}</p>
+                         <p className="text-lg font-bold text-blue-600">{importedData.totalConversions.toLocaleString()}</p>
                          <p className="text-[10px] text-muted-foreground">Conversions</p>
                        </div>
                        <div className="p-2 rounded-lg bg-card border border-border text-center">
@@ -3917,7 +3917,7 @@ export function AILandingPageGenerator({ isGenerating, onGenerate, prefillData }
                      <div className="space-y-2 text-[10px] text-purple-700 dark:text-purple-300">
                        <p>• "Stop Overpaying" triggers loss aversion (2x more powerful)</p>
                        <p>• Specific numbers ($847) increase trust by 27%</p>
-                       <p>• Green CTAs on dark backgrounds have 21% higher CTR</p>
+                       <p>• Bold CTAs on dark backgrounds have 21% higher CTR</p>
                      </div>
                    </div>
                    
@@ -4247,10 +4247,10 @@ export function AILandingPageGenerator({ isGenerating, onGenerate, prefillData }
                </button>
                <button 
                  onClick={handleImportData}
-                 className="p-4 rounded-xl border border-border bg-card hover:border-green-400 hover:bg-green-50/50 dark:hover:bg-green-950/30 transition-all text-center group"
-               >
-                 <div className="w-10 h-10 rounded-lg bg-green-100 dark:bg-green-900 flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform">
-                   <Upload className="w-5 h-5 text-green-600" />
+                  className="p-4 rounded-xl border border-border bg-card hover:border-blue-400 hover:bg-blue-50/50 dark:hover:bg-blue-950/30 transition-all text-center group"
+                >
+                  <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900 flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform">
+                    <Upload className="w-5 h-5 text-blue-600" />
                  </div>
                  <p className="font-medium text-sm text-foreground">Upload CSV</p>
                  <p className="text-xs text-muted-foreground">Custom data</p>
