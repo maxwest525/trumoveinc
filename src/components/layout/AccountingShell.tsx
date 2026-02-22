@@ -1,8 +1,9 @@
-import { useState, useEffect, type ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
-  Home, Sun, Moon, Bell, LayoutDashboard, Users, Link2, Package,
-  Globe, Zap, ScrollText, RotateCcw, Gauge, Sparkles, DollarSign,
+  Home, Sun, Moon, Bell, LayoutDashboard, DollarSign, Receipt,
+  CreditCard, FileText, Users, TrendingDown, BarChart3, Globe,
+  RotateCcw, Gauge,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useTheme } from "next-themes";
@@ -10,29 +11,28 @@ import { cn } from "@/lib/utils";
 import { setPortalContext } from "@/hooks/usePortalContext";
 
 const NAV_ITEMS = [
-  { label: "Dashboard", icon: LayoutDashboard, href: "/admin/dashboard" },
+  { label: "Dashboard", icon: LayoutDashboard, href: "/accounting/dashboard" },
   { label: "My KPIs", icon: Gauge, href: "/kpi" },
-  { label: "Users & Roles", icon: Users, href: "/admin/users" },
-  { label: "Integrations", icon: Link2, href: "/admin/integrations" },
-  { label: "Support Tickets", icon: ScrollText, href: "/admin/support-tickets" },
+  { label: "Invoices", icon: FileText },
+  { label: "Payments", icon: CreditCard },
+  { label: "Expenses", icon: TrendingDown },
+  { label: "Payroll", icon: Users },
+  { label: "Revenue Reports", icon: BarChart3 },
+  { label: "Overhead & Costs", icon: DollarSign },
+  { label: "Lead Costs", icon: Receipt },
+  { label: "Subscriptions", icon: Receipt },
+  { label: "QuickBooks", icon: Globe },
 ];
 
-const ADVANCED_ITEMS = [
-  { label: "Products & Pricing", icon: Package },
-  { label: "Automations", icon: Zap },
-  { label: "Audit Log", icon: ScrollText },
-];
-
-interface AdminShellProps {
+interface AccountingShellProps {
   children: ReactNode;
-  breadcrumb?: string; // e.g. "/ Users"
+  breadcrumb?: string;
 }
 
-export default function AdminShell({ children, breadcrumb = "" }: AdminShellProps) {
+export default function AccountingShell({ children, breadcrumb = "" }: AccountingShellProps) {
   const { theme, setTheme } = useTheme();
   const location = useLocation();
   const navigate = useNavigate();
-  const [showAdvanced] = useState(true);
 
   useEffect(() => {
     setPortalContext("admin");
@@ -46,39 +46,34 @@ export default function AdminShell({ children, breadcrumb = "" }: AdminShellProp
 
   return (
     <div className="flex min-h-screen bg-background text-foreground">
-      {/* Sidebar */}
       <aside className="w-52 shrink-0 border-r border-border bg-card flex flex-col min-h-screen">
         <div className="px-4 py-4 flex items-center gap-2">
           <div className="w-7 h-7 rounded-lg bg-foreground flex items-center justify-center">
             <span className="text-background text-xs font-bold">G</span>
           </div>
           <span className="text-sm font-bold text-foreground tracking-tight">TRUMOVE</span>
-          <span className="text-[10px] text-muted-foreground ml-1">Admin</span>
+          <span className="text-[10px] text-muted-foreground ml-1">Accounting</span>
         </div>
 
         <nav className="flex-1 px-2 py-2 space-y-0.5">
           {NAV_ITEMS.map((item) => {
             const Icon = item.icon;
-            const active = location.pathname === item.href;
-            return (
-              <Link
-                key={item.label}
-                to={item.href}
-                className={cn(
-                  "flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors",
-                  active ? "bg-foreground text-background" : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                )}
-              >
-                <Icon className="w-4 h-4" />
-                <span>{item.label}</span>
-              </Link>
-            );
-          })}
-
-          <div className="h-px bg-border/50 mx-2 my-1" />
-
-          {ADVANCED_ITEMS.map((item) => {
-            const Icon = item.icon;
+            if (item.href) {
+              const active = location.pathname === item.href;
+              return (
+                <Link
+                  key={item.label}
+                  to={item.href}
+                  className={cn(
+                    "flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors",
+                    active ? "bg-foreground text-background" : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  )}
+                >
+                  <Icon className="w-4 h-4" />
+                  <span>{item.label}</span>
+                </Link>
+              );
+            }
             return (
               <button
                 key={item.label}
@@ -93,21 +88,6 @@ export default function AdminShell({ children, breadcrumb = "" }: AdminShellProp
         </nav>
 
         <div className="px-2 pb-4 space-y-0.5">
-          <Link
-            to="/marketing/dashboard"
-            className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-          >
-            <Sparkles className="w-4 h-4" />
-            <span>Marketing Suite</span>
-          </Link>
-          <Link
-            to="/accounting/dashboard"
-            className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-          >
-            <DollarSign className="w-4 h-4" />
-            <span>Accounting</span>
-          </Link>
-          <div className="h-px bg-border/50 mx-2 my-1" />
           <button
             onClick={handleResetPreference}
             className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
@@ -125,7 +105,6 @@ export default function AdminShell({ children, breadcrumb = "" }: AdminShellProp
         </div>
       </aside>
 
-      {/* Main area */}
       <div className="flex-1 flex flex-col min-h-screen">
         <header className="h-12 border-b border-border bg-card flex items-center justify-between px-4 shrink-0">
           <div className="flex items-center gap-3">
@@ -141,7 +120,7 @@ export default function AdminShell({ children, breadcrumb = "" }: AdminShellProp
               <Home className="w-3.5 h-3.5" />
               <span>Portal</span>
             </Link>
-            <span className="text-xs text-muted-foreground">/ Admin{breadcrumb}</span>
+            <span className="text-xs text-muted-foreground">/ Accounting{breadcrumb}</span>
           </div>
           <div className="flex items-center gap-2">
             <button onClick={() => setTheme(theme === "dark" ? "light" : "dark")} className="p-1.5 rounded-lg hover:bg-muted transition-colors">
