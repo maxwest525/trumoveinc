@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { Home, Sun, Moon, Bell, LayoutDashboard, Users, Link2, Package, Globe, Sparkles, LineChart, Zap, ScrollText, RotateCcw, MoreHorizontal, ChevronDown, ChevronUp, Gauge } from "lucide-react";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
@@ -67,11 +68,10 @@ export default function AdminUsersPage() {
             <div className="space-y-0.5 pl-1 border-l-2 border-border/50 ml-4 animate-in fade-in slide-in-from-top-1 duration-200">
               {NAV_ITEMS.filter(i => i.advanced).map((item) => {
                 const Icon = item.icon;
-                const active = location.pathname === item.href;
                 return (
-                  <Link key={item.label} to={item.href} className={cn("flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors", active ? "bg-foreground text-background" : "text-muted-foreground hover:bg-muted hover:text-foreground")}>
+                  <button key={item.label} onClick={() => toast.info(`${item.label} coming soon`)} className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">
                     <Icon className="w-4 h-4" /><span>{item.label}</span>
-                  </Link>
+                  </button>
                 );
               })}
             </div>
