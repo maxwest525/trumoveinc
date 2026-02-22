@@ -192,7 +192,7 @@ export function AIPromptInput({ onSubmit, isProcessing = false }: AIPromptInputP
               {cap}
             </Badge>
           ))}
-          <Badge className="text-[9px] h-5 bg-blue-500/10 text-blue-600">
+          <Badge className="text-[9px] h-5 bg-green-500/10 text-green-600">
             <Sparkles className="w-3 h-3 mr-1" />
             Powered by Lovable AI
           </Badge>

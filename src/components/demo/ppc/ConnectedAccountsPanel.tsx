@@ -193,7 +193,7 @@ export function ConnectedAccountsPanel({ compact = false, liveMode = false }: Co
   };
 
   const TrendIcon = ({ trend }: { trend: 'up' | 'down' | 'stable' }) => {
-    if (trend === 'up') return <TrendingUp className="w-3 h-3 text-blue-500" />;
+    if (trend === 'up') return <TrendingUp className="w-3 h-3 text-green-500" />;
     if (trend === 'down') return <TrendingDown className="w-3 h-3 text-red-500" />;
     return <Minus className="w-3 h-3 text-muted-foreground" />;
   };
@@ -225,8 +225,8 @@ export function ConnectedAccountsPanel({ compact = false, liveMode = false }: Co
           </span>
         </div>
         {liveMode && (
-           <Badge variant="outline" className="text-[10px] gap-1 h-5 border-blue-500/50">
-            <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+           <Badge variant="outline" className="text-[10px] gap-1 h-5 border-green-500/50">
+            <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
             Live
           </Badge>
         )}
@@ -251,8 +251,8 @@ export function ConnectedAccountsPanel({ compact = false, liveMode = false }: Co
         </div>
         <div className="flex items-center gap-2">
           {liveMode && (
-             <Badge className="text-[10px] gap-1 h-5 bg-blue-500/10 text-blue-600 border-blue-500/30">
-              <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+              <Badge className="text-[10px] gap-1 h-5 bg-green-500/10 text-green-600 border-green-500/30">
+              <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
               Live Sync
             </Badge>
           )}
@@ -285,10 +285,10 @@ export function ConnectedAccountsPanel({ compact = false, liveMode = false }: Co
               <div className="flex items-center gap-2">
                 <span className="font-medium text-sm text-foreground">{account.platform}</span>
                 {account.status === 'connected' && (
-                  <CheckCircle2 className="w-3.5 h-3.5 text-blue-500" />
+                  <CheckCircle2 className="w-3.5 h-3.5 text-green-500" />
                 )}
                 {account.status === 'syncing' && (
-                  <RefreshCw className="w-3.5 h-3.5 text-blue-500 animate-spin" />
+                  <RefreshCw className="w-3.5 h-3.5 text-green-500 animate-spin" />
                 )}
                 {account.status === 'error' && (
                   <AlertCircle className="w-3.5 h-3.5 text-red-500" />

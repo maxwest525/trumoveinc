@@ -1361,11 +1361,11 @@ export function AILandingPageGenerator({ isGenerating, onGenerate, prefillData }
          style={{ background: `linear-gradient(135deg, ${theme.secondary} 0%, #0F172A 50%, ${theme.secondary} 100%)` }}
        >
          <div className="absolute top-4 left-4 flex gap-2 flex-wrap">
-           <Badge className="bg-blue-500/20 text-blue-400 border border-blue-500/30">
+            <Badge className="bg-green-500/20 text-green-400 border border-green-500/30">
             <CheckCircle2 className="w-3 h-3 mr-1" />
             FMCSA Licensed
           </Badge>
-          <Badge className="bg-blue-500/20 text-blue-400 border border-blue-500/30">
+          <Badge className="bg-green-500/20 text-green-400 border border-green-500/30">
             <Shield className="w-3 h-3 mr-1" />
             Bonded & Insured
           </Badge>
@@ -1789,7 +1789,7 @@ export function AILandingPageGenerator({ isGenerating, onGenerate, prefillData }
             <div className="text-center mb-4 pt-2">
               <img src={logoImg} alt={businessName} className="h-6 mx-auto mb-2" />
               <p className="text-4xl font-bold" style={{ color: theme.primary }}>$3,400</p>
-              <p className="text-xs text-blue-600 font-medium">Guaranteed price</p>
+              <p className="text-xs text-green-600 font-medium">Guaranteed price</p>
             </div>
             <ul className="space-y-2 text-sm text-slate-700">
               <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4" style={{ color: theme.primary }} /> Locked-in pricing</li>
@@ -1941,7 +1941,7 @@ export function AILandingPageGenerator({ isGenerating, onGenerate, prefillData }
       {/* Similar Moves Social Proof */}
       <div className="py-16 px-8 bg-slate-50 dark:bg-slate-800">
         <div className="text-center mb-10">
-          <Badge className="mb-4 bg-blue-500/10 text-blue-600 border border-blue-500/30">
+          <Badge className="mb-4 bg-green-500/10 text-green-600 border border-green-500/30">
             <Users className="w-3 h-3 mr-1" /> Recent Moves
           </Badge>
           <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-3">
@@ -2162,7 +2162,7 @@ export function AILandingPageGenerator({ isGenerating, onGenerate, prefillData }
       {/* Written Testimonials Masonry Grid */}
       <div className="py-16 px-8 bg-slate-50 dark:bg-slate-800">
         <div className="text-center mb-10">
-          <Badge className="mb-4 bg-blue-500/10 text-blue-600 border border-blue-500/30">
+          <Badge className="mb-4 bg-green-500/10 text-green-600 border border-green-500/30">
             <Quote className="w-3 h-3 mr-1" /> Written Reviews
           </Badge>
           <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-3">
@@ -2234,14 +2234,14 @@ export function AILandingPageGenerator({ isGenerating, onGenerate, prefillData }
                   <p className="text-xs font-semibold text-red-600 mb-1">BEFORE</p>
                   <p className="text-sm text-red-700 dark:text-red-300">{story.before}</p>
                 </div>
-                 <div className="p-4 rounded-xl bg-blue-50 dark:bg-blue-950/30">
-                   <p className="text-xs font-semibold text-blue-600 mb-1">AFTER</p>
-                   <p className="text-sm text-blue-700 dark:text-blue-300">{story.after}</p>
+                 <div className="p-4 rounded-xl bg-green-50 dark:bg-green-950/30">
+                   <p className="text-xs font-semibold text-green-600 mb-1">AFTER</p>
+                   <p className="text-sm text-green-700 dark:text-green-300">{story.after}</p>
                  </div>
                </div>
                <div className="flex items-center justify-between">
                  <span className="text-sm text-slate-600 dark:text-slate-400">{story.customer}</span>
-                 <Badge className="bg-blue-100 text-blue-700">Saved: {story.saved}</Badge>
+                 <Badge className="bg-green-100 text-green-700">Saved: {story.saved}</Badge>
               </div>
             </div>
           ))}
