@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { Home, Sun, Moon, Bell, Search, LayoutDashboard, Users, Link2, Package, Globe, Sparkles, LineChart, Zap, ScrollText } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Home, Sun, Moon, Bell, Search, LayoutDashboard, Users, Link2, Package, Globe, Sparkles, LineChart, Zap, ScrollText, RotateCcw } from "lucide-react";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 
@@ -46,6 +46,12 @@ const USERS_BY_ROLE = [
 export default function AdminDashboard() {
   const { theme, setTheme } = useTheme();
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleResetPreference = () => {
+    localStorage.removeItem("truemove_remembered_role");
+    navigate("/agent-login");
+  };
 
   useEffect(() => { window.scrollTo(0, 0); }, []);
 
@@ -74,7 +80,10 @@ export default function AdminDashboard() {
             );
           })}
         </nav>
-        <div className="px-2 pb-4">
+        <div className="px-2 pb-4 space-y-0.5">
+          <button onClick={handleResetPreference} className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">
+            <RotateCcw className="w-4 h-4" /><span>Reset Preference</span>
+          </button>
           <Link to="/agent-login" className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">
             <Home className="w-4 h-4" /><span>Back to Roles</span>
           </Link>
