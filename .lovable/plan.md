@@ -1,32 +1,55 @@
 
 
-## Demo Comparison Page
+# Remove Customer-Facing Navigation from All Portal Pages
 
-Create a `/demo` route with a simple page that lets you switch between the **old** (pre-overhaul) and **new** (current) agent login experience side by side, plus add a "Demo" link in the footer.
+## Problem
+Several portal/employee pages still render the customer-facing website header (with "Home", "Meet Trudy", "Connect With Us", etc.) because they use `SiteShell` or have no shell at all. These pages should use the same sidebar + top bar layout as the rest of the portal.
 
-### What you'll get
+## Affected Pages
 
-- **Footer**: A new "Demo" link added to the footer nav, linking to `/demo`
-- **`/demo` page**: A clean page with two big buttons:
-  - **"Old Version"** -- loads the original agent login (before yesterday's overhaul)
-  - **"New Version"** -- loads the current simplified agent login
-- Clicking either option renders that version inline on the same page so you can compare without navigating away
+| Page | Current Shell | Problem |
+|------|--------------|---------|
+| AgentPipeline (`/agent/pipeline`) | `SiteShell` | Shows customer header + footer |
+| ProfileSettings (`/agent/profile`) | `SiteShell` | Shows customer header + footer |
+| AdminIntegrations (`/admin/integrations`) | `SiteShell` | Shows customer header + footer |
+| AdminSupportTickets (`/admin/support-tickets`) | None (bare `div`) | No sidebar, just `AgentTopBar` |
 
-### Technical details
+Pages already correct (no changes needed): AgentDashboard, AdminDashboard, AdminUsersPage, ManagerDashboard, KpiDashboard.
 
-1. **Create `src/pages/AgentLoginOld.tsx`**
-   - Copy the current `AgentLogin.tsx` as the base, then restore the original pre-overhaul versions of the modals it imports (workspace, operations, coaching, leaderboard). Since we don't have the old code saved, this version will use the **same current modals** but the page itself will be clearly labeled "Old" -- you can then tell me specifically what to change on each one.
-   - Actually, a simpler approach: both "Old" and "New" will point to the same `AgentLogin` component for now. The `/demo` page is really a **comparison hub** where you can click through to `/agent-login` (new) or `/agent-login-old` (old), and you tell me what to revert on the old one.
+## Solution
 
-2. **Create `src/pages/Demo.tsx`**
-   - Simple page with two cards: "Old Agent Login" links to `/agent-login-old`, "New Agent Login" links to `/agent-login`
-   - Clean layout, easy to click
+### 1. Wrap AdminIntegrations and AdminSupportTickets with AdminShell
+Both are admin pages, so they should use the existing `AdminShell` component (which provides the admin sidebar, top bar with breadcrumbs, theme toggle, etc.).
 
-3. **Update `src/components/layout/Footer.tsx`**
-   - Add a "Demo" link pointing to `/demo`
+- **AdminIntegrations**: Replace `SiteShell` + `AgentTopBar` with `AdminShell` and pass `breadcrumb=" / Integrations"`. Remove `SiteShell` and `AgentTopBar` imports.
+- **AdminSupportTickets**: Wrap content in `AdminShell` with `breadcrumb=" / Support Tickets"`. Remove `AgentTopBar`.
+- Update `AdminShell`'s `NAV_ITEMS` to include "Support Tickets" so it highlights correctly in the sidebar.
 
-4. **Update `src/App.tsx`**
-   - Add routes for `/demo` and `/agent-login-old`
+### 2. Create an AgentShell shared component
+Similar to `AdminShell`, create `src/components/layout/AgentShell.tsx` that wraps agent pages with:
+- The existing `AgentSidebar` (left)
+- A top bar with breadcrumbs, theme toggle, notifications (matching the pattern in `AgentDashboard`)
+- No customer-facing header/footer
 
-Since we don't have the pre-overhaul code saved in version control, the "Old" version will start as a copy of the current agent login. Once you see both side by side, you can tell me exactly what to change on each version -- what you liked from before, what you like now -- and I'll adjust accordingly.
+### 3. Wrap AgentPipeline and ProfileSettings with AgentShell
+- **AgentPipeline**: Replace `SiteShell` + `AgentTopBar` with `AgentShell`.
+- **ProfileSettings**: Replace `SiteShell` + `AgentTopBar` with `AgentShell`.
 
+## Technical Details
+
+### New file: `src/components/layout/AgentShell.tsx`
+- Accepts `children` and optional `breadcrumb` string
+- Renders `AgentSidebar` on the left
+- Renders the same top bar as `AgentDashboard` (Website link, Portal breadcrumb, theme toggle, bell, avatar)
+- Calls `setPortalContext("agent")` on mount
+- Exposes `onAction` for sidebar modals (workspace, operations, coaching, messaging) -- renders the modal components internally
+
+### Modified files:
+- **`src/pages/AgentPipeline.tsx`**: Replace `SiteShell`/`AgentTopBar` with `AgentShell`
+- **`src/pages/ProfileSettings.tsx`**: Replace `SiteShell`/`AgentTopBar` with `AgentShell`
+- **`src/pages/AdminIntegrations.tsx`**: Replace `SiteShell`/`AgentTopBar` with `AdminShell`
+- **`src/pages/AdminSupportTickets.tsx`**: Wrap with `AdminShell`, remove `AgentTopBar`
+- **`src/components/layout/AdminShell.tsx`**: Add "Support Tickets" to `NAV_ITEMS`
+
+### Result
+Every portal page will have a consistent sidebar + internal top bar layout. The customer-facing website header will never appear on any `/agent/*`, `/admin/*`, or `/manager/*` page.
