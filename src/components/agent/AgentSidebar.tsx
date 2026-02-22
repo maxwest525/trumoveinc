@@ -51,7 +51,7 @@ export default function AgentSidebar() {
               className={cn(
                 "flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors",
                 active
-                  ? "bg-primary text-primary-foreground"
+                  ? "bg-foreground text-background"
                   : "text-muted-foreground hover:bg-muted hover:text-foreground"
               )}
             >
