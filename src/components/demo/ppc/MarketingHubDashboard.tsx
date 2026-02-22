@@ -3,9 +3,8 @@ import { Badge } from "@/components/ui/badge";
 import {
   Layout, TrendingUp, Target,
   DollarSign, BarChart3,
-  ChevronRight
+  ChevronRight, MessageSquare, Sparkles, Rocket, Wand2
 } from "lucide-react";
-import { TrudyMarketingChat } from "./TrudyMarketingChat";
 import { RecentCreations } from "./RecentCreations";
 import { cn } from "@/lib/utils";
 import { LandingPage } from "./types";
@@ -57,102 +56,106 @@ export function MarketingHubDashboard({
     }
   };
 
+  const entryOptions = [
+    {
+      id: 'trudy',
+      title: 'Tell Trudy',
+      subtitle: 'Describe what you want and she\'ll build it',
+      icon: MessageSquare,
+      gradient: 'from-purple-500 to-pink-500',
+      action: () => onNavigate('trudy-chat'),
+    },
+    {
+      id: 'manual',
+      title: 'Build Manual',
+      subtitle: 'Choose template, customize, and publish',
+      icon: Wand2,
+      gradient: 'from-emerald-500 to-teal-500',
+      action: () => handleCreateLandingPage(),
+    },
+    {
+      id: 'dashboard',
+      title: 'Marketing Dashboard',
+      subtitle: 'Analytics, A/B tests, and performance',
+      icon: BarChart3,
+      gradient: 'from-blue-500 to-indigo-500',
+      action: () => onNavigate('performance'),
+    },
+    {
+      id: 'auto',
+      title: 'Just Build It For Me',
+      subtitle: 'Most optimized pages based on your data',
+      icon: Rocket,
+      gradient: 'from-amber-500 to-orange-500',
+      action: () => onNavigate('auto-build'),
+    },
+  ];
+
   return (
-    <div className="flex h-full">
-      {/* Left: Chat Interface - Takes Most of the Space (SMS-style) */}
-      <div className="flex-1 flex flex-col min-w-0">
-        <TrudyMarketingChat 
-          onNavigate={onNavigate}
-          onCreateLandingPage={handleCreateLandingPage}
-        />
-      </div>
-
-      {/* Right: Compact Stats Sidebar */}
-      <div className="w-[240px] border-l border-border bg-muted/20 flex flex-col overflow-hidden">
+    <div className="flex flex-col h-full">
+      <div className="flex-1 p-6 space-y-6">
         {/* Header */}
-        <div className="px-3 py-2.5 border-b border-border">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-semibold text-foreground">Quick Stats</span>
-            {liveMode && (
-              <Badge variant="secondary" className="text-[10px] px-1.5 py-0 bg-red-500/10 text-red-500 gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-                Live
-              </Badge>
-            )}
-          </div>
+        <div className="text-center space-y-1">
+          <h2 className="text-xl font-bold text-foreground">What would you like to do?</h2>
+          <p className="text-sm text-muted-foreground">Choose how you'd like to get started</p>
         </div>
 
-        {/* Stats List */}
-        <div className="flex-1 overflow-y-auto p-3 space-y-4">
-          {/* Stats Cards */}
-          <div className="space-y-2">
-            {[
-              { label: 'Total Spend', value: `$${stats.totalSpend.toLocaleString()}`, icon: DollarSign, color: 'hsl(var(--primary))' },
-              { label: 'Conversions', value: stats.conversions.toString(), icon: Target, color: 'hsl(var(--primary))' },
-              { label: 'Active Pages', value: stats.activePages.toString(), icon: Layout, color: 'hsl(217 91% 60%)' },
-              { label: 'Tests Running', value: stats.testsRunning.toString(), icon: BarChart3, color: 'hsl(330 81% 60%)' },
-            ].map((stat) => (
-              <div 
-                key={stat.label} 
-                className="flex items-center gap-2.5 p-2.5 rounded-lg bg-background border border-border cursor-pointer hover:border-primary/30 transition-colors"
-                onClick={() => onNavigate('performance')}
-              >
-                <div 
-                  className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
-                  style={{ background: `color-mix(in srgb, ${stat.color} 15%, transparent)` }}
-                >
-                  <stat.icon className="w-4 h-4" style={{ color: stat.color }} />
+        {/* 4 Entry Options */}
+        <div className="grid grid-cols-2 gap-4">
+          {entryOptions.map((option) => (
+            <Card
+              key={option.id}
+              onClick={option.action}
+              className="group cursor-pointer border-2 border-transparent hover:border-primary/50 transition-all duration-200 hover:shadow-lg hover:-translate-y-1"
+            >
+              <CardContent className="p-5 space-y-3">
+                <div className={cn(
+                  "w-12 h-12 rounded-xl flex items-center justify-center bg-gradient-to-br",
+                  option.gradient
+                )}>
+                  <option.icon className="w-6 h-6 text-white" />
                 </div>
-                <div className="min-w-0">
-                  <p className="text-sm font-bold text-foreground truncate">{stat.value}</p>
-                  <p className="text-[10px] text-muted-foreground truncate">{stat.label}</p>
+                <div>
+                  <h3 className="font-bold text-foreground group-hover:text-primary transition-colors">
+                    {option.title}
+                  </h3>
+                  <p className="text-xs text-muted-foreground mt-0.5">{option.subtitle}</p>
                 </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Recent Creations */}
-          {recentPages.length > 0 && (
-            <RecentCreations 
-              pages={recentPages}
-              onView={handleViewPage}
-              onEdit={handleEditPage}
-            />
-          )}
+                <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
+              </CardContent>
+            </Card>
+          ))}
         </div>
 
-        {/* Quick Links */}
-        <div className="p-3 border-t border-border space-y-2">
-          <Card 
-            className="cursor-pointer hover:border-primary/50 transition-all group"
-            onClick={() => onNavigate('performance')}
-          >
-            <CardContent className="p-2.5 flex items-center gap-2">
-              <div 
-                className="w-7 h-7 rounded-md flex items-center justify-center shrink-0 bg-primary/10"
-              >
-                <TrendingUp className="w-3.5 h-3.5 text-primary" />
+        {/* Quick Stats Row */}
+        <div className="grid grid-cols-4 gap-3">
+          {[
+            { label: 'Spend', value: `$${stats.totalSpend.toLocaleString()}`, icon: DollarSign },
+            { label: 'Conversions', value: stats.conversions.toString(), icon: Target },
+            { label: 'Active Pages', value: stats.activePages.toString(), icon: Layout },
+            { label: 'Tests Running', value: stats.testsRunning.toString(), icon: TrendingUp },
+          ].map((stat) => (
+            <div 
+              key={stat.label} 
+              className="flex items-center gap-2 p-3 rounded-lg bg-muted/50 border border-border"
+            >
+              <stat.icon className="w-4 h-4 text-primary shrink-0" />
+              <div className="min-w-0">
+                <p className="text-sm font-bold text-foreground">{stat.value}</p>
+                <p className="text-[10px] text-muted-foreground">{stat.label}</p>
               </div>
-              <span className="text-xs font-medium text-foreground group-hover:text-primary transition-colors flex-1">Analytics</span>
-              <ChevronRight className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
-            </CardContent>
-          </Card>
-          
-          <Card 
-            className="cursor-pointer hover:border-primary/50 transition-all group"
-            onClick={() => onNavigate('landing')}
-          >
-            <CardContent className="p-2.5 flex items-center gap-2">
-              <div 
-                 className="w-7 h-7 rounded-md flex items-center justify-center shrink-0 bg-primary/10"
-               >
-                 <Layout className="w-3.5 h-3.5 text-primary" />
-              </div>
-              <span className="text-xs font-medium text-foreground group-hover:text-primary transition-colors flex-1">Pages ({stats.activePages})</span>
-              <ChevronRight className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
-            </CardContent>
-          </Card>
+            </div>
+          ))}
         </div>
+
+        {/* Recent Creations */}
+        {recentPages.length > 0 && (
+          <RecentCreations 
+            pages={recentPages}
+            onView={handleViewPage}
+            onEdit={handleEditPage}
+          />
+        )}
       </div>
     </div>
   );

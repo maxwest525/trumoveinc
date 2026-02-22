@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import DraggableModal from "@/components/ui/DraggableModal";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -20,6 +20,7 @@ import { AILandingPageGenerator } from "./ppc/AILandingPageGenerator";
 import { MarketingHubDashboard } from "./ppc/MarketingHubDashboard";
 import { UnifiedAnalyticsDashboard } from "./ppc/UnifiedAnalyticsDashboard";
 import { SimpleMarketingFlow } from "./ppc/SimpleMarketingFlow";
+import { TrudyMarketingChat } from "./ppc/TrudyMarketingChat";
 import { useMarketingPreferences } from "@/hooks/useMarketingPreferences";
 
 interface PPCDemoModalProps {
@@ -71,22 +72,6 @@ const INITIAL_ADS = [
     spend: 189.60,
     conversions: 8
   },
-];
-
-const SEO_ISSUES = [
-  { type: "error", message: "Missing meta description on /services page", impact: "High" },
-  { type: "warning", message: "H1 tag too long (72 chars) on homepage", impact: "Medium" },
-  { type: "warning", message: "Images missing alt text (3 found)", impact: "Medium" },
-  { type: "success", message: "All pages have unique title tags", impact: "Passed" },
-  { type: "success", message: "Mobile-friendly design detected", impact: "Passed" },
-  { type: "success", message: "SSL certificate valid", impact: "Passed" },
-];
-
-const LANDING_PAGE_TEMPLATES = [
-  { id: 1, name: "Quote Request", conversion: "12.4%", thumbnail: "quote" },
-  { id: 2, name: "Service Comparison", conversion: "8.7%", thumbnail: "compare" },
-  { id: 3, name: "Contact Form", conversion: "6.2%", thumbnail: "contact" },
-  { id: 4, name: "Calculator Tool", conversion: "15.8%", thumbnail: "calculator" },
 ];
 
 const INITIAL_AB_TESTS: ABTest[] = [
@@ -156,7 +141,7 @@ const INITIAL_STATS: Stats = {
 
 export default function PPCDemoModal({ open, onOpenChange }: PPCDemoModalProps) {
   const [activeTab, setActiveTab] = useState("dashboard");
-  const [viewMode, setViewMode] = useState<'hub' | 'quickcreate' | 'detail'>('hub');
+  const [viewMode, setViewMode] = useState<'hub' | 'quickcreate' | 'detail' | 'trudy-chat' | 'auto-build'>('hub');
   const [quickCreateType, setQuickCreateType] = useState<'ad' | 'landing' | 'campaign' | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   
@@ -181,12 +166,29 @@ export default function PPCDemoModal({ open, onOpenChange }: PPCDemoModalProps) 
   const [exportType, setExportType] = useState<"abtest" | "conversions">("abtest");
   const [isExporting, setIsExporting] = useState(false);
 
+  // Scroll ref for scroll-to-top
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
+
+  // Scroll to top whenever view changes
+  const scrollToTop = useCallback(() => {
+    // Find the ScrollArea viewport and scroll to top
+    setTimeout(() => {
+      const viewport = scrollAreaRef.current?.querySelector('[data-radix-scroll-area-viewport]');
+      if (viewport) {
+        viewport.scrollTop = 0;
+      }
+    }, 50);
+  }, []);
+
+  useEffect(() => {
+    scrollToTop();
+  }, [viewMode, activeTab, scrollToTop]);
+
   // Live mode simulation
   useEffect(() => {
     if (!liveMode || !open) return;
     
     const interval = setInterval(() => {
-      // Update stats with small random changes
       setStats(prev => ({
         totalSpend: prev.totalSpend + Math.random() * 5,
         clicks: prev.clicks + Math.floor(Math.random() * 3),
@@ -194,7 +196,6 @@ export default function PPCDemoModal({ open, onOpenChange }: PPCDemoModalProps) 
         costPerConv: prev.totalSpend / prev.conversions
       }));
       
-      // Update ads
       setAds(prev => prev.map(ad => ad.status === "active" ? {
         ...ad,
         clicks: ad.clicks + Math.floor(Math.random() * 2),
@@ -203,7 +204,6 @@ export default function PPCDemoModal({ open, onOpenChange }: PPCDemoModalProps) 
         conversions: ad.conversions + (Math.random() > 0.85 ? 1 : 0)
       } : ad));
       
-      // Update A/B tests
       setAbTests(prev => prev.map(test => test.status === "running" ? {
         ...test,
         variants: test.variants.map(v => ({
@@ -215,19 +215,16 @@ export default function PPCDemoModal({ open, onOpenChange }: PPCDemoModalProps) 
         confidence: Math.min(99, test.confidence + (Math.random() > 0.8 ? 0.1 : 0))
       } : test));
       
-      // Update conversion events
       setConversionEvents(prev => prev.map(event => ({
         ...event,
         count: event.count + (Math.random() > 0.7 ? 1 : 0)
       })));
       
-      // Update funnel
       setFunnelStages(prev => prev.map((stage, i) => ({
         ...stage,
         count: stage.count + (i === 0 ? Math.floor(Math.random() * 5) : (Math.random() > 0.8 ? 1 : 0))
       })));
       
-      // Update chart
       setChartData(prev => {
         const newData = [...prev.slice(1), Math.floor(Math.random() * 40) + 60];
         return newData;
@@ -252,10 +249,7 @@ export default function PPCDemoModal({ open, onOpenChange }: PPCDemoModalProps) 
     }
     
     setIsExporting(true);
-    
-    // Simulate email sending
     await new Promise(resolve => setTimeout(resolve, 2000));
-    
     setIsExporting(false);
     setShowEmailModal(false);
     setExportEmail("");
@@ -284,7 +278,13 @@ export default function PPCDemoModal({ open, onOpenChange }: PPCDemoModalProps) 
   };
  
   const handleNavigate = (section: string) => {
-    if (section === 'ai-create' || section === 'landing') {
+    if (section === 'trudy-chat') {
+      setViewMode('trudy-chat');
+    } else if (section === 'auto-build') {
+      // Auto-build: go to analytics with auto-selected data, then to landing pages
+      setViewMode('detail');
+      setActiveTab('analytics');
+    } else if (section === 'ai-create' || section === 'landing') {
       handleQuickCreate('landing');
     } else if (section === 'performance') {
       setViewMode('detail');
@@ -355,7 +355,7 @@ export default function PPCDemoModal({ open, onOpenChange }: PPCDemoModalProps) 
       footer={
         <div className="flex items-center justify-between px-4 py-2.5 border-t border-border bg-muted/30">
           <div className="flex items-center gap-3">
-            {viewMode === 'detail' && (
+            {(viewMode === 'detail' || viewMode === 'trudy-chat' || viewMode === 'auto-build' || viewMode === 'quickcreate') && (
               <Button
                 variant="ghost"
                 size="sm"
@@ -442,7 +442,7 @@ export default function PPCDemoModal({ open, onOpenChange }: PPCDemoModalProps) 
 
         {/* Hub View */}
         {viewMode === 'hub' && (
-          <ScrollArea className="flex-1 max-h-[calc(90vh-140px)]">
+          <ScrollArea className="flex-1 max-h-[calc(90vh-140px)]" ref={scrollAreaRef}>
             <MarketingHubDashboard 
               onNavigate={handleNavigate}
               onQuickCreate={handleQuickCreate}
@@ -456,20 +456,45 @@ export default function PPCDemoModal({ open, onOpenChange }: PPCDemoModalProps) 
             />
           </ScrollArea>
         )}
+
+        {/* Trudy Chat View */}
+        {viewMode === 'trudy-chat' && (
+          <div className="flex-1 flex flex-col min-h-0 max-h-[calc(90vh-140px)]">
+            <TrudyMarketingChat 
+              onNavigate={handleNavigate}
+              onCreateLandingPage={() => handleQuickCreate('landing')}
+            />
+          </div>
+        )}
  
         {/* Quick Create Flow */}
         {viewMode === 'quickcreate' && (
-          <ScrollArea className="flex-1 max-h-[calc(90vh-140px)]">
+          <ScrollArea className="flex-1 max-h-[calc(90vh-140px)]" ref={scrollAreaRef}>
             <SimpleMarketingFlow 
               onComplete={handleFlowComplete}
               onCancel={() => setViewMode('hub')}
             />
           </ScrollArea>
         )}
+
+        {/* Auto-Build Flow - goes to analytics with auto-selected data */}
+        {viewMode === 'auto-build' && (
+          <ScrollArea className="flex-1 max-h-[calc(90vh-140px)]" ref={scrollAreaRef}>
+            <UnifiedAnalyticsDashboard 
+              onCreateLandingPage={(prefillData) => {
+                setLandingPagePrefill(prefillData);
+                setViewMode('detail');
+                setActiveTab("landing");
+              }}
+              liveMode={liveMode}
+              simplified
+            />
+          </ScrollArea>
+        )}
  
         {/* Detail View - Original Content */}
         {viewMode === 'detail' && (
-          <ScrollArea className="flex-1 max-h-[calc(90vh-180px)]">
+          <ScrollArea className="flex-1 max-h-[calc(90vh-180px)]" ref={scrollAreaRef}>
           <div className="p-4">
             {/* Unified Analytics Dashboard */}
             {activeTab === "analytics" && (

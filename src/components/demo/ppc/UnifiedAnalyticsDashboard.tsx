@@ -9,7 +9,8 @@ import {
   TrendingUp, TrendingDown, DollarSign, Users, Globe, Target,
   Smartphone, Monitor, MapPin, BarChart3, PieChart, Hash, Zap,
   CheckCircle2, AlertTriangle, Star, Search, Layout, FlaskConical,
-  ArrowRight, MousePointer, Eye, Clock, Percent, Sparkles
+  ArrowRight, MousePointer, Eye, Clock, Percent, Sparkles,
+  ChevronDown, ChevronUp as ChevronUpIcon
 } from "lucide-react";
 import { BudgetAlerts } from "./BudgetAlerts";
 
@@ -63,6 +64,7 @@ export interface AnalyticsPrefillData {
 interface UnifiedAnalyticsDashboardProps {
   onCreateLandingPage: (prefillData: AnalyticsPrefillData) => void;
   liveMode?: boolean;
+  simplified?: boolean;
 }
  
  // Consolidated data
@@ -115,7 +117,8 @@ interface UnifiedAnalyticsDashboardProps {
    { stage: "Booking Made", count: 847, rate: 3.0 },
  ];
  
-export function UnifiedAnalyticsDashboard({ onCreateLandingPage, liveMode }: UnifiedAnalyticsDashboardProps) {
+export function UnifiedAnalyticsDashboard({ onCreateLandingPage, liveMode, simplified = false }: UnifiedAnalyticsDashboardProps) {
+  const [showAdvanced, setShowAdvanced] = useState(false);
   // Totals
   const totalSpend = PLATFORM_DATA.reduce((sum, p) => sum + p.spend, 0);
   const totalConversions = PLATFORM_DATA.reduce((sum, p) => sum + p.conversions, 0);
@@ -181,9 +184,17 @@ export function UnifiedAnalyticsDashboard({ onCreateLandingPage, liveMode }: Uni
 
   return (
     <ScrollArea className="h-full">
-      <div className="p-4 space-y-4">
+       <div className="p-4 space-y-4">
+        {/* Simplified header for auto-build mode */}
+        {simplified && (
+          <div className="text-center space-y-1">
+            <h2 className="text-lg font-bold text-foreground">Select Your Optimization Data</h2>
+            <p className="text-xs text-muted-foreground">Choose the keywords, locations, and audiences to power your landing page</p>
+          </div>
+        )}
+
         {/* Live Mode Indicator */}
-        {liveMode && (
+        {liveMode && !simplified && (
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-destructive/10 border border-destructive/30 w-fit animate-pulse">
             <span className="w-2 h-2 rounded-full bg-destructive animate-ping" />
             <span className="text-xs font-medium text-destructive">LIVE DATA</span>
@@ -191,20 +202,24 @@ export function UnifiedAnalyticsDashboard({ onCreateLandingPage, liveMode }: Uni
           </div>
         )}
 
-        {/* Budget & Performance Alerts */}
-        <BudgetAlerts liveMode={liveMode} />
+        {/* Budget & Performance Alerts - hide in simplified */}
+        {!simplified && <BudgetAlerts liveMode={liveMode} />}
 
-        {/* KPI Strip - 8 Key Metrics */}
-        <div className="grid grid-cols-8 gap-2">
+        {/* KPI Strip */}
+        <div className={`grid gap-2 ${simplified ? 'grid-cols-4' : 'grid-cols-8'}`}>
           {[
             { label: "Spend", value: totalSpend / 1000, prefix: "$", suffix: "K", decimals: 1, icon: DollarSign, color: "text-primary" },
-            { label: "Clicks", value: totalClicks, icon: MousePointer, color: "text-blue-500" },
-            { label: "CTR", value: avgCTR, suffix: "%", decimals: 1, icon: Percent, color: "text-purple-500" },
+            ...(simplified ? [] : [
+              { label: "Clicks", value: totalClicks, icon: MousePointer, color: "text-blue-500" },
+              { label: "CTR", value: avgCTR, suffix: "%", decimals: 1, icon: Percent, color: "text-purple-500" },
+            ]),
             { label: "Conversions", value: totalConversions, icon: Target, color: "text-pink-500" },
             { label: "CPA", value: avgCPA, prefix: "$", decimals: 0, icon: DollarSign, color: "text-amber-500" },
             { label: "ROAS", value: avgROAS, suffix: "x", decimals: 1, icon: TrendingUp, color: "text-primary" },
-            { label: "SEO Score", value: 87, icon: Globe, color: "text-blue-500" },
-            { label: "A/B Lifts", value: 27, prefix: "+", suffix: "%", icon: FlaskConical, color: "text-pink-500" },
+            ...(simplified ? [] : [
+              { label: "SEO Score", value: 87, icon: Globe, color: "text-blue-500" },
+              { label: "A/B Lifts", value: 27, prefix: "+", suffix: "%", icon: FlaskConical, color: "text-pink-500" },
+            ]),
           ].map((stat, idx) => (
             <div 
               key={stat.label} 
@@ -226,8 +241,203 @@ export function UnifiedAnalyticsDashboard({ onCreateLandingPage, liveMode }: Uni
           ))}
         </div>
  
-         {/* Main Grid - 3 Columns */}
-         <div className="grid grid-cols-3 gap-4">
+         {/* Simplified Mode: 2-column selectable grid */}
+         {simplified && (
+           <div className="space-y-4">
+             <div className="grid grid-cols-2 gap-4">
+               {/* Keywords - Selectable */}
+               <Card className="border-border">
+                 <CardHeader className="pb-2 pt-3 px-3">
+                   <div className="flex items-center justify-between">
+                     <CardTitle className="text-xs font-semibold flex items-center gap-1.5">
+                       <Hash className="w-3.5 h-3.5 text-amber-500" />
+                       Keywords
+                     </CardTitle>
+                     <Badge variant="outline" className="text-[9px] h-4 gap-1 border-primary/50 text-primary">
+                       {selectedKeywords.length} selected
+                     </Badge>
+                   </div>
+                 </CardHeader>
+                 <CardContent className="px-3 pb-3 space-y-1.5">
+                   {KEYWORDS_DATA.slice(0, 5).map((kw, i) => {
+                     const isSelected = selectedKeywords.includes(kw.keyword);
+                     return (
+                       <div 
+                         key={i} 
+                         className={`flex items-center justify-between py-1.5 px-2 rounded-md border transition-all cursor-pointer ${
+                           isSelected ? 'border-primary/50 bg-primary/5' : 'border-transparent hover:bg-muted/50'
+                         }`}
+                         onClick={() => toggleKeyword(kw.keyword)}
+                       >
+                         <div className="flex items-center gap-2 min-w-0">
+                           <Checkbox checked={isSelected} className="pointer-events-none h-3.5 w-3.5" />
+                           <span className={`text-xs font-medium truncate ${isSelected ? 'text-primary' : ''}`}>{kw.keyword}</span>
+                           {kw.trend === 'up' && <TrendingUp className="w-3 h-3 text-primary shrink-0" />}
+                           {kw.trend === 'down' && <TrendingDown className="w-3 h-3 text-destructive shrink-0" />}
+                         </div>
+                         <Badge variant="outline" className="text-[9px] h-4 shrink-0">{kw.ctr}% CTR</Badge>
+                       </div>
+                     );
+                   })}
+                 </CardContent>
+               </Card>
+
+               {/* Locations - Selectable */}
+               <Card className="border-border">
+                 <CardHeader className="pb-2 pt-3 px-3">
+                   <div className="flex items-center justify-between">
+                     <CardTitle className="text-xs font-semibold flex items-center gap-1.5">
+                       <MapPin className="w-3.5 h-3.5 text-destructive" />
+                       Locations
+                     </CardTitle>
+                     <Badge variant="outline" className="text-[9px] h-4 gap-1 border-primary/50 text-primary">
+                       {selectedLocations.length} selected
+                     </Badge>
+                   </div>
+                 </CardHeader>
+                 <CardContent className="px-3 pb-3 space-y-1.5">
+                   {GEO_DATA.map((loc) => {
+                     const locationString = `${loc.city}, ${loc.state}`;
+                     const isSelected = selectedLocations.includes(locationString);
+                     return (
+                       <div 
+                         key={loc.city} 
+                         className={`flex items-center justify-between py-1.5 px-2 rounded-md border transition-all cursor-pointer ${
+                           isSelected ? 'border-primary/50 bg-primary/5' : 'border-transparent hover:bg-muted/50'
+                         }`}
+                         onClick={() => toggleLocation(locationString)}
+                       >
+                         <div className="flex items-center gap-2">
+                           <Checkbox checked={isSelected} className="pointer-events-none h-3.5 w-3.5" />
+                           <span className={`text-xs font-medium ${isSelected ? 'text-primary' : ''}`}>{loc.city}</span>
+                           <span className="text-[10px] text-muted-foreground">{loc.state}</span>
+                         </div>
+                         <Badge variant="outline" className="text-[9px] h-4">{loc.rate}%</Badge>
+                       </div>
+                     );
+                   })}
+                 </CardContent>
+               </Card>
+             </div>
+
+             {/* Demographics row */}
+             <Card className="border-border">
+               <CardHeader className="pb-2 pt-3 px-3">
+                 <CardTitle className="text-xs font-semibold flex items-center gap-1.5">
+                   <Users className="w-3.5 h-3.5 text-indigo-500" />
+                   Audience Segments
+                 </CardTitle>
+               </CardHeader>
+               <CardContent className="px-3 pb-3">
+                 <div className="grid grid-cols-2 gap-2">
+                   {DEMO_DATA.slice(0, 4).map((demo) => (
+                     <div key={demo.segment} className="p-2 rounded-lg bg-muted/50 space-y-1">
+                       <div className="flex items-center justify-between">
+                         <span className="text-xs font-medium">{demo.segment}</span>
+                         <Badge className="text-[9px] h-4 bg-primary/10 text-primary border-0">{demo.percentage}%</Badge>
+                       </div>
+                       <div className="flex items-center justify-between text-[10px] text-muted-foreground">
+                         <span>{demo.conversions} conversions</span>
+                         <div className="flex items-center gap-1">
+                           {demo.device === "Mobile" ? <Smartphone className="w-3 h-3" /> : <Monitor className="w-3 h-3" />}
+                           {demo.device}
+                         </div>
+                       </div>
+                     </div>
+                   ))}
+                 </div>
+               </CardContent>
+             </Card>
+
+             {/* Advanced toggle */}
+             <button
+               onClick={() => setShowAdvanced(!showAdvanced)}
+               className="flex items-center gap-2 w-full justify-center py-2 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+             >
+               {showAdvanced ? <ChevronUpIcon className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+               {showAdvanced ? 'Hide Advanced Analytics' : 'Show Advanced Analytics'}
+             </button>
+
+             {showAdvanced && (
+               <div className="grid grid-cols-3 gap-4">
+                 {/* SEO */}
+                 <Card className="border-border">
+                   <CardHeader className="pb-2 pt-3 px-3">
+                     <CardTitle className="text-xs font-semibold flex items-center gap-1.5">
+                       <Globe className="w-3.5 h-3.5 text-blue-500" />
+                       SEO Scores
+                     </CardTitle>
+                   </CardHeader>
+                   <CardContent className="px-3 pb-3 space-y-2">
+                     {SEO_SCORES.map((item) => (
+                       <div key={item.label} className="space-y-1">
+                         <div className="flex justify-between text-xs">
+                           <span className="text-muted-foreground">{item.label}</span>
+                           <span className="font-medium" style={{ color: item.color }}>{item.score}</span>
+                         </div>
+                         <Progress value={item.score} className="h-1.5" />
+                       </div>
+                     ))}
+                   </CardContent>
+                 </Card>
+
+                 {/* Platform ROAS */}
+                 <Card className="border-border">
+                   <CardHeader className="pb-2 pt-3 px-3">
+                     <CardTitle className="text-xs font-semibold flex items-center gap-1.5">
+                       <BarChart3 className="w-3.5 h-3.5 text-purple-500" />
+                       Platform ROAS
+                     </CardTitle>
+                   </CardHeader>
+                   <CardContent className="px-3 pb-3 space-y-2">
+                     {PLATFORM_DATA.map((p) => (
+                       <div key={p.platform} className="flex items-center justify-between py-1.5 border-b border-border last:border-0">
+                         <span className="text-xs font-medium">{p.platform}</span>
+                         <Badge variant={p.roas >= 3.5 ? 'default' : p.roas >= 2.5 ? 'secondary' : 'destructive'} className="text-[9px] h-4">
+                           {p.roas}x
+                         </Badge>
+                       </div>
+                     ))}
+                   </CardContent>
+                 </Card>
+
+                 {/* Funnel */}
+                 <Card className="border-border">
+                   <CardHeader className="pb-2 pt-3 px-3">
+                     <CardTitle className="text-xs font-semibold flex items-center gap-1.5">
+                       <Target className="w-3.5 h-3.5 text-primary" />
+                       Conversion Funnel
+                     </CardTitle>
+                   </CardHeader>
+                   <CardContent className="px-3 pb-3 space-y-2">
+                     {FUNNEL_DATA.map((stage, i) => (
+                       <div key={stage.stage} className="space-y-1">
+                         <div className="flex justify-between text-xs">
+                           <span className="text-muted-foreground">{stage.stage}</span>
+                           <span className="font-medium">{stage.count.toLocaleString()}</span>
+                         </div>
+                         <div className="h-2 bg-muted rounded-full overflow-hidden">
+                           <div 
+                             className="h-full rounded-full"
+                             style={{ 
+                               width: `${stage.rate}%`,
+                               background: `hsl(var(--primary))`,
+                               opacity: 1 - (i * 0.15)
+                             }}
+                           />
+                         </div>
+                       </div>
+                     ))}
+                   </CardContent>
+                 </Card>
+               </div>
+             )}
+           </div>
+         )}
+
+         {/* Full Mode: 3-Column Grid */}
+         {!simplified && (
+          <div className="grid grid-cols-3 gap-4">
            {/* Column 1: Keywords + SEO */}
            <div className="space-y-4">
             {/* Top Keywords - Selectable */}
@@ -520,7 +730,7 @@ export function UnifiedAnalyticsDashboard({ onCreateLandingPage, liveMode }: Uni
                    <div key={demo.segment} className="p-2 rounded-lg bg-muted/50 space-y-1">
                      <div className="flex items-center justify-between">
                        <span className="text-xs font-medium">{demo.segment}</span>
-                       <Badge className="text-[9px] h-4 bg-primary/10 text-primary">${demo.aov}</Badge>
+                       <Badge className="text-[9px] h-4 bg-primary/10 text-primary border-0">${demo.aov}</Badge>
                      </div>
                      <div className="flex items-center justify-between text-[10px] text-muted-foreground">
                        <span>{demo.percentage}% of traffic</span>
@@ -556,6 +766,7 @@ export function UnifiedAnalyticsDashboard({ onCreateLandingPage, liveMode }: Uni
              </Card>
            </div>
          </div>
+         )}
  
         {/* Action Bar */}
         <Card className="border-primary/30 bg-gradient-to-r from-primary/5 via-transparent to-pink-500/5">
