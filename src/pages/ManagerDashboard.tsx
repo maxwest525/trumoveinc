@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Home, Sun, Moon, Bell, Search, LayoutDashboard, Users, Target, CalendarCheck, Headphones, AlertTriangle, CheckCircle, BarChart3, RotateCcw, MoreHorizontal, ChevronDown, ChevronUp, Gauge, Globe, LogOut } from "lucide-react";
+import { LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import { setPortalContext } from "@/hooks/usePortalContext";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
@@ -23,6 +24,29 @@ const STATS = [
   { label: "Close Rate", value: "24%", change: "+3%" },
   { label: "Bookings SLA", value: "94%", sub: "On-time delivery" },
   { label: "At-Risk Bookings", value: "2", sub: "Need attention" },
+];
+
+const REVENUE_TREND = [
+  { month: "Sep", revenue: 98000 },
+  { month: "Oct", revenue: 112000 },
+  { month: "Nov", revenue: 105000 },
+  { month: "Dec", revenue: 128000 },
+  { month: "Jan", revenue: 142000 },
+  { month: "Feb", revenue: 156400 },
+];
+
+const BOOKINGS_STATUS = [
+  { status: "Completed", count: 18 },
+  { status: "In Progress", count: 6 },
+  { status: "Scheduled", count: 4 },
+  { status: "Cancelled", count: 2 },
+];
+
+const BOOKING_COLORS = [
+  "hsl(var(--primary))",
+  "hsl(var(--chart-2))",
+  "hsl(var(--chart-3))",
+  "hsl(var(--chart-4))",
 ];
 
 const APPROVALS = [
@@ -164,6 +188,43 @@ export default function ManagerDashboard() {
                 {s.sub && <span className="text-[11px] text-muted-foreground">{s.sub}</span>}
               </div>
             ))}
+          </div>
+
+          {/* Charts */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div className="lg:col-span-2 rounded-xl border border-border bg-card p-4">
+              <h2 className="text-sm font-semibold text-foreground mb-3">Team Revenue Trend</h2>
+              <ResponsiveContainer width="100%" height={180}>
+                <LineChart data={REVENUE_TREND}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
+                  <XAxis dataKey="month" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`} />
+                  <Tooltip contentStyle={{ borderRadius: 8, border: "1px solid hsl(var(--border))", background: "hsl(var(--card))" }} formatter={(v: number) => [`$${v.toLocaleString()}`, "Revenue"]} />
+                  <Line type="monotone" dataKey="revenue" stroke="hsl(var(--primary))" strokeWidth={2} dot={{ r: 3, fill: "hsl(var(--primary))" }} />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="rounded-xl border border-border bg-card p-4">
+              <h2 className="text-sm font-semibold text-foreground mb-3">Bookings by Status</h2>
+              <ResponsiveContainer width="100%" height={140}>
+                <PieChart>
+                  <Pie data={BOOKINGS_STATUS} dataKey="count" nameKey="status" cx="50%" cy="50%" innerRadius={35} outerRadius={55} paddingAngle={4}>
+                    {BOOKINGS_STATUS.map((_, idx) => (
+                      <Cell key={idx} fill={BOOKING_COLORS[idx]} />
+                    ))}
+                  </Pie>
+                  <Tooltip contentStyle={{ borderRadius: 8, border: "1px solid hsl(var(--border))", background: "hsl(var(--card))" }} />
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="flex flex-wrap gap-x-3 gap-y-1 mt-2 justify-center">
+                {BOOKINGS_STATUS.map((d, i) => (
+                  <span key={i} className="flex items-center gap-1 text-[11px] text-muted-foreground">
+                    <span className="w-2 h-2 rounded-full" style={{ background: BOOKING_COLORS[i] }} />
+                    {d.status}
+                  </span>
+                ))}
+              </div>
+            </div>
           </div>
 
           {/* Approvals + Alerts */}

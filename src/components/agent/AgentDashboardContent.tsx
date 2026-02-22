@@ -1,4 +1,29 @@
 import { Eye, CheckSquare, FileText, CalendarCheck, ChevronRight } from "lucide-react";
+import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
+
+const WEEKLY_LEADS = [
+  { day: "Mon", leads: 3, booked: 1 },
+  { day: "Tue", leads: 5, booked: 2 },
+  { day: "Wed", leads: 4, booked: 1 },
+  { day: "Thu", leads: 6, booked: 3 },
+  { day: "Fri", leads: 7, booked: 2 },
+  { day: "Sat", leads: 2, booked: 1 },
+  { day: "Sun", leads: 1, booked: 0 },
+];
+
+const PIPELINE_DATA = [
+  { stage: "New Lead", count: 12 },
+  { stage: "Inventory", count: 8 },
+  { stage: "Estimate", count: 7 },
+  { stage: "Booked", count: 4 },
+];
+
+const PIPELINE_COLORS = [
+  "hsl(var(--primary))",
+  "hsl(var(--chart-2))",
+  "hsl(var(--chart-3))",
+  "hsl(var(--chart-4))",
+];
 
 const STATS = [
   { label: "New Leads Today", value: "8", change: "+12%", icon: Eye },
@@ -46,6 +71,44 @@ export default function AgentDashboardContent() {
             </div>
           );
         })}
+      </div>
+
+      {/* Charts */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div className="lg:col-span-2 rounded-xl border border-border bg-card p-4">
+          <h2 className="text-sm font-semibold text-foreground mb-3">Weekly Leads</h2>
+          <ResponsiveContainer width="100%" height={180}>
+            <BarChart data={WEEKLY_LEADS}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
+              <XAxis dataKey="day" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} />
+              <Tooltip contentStyle={{ borderRadius: 8, border: "1px solid hsl(var(--border))", background: "hsl(var(--card))" }} />
+              <Bar dataKey="leads" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} name="Leads" />
+              <Bar dataKey="booked" fill="hsl(var(--chart-2))" radius={[4, 4, 0, 0]} name="Booked" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+        <div className="rounded-xl border border-border bg-card p-4">
+          <h2 className="text-sm font-semibold text-foreground mb-3">Pipeline Breakdown</h2>
+          <ResponsiveContainer width="100%" height={140}>
+            <PieChart>
+              <Pie data={PIPELINE_DATA} dataKey="count" nameKey="stage" cx="50%" cy="50%" innerRadius={35} outerRadius={55} paddingAngle={4}>
+                {PIPELINE_DATA.map((_, idx) => (
+                  <Cell key={idx} fill={PIPELINE_COLORS[idx]} />
+                ))}
+              </Pie>
+              <Tooltip contentStyle={{ borderRadius: 8, border: "1px solid hsl(var(--border))", background: "hsl(var(--card))" }} />
+            </PieChart>
+          </ResponsiveContainer>
+          <div className="flex flex-wrap gap-x-3 gap-y-1 mt-2 justify-center">
+            {PIPELINE_DATA.map((d, i) => (
+              <span key={i} className="flex items-center gap-1 text-[11px] text-muted-foreground">
+                <span className="w-2 h-2 rounded-full" style={{ background: PIPELINE_COLORS[i] }} />
+                {d.stage}
+              </span>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Two-column: Next Actions + Client Activity */}
