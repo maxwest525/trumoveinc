@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Home, Sun, Moon, Bell, LayoutDashboard, Users, Link2, Package, Globe, Sparkles, LineChart, Zap, ScrollText, RotateCcw, MoreHorizontal, ChevronDown, ChevronUp, Gauge } from "lucide-react";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
+import { setPortalContext } from "@/hooks/usePortalContext";
 import AdminUsersRoles from "./AdminUsersRoles";
 
 const NAV_ITEMS = [
@@ -30,7 +31,7 @@ export default function AdminUsersPage() {
     navigate("/agent-login");
   };
 
-  useEffect(() => { window.scrollTo(0, 0); }, []);
+  useEffect(() => { setPortalContext("admin"); window.scrollTo(0, 0); }, []);
 
   return (
     <div className="flex min-h-screen bg-background text-foreground">
