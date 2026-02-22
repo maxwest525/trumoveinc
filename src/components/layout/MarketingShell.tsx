@@ -1,9 +1,8 @@
 import { useState, useEffect, type ReactNode } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
-  Home, Sun, Moon, Bell, LayoutDashboard, Users, CalendarCheck,
-  Target, Headphones, AlertTriangle, CheckCircle, BarChart3,
-  RotateCcw, Gauge, Globe, Sparkles,
+  Home, Sun, Moon, Bell, Globe, Sparkles, LineChart, LayoutDashboard,
+  RotateCcw, Gauge,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useTheme } from "next-themes";
@@ -11,33 +10,25 @@ import { cn } from "@/lib/utils";
 import { setPortalContext } from "@/hooks/usePortalContext";
 
 const NAV_ITEMS = [
-  { label: "Dashboard", icon: LayoutDashboard, href: "/manager/dashboard" },
+  { label: "Dashboard", icon: LayoutDashboard, href: "/marketing/dashboard" },
   { label: "My KPIs", icon: Gauge, href: "/kpi" },
-  { label: "Team Pipeline", icon: Users, href: "/manager/dashboard" },
-  { label: "Bookings Oversight", icon: CalendarCheck, href: "/manager/dashboard" },
+  { label: "AI Marketing Suite", icon: Sparkles, href: "/marketing/dashboard" },
+  { label: "Website Builder", icon: Globe },
+  { label: "Analytics Setup", icon: LineChart },
 ];
 
-const ADVANCED_ITEMS = [
-  { label: "Estimates Oversight", icon: Target },
-  { label: "Call Monitoring", icon: Headphones },
-  { label: "Alerts", icon: AlertTriangle, badge: 3 },
-  { label: "Approvals", icon: CheckCircle, badge: 2 },
-  { label: "Reports", icon: BarChart3 },
-];
-
-interface ManagerShellProps {
+interface MarketingShellProps {
   children: ReactNode;
   breadcrumb?: string;
 }
 
-export default function ManagerShell({ children, breadcrumb = "" }: ManagerShellProps) {
+export default function MarketingShell({ children, breadcrumb = "" }: MarketingShellProps) {
   const { theme, setTheme } = useTheme();
   const location = useLocation();
   const navigate = useNavigate();
-  const [showAdvanced] = useState(true);
 
   useEffect(() => {
-    setPortalContext("manager");
+    setPortalContext("admin");
     window.scrollTo(0, 0);
   }, []);
 
@@ -48,81 +39,81 @@ export default function ManagerShell({ children, breadcrumb = "" }: ManagerShell
 
   return (
     <div className="flex min-h-screen bg-background text-foreground">
-      {/* Sidebar */}
       <aside className="w-52 shrink-0 border-r border-border bg-card flex flex-col min-h-screen">
         <div className="px-4 py-4 flex items-center gap-2">
           <div className="w-7 h-7 rounded-lg bg-foreground flex items-center justify-center">
             <span className="text-background text-xs font-bold">G</span>
           </div>
           <span className="text-sm font-bold text-foreground tracking-tight">TRUMOVE</span>
-          <span className="text-[10px] text-muted-foreground ml-1">Manager</span>
+          <span className="text-[10px] text-muted-foreground ml-1">Marketing</span>
         </div>
 
         <nav className="flex-1 px-2 py-2 space-y-0.5">
           {NAV_ITEMS.map((item) => {
             const Icon = item.icon;
-            const active = location.pathname === item.href;
-            return (
-              <Link
-                key={item.label}
-                to={item.href}
-                className={cn(
-                  "flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors",
-                  active ? "bg-foreground text-background" : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                )}
-              >
-                <Icon className="w-4 h-4" /><span>{item.label}</span>
-              </Link>
-            );
-          })}
-
-          <div className="h-px bg-border/50 mx-2 my-1" />
-
-          {ADVANCED_ITEMS.map((item) => {
-            const Icon = item.icon;
+            if (item.href) {
+              const active = location.pathname === item.href;
+              return (
+                <Link
+                  key={item.label}
+                  to={item.href}
+                  className={cn(
+                    "flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors",
+                    active ? "bg-foreground text-background" : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  )}
+                >
+                  <Icon className="w-4 h-4" />
+                  <span>{item.label}</span>
+                </Link>
+              );
+            }
             return (
               <button
                 key={item.label}
                 onClick={() => toast.info(`${item.label} coming soon`)}
                 className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
               >
-                <Icon className="w-4 h-4" /><span>{item.label}</span>
-                {item.badge ? <span className="ml-auto min-w-[18px] h-[18px] flex items-center justify-center rounded-full text-[10px] font-semibold bg-foreground text-background leading-none px-1">{item.badge}</span> : null}
+                <Icon className="w-4 h-4" />
+                <span>{item.label}</span>
               </button>
             );
           })}
         </nav>
 
         <div className="px-2 pb-4 space-y-0.5">
-          <Link
-            to="/marketing/dashboard"
-            className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+          <button
+            onClick={handleResetPreference}
+            className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
           >
-            <Sparkles className="w-4 h-4" />
-            <span>Marketing Suite</span>
-          </Link>
-          <div className="h-px bg-border/50 mx-2 my-1" />
-          <button onClick={handleResetPreference} className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">
-            <RotateCcw className="w-4 h-4" /><span>Reset Preference</span>
+            <RotateCcw className="w-4 h-4" />
+            <span>Reset Preference</span>
           </button>
-          <Link to="/agent-login" className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">
-            <Home className="w-4 h-4" /><span>Back to Roles</span>
+          <Link
+            to="/agent-login"
+            className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+          >
+            <Home className="w-4 h-4" />
+            <span>Back to Roles</span>
           </Link>
         </div>
       </aside>
 
-      {/* Main area */}
       <div className="flex-1 flex flex-col min-h-screen">
         <header className="h-12 border-b border-border bg-card flex items-center justify-between px-4 shrink-0">
           <div className="flex items-center gap-3">
-            <Link to="/" className="flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-border bg-background text-xs font-medium text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-all">
-              <Globe className="w-3.5 h-3.5" /><span>Website</span>
+            <Link
+              to="/"
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-border bg-background text-xs font-medium text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-all"
+            >
+              <Globe className="w-3.5 h-3.5" />
+              <span>Website</span>
             </Link>
             <div className="w-px h-4 bg-border" />
             <Link to="/agent-login" className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
-              <Home className="w-3.5 h-3.5" /><span>Portal</span>
+              <Home className="w-3.5 h-3.5" />
+              <span>Portal</span>
             </Link>
-            <span className="text-xs text-muted-foreground">/ Management{breadcrumb}</span>
+            <span className="text-xs text-muted-foreground">/ Marketing{breadcrumb}</span>
           </div>
           <div className="flex items-center gap-2">
             <button onClick={() => setTheme(theme === "dark" ? "light" : "dark")} className="p-1.5 rounded-lg hover:bg-muted transition-colors">

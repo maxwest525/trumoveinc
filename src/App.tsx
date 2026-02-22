@@ -35,6 +35,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import AdminUsersPage from "./pages/AdminUsersPage";
 import KpiDashboard from "./pages/KpiDashboard";
 import ResetPassword from "./pages/ResetPassword";
+import MarketingDashboard from "./pages/MarketingDashboard";
 
 const queryClient = new QueryClient();
 
@@ -75,6 +76,7 @@ const App = () => (
             <Route path="/admin/users" element={<AdminUsersPage />} />
             <Route path="/kpi" element={<KpiDashboard />} />
             <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/marketing/dashboard" element={<MarketingDashboard />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
