@@ -17,16 +17,16 @@ const ROLES = [
     title: "Manager",
     description: "Monitor team performance, approve changes, and review campaign health.",
     icon: BarChart3,
-    href: "#",
-    ready: false,
+    href: "/manager/dashboard",
+    ready: true,
   },
   {
     id: "admin",
     title: "Admin",
     description: "Configure users, integrations, branding, and system settings.",
     icon: Shield,
-    href: "#",
-    ready: false,
+    href: "/admin/dashboard",
+    ready: true,
   },
 ];
 
