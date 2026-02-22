@@ -23,7 +23,6 @@ import ScanRoom from "./pages/ScanRoom";
 import Classic from "./pages/Classic";
 import LiveTracking from "./pages/LiveTracking";
 import ElevenLabsTrudyWidget from "./components/ElevenLabsTrudyWidget";
-import FloatingContactPill from "./components/FloatingContactPill";
 import CustomerService from "./pages/CustomerService";
 import AdminSupportTickets from "./pages/AdminSupportTickets";
 import AgentPipeline from "./pages/AgentPipeline";
@@ -64,7 +63,6 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Routes>
           <ElevenLabsTrudyWidget />
-          <FloatingContactPill />
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>
