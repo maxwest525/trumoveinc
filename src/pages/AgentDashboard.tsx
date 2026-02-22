@@ -8,6 +8,7 @@ import { CombinedWorkspaceModal } from "@/components/agent/CombinedWorkspaceModa
 import { OperationsCenterModal } from "@/components/agent/OperationsCenterModal";
 import { CoachingSummaryModal } from "@/components/coaching/CoachingSummaryModal";
 import { InternalMessagingModal } from "@/components/messaging/InternalMessagingModal";
+import { setPortalContext } from "@/hooks/usePortalContext";
 
 export default function AgentDashboard() {
   const { theme, setTheme } = useTheme();
@@ -16,7 +17,7 @@ export default function AgentDashboard() {
   const [coachingOpen, setCoachingOpen] = useState(false);
   const [messagingOpen, setMessagingOpen] = useState(false);
 
-  useEffect(() => { window.scrollTo(0, 0); }, []);
+  useEffect(() => { setPortalContext("agent"); window.scrollTo(0, 0); }, []);
 
   const handleAction = (action: SidebarAction) => {
     if (action === "workspace") setWorkspaceOpen(true);

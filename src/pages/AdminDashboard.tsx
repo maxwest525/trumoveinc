@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Home, Sun, Moon, Bell, Search, LayoutDashboard, Users, Link2, Package, Globe, Sparkles, LineChart, Zap, ScrollText, RotateCcw, MoreHorizontal, ChevronDown, ChevronUp, Gauge, LogOut } from "lucide-react";
+import { setPortalContext } from "@/hooks/usePortalContext";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 
@@ -56,7 +57,7 @@ export default function AdminDashboard() {
     navigate("/agent-login");
   };
 
-  useEffect(() => { window.scrollTo(0, 0); }, []);
+  useEffect(() => { setPortalContext("admin"); window.scrollTo(0, 0); }, []);
 
   return (
     <div className="flex min-h-screen bg-background text-foreground">
