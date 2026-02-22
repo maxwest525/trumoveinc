@@ -1,50 +1,47 @@
 
 
-# Add Charts to Agent and Manager Dashboards
+# Connect Admin Dashboard to Real Database Data
 
-## Agent Dashboard (`AgentDashboardContent.tsx`)
+## Overview
+Replace all hardcoded mock data in the Admin Dashboard with live queries to your backend. The dashboard will fetch real counts and activity from the `profiles`, `user_roles`, `deals`, `leads`, `activities`, and `support_tickets` tables.
 
-Add a new charts row between the stats and the Next Actions section, with two charts contextual to an agent's workflow:
+## What Changes
 
-1. **Weekly Leads bar chart** (2/3 width) -- shows leads received vs bookings closed per day of the week. Uses the same `BarChart` pattern from the Admin dashboard (recharts `ResponsiveContainer`, `CartesianGrid`, `XAxis`, `YAxis`, `Tooltip`, `Bar`).
+### Stats Cards (top row)
+| Card | Currently | Will Show |
+|------|-----------|-----------|
+| Total Users | Hardcoded "48" | Count from `profiles` table |
+| Active Sessions | Hardcoded "23" | Count of users with `is_online = true` from `profiles` |
+| Integrations | Hardcoded "0/4" | Keep static (no integrations table exists) |
+| Automations | Hardcoded "3" | Count of open `support_tickets` (most relevant live metric) |
 
-2. **Pipeline Breakdown donut chart** (1/3 width) -- shows how many deals are at each pipeline stage (New Lead, Inventory, Estimate, Booked). Uses `PieChart` + `Pie` + `Cell` with a legend below, matching the Admin "Users by Role" style.
+### Users by Role (pie chart)
+Currently hardcoded role counts. Will query `user_roles` table grouped by `role` and map to display labels (owner -> Owners, admin -> Admins, manager -> Managers, agent -> Agents).
 
-Mock data arrays will be added at the top of the file for both charts.
+### Weekly Activity (bar chart)
+Currently hardcoded daily logins/actions. Will query `activities` table for the last 7 days, grouped by day of week, counting total activities and completed activities (`is_done = true`).
 
-## Manager Dashboard (`ManagerDashboard.tsx`)
-
-Add a charts row between the stats and the Approvals/Alerts section, with two charts contextual to a manager's oversight:
-
-1. **Team Revenue Trend line chart** (2/3 width) -- shows monthly revenue over the last 6 months. Uses `LineChart` with the same styling as Admin's "User Growth" chart.
-
-2. **Bookings by Status donut chart** (1/3 width) -- shows bookings split by status (Completed, In Progress, Scheduled, Cancelled). Uses the same `PieChart` pattern.
-
-Mock data arrays will be added at the top of the file for both charts.
+### User Growth (line chart)
+Currently hardcoded monthly user counts. Will query `profiles` table, grouping by `created_at` month for the last 6 months to show cumulative user growth.
 
 ## Technical Details
 
-### Files modified:
+### File modified: `src/pages/AdminDashboard.tsx`
 
-- **`src/components/agent/AgentDashboardContent.tsx`**
-  - Import `BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid` from `recharts`
-  - Add `WEEKLY_LEADS` data: `[{ day: "Mon", leads: 3, booked: 1 }, ...]`
-  - Add `PIPELINE_DATA`: `[{ stage: "New Lead", count: 12 }, { stage: "Inventory", count: 8 }, { stage: "Estimate", count: 7 }, { stage: "Booked", count: 4 }]`
-  - Add `PIPELINE_COLORS` array using design tokens (`--primary`, `--chart-2`, `--chart-3`, `--chart-4`)
-  - Insert a new `grid grid-cols-1 lg:grid-cols-3` section after stats with the bar chart (col-span-2) and pie chart (col-span-1)
+- Add imports: `useState`, `useEffect` from React, `supabase` from integrations
+- Remove all hardcoded data constants (`STATS`, `USERS_BY_ROLE`, `ACTIVITY_DATA`, `GROWTH_DATA`)
+- Add a `useEffect` that runs on mount and fetches in parallel:
+  1. `supabase.from("profiles").select("id, created_at, is_online")` -- for total users, online count, and growth data
+  2. `supabase.from("user_roles").select("role")` -- for role breakdown pie chart
+  3. `supabase.from("activities").select("created_at, is_done").gte("created_at", sevenDaysAgo)` -- for weekly activity chart
+  4. `supabase.from("support_tickets").select("id").eq("status", "open")` -- for open tickets count
+- Compute derived data client-side:
+  - **Role counts**: Group `user_roles` rows by `role`, count each
+  - **Weekly activity**: Group `activities` by day-of-week, count total vs completed
+  - **User growth**: For each of last 6 months, count profiles with `created_at` on or before that month's end (cumulative)
+- Add a loading state that shows a spinner/skeleton while data loads
+- Keep `QUICK_SETUP`, `INTEGRATIONS`, and `ROLE_COLORS` as static constants (no backing tables for those)
 
-- **`src/pages/ManagerDashboard.tsx`**
-  - Import `LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid` from `recharts`
-  - Add `REVENUE_TREND` data: `[{ month: "Sep", revenue: 98000 }, ... { month: "Feb", revenue: 156400 }]`
-  - Add `BOOKINGS_STATUS` data: `[{ status: "Completed", count: 18 }, { status: "In Progress", count: 6 }, { status: "Scheduled", count: 4 }, { status: "Cancelled", count: 2 }]`
-  - Add `BOOKING_COLORS` array using design tokens
-  - Insert a new charts grid section after stats, before the Approvals/Alerts row
-
-### Styling
-All charts will use the exact same patterns as AdminDashboard:
-- `ResponsiveContainer` with `height={180}` for bar/line, `height={140}` for pie
-- Same `Tooltip contentStyle` with border radius, border, and card background
-- Same `CartesianGrid` with dashed lines, no vertical grid
-- Same axis font sizes and colors
-- Same donut inner/outer radius and padding angle
+### No database changes needed
+All required tables (`profiles`, `user_roles`, `activities`, `support_tickets`) already exist with appropriate RLS policies that allow owners/managers/admins to read the data.
 
