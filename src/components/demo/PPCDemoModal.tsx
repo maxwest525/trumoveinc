@@ -353,7 +353,7 @@ export default function PPCDemoModal({ open, onOpenChange }: PPCDemoModalProps) 
         </div>
       }
       footer={
-        <div className="flex items-center justify-between px-4 py-2.5 border-t border-border bg-muted/30">
+        <div className="flex items-center justify-between px-4 py-2.5 border-t border-border bg-gradient-to-r from-muted/40 via-muted/20 to-muted/40">
           <div className="flex items-center gap-3">
             {(viewMode === 'detail' || viewMode === 'trudy-chat' || viewMode === 'auto-build' || viewMode === 'quickcreate') && (
               <Button
@@ -366,10 +366,19 @@ export default function PPCDemoModal({ open, onOpenChange }: PPCDemoModalProps) 
                 Back to Hub
               </Button>
             )}
-            <div className={`w-2 h-2 rounded-full ${liveMode ? "bg-red-500 animate-pulse" : ""}`} style={{ background: liveMode ? undefined : "#7C3AED" }} />
-            <span className="text-xs text-muted-foreground">
-              {liveMode ? "Live Demo Mode - Data updates in real-time" : "Demo Mode - No real campaigns affected"}
-            </span>
+            <div className="relative flex items-center gap-2">
+              {liveMode ? (
+                <span className="relative flex h-2.5 w-2.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500" />
+                </span>
+              ) : (
+                <span className="w-2.5 h-2.5 rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500" />
+              )}
+              <span className="text-xs text-muted-foreground">
+                {liveMode ? "Live Demo Mode - Data updates in real-time" : "Demo Mode - No real campaigns affected"}
+              </span>
+            </div>
           </div>
           <Button variant="ghost" size="sm" className="gap-1 text-muted-foreground">
             <ExternalLink className="w-3 h-3" />
@@ -381,21 +390,24 @@ export default function PPCDemoModal({ open, onOpenChange }: PPCDemoModalProps) 
 
         {/* Navigation - Only show in detail view */}
         {viewMode === 'detail' && (
-          <div className="flex gap-1 px-4 py-2 overflow-x-auto" style={{ background: "#F8FAFC", borderBottom: "1px solid #E2E8F0" }}>
+          <div className="flex gap-1 px-4 py-2.5 overflow-x-auto bg-gradient-to-r from-muted/50 via-muted/30 to-muted/50" style={{ borderBottom: "1px solid hsl(var(--border))" }}>
             {[
-              { id: "analytics", label: "All Analytics", icon: BarChart3 },
-              { id: "ads", label: "Google Ads", icon: Target },
-              { id: "landing", label: "Landing Pages", icon: Layout },
-              { id: "abtest", label: "A/B Tests", icon: FlaskConical },
+              { id: "analytics", label: "All Analytics", icon: BarChart3, color: "from-blue-500 to-indigo-500" },
+              { id: "ads", label: "Google Ads", icon: Target, color: "from-emerald-500 to-teal-500" },
+              { id: "landing", label: "Landing Pages", icon: Layout, color: "from-violet-500 to-purple-500" },
+              { id: "abtest", label: "A/B Tests", icon: FlaskConical, color: "from-pink-500 to-rose-500" },
             ].map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap"
-                style={{
-                  background: activeTab === tab.id ? "linear-gradient(135deg, #7C3AED 0%, #A855F7 100%)" : "transparent",
-                  color: activeTab === tab.id ? "white" : "#64748B",
-                }}
+                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-medium transition-all whitespace-nowrap ${
+                  activeTab === tab.id 
+                    ? 'text-white shadow-lg scale-[1.02]' 
+                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                }`}
+                style={activeTab === tab.id ? {
+                  background: "linear-gradient(135deg, #7C3AED 0%, #A855F7 50%, #EC4899 100%)",
+                } : {}}
               >
                 <tab.icon className="w-3.5 h-3.5" />
                 {tab.label}

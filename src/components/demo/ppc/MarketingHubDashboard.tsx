@@ -3,7 +3,8 @@ import { Badge } from "@/components/ui/badge";
 import {
   Layout, TrendingUp, Target,
   DollarSign, BarChart3,
-  ChevronRight, MessageSquare, Sparkles, Rocket, Wand2
+  ChevronRight, MessageSquare, Sparkles, Rocket, Wand2,
+  Zap, Activity
 } from "lucide-react";
 import { RecentCreations } from "./RecentCreations";
 import { cn } from "@/lib/utils";
@@ -62,7 +63,8 @@ export function MarketingHubDashboard({
       title: 'Tell Trudy',
       subtitle: 'Describe what you want and she\'ll build it',
       icon: MessageSquare,
-      gradient: 'from-purple-500 to-pink-500',
+      gradient: 'from-violet-500 via-purple-500 to-fuchsia-500',
+      glowColor: 'hsl(270 80% 60% / 0.15)',
       action: () => onNavigate('trudy-chat'),
     },
     {
@@ -70,7 +72,8 @@ export function MarketingHubDashboard({
       title: 'Build Manual',
       subtitle: 'Choose template, customize, and publish',
       icon: Wand2,
-      gradient: 'from-emerald-500 to-teal-500',
+      gradient: 'from-emerald-400 via-teal-500 to-cyan-500',
+      glowColor: 'hsl(170 80% 45% / 0.15)',
       action: () => handleCreateLandingPage(),
     },
     {
@@ -78,7 +81,8 @@ export function MarketingHubDashboard({
       title: 'Marketing Dashboard',
       subtitle: 'Analytics, A/B tests, and performance',
       icon: BarChart3,
-      gradient: 'from-blue-500 to-indigo-500',
+      gradient: 'from-blue-500 via-indigo-500 to-violet-500',
+      glowColor: 'hsl(230 80% 55% / 0.15)',
       action: () => onNavigate('performance'),
     },
     {
@@ -86,62 +90,90 @@ export function MarketingHubDashboard({
       title: 'Just Build It For Me',
       subtitle: 'Most optimized pages based on your data',
       icon: Rocket,
-      gradient: 'from-amber-500 to-orange-500',
+      gradient: 'from-amber-400 via-orange-500 to-rose-500',
+      glowColor: 'hsl(25 90% 55% / 0.15)',
       action: () => onNavigate('auto-build'),
     },
+  ];
+
+  const statItems = [
+    { label: 'Spend', value: `$${stats.totalSpend.toLocaleString()}`, icon: DollarSign, color: 'from-emerald-400 to-emerald-600', textColor: 'text-emerald-500' },
+    { label: 'Conversions', value: stats.conversions.toString(), icon: Target, color: 'from-pink-400 to-rose-600', textColor: 'text-pink-500' },
+    { label: 'Active Pages', value: stats.activePages.toString(), icon: Layout, color: 'from-blue-400 to-indigo-600', textColor: 'text-blue-500' },
+    { label: 'Tests Running', value: stats.testsRunning.toString(), icon: TrendingUp, color: 'from-violet-400 to-purple-600', textColor: 'text-violet-500' },
   ];
 
   return (
     <div className="flex flex-col h-full">
       <div className="flex-1 p-6 space-y-6">
-        {/* Header */}
-        <div className="text-center space-y-1">
+        {/* Header with sparkle accent */}
+        <div className="text-center space-y-2">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gradient-to-r from-violet-500/10 via-fuchsia-500/10 to-pink-500/10 border border-violet-500/20 mb-2">
+            <Sparkles className="w-3.5 h-3.5 text-violet-500" />
+            <span className="text-xs font-medium text-violet-600 dark:text-violet-400">AI-Powered Marketing</span>
+            <Zap className="w-3 h-3 text-fuchsia-500" />
+          </div>
           <h2 className="text-xl font-bold text-foreground">What would you like to do?</h2>
           <p className="text-sm text-muted-foreground">Choose how you'd like to get started</p>
         </div>
 
-        {/* 4 Entry Options */}
+        {/* 4 Entry Options with colored glows */}
         <div className="grid grid-cols-2 gap-4">
-          {entryOptions.map((option) => (
+          {entryOptions.map((option, idx) => (
             <Card
               key={option.id}
               onClick={option.action}
-              className="group cursor-pointer border-2 border-transparent hover:border-primary/50 transition-all duration-200 hover:shadow-lg hover:-translate-y-1"
+              className="group cursor-pointer border border-border/50 hover:border-transparent transition-all duration-300 hover:shadow-xl hover:-translate-y-1 overflow-hidden relative"
+              style={{
+                animationDelay: `${idx * 75}ms`,
+              }}
             >
-              <CardContent className="p-5 space-y-3">
+              {/* Subtle gradient background on hover */}
+              <div 
+                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                style={{ background: option.glowColor }}
+              />
+              <CardContent className="p-5 space-y-3 relative z-10">
                 <div className={cn(
-                  "w-12 h-12 rounded-xl flex items-center justify-center bg-gradient-to-br",
+                  "w-12 h-12 rounded-xl flex items-center justify-center bg-gradient-to-br shadow-lg",
                   option.gradient
                 )}>
-                  <option.icon className="w-6 h-6 text-white" />
+                  <option.icon className="w-6 h-6 text-white drop-shadow-sm" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-foreground group-hover:text-primary transition-colors">
+                  <h3 className="font-bold text-foreground group-hover:text-foreground transition-colors">
                     {option.title}
                   </h3>
                   <p className="text-xs text-muted-foreground mt-0.5">{option.subtitle}</p>
                 </div>
-                <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
+                <div className="flex items-center gap-1">
+                  <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:translate-x-1 transition-all" />
+                </div>
               </CardContent>
+              {/* Bottom accent line */}
+              <div className={cn(
+                "h-0.5 w-full bg-gradient-to-r opacity-0 group-hover:opacity-100 transition-opacity duration-300",
+                option.gradient
+              )} />
             </Card>
           ))}
         </div>
 
-        {/* Quick Stats Row */}
+        {/* Quick Stats Row with colored icons */}
         <div className="grid grid-cols-4 gap-3">
-          {[
-            { label: 'Spend', value: `$${stats.totalSpend.toLocaleString()}`, icon: DollarSign },
-            { label: 'Conversions', value: stats.conversions.toString(), icon: Target },
-            { label: 'Active Pages', value: stats.activePages.toString(), icon: Layout },
-            { label: 'Tests Running', value: stats.testsRunning.toString(), icon: TrendingUp },
-          ].map((stat) => (
+          {statItems.map((stat, idx) => (
             <div 
               key={stat.label} 
-              className="flex items-center gap-2 p-3 rounded-lg bg-muted/50 border border-border"
+              className="flex items-center gap-2.5 p-3 rounded-xl bg-gradient-to-br from-muted/50 to-muted/30 border border-border/50 hover:border-border transition-all group"
             >
-              <stat.icon className="w-4 h-4 text-primary shrink-0" />
+              <div className={cn(
+                "w-8 h-8 rounded-lg flex items-center justify-center bg-gradient-to-br shrink-0 shadow-sm",
+                stat.color
+              )}>
+                <stat.icon className="w-4 h-4 text-white" />
+              </div>
               <div className="min-w-0">
-                <p className="text-sm font-bold text-foreground">{stat.value}</p>
+                <p className={cn("text-sm font-bold", stat.textColor)}>{stat.value}</p>
                 <p className="text-[10px] text-muted-foreground">{stat.label}</p>
               </div>
             </div>

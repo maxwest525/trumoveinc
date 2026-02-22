@@ -195,9 +195,12 @@ export function UnifiedAnalyticsDashboard({ onCreateLandingPage, liveMode, simpl
 
         {/* Live Mode Indicator */}
         {liveMode && !simplified && (
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-destructive/10 border border-destructive/30 w-fit animate-pulse">
-            <span className="w-2 h-2 rounded-full bg-destructive animate-ping" />
-            <span className="text-xs font-medium text-destructive">LIVE DATA</span>
+          <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-red-500/10 via-orange-500/10 to-amber-500/10 border border-red-500/30 w-fit">
+            <span className="relative flex h-2.5 w-2.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500" />
+            </span>
+            <span className="text-xs font-semibold bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent">LIVE DATA</span>
             <span className="text-xs text-muted-foreground">+{liveClickCount} clicks this session</span>
           </div>
         )}
@@ -205,29 +208,31 @@ export function UnifiedAnalyticsDashboard({ onCreateLandingPage, liveMode, simpl
         {/* Budget & Performance Alerts - hide in simplified */}
         {!simplified && <BudgetAlerts liveMode={liveMode} />}
 
-        {/* KPI Strip */}
+        {/* KPI Strip - Vibrant */}
         <div className={`grid gap-2 ${simplified ? 'grid-cols-4' : 'grid-cols-8'}`}>
           {[
-            { label: "Spend", value: totalSpend / 1000, prefix: "$", suffix: "K", decimals: 1, icon: DollarSign, color: "text-primary" },
+            { label: "Spend", value: totalSpend / 1000, prefix: "$", suffix: "K", decimals: 1, icon: DollarSign, gradient: "from-emerald-400 to-emerald-600", textColor: "text-emerald-500" },
             ...(simplified ? [] : [
-              { label: "Clicks", value: totalClicks, icon: MousePointer, color: "text-blue-500" },
-              { label: "CTR", value: avgCTR, suffix: "%", decimals: 1, icon: Percent, color: "text-purple-500" },
+              { label: "Clicks", value: totalClicks, icon: MousePointer, gradient: "from-blue-400 to-blue-600", textColor: "text-blue-500" },
+              { label: "CTR", value: avgCTR, suffix: "%", decimals: 1, icon: Percent, gradient: "from-violet-400 to-purple-600", textColor: "text-violet-500" },
             ]),
-            { label: "Conversions", value: totalConversions, icon: Target, color: "text-pink-500" },
-            { label: "CPA", value: avgCPA, prefix: "$", decimals: 0, icon: DollarSign, color: "text-amber-500" },
-            { label: "ROAS", value: avgROAS, suffix: "x", decimals: 1, icon: TrendingUp, color: "text-primary" },
+            { label: "Conversions", value: totalConversions, icon: Target, gradient: "from-pink-400 to-rose-600", textColor: "text-pink-500" },
+            { label: "CPA", value: avgCPA, prefix: "$", decimals: 0, icon: DollarSign, gradient: "from-amber-400 to-orange-600", textColor: "text-amber-500" },
+            { label: "ROAS", value: avgROAS, suffix: "x", decimals: 1, icon: TrendingUp, gradient: "from-cyan-400 to-teal-600", textColor: "text-cyan-500" },
             ...(simplified ? [] : [
-              { label: "SEO Score", value: 87, icon: Globe, color: "text-blue-500" },
-              { label: "A/B Lifts", value: 27, prefix: "+", suffix: "%", icon: FlaskConical, color: "text-pink-500" },
+              { label: "SEO Score", value: 87, icon: Globe, gradient: "from-indigo-400 to-indigo-600", textColor: "text-indigo-500" },
+              { label: "A/B Lifts", value: 27, prefix: "+", suffix: "%", icon: FlaskConical, gradient: "from-fuchsia-400 to-pink-600", textColor: "text-fuchsia-500" },
             ]),
           ].map((stat, idx) => (
             <div 
               key={stat.label} 
-              className={`p-2 rounded-lg bg-muted/50 border border-border text-center transition-all duration-300 ${liveMode ? 'hover:border-primary/50' : ''}`}
+              className={`p-2.5 rounded-xl bg-gradient-to-br from-muted/60 to-muted/30 border border-border/50 text-center transition-all duration-300 hover:shadow-md hover:border-border group ${liveMode ? 'hover:scale-[1.02]' : ''}`}
               style={{ animationDelay: liveMode ? `${idx * 100}ms` : '0ms' }}
             >
-              <stat.icon className={`w-4 h-4 mx-auto mb-1 ${stat.color} ${liveMode ? 'animate-pulse' : ''}`} />
-              <p className="text-sm font-bold text-foreground">
+              <div className={`w-7 h-7 mx-auto mb-1.5 rounded-lg bg-gradient-to-br ${stat.gradient} flex items-center justify-center shadow-sm`}>
+                <stat.icon className={`w-3.5 h-3.5 text-white ${liveMode ? 'animate-pulse' : ''}`} />
+              </div>
+              <p className={`text-sm font-bold ${stat.textColor}`}>
                 <AnimatedNumber 
                   value={stat.value} 
                   prefix={stat.prefix} 
@@ -744,54 +749,60 @@ export function UnifiedAnalyticsDashboard({ onCreateLandingPage, liveMode, simpl
                </CardContent>
              </Card>
  
-             {/* AI Recommendations */}
-             <Card className="border-primary/30 bg-gradient-to-br from-primary/5 to-primary/10">
-               <CardHeader className="pb-2 pt-3 px-3">
-                 <CardTitle className="text-xs font-semibold flex items-center gap-1.5">
-                   <Zap className="w-3.5 h-3.5 text-primary" />
-                   AI Recommendations
-                 </CardTitle>
-               </CardHeader>
-               <CardContent className="px-3 pb-3 space-y-2 text-xs">
-                 <div className="p-2 rounded bg-background/50">
-                   <span className="text-primary">↑</span> Increase NYC budget 25% (8.1% conv rate)
-                 </div>
-                 <div className="p-2 rounded bg-background/50">
-                   <span className="text-amber-600">→</span> Shift TikTok spend to Google (1.9x vs 4.2x ROAS)
-                 </div>
-                 <div className="p-2 rounded bg-background/50">
-                   <span className="text-blue-600">+</span> Add B2B targeting ($8,900 AOV segment)
-                 </div>
-               </CardContent>
-             </Card>
+              {/* AI Recommendations */}
+              <Card className="border-violet-500/30 bg-gradient-to-br from-violet-500/5 via-fuchsia-500/5 to-pink-500/5 overflow-hidden relative">
+                <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-violet-500/10 to-transparent rounded-bl-full" />
+                <CardHeader className="pb-2 pt-3 px-3 relative z-10">
+                  <CardTitle className="text-xs font-semibold flex items-center gap-1.5">
+                    <div className="w-5 h-5 rounded-md bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center">
+                      <Zap className="w-3 h-3 text-white" />
+                    </div>
+                    AI Recommendations
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="px-3 pb-3 space-y-2 text-xs relative z-10">
+                  <div className="p-2 rounded-lg bg-background/60 border border-emerald-500/20">
+                    <span className="text-emerald-500 font-bold">↑</span> Increase NYC budget 25% (8.1% conv rate)
+                  </div>
+                  <div className="p-2 rounded-lg bg-background/60 border border-amber-500/20">
+                    <span className="text-amber-500 font-bold">→</span> Shift TikTok spend to Google (1.9x vs 4.2x ROAS)
+                  </div>
+                  <div className="p-2 rounded-lg bg-background/60 border border-blue-500/20">
+                    <span className="text-blue-500 font-bold">+</span> Add B2B targeting ($8,900 AOV segment)
+                  </div>
+                </CardContent>
+              </Card>
            </div>
          </div>
          )}
  
-        {/* Action Bar */}
-        <Card className="border-primary/30 bg-gradient-to-r from-primary/5 via-transparent to-pink-500/5">
-          <CardContent className="p-3 flex items-center justify-between">
+         {/* Action Bar - Vibrant */}
+        <Card className="border-violet-500/30 bg-gradient-to-r from-violet-500/10 via-fuchsia-500/5 to-pink-500/10 overflow-hidden relative">
+          <div className="absolute inset-0 bg-gradient-to-r from-violet-500/5 via-transparent to-pink-500/5" />
+          <CardContent className="p-4 flex items-center justify-between relative z-10">
             <div className="flex items-center gap-3">
-              <Star className="w-5 h-5 text-primary" />
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center shadow-lg shadow-violet-500/20">
+                <Sparkles className="w-5 h-5 text-white" />
+              </div>
               <div>
-                <p className="text-sm font-medium">Ready to create your landing page?</p>
+                <p className="text-sm font-semibold">Ready to create your landing page?</p>
                 <p className="text-xs text-muted-foreground flex items-center gap-2">
                   <span className="flex items-center gap-1">
-                    <Hash className="w-3 h-3" /> {selectedKeywords.length} keywords
+                    <Hash className="w-3 h-3 text-amber-500" /> {selectedKeywords.length} keywords
                   </span>
                   <span className="text-muted-foreground/50">•</span>
                   <span className="flex items-center gap-1">
-                    <MapPin className="w-3 h-3" /> {selectedLocations.length} locations
+                    <MapPin className="w-3 h-3 text-rose-500" /> {selectedLocations.length} locations
                   </span>
                   <span className="text-muted-foreground/50">•</span>
-                  <span>Auto-fill enabled</span>
+                  <span className="text-violet-500">Auto-fill enabled</span>
                 </p>
               </div>
             </div>
            <Button 
              onClick={handleCreateLandingPage} 
-             className="gap-2" 
-             style={{ background: "linear-gradient(135deg, #7C3AED 0%, #A855F7 100%)" }}
+             className="gap-2 shadow-lg shadow-violet-500/20 hover:shadow-violet-500/30 transition-all" 
+             style={{ background: "linear-gradient(135deg, #7C3AED 0%, #A855F7 50%, #EC4899 100%)" }}
              disabled={selectedKeywords.length === 0 && selectedLocations.length === 0}
            >
              <Layout className="w-4 h-4" />
