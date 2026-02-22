@@ -1,55 +1,50 @@
 
 
-# Remove Customer-Facing Navigation from All Portal Pages
+# Add Charts to Agent and Manager Dashboards
 
-## Problem
-Several portal/employee pages still render the customer-facing website header (with "Home", "Meet Trudy", "Connect With Us", etc.) because they use `SiteShell` or have no shell at all. These pages should use the same sidebar + top bar layout as the rest of the portal.
+## Agent Dashboard (`AgentDashboardContent.tsx`)
 
-## Affected Pages
+Add a new charts row between the stats and the Next Actions section, with two charts contextual to an agent's workflow:
 
-| Page | Current Shell | Problem |
-|------|--------------|---------|
-| AgentPipeline (`/agent/pipeline`) | `SiteShell` | Shows customer header + footer |
-| ProfileSettings (`/agent/profile`) | `SiteShell` | Shows customer header + footer |
-| AdminIntegrations (`/admin/integrations`) | `SiteShell` | Shows customer header + footer |
-| AdminSupportTickets (`/admin/support-tickets`) | None (bare `div`) | No sidebar, just `AgentTopBar` |
+1. **Weekly Leads bar chart** (2/3 width) -- shows leads received vs bookings closed per day of the week. Uses the same `BarChart` pattern from the Admin dashboard (recharts `ResponsiveContainer`, `CartesianGrid`, `XAxis`, `YAxis`, `Tooltip`, `Bar`).
 
-Pages already correct (no changes needed): AgentDashboard, AdminDashboard, AdminUsersPage, ManagerDashboard, KpiDashboard.
+2. **Pipeline Breakdown donut chart** (1/3 width) -- shows how many deals are at each pipeline stage (New Lead, Inventory, Estimate, Booked). Uses `PieChart` + `Pie` + `Cell` with a legend below, matching the Admin "Users by Role" style.
 
-## Solution
+Mock data arrays will be added at the top of the file for both charts.
 
-### 1. Wrap AdminIntegrations and AdminSupportTickets with AdminShell
-Both are admin pages, so they should use the existing `AdminShell` component (which provides the admin sidebar, top bar with breadcrumbs, theme toggle, etc.).
+## Manager Dashboard (`ManagerDashboard.tsx`)
 
-- **AdminIntegrations**: Replace `SiteShell` + `AgentTopBar` with `AdminShell` and pass `breadcrumb=" / Integrations"`. Remove `SiteShell` and `AgentTopBar` imports.
-- **AdminSupportTickets**: Wrap content in `AdminShell` with `breadcrumb=" / Support Tickets"`. Remove `AgentTopBar`.
-- Update `AdminShell`'s `NAV_ITEMS` to include "Support Tickets" so it highlights correctly in the sidebar.
+Add a charts row between the stats and the Approvals/Alerts section, with two charts contextual to a manager's oversight:
 
-### 2. Create an AgentShell shared component
-Similar to `AdminShell`, create `src/components/layout/AgentShell.tsx` that wraps agent pages with:
-- The existing `AgentSidebar` (left)
-- A top bar with breadcrumbs, theme toggle, notifications (matching the pattern in `AgentDashboard`)
-- No customer-facing header/footer
+1. **Team Revenue Trend line chart** (2/3 width) -- shows monthly revenue over the last 6 months. Uses `LineChart` with the same styling as Admin's "User Growth" chart.
 
-### 3. Wrap AgentPipeline and ProfileSettings with AgentShell
-- **AgentPipeline**: Replace `SiteShell` + `AgentTopBar` with `AgentShell`.
-- **ProfileSettings**: Replace `SiteShell` + `AgentTopBar` with `AgentShell`.
+2. **Bookings by Status donut chart** (1/3 width) -- shows bookings split by status (Completed, In Progress, Scheduled, Cancelled). Uses the same `PieChart` pattern.
+
+Mock data arrays will be added at the top of the file for both charts.
 
 ## Technical Details
 
-### New file: `src/components/layout/AgentShell.tsx`
-- Accepts `children` and optional `breadcrumb` string
-- Renders `AgentSidebar` on the left
-- Renders the same top bar as `AgentDashboard` (Website link, Portal breadcrumb, theme toggle, bell, avatar)
-- Calls `setPortalContext("agent")` on mount
-- Exposes `onAction` for sidebar modals (workspace, operations, coaching, messaging) -- renders the modal components internally
+### Files modified:
 
-### Modified files:
-- **`src/pages/AgentPipeline.tsx`**: Replace `SiteShell`/`AgentTopBar` with `AgentShell`
-- **`src/pages/ProfileSettings.tsx`**: Replace `SiteShell`/`AgentTopBar` with `AgentShell`
-- **`src/pages/AdminIntegrations.tsx`**: Replace `SiteShell`/`AgentTopBar` with `AdminShell`
-- **`src/pages/AdminSupportTickets.tsx`**: Wrap with `AdminShell`, remove `AgentTopBar`
-- **`src/components/layout/AdminShell.tsx`**: Add "Support Tickets" to `NAV_ITEMS`
+- **`src/components/agent/AgentDashboardContent.tsx`**
+  - Import `BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid` from `recharts`
+  - Add `WEEKLY_LEADS` data: `[{ day: "Mon", leads: 3, booked: 1 }, ...]`
+  - Add `PIPELINE_DATA`: `[{ stage: "New Lead", count: 12 }, { stage: "Inventory", count: 8 }, { stage: "Estimate", count: 7 }, { stage: "Booked", count: 4 }]`
+  - Add `PIPELINE_COLORS` array using design tokens (`--primary`, `--chart-2`, `--chart-3`, `--chart-4`)
+  - Insert a new `grid grid-cols-1 lg:grid-cols-3` section after stats with the bar chart (col-span-2) and pie chart (col-span-1)
 
-### Result
-Every portal page will have a consistent sidebar + internal top bar layout. The customer-facing website header will never appear on any `/agent/*`, `/admin/*`, or `/manager/*` page.
+- **`src/pages/ManagerDashboard.tsx`**
+  - Import `LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid` from `recharts`
+  - Add `REVENUE_TREND` data: `[{ month: "Sep", revenue: 98000 }, ... { month: "Feb", revenue: 156400 }]`
+  - Add `BOOKINGS_STATUS` data: `[{ status: "Completed", count: 18 }, { status: "In Progress", count: 6 }, { status: "Scheduled", count: 4 }, { status: "Cancelled", count: 2 }]`
+  - Add `BOOKING_COLORS` array using design tokens
+  - Insert a new charts grid section after stats, before the Approvals/Alerts row
+
+### Styling
+All charts will use the exact same patterns as AdminDashboard:
+- `ResponsiveContainer` with `height={180}` for bar/line, `height={140}` for pie
+- Same `Tooltip contentStyle` with border radius, border, and card background
+- Same `CartesianGrid` with dashed lines, no vertical grid
+- Same axis font sizes and colors
+- Same donut inner/outer radius and padding angle
+
