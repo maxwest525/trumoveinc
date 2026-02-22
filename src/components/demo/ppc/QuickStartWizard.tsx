@@ -69,7 +69,7 @@ const GOALS: GoalOption[] = [
     title: 'Compare Services',
     description: 'Show why you\'re better than competitors',
     icon: Award,
-    color: '#10B981',
+    color: '#3B82F6',
     conversionRate: '8.7%',
     whyRecommended: 'Best for competitive markets with many movers',
   },
@@ -297,7 +297,7 @@ export function QuickStartWizard({ onComplete, onCancel, initialData }: QuickSta
               variant={completionStatus.percent === 100 ? "default" : "outline"} 
               className={cn(
                 "gap-1",
-                completionStatus.percent === 100 && "bg-green-500"
+                completionStatus.percent === 100 && "bg-blue-500"
               )}
             >
               <CheckCircle2 className="w-3 h-3" />

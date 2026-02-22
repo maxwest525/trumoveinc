@@ -244,8 +244,8 @@ const COLOR_THEMES = [
   {
     id: "default",
     name: "Default",
-    primary: "#22C55E",
-    primaryDark: "#16A34A",
+    primary: "#3B82F6",
+    primaryDark: "#1D4ED8",
     secondary: "#0F172A",
     accent: "#7C3AED",
     accentLight: "#A855F7",
@@ -270,9 +270,9 @@ const COLOR_THEMES = [
   },
   {
     id: "forest",
-    name: "Forest Green",
-    primary: "#059669",
-    primaryDark: "#047857",
+    name: "Forest Teal",
+    primary: "#0D9488",
+    primaryDark: "#0F766E",
     secondary: "#064E3B",
     accent: "#34D399",
     accentLight: "#6EE7B7",
@@ -977,7 +977,7 @@ export function AILandingPageGenerator({ isGenerating, onGenerate, prefillData }
           return `
     <section style="background: linear-gradient(135deg, ${theme.secondary} 0%, #1E293B 50%, ${theme.secondary} 100%); padding: 4rem 2rem; text-align: center; color: white; position: relative;">
       <div style="position: absolute; top: 1rem; left: 1rem;">
-        <span class="badge" style="background: rgba(34, 197, 94, 0.2); color: #22C55E; border: 1px solid rgba(34, 197, 94, 0.3);">✓ FMCSA Licensed</span>
+        <span class="badge" style="background: rgba(59, 130, 246, 0.2); color: #3B82F6; border: 1px solid rgba(59, 130, 246, 0.3);">✓ FMCSA Licensed</span>
       </div>
       <div style="position: absolute; top: 1rem; right: 1rem;">
         <span class="badge" style="background: rgba(245, 158, 11, 0.2); color: #F59E0B; border: 1px solid rgba(245, 158, 11, 0.3);">⭐ 4.9/5 Rating</span>
@@ -1337,7 +1337,7 @@ export function AILandingPageGenerator({ isGenerating, onGenerate, prefillData }
         <div className="flex items-center justify-between px-6 py-3">
           <TruMoveLogo className="h-8" />
           <div className="flex items-center gap-4">
-            <a href="tel:1-800-TRUMOVE" className="flex items-center gap-2 text-slate-700 hover:text-green-600 transition-colors">
+             <a href="tel:1-800-TRUMOVE" className="flex items-center gap-2 text-slate-700 hover:text-blue-600 transition-colors">
               <Phone className="w-4 h-4" />
               <span className="font-semibold text-sm">1-800-TRUMOVE</span>
             </a>
@@ -1355,13 +1355,13 @@ export function AILandingPageGenerator({ isGenerating, onGenerate, prefillData }
         </span>
       </div>
 
-      {/* Hero Section - Dark with green CTAs */}
-      <div 
-        className="relative px-8 py-20 text-center"
-        style={{ background: `linear-gradient(135deg, ${theme.secondary} 0%, #0F172A 50%, ${theme.secondary} 100%)` }}
-      >
-        <div className="absolute top-4 left-4 flex gap-2">
-          <Badge className="bg-green-500/20 text-green-400 border border-green-500/30">
+       {/* Hero Section - Dark with blue CTAs */}
+       <div 
+         className="relative px-8 py-20 text-center"
+         style={{ background: `linear-gradient(135deg, ${theme.secondary} 0%, #0F172A 50%, ${theme.secondary} 100%)` }}
+       >
+         <div className="absolute top-4 left-4 flex gap-2 flex-wrap">
+           <Badge className="bg-blue-500/20 text-blue-400 border border-blue-500/30">
             <CheckCircle2 className="w-3 h-3 mr-1" />
             FMCSA Licensed
           </Badge>
@@ -1642,7 +1642,7 @@ export function AILandingPageGenerator({ isGenerating, onGenerate, prefillData }
         <div className="flex items-center justify-between px-6 py-3">
           <img src={logoImg} alt={businessName} className="h-8" />
           <div className="flex items-center gap-4">
-            <a href="tel:1-800-TRUMOVE" className="flex items-center gap-2 text-slate-700 hover:text-green-600 transition-colors">
+             <a href="tel:1-800-TRUMOVE" className="flex items-center gap-2 text-slate-700 hover:text-blue-600 transition-colors">
               <Phone className="w-4 h-4" />
               <span className="font-semibold">1-800-TRUMOVE</span>
             </a>
@@ -1789,7 +1789,7 @@ export function AILandingPageGenerator({ isGenerating, onGenerate, prefillData }
             <div className="text-center mb-4 pt-2">
               <img src={logoImg} alt={businessName} className="h-6 mx-auto mb-2" />
               <p className="text-4xl font-bold" style={{ color: theme.primary }}>$3,400</p>
-              <p className="text-xs text-green-600 font-medium">Guaranteed price</p>
+              <p className="text-xs text-blue-600 font-medium">Guaranteed price</p>
             </div>
             <ul className="space-y-2 text-sm text-slate-700">
               <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4" style={{ color: theme.primary }} /> Locked-in pricing</li>
@@ -1864,7 +1864,7 @@ export function AILandingPageGenerator({ isGenerating, onGenerate, prefillData }
             <Badge style={{ background: `${theme.accent}20`, color: theme.accent }}>
               <Calculator className="w-3 h-3 mr-1" /> Free Calculator
             </Badge>
-            <a href="tel:1-800-TRUMOVE" className="flex items-center gap-2 text-slate-700 hover:text-green-600 transition-colors">
+             <a href="tel:1-800-TRUMOVE" className="flex items-center gap-2 text-slate-700 hover:text-blue-600 transition-colors">
               <Phone className="w-4 h-4" />
               <span className="font-semibold">1-800-TRUMOVE</span>
             </a>
@@ -1895,9 +1895,9 @@ export function AILandingPageGenerator({ isGenerating, onGenerate, prefillData }
               Our AI analyzes thousands of moves to give you the most accurate estimate — no email or phone call required.
             </p>
             <div className="flex items-center gap-6 text-white/70 text-sm justify-center md:justify-start">
-              <span className="flex items-center gap-1"><CheckCircle2 className="w-4 h-4 text-green-400" /> Instant results</span>
-              <span className="flex items-center gap-1"><CheckCircle2 className="w-4 h-4 text-green-400" /> No spam</span>
-              <span className="flex items-center gap-1"><CheckCircle2 className="w-4 h-4 text-green-400" /> 100% free</span>
+               <span className="flex items-center gap-1"><CheckCircle2 className="w-4 h-4 text-blue-400" /> Instant results</span>
+               <span className="flex items-center gap-1"><CheckCircle2 className="w-4 h-4 text-blue-400" /> No spam</span>
+               <span className="flex items-center gap-1"><CheckCircle2 className="w-4 h-4 text-blue-400" /> 100% free</span>
             </div>
           </div>
 
@@ -1941,7 +1941,7 @@ export function AILandingPageGenerator({ isGenerating, onGenerate, prefillData }
       {/* Similar Moves Social Proof */}
       <div className="py-16 px-8 bg-slate-50 dark:bg-slate-800">
         <div className="text-center mb-10">
-          <Badge className="mb-4 bg-green-500/10 text-green-600 border border-green-500/30">
+          <Badge className="mb-4 bg-blue-500/10 text-blue-600 border border-blue-500/30">
             <Users className="w-3 h-3 mr-1" /> Recent Moves
           </Badge>
           <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-3">
@@ -1967,7 +1967,7 @@ export function AILandingPageGenerator({ isGenerating, onGenerate, prefillData }
               </div>
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs text-slate-500">{move.size}</span>
-                <Badge className="bg-green-100 text-green-700 text-xs">Saved {move.saved}</Badge>
+                <Badge className="bg-blue-100 text-blue-700 text-xs">Saved {move.saved}</Badge>
               </div>
               <p className="text-2xl font-bold text-slate-900 dark:text-white">{move.cost}</p>
               <div className="flex items-center gap-1 mt-2">
@@ -2059,7 +2059,7 @@ export function AILandingPageGenerator({ isGenerating, onGenerate, prefillData }
         <div className="flex items-center justify-between px-6 py-3">
           <img src={logoImg} alt={businessName} className="h-8" />
           <div className="flex items-center gap-4">
-            <a href="tel:1-800-TRUMOVE" className="flex items-center gap-2 text-slate-700 hover:text-green-600 transition-colors">
+             <a href="tel:1-800-TRUMOVE" className="flex items-center gap-2 text-slate-700 hover:text-blue-600 transition-colors">
               <Phone className="w-4 h-4" />
               <span className="font-semibold">1-800-TRUMOVE</span>
             </a>
@@ -2234,14 +2234,14 @@ export function AILandingPageGenerator({ isGenerating, onGenerate, prefillData }
                   <p className="text-xs font-semibold text-red-600 mb-1">BEFORE</p>
                   <p className="text-sm text-red-700 dark:text-red-300">{story.before}</p>
                 </div>
-                <div className="p-4 rounded-xl bg-green-50 dark:bg-green-950/30">
-                  <p className="text-xs font-semibold text-green-600 mb-1">AFTER</p>
-                  <p className="text-sm text-green-700 dark:text-green-300">{story.after}</p>
-                </div>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-slate-600 dark:text-slate-400">{story.customer}</span>
-                <Badge className="bg-green-100 text-green-700">Saved: {story.saved}</Badge>
+                 <div className="p-4 rounded-xl bg-blue-50 dark:bg-blue-950/30">
+                   <p className="text-xs font-semibold text-blue-600 mb-1">AFTER</p>
+                   <p className="text-sm text-blue-700 dark:text-blue-300">{story.after}</p>
+                 </div>
+               </div>
+               <div className="flex items-center justify-between">
+                 <span className="text-sm text-slate-600 dark:text-slate-400">{story.customer}</span>
+                 <Badge className="bg-blue-100 text-blue-700">Saved: {story.saved}</Badge>
               </div>
             </div>
           ))}
@@ -2295,7 +2295,7 @@ export function AILandingPageGenerator({ isGenerating, onGenerate, prefillData }
               </Badge>
             </div>
             <div className="flex items-center gap-4">
-              <a href="tel:1-800-TRUMOVE" className="flex items-center gap-2 text-slate-700 hover:text-green-600 transition-colors">
+              <a href="tel:1-800-TRUMOVE" className="flex items-center gap-2 text-slate-700 hover:text-blue-600 transition-colors">
                 <Phone className="w-4 h-4" />
                 <span className="font-semibold">1-800-TRUMOVE</span>
               </a>
@@ -2333,9 +2333,9 @@ export function AILandingPageGenerator({ isGenerating, onGenerate, prefillData }
                   Local experts who know every neighborhood, every route, and every way to save you money on your move.
                 </p>
                 <div className="flex items-center gap-6 text-white/70 text-sm justify-center md:justify-start flex-wrap">
-                  <span className="flex items-center gap-1"><CheckCircle2 className="w-4 h-4 text-green-400" /> Licensed & Insured</span>
-                  <span className="flex items-center gap-1"><CheckCircle2 className="w-4 h-4 text-green-400" /> Local Crews</span>
-                  <span className="flex items-center gap-1"><CheckCircle2 className="w-4 h-4 text-green-400" /> Same-Day Quotes</span>
+                   <span className="flex items-center gap-1"><CheckCircle2 className="w-4 h-4 text-blue-400" /> Licensed & Insured</span>
+                   <span className="flex items-center gap-1"><CheckCircle2 className="w-4 h-4 text-blue-400" /> Local Crews</span>
+                   <span className="flex items-center gap-1"><CheckCircle2 className="w-4 h-4 text-blue-400" /> Same-Day Quotes</span>
                 </div>
               </div>
 
@@ -2405,7 +2405,7 @@ export function AILandingPageGenerator({ isGenerating, onGenerate, prefillData }
               {cities.map((city, i) => (
                 <div 
                   key={city} 
-                  className="p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-center hover:border-green-400 transition-colors cursor-pointer"
+                  className="p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-center hover:border-blue-400 transition-colors cursor-pointer"
                 >
                   <MapPin className="w-5 h-5 mx-auto mb-2" style={{ color: theme.primary }} />
                   <p className="font-medium text-slate-900 dark:text-white">{city}</p>
@@ -2582,7 +2582,7 @@ export function AILandingPageGenerator({ isGenerating, onGenerate, prefillData }
               { num: 5, title: "Packing Tips & Tricks", time: "3 min" },
               { num: 6, title: "Your Moving Day Checklist", time: "2 min" },
             ].map((item) => (
-              <div key={item.num} className="flex items-center gap-3 p-3 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-green-400 transition-colors cursor-pointer">
+              <div key={item.num} className="flex items-center gap-3 p-3 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-blue-400 transition-colors cursor-pointer">
                 <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold" style={{ background: theme.primary }}>
                   {item.num}
                 </div>
@@ -2634,8 +2634,8 @@ export function AILandingPageGenerator({ isGenerating, onGenerate, prefillData }
           </ul>
 
           {/* Callout Box */}
-          <div className="p-5 rounded-xl bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800">
-            <p className="text-sm text-green-800 dark:text-green-300 flex items-start gap-2">
+           <div className="p-5 rounded-xl bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800">
+             <p className="text-sm text-blue-800 dark:text-blue-300 flex items-start gap-2">
               <Sparkles className="w-5 h-5 flex-shrink-0" />
               <span><strong>💡 Pro Tip:</strong> Use an AI-powered inventory scanner to get the most accurate quote. TruMove's scanner is accurate within 5% of final costs.</span>
             </p>
@@ -3153,7 +3153,7 @@ export function AILandingPageGenerator({ isGenerating, onGenerate, prefillData }
                            <Badge 
                              variant="secondary" 
                              className={`text-xs ${
-                               kw.trend === 'up' ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300' :
+                               kw.trend === 'up' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300' :
                                kw.trend === 'down' ? 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300' :
                                ''
                              }`}
@@ -3166,7 +3166,7 @@ export function AILandingPageGenerator({ isGenerating, onGenerate, prefillData }
                          </div>
                          <div className="flex items-center gap-3 text-xs text-muted-foreground">
                            <span>{kw.clicks.toLocaleString()} clicks</span>
-                           <span className="text-green-600 font-medium">{kw.conversions} conv</span>
+                           <span className="text-blue-600 font-medium">{kw.conversions} conv</span>
                            <span>{kw.ctr.toFixed(2)}% CTR</span>
                          </div>
                        </div>
@@ -3203,7 +3203,7 @@ export function AILandingPageGenerator({ isGenerating, onGenerate, prefillData }
                                <p className="text-xs text-muted-foreground">{geo.region} • {geo.topCity}</p>
                              </div>
                            </div>
-                           <Badge variant="secondary" className="text-xs bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">
+                           <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">
                              {geo.convRate.toFixed(1)}% CVR
                            </Badge>
                          </div>
@@ -3213,7 +3213,7 @@ export function AILandingPageGenerator({ isGenerating, onGenerate, prefillData }
                              <p className="text-muted-foreground">Clicks</p>
                            </div>
                            <div className="p-1.5 rounded bg-muted">
-                             <p className="font-semibold text-green-600">{geo.conversions}</p>
+                             <p className="font-semibold text-blue-600">{geo.conversions}</p>
                              <p className="text-muted-foreground">Conv</p>
                            </div>
                            <div className="p-1.5 rounded bg-muted">
@@ -3258,7 +3258,7 @@ export function AILandingPageGenerator({ isGenerating, onGenerate, prefillData }
                            </div>
                          </div>
                          <div className="text-right">
-                           <p className="font-semibold text-sm text-green-600">${demo.avgOrderValue.toLocaleString()}</p>
+                           <p className="font-semibold text-sm text-blue-600">${demo.avgOrderValue.toLocaleString()}</p>
                            <p className="text-xs text-muted-foreground">Avg Order</p>
                          </div>
                        </div>
@@ -3278,11 +3278,11 @@ export function AILandingPageGenerator({ isGenerating, onGenerate, prefillData }
                          <div className="flex-1">
                            <div className="flex items-center justify-between mb-1">
                              <span className="text-muted-foreground">Conversions</span>
-                             <span className="font-medium text-green-600">{demo.conversions}</span>
+                             <span className="font-medium text-blue-600">{demo.conversions}</span>
                            </div>
                            <div className="h-1.5 rounded-full bg-muted overflow-hidden">
                              <div 
-                               className="h-full rounded-full bg-green-500" 
+                               className="h-full rounded-full bg-blue-500" 
                                style={{ width: `${(demo.conversions / 812) * 100}%` }}
                              />
                            </div>
@@ -3421,7 +3421,7 @@ export function AILandingPageGenerator({ isGenerating, onGenerate, prefillData }
                    {LANDING_PAGE_TEMPLATES.find(t => t.id === selectedTemplate)?.name}
                  </Badge>
                  {isSideBySide && (
-                   <Badge className="bg-green-500/30 text-green-200 border-green-400/30 text-xs">
+                   <Badge className="bg-blue-500/30 text-blue-200 border-blue-400/30 text-xs">
                      Side-by-Side
                    </Badge>
                  )}
@@ -3537,7 +3537,7 @@ export function AILandingPageGenerator({ isGenerating, onGenerate, prefillData }
                   <div className="flex items-center gap-2">
                     <Button 
                       size="sm" 
-                      className="h-8 gap-1.5 bg-green-600 hover:bg-green-700 text-white"
+                      className="h-8 gap-1.5 bg-blue-600 hover:bg-blue-700 text-white"
                       onClick={() => window.open("#", "_blank")}
                     >
                       <CheckCircle2 className="w-3.5 h-3.5" />

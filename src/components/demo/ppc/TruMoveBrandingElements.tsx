@@ -20,12 +20,12 @@
  
  // Powered by TruMove Badge
  export const PoweredByBadge = () => (
-   <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-slate-900 rounded-full">
-     <Sparkles className="w-3.5 h-3.5 text-green-400" />
-     <span className="text-xs font-medium text-white">Powered by</span>
-     <span className="text-xs font-bold text-green-400">TruMove AI</span>
-   </div>
- );
+    <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-slate-900 rounded-full">
+      <Sparkles className="w-3.5 h-3.5 text-blue-400" />
+      <span className="text-xs font-medium text-white">Powered by</span>
+      <span className="text-xs font-bold text-blue-400">TruMove AI</span>
+    </div>
+  );
  
  // TruMove Guarantee Badge
  export const TruMoveGuaranteeBadge = ({ size = 'default' }: { size?: 'small' | 'default' | 'large' }) => {
@@ -55,7 +55,7 @@
      <div className={`flex justify-center items-center gap-6 py-4 border-y ${theme === 'dark' ? 'border-white/10 bg-slate-900' : 'border-slate-200 bg-slate-50'}`}>
        {badges.map((badge, i) => (
          <div key={i} className="flex items-center gap-2">
-           <badge.icon className={`w-4 h-4 ${theme === 'dark' ? 'text-green-400' : 'text-green-600'}`} />
+           <badge.icon className={`w-4 h-4 ${theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}`} />
            <span className={`text-sm font-medium ${theme === 'dark' ? 'text-white' : 'text-slate-700'}`}>{badge.text}</span>
          </div>
        ))}
@@ -79,7 +79,7 @@
        <div className="flex animate-marquee whitespace-nowrap">
          {[...proofs, ...proofs].map((proof, i) => (
            <span key={i} className="mx-8 flex items-center gap-2">
-             <span className="text-green-400">●</span>
+             <span className="text-blue-400">●</span>
              <span className="text-sm">{proof}</span>
            </span>
          ))}
@@ -131,15 +131,15 @@
  
  // Sticky Header Bar
  export const StickyHeader = ({ businessName = "TruMove" }: { businessName?: string }) => (
-   <header className="sticky top-0 z-50 bg-white border-b-2 border-green-500 shadow-sm">
-     <div className="flex items-center justify-between px-6 py-3">
-       <TruMoveLogo className="h-8" />
-       <div className="flex items-center gap-4">
-         <a href="tel:1-800-TRUMOVE" className="flex items-center gap-2 text-slate-700 hover:text-green-600 transition-colors">
-           <Phone className="w-4 h-4" />
-           <span className="font-semibold">1-800-TRUMOVE</span>
-         </a>
-         <Button size="sm" className="bg-green-600 hover:bg-green-700">Get a Quote</Button>
+    <header className="sticky top-0 z-50 bg-white border-b-2 border-blue-500 shadow-sm">
+      <div className="flex items-center justify-between px-6 py-3">
+        <TruMoveLogo className="h-8" />
+        <div className="flex items-center gap-4">
+          <a href="tel:1-800-TRUMOVE" className="flex items-center gap-2 text-slate-700 hover:text-blue-600 transition-colors">
+            <Phone className="w-4 h-4" />
+            <span className="font-semibold">1-800-TRUMOVE</span>
+          </a>
+          <Button size="sm" className="bg-blue-600 hover:bg-blue-700">Get a Quote</Button>
        </div>
      </div>
    </header>
@@ -156,7 +156,7 @@
    return (
      <div className={`py-16 px-8 ${theme === 'dark' ? 'bg-slate-900' : 'bg-white'}`}>
        <div className="text-center mb-12">
-         <Badge className="mb-4 bg-green-500/10 text-green-600 border border-green-500/30">How TruMove Works</Badge>
+         <Badge className="mb-4 bg-blue-500/10 text-blue-600 border border-blue-500/30">How TruMove Works</Badge>
          <h2 className={`text-3xl font-bold mb-3 ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
            3 Simple Steps to Your Perfect Move
          </h2>
@@ -167,12 +167,12 @@
        
        <div className="relative max-w-4xl mx-auto">
          {/* Connecting line */}
-         <div className="absolute top-16 left-0 right-0 h-0.5 bg-gradient-to-r from-green-500 via-green-400 to-green-500 hidden md:block" />
+         <div className="absolute top-16 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-500 via-blue-400 to-blue-500 hidden md:block" />
          
          <div className="grid md:grid-cols-3 gap-8">
            {steps.map((step, i) => (
              <div key={i} className="relative text-center">
-               <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center text-3xl shadow-lg shadow-green-500/30 relative z-10">
+               <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-3xl shadow-lg shadow-blue-500/30 relative z-10">
                  {step.icon}
                </div>
                <div className={`absolute -top-2 -right-2 w-7 h-7 rounded-full bg-slate-900 text-white text-sm font-bold flex items-center justify-center z-20`}>
@@ -203,7 +203,7 @@
    return (
      <div className="py-16 px-8 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
        <div className="text-center mb-12">
-         <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center shadow-lg shadow-green-500/40">
+         <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/40">
            <Shield className="w-10 h-10 text-white" />
          </div>
          <h2 className="text-3xl font-bold text-white mb-3">The TruMove Triple Guarantee</h2>
@@ -212,8 +212,8 @@
        
        <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
          {guarantees.map((g, i) => (
-           <div key={i} className="text-center p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-green-500/50 transition-colors">
-             <g.icon className="w-12 h-12 mx-auto mb-4 text-green-400" />
+            <div key={i} className="text-center p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-blue-500/50 transition-colors">
+              <g.icon className="w-12 h-12 mx-auto mb-4 text-blue-400" />
              <h3 className="text-xl font-bold text-white mb-2">{g.title}</h3>
              <p className="text-slate-400">{g.description}</p>
            </div>
@@ -253,7 +253,7 @@
                {t.thumbnail}
                <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
                  <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center shadow-lg">
-                   <Play className="w-6 h-6 text-green-600 ml-1" />
+                   <Play className="w-6 h-6 text-blue-600 ml-1" />
                  </div>
                </div>
              </div>
@@ -299,7 +299,7 @@
            <thead>
              <tr className="bg-slate-900 text-white">
                <th className="text-left p-4">Feature</th>
-               <th className="p-4 text-center bg-green-600">
+               <th className="p-4 text-center bg-blue-600">
                  <div className="flex flex-col items-center">
                    <TruMoveLogo className="h-6 brightness-0 invert mb-1" />
                    <span className="text-xs opacity-80">AI-Powered</span>
@@ -315,11 +315,11 @@
                  <td className="p-4 font-medium text-slate-900">
                    {f.name}
                    {f.exclusive && (
-                     <Badge className="ml-2 text-[10px] bg-green-500/10 text-green-600 border-0">TruMove Exclusive</Badge>
+                     <Badge className="ml-2 text-[10px] bg-blue-500/10 text-blue-600 border-0">TruMove Exclusive</Badge>
                    )}
                  </td>
-                 <td className="p-4 text-center bg-green-50">
-                   {f.trumove ? <CheckCircle2 className="w-6 h-6 text-green-600 mx-auto" /> : <span className="text-slate-300">—</span>}
+                  <td className="p-4 text-center bg-blue-50">
+                    {f.trumove ? <CheckCircle2 className="w-6 h-6 text-blue-600 mx-auto" /> : <span className="text-slate-300">—</span>}
                  </td>
                  <td className="p-4 text-center">
                    {f.traditional ? <CheckCircle2 className="w-5 h-5 text-slate-400 mx-auto" /> : <span className="text-slate-300">—</span>}
@@ -455,7 +455,7 @@
  // Floating CTA Button (for mobile)
  export const FloatingStickyBar = () => (
    <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t shadow-lg p-3 md:hidden">
-     <Button className="w-full py-4 text-lg font-bold bg-green-600 hover:bg-green-700">
+     <Button className="w-full py-4 text-lg font-bold bg-blue-600 hover:bg-blue-700">
        Get Your Free Quote <ArrowRight className="w-5 h-5 ml-2" />
      </Button>
    </div>
@@ -463,7 +463,7 @@
  
  // Chat with Trudy Button
  export const ChatWithTrudyButton = () => (
-   <button className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-3 rounded-full bg-gradient-to-r from-green-600 to-green-500 text-white shadow-lg hover:shadow-xl transition-shadow">
+   <button className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-3 rounded-full bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg hover:shadow-xl transition-shadow">
      <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
        <Truck className="w-4 h-4" />
        <Sparkles className="w-2.5 h-2.5 absolute -top-0.5 -right-0.5 text-amber-300" />

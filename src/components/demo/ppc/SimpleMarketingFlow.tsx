@@ -31,14 +31,14 @@ interface QuickTemplate {
 
 const AD_TEMPLATES: QuickTemplate[] = [
   { id: 'quote', title: 'Get Free Quote', subtitle: 'Lead generation focus', icon: FileText, color: '#7C3AED', conversionRate: '12.4%', popular: true },
-  { id: 'savings', title: 'Save 30% Today', subtitle: 'Discount messaging', icon: Target, color: '#10B981', conversionRate: '9.8%' },
+  { id: 'savings', title: 'Save 30% Today', subtitle: 'Discount messaging', icon: Target, color: '#3B82F6', conversionRate: '9.8%' },
   { id: 'trust', title: '50K+ Happy Families', subtitle: 'Social proof focus', icon: Users, color: '#3B82F6', conversionRate: '8.2%' },
   { id: 'local', title: 'Local Movers Near You', subtitle: 'Geo-targeted', icon: MapPin, color: '#F59E0B', conversionRate: '11.1%' },
 ];
 
 const LANDING_TEMPLATES: QuickTemplate[] = [
   { id: 'funnel-quote', title: 'Quote Funnel', subtitle: 'High-converting lead capture', icon: FileText, color: '#7C3AED', conversionRate: '15.8%', popular: true },
-  { id: 'calculator', title: 'Cost Calculator', subtitle: 'Interactive pricing tool', icon: Calculator, color: '#10B981', conversionRate: '18.2%' },
+  { id: 'calculator', title: 'Cost Calculator', subtitle: 'Interactive pricing tool', icon: Calculator, color: '#3B82F6', conversionRate: '18.2%' },
   { id: 'comparison', title: 'Why Choose Us', subtitle: 'Competitor comparison', icon: Star, color: '#F59E0B', conversionRate: '12.4%' },
   { id: 'local-seo', title: 'City Landing Page', subtitle: 'Local SEO optimized', icon: MapPin, color: '#3B82F6', conversionRate: '9.6%' },
 ];
@@ -176,8 +176,8 @@ export function SimpleMarketingFlow({ onComplete, onCancel }: SimpleMarketingFlo
               title: 'Landing Page', 
               description: 'High-converting page',
               icon: Layout,
-              color: '#10B981',
-              gradient: 'from-emerald-500 to-emerald-600'
+               color: '#3B82F6',
+               gradient: 'from-blue-500 to-blue-600'
             },
             { 
               type: 'campaign' as FlowType, 

@@ -50,8 +50,8 @@ export function DraggableABTestCard({ test, liveMode }: DraggableABTestCardProps
               <Badge 
                 className="text-[10px]"
                 style={{ 
-                  background: test.status === "running" ? "#10B98120" : test.status === "paused" ? "#F59E0B20" : "#7C3AED20",
-                  color: test.status === "running" ? "#10B981" : test.status === "paused" ? "#F59E0B" : "#7C3AED"
+                  background: test.status === "running" ? "#3B82F620" : test.status === "paused" ? "#F59E0B20" : "#7C3AED20",
+                  color: test.status === "running" ? "#3B82F6" : test.status === "paused" ? "#F59E0B" : "#7C3AED"
                 }}
               >
                 {test.status === "running" ? "Running" : test.status === "paused" ? "Paused" : "Completed"}
@@ -67,7 +67,7 @@ export function DraggableABTestCard({ test, liveMode }: DraggableABTestCardProps
           </div>
         </div>
         <div className="text-right">
-          <div className="text-lg font-bold" style={{ color: "#10B981" }}>{test.lift}</div>
+          <div className="text-lg font-bold" style={{ color: "#3B82F6" }}>{test.lift}</div>
           <div className="text-[10px] text-muted-foreground">Lift</div>
         </div>
       </div>
@@ -77,7 +77,7 @@ export function DraggableABTestCard({ test, liveMode }: DraggableABTestCardProps
         {test.variants.map((variant, idx) => (
           <div 
             key={idx} 
-            className={`p-3 rounded-lg border ${variant.name === test.winner ? "border-green-300 bg-green-50/50 dark:bg-green-950/20" : "border-border bg-muted/30"}`}
+            className={`p-3 rounded-lg border ${variant.name === test.winner ? "border-blue-300 bg-blue-50/50 dark:bg-blue-950/20" : "border-border bg-muted/30"}`}
           >
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs font-medium text-foreground">{variant.name}</span>
@@ -95,7 +95,7 @@ export function DraggableABTestCard({ test, liveMode }: DraggableABTestCardProps
                 <div className="text-[9px] text-muted-foreground">Conversions</div>
               </div>
               <div>
-                <div className={`text-sm font-bold ${liveMode ? "transition-all duration-300" : ""}`} style={{ color: variant.name === test.winner ? "#10B981" : "#64748B" }}>{variant.rate.toFixed(1)}%</div>
+                <div className={`text-sm font-bold ${liveMode ? "transition-all duration-300" : ""}`} style={{ color: variant.name === test.winner ? "#3B82F6" : "#64748B" }}>{variant.rate.toFixed(1)}%</div>
                 <div className="text-[9px] text-muted-foreground">Rate</div>
               </div>
             </div>
@@ -108,14 +108,14 @@ export function DraggableABTestCard({ test, liveMode }: DraggableABTestCardProps
         <div className="flex-1">
           <div className="flex items-center justify-between text-xs mb-1">
             <span className="text-muted-foreground">Statistical Confidence</span>
-            <span className={`font-medium ${liveMode ? "transition-all duration-300" : ""}`} style={{ color: test.confidence >= 95 ? "#10B981" : "#F59E0B" }}>{test.confidence.toFixed(0)}%</span>
+            <span className={`font-medium ${liveMode ? "transition-all duration-300" : ""}`} style={{ color: test.confidence >= 95 ? "#3B82F6" : "#F59E0B" }}>{test.confidence.toFixed(0)}%</span>
           </div>
           <div className="h-2 rounded-full bg-muted overflow-hidden">
             <div 
               className={`h-full rounded-full ${liveMode ? "transition-all duration-500" : ""}`}
               style={{ 
                 width: `${test.confidence}%`,
-                background: test.confidence >= 95 ? "#10B981" : test.confidence >= 80 ? "#F59E0B" : "#EF4444"
+                background: test.confidence >= 95 ? "#3B82F6" : test.confidence >= 80 ? "#F59E0B" : "#EF4444"
               }}
             />
           </div>
