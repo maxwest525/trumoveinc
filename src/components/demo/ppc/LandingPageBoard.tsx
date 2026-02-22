@@ -151,8 +151,8 @@ export function LandingPageBoard({ onCreateNew, onEditPage, pages, onPagesChange
  
   const getPerformanceStyles = (perf: LandingPage['performance']) => {
     switch (perf) {
-      case 'excellent': return { bg: 'bg-blue-500/10', text: 'text-blue-600', border: 'border-blue-500/30' };
-      case 'good': return { bg: 'bg-blue-500/10', text: 'text-blue-600', border: 'border-blue-500/30' };
+      case 'excellent': return { bg: 'bg-green-500/10', text: 'text-green-600', border: 'border-green-500/30' };
+      case 'good': return { bg: 'bg-green-500/10', text: 'text-green-600', border: 'border-green-500/30' };
       case 'poor': return { bg: 'bg-red-500/10', text: 'text-red-600', border: 'border-red-500/30' };
       case 'new': return { bg: 'bg-purple-500/10', text: 'text-purple-600', border: 'border-purple-500/30' };
       default: return { bg: 'bg-muted', text: 'text-muted-foreground', border: 'border-muted' };
@@ -176,8 +176,8 @@ export function LandingPageBoard({ onCreateNew, onEditPage, pages, onPagesChange
         </div>
         <div className="w-px h-8 bg-border" />
         <div className="flex items-center gap-2">
-           <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center">
-            <Users className="w-4 h-4 text-blue-600" />
+           <div className="w-8 h-8 rounded-lg bg-green-500/10 flex items-center justify-center">
+            <Users className="w-4 h-4 text-green-600" />
           </div>
           <div>
             <p className="text-lg font-bold text-foreground">{totalConversions}</p>
@@ -291,12 +291,12 @@ export function LandingPageBoard({ onCreateNew, onEditPage, pages, onPagesChange
                       <p className="text-xs text-muted-foreground">Conversions</p>
                       <p className="font-semibold text-foreground flex items-center gap-1">
                         {page.conversions}
-                        {page.trend === 'up' && <TrendingUp className="w-3 h-3 text-blue-500" />}
+                        {page.trend === 'up' && <TrendingUp className="w-3 h-3 text-green-500" />}
                       </p>
                     </div>
                     <div>
                       <p className="text-xs text-muted-foreground">Cost/Lead</p>
-                      <p className={`font-semibold ${page.cpa < 15 ? 'text-blue-600' : page.cpa > 20 ? 'text-red-500' : 'text-foreground'}`}>
+                      <p className={`font-semibold ${page.cpa < 15 ? 'text-green-600' : page.cpa > 20 ? 'text-red-500' : 'text-foreground'}`}>
                         ${page.cpa.toFixed(2)}
                       </p>
                     </div>
