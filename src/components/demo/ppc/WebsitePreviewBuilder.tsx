@@ -4,6 +4,7 @@ import { Sun, Moon, ArrowLeft, Star, CheckCircle2, Phone, MapPin, Shield, Clock,
 import ScaledPreview from "@/components/ui/ScaledPreview";
 import { BuildSelections } from "./AnalyticsBuilderPanel";
 import { cn } from "@/lib/utils";
+import { AutomationModeSelector } from "./AutomationModeSelector";
 
 interface WebsitePreviewBuilderProps {
   selections: BuildSelections;
@@ -1483,6 +1484,7 @@ export function WebsitePreviewBuilder({ selections, onBack }: WebsitePreviewBuil
             {darkMode ? <Moon className="w-3.5 h-3.5" /> : <Sun className="w-3.5 h-3.5" />}
             {darkMode ? 'Dark' : 'Light'}
           </button>
+          <AutomationModeSelector />
         </div>
       </div>
 

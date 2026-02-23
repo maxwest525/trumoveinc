@@ -6,6 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { ArrowLeft, Sparkles, RefreshCw, Layout } from "lucide-react";
 import { BuildSelections } from "./AnalyticsBuilderPanel";
 import { cn } from "@/lib/utils";
+import { AutomationModeSelector } from "./AutomationModeSelector";
 
 interface AdCampaignBuilderProps {
   selections: BuildSelections;
@@ -126,6 +127,7 @@ export function AdCampaignBuilder({ selections, onBack, onMatchLanding }: AdCamp
         <Button variant="outline" size="sm" onClick={onBack} className="gap-1.5 text-xs">
           <ArrowLeft className="w-3.5 h-3.5" /> Back
         </Button>
+        <AutomationModeSelector />
       </div>
 
       {/* Platform Selection */}
