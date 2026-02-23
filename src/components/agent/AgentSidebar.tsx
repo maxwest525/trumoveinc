@@ -10,17 +10,20 @@ interface NavItem {
   href: string;
 }
 
+interface AgentSidebarProps {
+  onDialerToggle?: () => void;
+}
+
 const NAV_ITEMS: NavItem[] = [
   { label: "Dashboard", icon: LayoutDashboard, href: "/agent/dashboard" },
   { label: "New Customer", icon: UserPlus, href: "/agent/new-customer" },
   { label: "My Customers", icon: Users, href: "/agent/customers" },
   { label: "Messages", icon: MessageSquare, href: "/agent/messages" },
-  { label: "Dialer", icon: Phone, href: "/agent/dialer" },
   { label: "Bookings", icon: CalendarCheck, href: "/agent/operations" },
   { label: "Recordings", icon: Mic, href: "/agent/recordings" },
 ];
 
-export default function AgentSidebar() {
+export default function AgentSidebar({ onDialerToggle }: AgentSidebarProps) {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -59,6 +62,13 @@ export default function AgentSidebar() {
             </Link>
           );
         })}
+        <button
+          onClick={onDialerToggle}
+          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+        >
+          <Phone className="w-4 h-4" />
+          <span>Dialer</span>
+        </button>
       </nav>
 
       <div className="px-2 pb-4 space-y-0.5">
