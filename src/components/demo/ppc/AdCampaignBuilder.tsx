@@ -92,6 +92,41 @@ function generateCopy(platform: string, selections: BuildSelections) {
       ],
       cta: 'Request Demo',
     },
+    'Microsoft': {
+      headlines: [
+        `${kw.replace(/\b\w/g, c => c.toUpperCase())} — Instant AI Quotes`,
+        `Trusted Movers in ${loc} | Save Up to 30%`,
+        `Licensed & Insured — Free Moving Estimates`,
+      ],
+      descriptions: [
+        `Get accurate AI-powered moving quotes in under 60 seconds. Compare verified, FMCSA-licensed movers across 48 states. Full-value protection included.`,
+        `Join 50,000+ ${audience} who trust TruMove. Real-time shipment tracking, transparent pricing, no hidden fees. Book your move online today.`,
+      ],
+      cta: 'Get Your Estimate',
+    },
+    'Pinterest': {
+      headlines: [
+        `Your Dream Move Starts Here ✨`,
+        `Moving Checklist: AI Does the Heavy Lifting`,
+        `Plan Your ${loc} Move the Smart Way`,
+      ],
+      descriptions: [
+        `Planning a big move? Let TruMove's AI handle the quotes while you focus on designing your new space. Accurate estimates, vetted movers, and real-time tracking — all in one place. 📦🏡`,
+        `Save this for your next move! Compare top-rated movers, get instant pricing, and track your shipment from pickup to delivery.`,
+      ],
+      cta: 'Save & Get Quote',
+    },
+    'X': {
+      headlines: [
+        `Moving soon? Skip the call-around 📱`,
+        `AI moving quotes in 60s — no cap`,
+        `${loc} movers ranked by real reviews`,
+      ],
+      descriptions: [
+        `TruMove just quoted my entire cross-country move in under a minute. 50K+ moves completed, 4.9★ rating, real-time GPS tracking. Why is everyone still calling around for quotes?`,
+      ],
+      cta: 'Get Quoted →',
+    },
   };
 
   // Find matching group
