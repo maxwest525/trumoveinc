@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import AgentShell from "@/components/layout/AgentShell";
 import { supabase } from "@/integrations/supabase/client";
-import { Users, Mail, Phone, MapPin, Calendar, ChevronRight, Search } from "lucide-react";
+import { Users, Mail, Phone, MapPin, Calendar, ChevronRight, Search, MessageSquare } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
 interface Customer {
@@ -108,6 +109,18 @@ export default function AgentCustomers() {
                     </p>
                   )}
                 </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="shrink-0 gap-1.5 text-xs h-8 text-muted-foreground hover:text-foreground"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate("/agent/messages");
+                  }}
+                >
+                  <MessageSquare className="w-3.5 h-3.5" />
+                  Message
+                </Button>
                 <ChevronRight className="w-4 h-4 text-muted-foreground/30 group-hover:text-muted-foreground transition-colors shrink-0" />
               </div>
             ))}

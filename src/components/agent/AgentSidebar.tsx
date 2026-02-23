@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
-  LayoutDashboard, UserPlus, CalendarCheck, Mic, Home, RotateCcw, Users,
+  LayoutDashboard, UserPlus, CalendarCheck, Mic, Home, RotateCcw, Users, MessageSquare,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -14,6 +14,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: "Dashboard", icon: LayoutDashboard, href: "/agent/dashboard" },
   { label: "New Customer", icon: UserPlus, href: "/agent/new-customer" },
   { label: "My Customers", icon: Users, href: "/agent/customers" },
+  { label: "Messages", icon: MessageSquare, href: "/agent/messages" },
   { label: "Bookings", icon: CalendarCheck, href: "/agent/operations" },
   { label: "Recordings", icon: Mic, href: "/agent/recordings" },
 ];
