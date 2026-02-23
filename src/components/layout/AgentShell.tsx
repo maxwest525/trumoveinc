@@ -7,6 +7,8 @@ import { CombinedWorkspaceModal } from "@/components/agent/CombinedWorkspaceModa
 import { OperationsCenterModal } from "@/components/agent/OperationsCenterModal";
 import { CoachingSummaryModal } from "@/components/coaching/CoachingSummaryModal";
 import { InternalMessagingModal } from "@/components/messaging/InternalMessagingModal";
+import { CreateCustomerModal } from "@/components/agent/CreateCustomerModal";
+import { CollectPaymentModal } from "@/components/agent/CollectPaymentModal";
 import { setPortalContext } from "@/hooks/usePortalContext";
 
 interface AgentShellProps {
@@ -20,6 +22,9 @@ export default function AgentShell({ children, breadcrumb = "" }: AgentShellProp
   const [operationsOpen, setOperationsOpen] = useState(false);
   const [coachingOpen, setCoachingOpen] = useState(false);
   const [messagingOpen, setMessagingOpen] = useState(false);
+  const [newCustomerOpen, setNewCustomerOpen] = useState(false);
+  const [paymentsOpen, setPaymentsOpen] = useState(false);
+  const [paymentPrefill, setPaymentPrefill] = useState<{ name: string; email: string; phone: string } | null>(null);
 
   useEffect(() => {
     setPortalContext("agent");
@@ -31,6 +36,21 @@ export default function AgentShell({ children, breadcrumb = "" }: AgentShellProp
     else if (action === "operations") setOperationsOpen(true);
     else if (action === "coaching") setCoachingOpen(true);
     else if (action === "messaging") setMessagingOpen(true);
+    else if (action === "new_customer") setNewCustomerOpen(true);
+    else if (action === "payments") {
+      setPaymentPrefill(null);
+      setPaymentsOpen(true);
+    }
+  };
+
+  const handleSendESignFromCustomer = (customer: { id: string; name: string; email: string; phone: string }) => {
+    // Open workspace modal which has e-sign tab
+    setWorkspaceOpen(true);
+  };
+
+  const handleCollectPaymentFromCustomer = (customer: { id: string; name: string; email: string; phone: string }) => {
+    setPaymentPrefill({ name: customer.name, email: customer.email, phone: customer.phone });
+    setPaymentsOpen(true);
   };
 
   return (
@@ -64,6 +84,17 @@ export default function AgentShell({ children, breadcrumb = "" }: AgentShellProp
       <OperationsCenterModal open={operationsOpen} onOpenChange={setOperationsOpen} />
       <CoachingSummaryModal open={coachingOpen} onOpenChange={setCoachingOpen} />
       <InternalMessagingModal open={messagingOpen} onOpenChange={setMessagingOpen} />
+      <CreateCustomerModal
+        open={newCustomerOpen}
+        onOpenChange={setNewCustomerOpen}
+        onSendESign={handleSendESignFromCustomer}
+        onCollectPayment={handleCollectPaymentFromCustomer}
+      />
+      <CollectPaymentModal
+        open={paymentsOpen}
+        onOpenChange={setPaymentsOpen}
+        prefillCustomer={paymentPrefill}
+      />
     </div>
   );
 }
