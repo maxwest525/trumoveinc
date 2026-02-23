@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Home, Sun, Moon, Bell } from "lucide-react";
 import { useTheme } from "next-themes";
 import AgentSidebar from "@/components/agent/AgentSidebar";
@@ -13,12 +13,20 @@ interface AgentShellProps {
 
 export default function AgentShell({ children, breadcrumb = "" }: AgentShellProps) {
   const { theme, setTheme } = useTheme();
+  const location = useLocation();
   const [dialerOpen, setDialerOpen] = useState(false);
 
   useEffect(() => {
     setPortalContext("agent");
     window.scrollTo(0, 0);
   }, []);
+
+  // Auto-open dialer on the dialer page
+  useEffect(() => {
+    if (location.pathname === "/agent/dialer") {
+      setDialerOpen(true);
+    }
+  }, [location.pathname]);
 
   return (
     <div className="flex min-h-screen bg-background text-foreground">
