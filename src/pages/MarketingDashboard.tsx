@@ -19,6 +19,7 @@ import { UnifiedAnalyticsDashboard } from "@/components/demo/ppc/UnifiedAnalytic
 import { SimpleMarketingFlow } from "@/components/demo/ppc/SimpleMarketingFlow";
 import { TrudyMarketingChat } from "@/components/demo/ppc/TrudyMarketingChat";
 import { AutoBuildPage } from "@/components/demo/ppc/AutoBuildPage";
+import { AnalyticsBuilderPanel, BuildSelections } from "@/components/demo/ppc/AnalyticsBuilderPanel";
 import { useMarketingPreferences } from "@/hooks/useMarketingPreferences";
 
 const INITIAL_KEYWORDS = [
@@ -62,7 +63,7 @@ const INITIAL_STATS: Stats = { totalSpend: 1736, clicks: 2373, conversions: 70, 
 
 export default function MarketingDashboard() {
   const [activeTab, setActiveTab] = useState("dashboard");
-  const [viewMode, setViewMode] = useState<'hub' | 'quickcreate' | 'detail' | 'trudy-chat' | 'auto-build'>('hub');
+  const [viewMode, setViewMode] = useState<'hub' | 'quickcreate' | 'detail' | 'trudy-chat' | 'auto-build' | 'manual-build'>('hub');
   const [quickCreateType, setQuickCreateType] = useState<'ad' | 'landing' | 'campaign' | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [autoOpenFullScreen, setAutoOpenFullScreen] = useState(false);
@@ -109,9 +110,8 @@ export default function MarketingDashboard() {
   const openEmailModal = (type: "abtest" | "conversions") => { setExportType(type); setShowEmailModal(true); };
   const handleQuickCreate = (type: 'ad' | 'landing' | 'campaign') => { 
     if (type === 'landing') {
-      // Skip SimpleMarketingFlow for landing pages - go directly to generator
-      setViewMode('detail');
-      setActiveTab('landing');
+      // Go to manual build with analytics selector
+      setViewMode('manual-build');
       return;
     }
     setQuickCreateType(type); 
@@ -134,14 +134,29 @@ export default function MarketingDashboard() {
     else { setViewMode('detail'); setActiveTab(section === 'dashboard' ? 'analytics' : section); }
   };
 
-  const handleAutoBuild = (variationId: string) => {
-    // Auto-build: go directly to landing page generator which handles its own full-screen open
+  const handleAutoBuild = (variationId: string, selections?: BuildSelections) => {
+    const template = selections?.template || variationId;
     setLandingPagePrefill({
-      topKeyword: 'long distance moving company',
-      topLocation: 'California',
-      audience: 'Homeowners 35-54 (Desktop 62%)',
-      locations: ['California', 'Texas', 'Florida'],
-      keywords: ['long distance moving', 'cross country movers', 'moving quotes'],
+      topKeyword: selections?.keywords?.[0] || 'long distance moving company',
+      topLocation: selections?.locations?.[0] || 'California',
+      audience: selections?.demographics?.[0] || 'Homeowners 35-54 (Desktop 62%)',
+      locations: selections?.locations || ['California', 'Texas', 'Florida'],
+      keywords: selections?.keywords || ['long distance moving', 'cross country movers', 'moving quotes'],
+      avgCPA: 24.80,
+      autoPopulatedFields: ['keywords', 'locations', 'audience', 'headline'],
+    });
+    setAutoOpenFullScreen(true);
+    setViewMode('detail');
+    setActiveTab('landing');
+  };
+
+  const handleManualBuild = (selections: BuildSelections) => {
+    setLandingPagePrefill({
+      topKeyword: selections.keywords[0] || 'long distance moving company',
+      topLocation: selections.locations[0] || 'California',
+      audience: selections.demographics[0] || 'Homeowners 35-54',
+      locations: selections.locations,
+      keywords: selections.keywords,
       avgCPA: 24.80,
       autoPopulatedFields: ['keywords', 'locations', 'audience', 'headline'],
     });
@@ -162,7 +177,7 @@ export default function MarketingDashboard() {
               </Button>
             )}
             <h1 className="text-xl font-bold text-foreground">
-              {viewMode === 'hub' ? 'AI Marketing Suite' : viewMode === 'trudy-chat' ? 'Ask Trudy' : viewMode === 'quickcreate' ? 'Quick Create' : 'Marketing Tools'}
+              {viewMode === 'hub' ? 'AI Marketing Suite' : viewMode === 'trudy-chat' ? 'Ask Trudy' : viewMode === 'quickcreate' ? 'Quick Create' : viewMode === 'manual-build' ? 'Build Manual' : viewMode === 'auto-build' ? 'AI Auto-Build' : 'Marketing Tools'}
             </h1>
           </div>
           <button
@@ -242,6 +257,15 @@ export default function MarketingDashboard() {
         {/* Auto-Build Flow */}
         {viewMode === 'auto-build' && (
           <AutoBuildPage onBuild={handleAutoBuild} onCancel={() => setViewMode('hub')} />
+        )}
+
+        {/* Manual Build Flow */}
+        {viewMode === 'manual-build' && (
+          <AnalyticsBuilderPanel
+            mode="manual"
+            onBuild={handleManualBuild}
+            onCancel={() => setViewMode('hub')}
+          />
         )}
 
         {/* Detail View */}
