@@ -1,8 +1,9 @@
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { Home, Sun, Moon, Bell } from "lucide-react";
 import { useTheme } from "next-themes";
 import AgentSidebar from "@/components/agent/AgentSidebar";
+import { FloatingDialer } from "@/components/agent/FloatingDialer";
 import { setPortalContext } from "@/hooks/usePortalContext";
 
 interface AgentShellProps {
@@ -12,6 +13,7 @@ interface AgentShellProps {
 
 export default function AgentShell({ children, breadcrumb = "" }: AgentShellProps) {
   const { theme, setTheme } = useTheme();
+  const [dialerOpen, setDialerOpen] = useState(false);
 
   useEffect(() => {
     setPortalContext("agent");
@@ -20,7 +22,7 @@ export default function AgentShell({ children, breadcrumb = "" }: AgentShellProp
 
   return (
     <div className="flex min-h-screen bg-background text-foreground">
-      <AgentSidebar />
+      <AgentSidebar onDialerToggle={() => setDialerOpen(true)} />
       <div className="flex-1 flex flex-col min-h-screen">
         <header className="h-12 border-b border-border bg-card flex items-center justify-between px-4 shrink-0">
           <div className="flex items-center gap-3">
@@ -44,6 +46,7 @@ export default function AgentShell({ children, breadcrumb = "" }: AgentShellProp
           {children}
         </main>
       </div>
+      <FloatingDialer open={dialerOpen} onOpenChange={setDialerOpen} />
     </div>
   );
 }
