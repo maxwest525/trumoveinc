@@ -3,11 +3,11 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard, Users, Package, FileText, CalendarCheck,
   Phone, FileSignature, MessageSquare, CheckSquare, Home, RotateCcw,
-  Gauge
+  Gauge, UserPlus, CreditCard
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export type SidebarAction = "workspace" | "operations" | "coaching" | "messaging";
+export type SidebarAction = "workspace" | "operations" | "coaching" | "messaging" | "new_customer" | "payments";
 
 interface NavItem {
   label: string;
@@ -20,12 +20,14 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   // Primary tools
+  { label: "New Customer", icon: UserPlus, action: "new_customer" },
   { label: "CRM Pipeline", icon: Users, href: "/agent/pipeline" },
   { label: "Dialer", icon: Phone, action: "workspace" },
   // Core
   { label: "Dashboard", icon: LayoutDashboard, href: "/agent/dashboard" },
   { label: "My KPIs", icon: Gauge, href: "/kpi" },
   { label: "Bookings", icon: CalendarCheck, action: "operations" },
+  { label: "Payments", icon: CreditCard, action: "payments" },
   { label: "Messages", icon: MessageSquare, action: "messaging", badge: 5 },
   // Advanced tools
   { label: "Inventory", icon: Package, action: "workspace", advanced: true },
