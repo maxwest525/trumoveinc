@@ -41,7 +41,7 @@ import ManagerCoaching from "./pages/ManagerCoaching";
 
 import AgentOperations from "./pages/AgentOperations";
 import AgentNewCustomer from "./pages/AgentNewCustomer";
-import AgentRecordings from "./pages/AgentRecordings";
+import AgentDialerPage from "./pages/AgentDialerPage";
 import AgentESign from "./pages/AgentESign";
 import AgentPayment from "./pages/AgentPayment";
 import AgentCustomers from "./pages/AgentCustomers";
@@ -93,7 +93,7 @@ const App = () => (
             
             <Route path="/agent/operations" element={<AgentOperations />} />
             <Route path="/agent/new-customer" element={<AgentNewCustomer />} />
-            <Route path="/agent/recordings" element={<AgentRecordings />} />
+            <Route path="/agent/dialer" element={<AgentDialerPage />} />
             <Route path="/agent/esign" element={<AgentESign />} />
             <Route path="/agent/payment" element={<AgentPayment />} />
             <Route path="/agent/customers" element={<AgentCustomers />} />
