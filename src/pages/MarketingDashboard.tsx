@@ -20,6 +20,7 @@ import { SimpleMarketingFlow } from "@/components/demo/ppc/SimpleMarketingFlow";
 import { TrudyMarketingChat } from "@/components/demo/ppc/TrudyMarketingChat";
 import { AutoBuildPage } from "@/components/demo/ppc/AutoBuildPage";
 import { AnalyticsBuilderPanel, BuildSelections } from "@/components/demo/ppc/AnalyticsBuilderPanel";
+import { DarkPremiumLandingPreview } from "@/components/demo/ppc/DarkPremiumLandingPreview";
 import { useMarketingPreferences } from "@/hooks/useMarketingPreferences";
 
 const INITIAL_KEYWORDS = [
@@ -63,7 +64,8 @@ const INITIAL_STATS: Stats = { totalSpend: 1736, clicks: 2373, conversions: 70, 
 
 export default function MarketingDashboard() {
   const [activeTab, setActiveTab] = useState("dashboard");
-  const [viewMode, setViewMode] = useState<'hub' | 'quickcreate' | 'detail' | 'trudy-chat' | 'auto-build' | 'manual-build'>('hub');
+  const [viewMode, setViewMode] = useState<'hub' | 'quickcreate' | 'detail' | 'trudy-chat' | 'auto-build' | 'manual-build' | 'landing-preview'>('hub');
+  const [previewSelections, setPreviewSelections] = useState<BuildSelections | null>(null);
   const [quickCreateType, setQuickCreateType] = useState<'ad' | 'landing' | 'campaign' | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [autoOpenFullScreen, setAutoOpenFullScreen] = useState(false);
@@ -151,6 +153,11 @@ export default function MarketingDashboard() {
   };
 
   const handleManualBuild = (selections: BuildSelections) => {
+    if (selections.outputType === 'landing' || selections.outputType === 'website') {
+      setPreviewSelections(selections);
+      setViewMode('landing-preview');
+      return;
+    }
     setLandingPagePrefill({
       topKeyword: selections.keywords[0] || 'long distance moving company',
       topLocation: selections.locations[0] || 'California',
@@ -162,12 +169,7 @@ export default function MarketingDashboard() {
     });
     setAutoOpenFullScreen(true);
     setViewMode('detail');
-    // Route based on output type
-    if (selections.outputType === 'ad') {
-      setActiveTab('ads');
-    } else {
-      setActiveTab('landing');
-    }
+    setActiveTab('ads');
   };
 
   return (
@@ -182,7 +184,7 @@ export default function MarketingDashboard() {
               </Button>
             )}
             <h1 className="text-xl font-bold text-foreground">
-              {viewMode === 'hub' ? 'AI Marketing Suite' : viewMode === 'trudy-chat' ? 'Ask Trudy' : viewMode === 'quickcreate' ? 'Quick Create' : viewMode === 'manual-build' ? 'Build Manual' : viewMode === 'auto-build' ? 'AI Auto-Build' : 'Marketing Tools'}
+              {viewMode === 'hub' ? 'AI Marketing Suite' : viewMode === 'trudy-chat' ? 'Ask Trudy' : viewMode === 'quickcreate' ? 'Quick Create' : viewMode === 'manual-build' ? 'Build Manual' : viewMode === 'auto-build' ? 'AI Auto-Build' : viewMode === 'landing-preview' ? 'Generated Landing Page' : 'Marketing Tools'}
             </h1>
           </div>
           <button
@@ -270,6 +272,14 @@ export default function MarketingDashboard() {
             mode="manual"
             onBuild={handleManualBuild}
             onCancel={() => setViewMode('hub')}
+          />
+        )}
+
+        {/* Landing Page Preview */}
+        {viewMode === 'landing-preview' && previewSelections && (
+          <DarkPremiumLandingPreview
+            selections={previewSelections}
+            onBack={() => setViewMode('manual-build')}
           />
         )}
 
