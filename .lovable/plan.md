@@ -1,93 +1,115 @@
 
 
-# Overhaul: Landing Page Builder Workflow
+# Dedicated Website + Ad Campaign Generator Views
 
-## Problems Identified
+## Overview
 
-1. **"Build Manual" still has 6 template options shown equally** -- no intelligence about which are good/bad
-2. **"Just Build It For Me" goes to a separate page with 3 cards** -- but clicking any card triggers a loading screen then dumps you into the same template picker/editor with no actual preview of what was selected
-3. **The generator flow has redundant steps** -- template picker, then "Generate" button, then loading steps, then finally the preview. Too many "build" buttons
-4. **Generated pages are decent but could be much better** -- the HTML template content (inline styles) is basic; the React-rendered templates (quote-funnel, comparison, etc.) are good but the flow to reach them is confusing
-5. **Pixel.ai reference**: Clean flow -- describe what you want, it builds in real-time, you see the result and can edit. One action, one result.
+When users select "Website" or "Ad Campaign" in Build Manual and click Generate, they currently get routed to existing tabs. This plan adds two dedicated generator views that render in-place with polished previews, template pickers, and dynamic data binding.
 
-## New Workflow Design
+## New Components (4 files)
 
-### Hub: 4 options stay but behavior changes
+### 1. GeneratorPickerCard.tsx
+An intermediate "Choose a Generator" card shown after clicking Generate for Website or Ad Campaign output types.
 
-**"Just Build It For Me" (Auto-Build)**
-- Shows 3 AI-recommended variations (keep existing cards)
-- But instead of a loading screen that then redirects elsewhere, clicking "Build This" immediately generates and opens the **full-screen preview** of that template with the editor sidebar available
-- One click = one result. No intermediate pages.
+- Header: "Choose a Generator" with subtitle "Preview-only generators, no live publishing yet."
+- Two tiles depending on output type:
+  - Website/Landing: "Website + Landing Preview Builder" tile with "Open Preview Builder" button
+  - Ad Campaign: "Ad Campaign Builder" tile with "Open Ad Builder" button
+- Clicking the button transitions to the corresponding dedicated view
 
-**"Build Manual"**
-- Shows templates with **smart filtering**: good options shown prominently, weaker options collapsed in an accordion ("More templates")
-- Templates ranked by predicted conversion rate from analytics data
-- Clicking a template **immediately generates and opens full-screen preview** -- no separate "Generate" button step
-- Remove the "Generate Landing Page" button entirely; selecting a template IS the trigger
+### 2. WebsitePreviewBuilder.tsx
+Full preview environment for Website/Landing Page generation.
 
-### Simplified Generation Flow
+**Template Style Picker** -- 5 selectable pills:
+
+| Style | Inspiration | Background | Accent |
+|-------|------------|------------|--------|
+| Editorial Dark | Ubernatural | Pure black #000 | White/neutral |
+| Clean Split Light | Pixel.ai | White #fff | Teal #0d9488 |
+| Enterprise Dark Form | Ceros | Dark #0a0a0a | Blue-gray |
+| Promo Dark Gradient | Madgicx | Navy-purple gradient | Purple #a855f7 |
+| Corporate Light Video | GoHighLevel | Light #f8fafc | Blue #3b82f6 |
+
+**Controls:**
+- Light/Dark toggle (affects ONLY the preview canvas, not app UI)
+- Landing Page / Website toggle
+- When "Website" is selected, tabs appear: Home, Services, Reviews, Quote Form (swap preview sections, no real routing)
+
+**Preview Canvas:**
+- Uses existing ScaledPreview component for 1440px responsive rendering
+- Shared section structure across all templates: Hero, Social Proof Strip, Benefits, Testimonials, CTA, Footer
+- Each template varies only in typography, spacing density, accent colors, and layout pattern
+- All accent colors scoped strictly inside the preview canvas
+
+### 3. AdCampaignBuilder.tsx
+Ad copy generator with platform selection and matching landing preview.
+
+**Platform Multi-Select** (display only, no backend):
+Facebook Feed, Facebook Reels, Instagram Feed, Instagram Stories, Instagram Reels, TikTok, YouTube Shorts, Google Search, Google Performance Max, Google Display, Microsoft Ads, LinkedIn, X, Pinterest
+
+**"Generate Copy Preview" button** produces mock ad copy sections:
+- Platform-grouped cards showing headlines, descriptions, and CTA text
+- Populated with user's selected keywords, locations, audience
+
+**"Match Landing Style" dropdown:**
+- Selects one of the 5 template styles
+- Renders the same preview canvas from WebsitePreviewBuilder beneath the ad copy
+
+### 4. Template preview sub-components (inside WebsitePreviewBuilder)
+Each of the 5 templates rendered as a self-contained section within the preview canvas. All follow the same structure (Hero > Social Proof > Benefits > Testimonials > CTA > Footer) but with different visual treatments.
+
+## Modified Files
+
+### MarketingDashboard.tsx
+- Add two new view modes to the union type: `'generator-picker'` and `'website-builder'` and `'ad-builder'`
+- Store the BuildSelections in state when transitioning from manual build
+- Update `handleManualBuild`:
+  - If outputType is `'website'` or `'ad'`: set viewMode to `'generator-picker'` (instead of routing to existing tabs)
+  - If outputType is `'landing'`: keep current behavior (goes to AILandingPageGenerator)
+- Add render blocks for the new view modes
+- Update the page title in the top bar for each new view mode
+
+## Data Binding
+
+User's BuildSelections (keywords, locations, demographics) populate:
+- **Headline**: First keyword + first location (e.g., "Expert Long Distance Moving in Los Angeles")
+- **Subheadline**: Derived from audience segment
+- **3 benefit bullets**: Generated from keywords list
+- **2 testimonials**: Using location names for authenticity
+- **CTA button label**: Based on output type context
+- Missing inputs get sensible defaults clearly marked as placeholder text
+
+## Flow Diagram
 
 ```text
-Current: Hub -> Pick template -> Click Generate -> Watch 5 loading steps -> See inline preview -> Click "View Full Screen"
-New:     Hub -> Pick template -> Brief loading overlay (2s) -> Full-screen preview with editor
+Build Manual -> Select data -> Pick Output Type -> Click Generate
+  |
+  +--> Landing Page: existing flow (AILandingPageGenerator) -- UNCHANGED
+  |
+  +--> Website: GeneratorPickerCard -> "Open Preview Builder" -> WebsitePreviewBuilder
+  |                                                              (5 templates, light/dark toggle,
+  |                                                               Home/Services/Reviews/Quote tabs)
+  |
+  +--> Ad Campaign: GeneratorPickerCard -> "Open Ad Builder" -> AdCampaignBuilder
+                                                                (platform list, copy preview,
+                                                                 matching landing style dropdown)
 ```
 
-### Better Generated Landing Pages
+## Brand Safety
 
-- Upgrade the 3 best templates (quote-funnel, calculator, local-seo) with more polished content:
-  - Gradient mesh backgrounds instead of flat gradients
-  - Better typography hierarchy (tracking, line-height tuning)
-  - Animated stat counters and micro-interactions
-  - More realistic copy and social proof
-  - Proper responsive sections within the React templates
+- Template accent colors (teal, purple, blue, etc.) exist ONLY inside preview canvas components
+- The surrounding app UI (cards, buttons, nav, top bar) keeps all existing brand tokens unchanged
+- Light/dark toggle changes only the preview canvas background and text, not the app theme
+- No existing pages, tabs, or navigation are redesigned or restyled
 
-### Smart Template Filtering
+## Acceptance Checklist
 
-- Templates with conversion rate above 10% shown as "Recommended" cards at top
-- Templates below 10% collapsed in an accordion: "Show more templates"
-- Each card shows a mini performance indicator (green/yellow/red dot)
-
-## Technical Changes
-
-### 1. `AILandingPageGenerator.tsx` (major refactor)
-- Remove the initial view with template grid + separate "Generate" button
-- New initial view: **Smart template grid** with recommended vs collapsed sections
-- Clicking any template triggers generation and goes directly to full-screen preview (`isPopoutOpen = true`)
-- Remove the inline preview entirely (the `showLandingPage && !isPopoutOpen` path) -- always go full-screen
-- Move generation loading into an overlay within the full-screen view
-- Improve template content: better gradients, typography, spacing, realistic stats
-
-### 2. `AutoBuildPage.tsx` (simplify)
-- When user clicks "Build This" on a variation, show a brief loading overlay then open the full-screen preview directly (call back to parent with template ID)
-- Parent (`MarketingDashboard`) sets the template and immediately opens the generator in full-screen mode
-
-### 3. `MarketingDashboard.tsx` (wire up)
-- Add state to support opening generator directly in full-screen mode
-- Auto-build flow: set template + open full-screen in one action
-- Manual flow: pass through to generator which handles its own full-screen open
-
-### 4. Template Content Improvements
-- Upgrade `renderQuoteFunnelPage()` with:
-  - Gradient mesh hero background with subtle noise texture
-  - Floating testimonial badges
-  - Animated trust counter section
-  - Better form styling with focus states
-- Upgrade `renderCalculatorPage()` with:
-  - Side-by-side layout that works on mobile (stack vertically)
-  - Animated result reveal
-  - Better visual hierarchy
-- Upgrade `renderLocalSeoPage()` with:
-  - Map-style hero background
-  - Local review integration mockup
-  - City grid with population/service stats
-
-## Summary of UX Improvements
-
-| Before | After |
-|--------|-------|
-| 6 templates shown equally | Smart filtering: top 3 recommended, rest in accordion |
-| Template select then Generate button then loading then inline preview then full-screen button | Template select triggers generation, opens full-screen directly |
-| Auto-build shows 3 cards then loading screen then redirects | Auto-build: pick variation, brief overlay, full-screen preview |
-| Multiple "Build" buttons in sequence | One action = one result |
-| Basic template designs | Polished templates with better gradients, typography, animations |
+- Selecting Website output type shows GeneratorPickerCard instead of routing to existing tabs
+- Selecting Ad Campaign output type shows GeneratorPickerCard instead of routing to existing tabs
+- Clicking "Open Preview Builder" renders Template Picker, Light/Dark toggle, Preview Canvas with 5 styles
+- Clicking "Open Ad Builder" renders platform list, copy preview output, and matching landing style preview
+- App brand colors remain unchanged outside preview canvas
+- No overlapping elements, no broken spacing
+- Website preview shows Home/Services/Reviews/Quote Form tab switching
+- All 5 template styles render with distinct visual treatments but consistent structure
 
