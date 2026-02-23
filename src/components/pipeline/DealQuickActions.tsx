@@ -92,6 +92,76 @@ const HTML_TEMPLATES: Record<string, { label: string; getHtml: (name: string, co
         </div>
       </body></html>`,
   },
+  move_day_reminder: {
+    label: "Move Day Reminder",
+    getHtml: (name) => `
+      <!DOCTYPE html><html><body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;margin:0;padding:0;background:#fffbeb;">
+        <div style="max-width:600px;margin:0 auto;padding:40px 20px;">
+          <div style="background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.06);border:1px solid #fde68a;">
+            <div style="background:linear-gradient(135deg,#f59e0b 0%,#d97706 100%);padding:32px;text-align:center;">
+              <div style="font-size:48px;margin-bottom:8px;">📦</div>
+              <h1 style="color:#fff;margin:0;font-size:24px;">Move Day is Almost Here!</h1>
+              <p style="color:rgba(255,255,255,0.85);margin:8px 0 0;font-size:14px;">Here's everything you need to know</p>
+            </div>
+            <div style="padding:32px;">
+              <p style="color:#18181b;font-size:15px;">Hi ${name},</p>
+              <p style="color:#3f3f46;line-height:1.7;">Your move is right around the corner! We want to make sure you're fully prepared for a smooth, stress-free experience.</p>
+              <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:12px;padding:20px;margin:20px 0;">
+                <p style="color:#92400e;font-weight:700;margin:0 0 12px;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;">Quick Checklist</p>
+                <p style="color:#3f3f46;margin:0;line-height:2;font-size:14px;">
+                  ☐ Confirm all boxes are labeled by room<br/>
+                  ☐ Set aside essentials bag (meds, chargers, docs)<br/>
+                  ☐ Clear walkways and doorways for the crew<br/>
+                  ☐ Disconnect & defrost large appliances<br/>
+                  ☐ Reserve parking / elevator if applicable
+                </p>
+              </div>
+              <div style="background:#fef3c7;border-radius:10px;padding:16px;margin:16px 0;text-align:center;">
+                <p style="color:#92400e;font-size:13px;margin:0 0 4px;">🕐 Our crew will arrive between</p>
+                <p style="color:#78350f;font-size:22px;font-weight:800;margin:0;">8:00 AM – 10:00 AM</p>
+                <p style="color:#a16207;font-size:12px;margin:4px 0 0;">We'll call 30 minutes before arrival</p>
+              </div>
+              <p style="color:#3f3f46;line-height:1.7;font-size:14px;">Need to make last-minute changes? Reply to this email or call us — we've got you covered.</p>
+              <p style="color:#71717a;font-size:13px;margin-top:20px;">See you soon!<br/><strong style="color:#18181b;">— The TruMove Crew</strong></p>
+            </div>
+          </div>
+          <p style="text-align:center;color:#a1a1aa;font-size:11px;margin-top:16px;">© ${new Date().getFullYear()} TruMove</p>
+        </div>
+      </body></html>`,
+  },
+  thank_you_review: {
+    label: "Thank You / Review",
+    getHtml: (name) => `
+      <!DOCTYPE html><html><body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;margin:0;padding:0;background:#faf5ff;">
+        <div style="max-width:600px;margin:0 auto;padding:40px 20px;">
+          <div style="background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.06);border:1px solid #e9d5ff;">
+            <div style="background:linear-gradient(135deg,#9333ea 0%,#7c3aed 50%,#6d28d9 100%);padding:40px 32px;text-align:center;">
+              <div style="font-size:48px;margin-bottom:8px;">🌟</div>
+              <h1 style="color:#fff;margin:0;font-size:24px;">Thank You, ${name}!</h1>
+              <p style="color:rgba(255,255,255,0.8);margin:8px 0 0;font-size:14px;">It was a pleasure moving you</p>
+            </div>
+            <div style="padding:32px;">
+              <p style="color:#18181b;font-size:15px;">Hi ${name},</p>
+              <p style="color:#3f3f46;line-height:1.7;">We hope you're settling into your new space! It was an absolute pleasure helping with your move, and we truly appreciate your trust in TruMove.</p>
+              <div style="background:linear-gradient(135deg,#faf5ff,#f3e8ff);border:1px solid #e9d5ff;border-radius:12px;padding:24px;margin:24px 0;text-align:center;">
+                <p style="color:#6b21a8;font-weight:700;margin:0 0 8px;font-size:14px;">How did we do?</p>
+                <p style="color:#7c3aed;font-size:36px;margin:0;letter-spacing:6px;">⭐⭐⭐⭐⭐</p>
+                <p style="color:#6b21a8;font-size:13px;margin:8px 0 0;">Your feedback helps us serve others better</p>
+              </div>
+              <div style="text-align:center;margin:24px 0;">
+                <a href="#" style="display:inline-block;background:linear-gradient(135deg,#9333ea,#7c3aed);color:#fff;padding:14px 36px;border-radius:10px;text-decoration:none;font-weight:700;font-size:15px;box-shadow:0 4px 14px rgba(124,58,237,0.4);">Leave a Google Review</a>
+              </div>
+              <div style="border-top:1px solid #f3e8ff;padding-top:20px;margin-top:20px;">
+                <p style="color:#7c3aed;font-weight:600;font-size:13px;margin:0 0 8px;">🎁 Refer a Friend, Get Rewarded</p>
+                <p style="color:#3f3f46;font-size:13px;line-height:1.7;margin:0;">Know someone planning a move? Refer them to TruMove and you'll <strong>both</strong> receive a special discount on your next service.</p>
+              </div>
+              <p style="color:#71717a;font-size:13px;margin-top:20px;">With gratitude,<br/><strong style="color:#18181b;">— The TruMove Family</strong></p>
+            </div>
+          </div>
+          <p style="text-align:center;color:#a1a1aa;font-size:11px;margin-top:16px;">© ${new Date().getFullYear()} TruMove · <a href="#" style="color:#7C3AED;">Unsubscribe</a></p>
+        </div>
+      </body></html>`,
+  },
 };
 
 interface DealQuickActionsProps {
@@ -123,7 +193,9 @@ export function DealQuickActions({ deal, activities, onActivityAdded }: DealQuic
       const subject =
         selectedTemplate === "follow_up" ? `Following up on your move — ${customerName}` :
         selectedTemplate === "quote_ready" ? `Your moving quote is ready, ${lead?.first_name}!` :
-        `Move confirmed! Here's what's next, ${lead?.first_name}`;
+        selectedTemplate === "booking_confirm" ? `Move confirmed! Here's what's next, ${lead?.first_name}` :
+        selectedTemplate === "move_day_reminder" ? `Move day is almost here, ${lead?.first_name}! 📦` :
+        `Thank you, ${lead?.first_name}! We'd love your feedback 🌟`;
 
       const { error } = await supabase.functions.invoke("send-deal-email", {
         body: { to: customerEmail, subject, htmlBody, customerName },
