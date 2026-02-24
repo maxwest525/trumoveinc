@@ -212,32 +212,41 @@ export default function ElevenLabsTrudyWidget() {
         {!isConnected && !isConnecting && (
           <button
             onClick={toggleOptions}
-            className={`flex items-center justify-center w-9 h-9 rounded-lg border border-border/60 bg-card/80 backdrop-blur-sm shadow-sm hover:bg-accent transition-all duration-200 ${showOptions && !optionsClosing ? 'rotate-180' : ''}`}
+            className={`flex items-center justify-center w-10 h-10 rounded-lg border border-border/60 bg-card/80 backdrop-blur-sm shadow-sm hover:bg-accent transition-all duration-200 ${showOptions && !optionsClosing ? 'rotate-180' : ''}`}
             aria-label="More options"
           >
-            <ChevronUp className="h-3.5 w-3.5 text-muted-foreground rotate-180" />
+            <ChevronUp className="h-4 w-4 text-muted-foreground rotate-180" />
           </button>
         )}
-        <button
-          onClick={isConnected ? stopConversation : startConversation}
-          disabled={isConnecting}
-          className={`flex items-center gap-2 rounded-lg shadow-sm transition-all duration-150 active:scale-[0.97] ${
-            isConnected
-              ? 'bg-destructive text-destructive-foreground px-4 py-2.5'
-              : isConnecting
-              ? 'bg-muted text-muted-foreground px-4 py-2.5'
-              : 'bg-foreground text-background px-4 py-2.5 hover:bg-foreground/90'
-          }`}
-          aria-label={isConnected ? 'End call' : 'Talk to Trudy'}
-        >
-          {isConnecting ? (
-            <><Loader2 className="h-4 w-4 animate-spin" /><span className="text-xs font-medium tracking-tight">Connecting…</span></>
-          ) : isConnected ? (
-            <><PhoneOff className="h-4 w-4" /><span className="text-xs font-medium tracking-tight">End Call</span></>
-          ) : (
-            <><Mic className="h-4 w-4" /><span className="text-xs font-medium tracking-tight">Talk to Trudy</span></>
+        <div className="group relative">
+          <button
+            onClick={isConnected ? stopConversation : startConversation}
+            disabled={isConnecting}
+            className={`flex items-center gap-2.5 rounded-xl shadow-md transition-all duration-150 active:scale-[0.97] ${
+              isConnected
+                ? 'bg-destructive text-destructive-foreground px-5 py-3'
+                : isConnecting
+                ? 'bg-muted text-muted-foreground px-5 py-3'
+                : 'bg-foreground text-background px-5 py-3 hover:bg-foreground/90'
+            }`}
+            aria-label={isConnected ? 'End call' : 'Talk to Trudy'}
+          >
+            {isConnecting ? (
+              <><Loader2 className="h-[18px] w-[18px] animate-spin" /><span className="text-[13px] font-medium tracking-tight">Connecting…</span></>
+            ) : isConnected ? (
+              <><PhoneOff className="h-[18px] w-[18px]" /><span className="text-[13px] font-medium tracking-tight">End Call</span></>
+            ) : (
+              <><Mic className="h-[18px] w-[18px]" /><span className="text-[13px] font-medium tracking-tight">Talk to Trudy</span></>
+            )}
+          </button>
+          {/* Hover tooltip */}
+          {!isConnected && !isConnecting && (
+            <div className="absolute bottom-full right-0 mb-2 w-48 rounded-lg border border-border/60 bg-card/90 backdrop-blur-sm shadow-md px-3 py-2 opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-200">
+              <p className="text-[11px] font-medium text-foreground leading-tight">AI Voice Assistant</p>
+              <p className="text-[10px] text-muted-foreground leading-snug mt-0.5">Instant quotes, tracking, scheduling — powered by voice AI.</p>
+            </div>
           )}
-        </button>
+        </div>
       </div>
 
       {/* Dropdown below */}
