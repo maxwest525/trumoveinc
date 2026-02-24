@@ -335,20 +335,6 @@ export default function ScanRoom() {
               Simply scan your rooms and our AI will identify, measure, and catalog every item automatically.
             </p>
             
-            <div className="tru-scan-header-buttons">
-              <button
-                onClick={handleStartScanClick}
-                disabled={isScanning}
-                className="tru-scan-btn-dark"
-              >
-                <Sparkles className="w-4 h-4" />
-                Start Scanning
-              </button>
-              <Link to="/online-estimate" className="tru-scan-btn-outline">
-                Try Manual Builder
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-            </div>
           </div>
         </section>
 
@@ -561,17 +547,14 @@ export default function ScanRoom() {
                     ))
                   )}
                 </div>
-                {uploadedPhotos.length > 0 && (
-                  <button
-                    onClick={() => {
-                      handleStartScanClick();
-                    }}
-                    className="tru-scan-library-analyze-btn tru-scan-library-analyze-btn-compact"
-                  >
-                    <Sparkles className="w-3.5 h-3.5" />
-                    Analyze ({uploadedPhotos.length})
-                  </button>
-                )}
+                <button
+                  onClick={() => handleStartScanClick()}
+                  disabled={isScanning}
+                  className="tru-scan-library-analyze-btn tru-scan-library-analyze-btn-compact"
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                  {isScanning ? "Scanning..." : "Start Scanning"}
+                </button>
               </div>
             </div>
 
