@@ -74,7 +74,7 @@ export default function AgentNewCustomer() {
             <div className="space-y-1.5"><Label className="text-xs">Email</Label><Input type="email" value={form.email} onChange={e => updateField("email", e.target.value)} placeholder="john@email.com" /></div>
             <div className="space-y-1.5"><Label className="text-xs">Phone</Label><Input value={form.phone} onChange={e => updateField("phone", e.target.value)} placeholder="(555) 123-4567" /></div>
           </div>
-          <div className="grid grid-cols-4 gap-3">
+          <div className="grid grid-cols-6 gap-3">
             <div className="space-y-1.5">
               <Label className="text-xs">Lead Source</Label>
               <Select value={form.source} onValueChange={v => updateField("source", v)}>
@@ -89,8 +89,8 @@ export default function AgentNewCustomer() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-1.5"><Label className="text-xs">Origin Address</Label><Input value={form.originAddress} onChange={e => updateField("originAddress", e.target.value)} placeholder="123 Main St, City, ST" /></div>
-            <div className="space-y-1.5"><Label className="text-xs">Destination Address</Label><Input value={form.destinationAddress} onChange={e => updateField("destinationAddress", e.target.value)} placeholder="456 Oak Ave, City, ST" /></div>
+            <div className="col-span-2 space-y-1.5"><Label className="text-xs">Origin Address</Label><Input value={form.originAddress} onChange={e => updateField("originAddress", e.target.value)} placeholder="123 Main St, City, ST" /></div>
+            <div className="col-span-2 space-y-1.5"><Label className="text-xs">Destination Address</Label><Input value={form.destinationAddress} onChange={e => updateField("destinationAddress", e.target.value)} placeholder="456 Oak Ave, City, ST" /></div>
             <div className="space-y-1.5"><Label className="text-xs">Move Date</Label><Input type="date" value={form.moveDate} onChange={e => updateField("moveDate", e.target.value)} /></div>
           </div>
           <div className="space-y-1.5"><Label className="text-xs">Notes</Label><Textarea value={form.notes} onChange={e => updateField("notes", e.target.value)} placeholder="Any additional notes..." rows={2} /></div>
