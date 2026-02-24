@@ -43,7 +43,8 @@ import {
   Smartphone, Box, Clock, Shield, Zap, ChevronRight,
   Ruler, Package, Printer, Download, Square, Trash2, ArrowRightLeft,
   Phone, Video, Minus, Plus, X, Upload, ImageIcon, FolderOpen, Lock, User, Mail,
-  Sofa, BedDouble, UtensilsCrossed, Bath, Warehouse, Check, Pause, Play
+  Sofa, BedDouble, UtensilsCrossed, Bath, Warehouse, Check, Pause, Play,
+  Camera, Layers, Info
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -487,10 +488,25 @@ export default function ScanRoom() {
                     <span className="tru-scan-upload-formats">JPG, PNG, HEIC, MP4, MOV</span>
                   </label>
                 </div>
-                <div className="tru-scan-upload-tips">
-                  <p>Capture entire rooms</p>
-                  <p>Good lighting helps</p>
-                  <p>Multiple angles work best</p>
+                <div className="tru-scan-upload-tips mt-4 space-y-3">
+                  <div className="flex items-center gap-2 text-[10px] text-muted-foreground uppercase tracking-wide font-medium">
+                    <Info className="w-3 h-3" />
+                    <span>Quick Tips</span>
+                  </div>
+                  <div className="space-y-2 pl-1">
+                    <div className="flex items-center gap-2.5 text-xs text-muted-foreground/90">
+                      <Camera className="w-3.5 h-3.5 text-primary/70 shrink-0" />
+                      <span>Capture entire rooms</span>
+                    </div>
+                    <div className="flex items-center gap-2.5 text-xs text-muted-foreground/90">
+                      <Zap className="w-3.5 h-3.5 text-primary/70 shrink-0" />
+                      <span>Good lighting helps</span>
+                    </div>
+                    <div className="flex items-center gap-2.5 text-xs text-muted-foreground/90">
+                      <Layers className="w-3.5 h-3.5 text-primary/70 shrink-0" />
+                      <span>Multiple angles work best</span>
+                    </div>
+                  </div>
                 </div>
               </div>
 
