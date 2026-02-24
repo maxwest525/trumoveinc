@@ -292,7 +292,7 @@ export default function CustomerService() {
         {/* ─── HERO ─── */}
         <section className="text-center pt-6 pb-2 px-4">
           <div className="mx-auto max-w-3xl">
-            <h1 className="text-3xl font-black tracking-tight text-foreground leading-none">Trudy</h1>
+            <h1 className="text-3xl font-black tracking-tight text-foreground leading-none">Meet Trudy</h1>
             <p className="text-muted-foreground text-xs mt-1 mb-3 max-w-sm mx-auto leading-relaxed">
               AI move coordinator — instant quotes, tracking, scheduling & support by voice.
             </p>
