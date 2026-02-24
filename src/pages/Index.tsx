@@ -1412,11 +1412,8 @@ export default function Index() {
                   
                   <div className="tru-qb-form-header tru-qb-form-header-pill">
                     <div className="tru-qb-form-title-group animate-fade-scale-in opacity-0">
-                      <span className="tru-qb-form-title tru-qb-form-title-large" style={{ animationDelay: '0.1s' }}>
-                        AI-powered <span className="tru-qb-title-accent">Moving</span>
-                      </span>
-                      <span className="tru-qb-form-subtitle-compact" style={{ animationDelay: '0.25s' }}>
-                        FMCSA-vetted carriers, AI precision
+                      <span className="tru-qb-form-subtitle-compact" style={{ animationDelay: '0.1s' }}>
+                        FMCSA-VETTED CARRIERS, AI PRECISION
                       </span>
                     </div>
                   </div>
