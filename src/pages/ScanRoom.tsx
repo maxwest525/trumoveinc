@@ -405,23 +405,23 @@ export default function ScanRoom() {
         />
 
         {/* How It Works - Compact Inline Steps with scroll animation */}
-        <section className="container max-w-3xl mx-auto px-4 py-5">
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-2 sm:gap-0">
+        <section className="container max-w-4xl mx-auto px-4 py-6">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-0">
             {[
               { num: "1", title: "Upload Photos or Videos", desc: "Capture each room showing all furniture and items" },
               { num: "2", title: "AI Detects & Measures", desc: "Our AI identifies items and calculates weight & volume" },
               { num: "3", title: "Review & Get Quote", desc: "Verify your inventory and receive an instant estimate" },
             ].map((step, i) => (
               <ScrollFadeIn key={step.num} delay={i * 0.15}>
-                <div className="flex items-center gap-2.5 px-4 py-2.5">
-                  <span className="w-6 h-6 rounded-full bg-foreground text-background flex items-center justify-center text-[10px] font-bold flex-shrink-0">
+                <div className="flex items-center gap-3 px-5 py-3">
+                  <span className="w-8 h-8 rounded-full bg-foreground text-background flex items-center justify-center text-xs font-bold flex-shrink-0">
                     {step.num}
                   </span>
                   <div className="flex flex-col">
-                    <span className="text-xs font-semibold text-foreground leading-tight">{step.title}</span>
-                    <span className="text-[10px] text-muted-foreground/60 leading-tight">{step.desc}</span>
+                    <span className="text-sm font-semibold text-foreground leading-tight">{step.title}</span>
+                    <span className="text-xs text-muted-foreground/60 leading-tight">{step.desc}</span>
                   </div>
-                  {i < 2 && <span className="hidden sm:block text-muted-foreground/30 ml-3 mr-1">→</span>}
+                  {i < 2 && <span className="hidden sm:block text-muted-foreground/30 ml-4 mr-1">→</span>}
                 </div>
               </ScrollFadeIn>
             ))}
