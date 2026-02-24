@@ -13422,18 +13422,20 @@
   color: hsl(var(--foreground) / 0.7);
 }
 
-/* Hover: white bg with dark outline */
+/* Hover: white bg with grey outline + drop shadow */
 .header-nav-link:hover {
   color: hsl(var(--foreground));
   background: hsl(var(--background));
-  border-color: hsl(var(--foreground));
+  border-color: hsl(var(--foreground) / 0.2);
+  box-shadow: 0 2px 8px hsl(var(--foreground) / 0.08);
   transform: none;
 }
 
 .dark .header-nav-link:hover {
   color: hsl(var(--foreground));
-  background: hsl(var(--background));
-  border-color: hsl(var(--foreground));
+  background: hsl(var(--background) / 0.08);
+  border-color: hsl(var(--foreground) / 0.2);
+  box-shadow: 0 2px 8px hsl(0 0% 0% / 0.25);
   transform: none;
 }
 
