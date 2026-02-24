@@ -395,11 +395,11 @@ export default function CustomerService() {
               <h2 className="text-sm font-bold text-foreground tracking-tight uppercase tracking-wider">What Trudy Handles</h2>
               <p className="text-[11px] text-muted-foreground mt-0.5">One AI assistant for your entire move</p>
             </div>
-            <div className="tru-hero-value-cards-open grid gap-1.5 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="tru-hero-value-cards-open grid gap-2 sm:grid-cols-2 lg:grid-cols-4 items-start">
               {capabilities.map((cap, i) => (
                 <div
                   key={cap.label}
-                  className="tru-value-card-open group relative rounded-lg border border-border bg-card p-3 hover:border-foreground/20 transition-colors cursor-default"
+                  className="tru-value-card-open group relative rounded-xl border border-border bg-card p-3.5 shadow-[0_2px_8px_-2px_hsl(var(--tm-ink)/0.08),0_4px_16px_-4px_hsl(var(--tm-ink)/0.06)] hover:shadow-[0_4px_12px_-2px_hsl(var(--tm-ink)/0.12),0_8px_24px_-4px_hsl(var(--tm-ink)/0.08)] hover:border-foreground/20 transition-all cursor-default"
                   style={{ animationDelay: `${0.5 + i * 0.08}s` }}
                 >
                   {cap.tag && (
@@ -407,7 +407,7 @@ export default function CustomerService() {
                       {cap.tag}
                     </span>
                   )}
-                  <cap.icon className="w-4 h-4 text-muted-foreground mb-2.5 group-hover:text-foreground transition-colors" />
+                  <cap.icon className="w-4 h-4 text-muted-foreground mb-2 group-hover:text-foreground transition-colors" />
                   <h3 className="text-xs font-semibold text-foreground">{cap.label}</h3>
                   <p className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">{cap.desc}</p>
                 </div>
