@@ -383,11 +383,12 @@ export default function CustomerService() {
               <h2 className="text-lg font-bold text-foreground tracking-tight">What Trudy Handles</h2>
               <p className="text-xs text-muted-foreground mt-1">One AI assistant for your entire move</p>
             </div>
-            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
-              {capabilities.map((cap) => (
+            <div className="tru-hero-value-cards-open grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+              {capabilities.map((cap, i) => (
                 <div
                   key={cap.label}
-                  className="group relative rounded-xl border border-border bg-card p-4 hover:border-foreground/20 transition-colors cursor-default"
+                  className="tru-value-card-open group relative rounded-xl border border-border bg-card p-4 hover:border-foreground/20 transition-colors cursor-default"
+                  style={{ animationDelay: `${0.5 + i * 0.08}s` }}
                 >
                   {cap.tag && (
                     <span className="absolute top-2.5 right-2.5 text-[9px] font-bold uppercase tracking-wider text-foreground bg-muted px-1.5 py-0.5 rounded">
