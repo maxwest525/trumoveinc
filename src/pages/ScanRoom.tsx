@@ -15,7 +15,8 @@ import {
   Scan, Sparkles, ArrowRight, 
   Smartphone, Box, Clock, Shield, Zap, ChevronRight,
   Ruler, Package, Printer, Download, Square, Trash2, ArrowRightLeft,
-  Phone, Video, Minus, Plus, X, Upload, ImageIcon, FolderOpen, Lock, User, Mail
+  Phone, Video, Minus, Plus, X, Upload, ImageIcon, FolderOpen, Lock, User, Mail,
+  Sofa, BedDouble, UtensilsCrossed, Bath, Warehouse
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -489,17 +490,24 @@ export default function ScanRoom() {
                 </div>
                 <div className="tru-scan-library-grid tru-scan-library-grid-compact">
                   {uploadedPhotos.length === 0 ? (
-                    <div className="tru-scan-library-empty tru-scan-library-empty-compact flex flex-col gap-2">
-                      <ImageIcon className="w-6 h-6 text-muted-foreground/50" />
-                      <p className="text-sm font-medium text-muted-foreground">No media yet</p>
-                      <div className="flex flex-col gap-0.5 text-[11px] text-muted-foreground/60">
-                        <span>🛋️ Living Room</span>
-                        <span>🛏️ Bedrooms</span>
-                        <span>🍳 Kitchen</span>
-                        <span>🚿 Bathrooms</span>
-                        <span>🏠 Garage / Storage</span>
+                    <div className="tru-scan-library-empty tru-scan-library-empty-compact flex flex-col items-center gap-3 py-4">
+                      <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/70">Suggested Rooms</p>
+                      <div className="grid grid-cols-2 gap-2 w-full px-2">
+                        {[
+                          { icon: Sofa, label: "Living Room" },
+                          { icon: BedDouble, label: "Bedroom" },
+                          { icon: UtensilsCrossed, label: "Kitchen" },
+                          { icon: Bath, label: "Bathroom" },
+                          { icon: Warehouse, label: "Garage" },
+                          { icon: Box, label: "Storage" },
+                        ].map(({ icon: Icon, label }) => (
+                          <div key={label} className="flex items-center gap-1.5 rounded-lg border border-border bg-muted/30 px-2.5 py-2 text-[11px] text-muted-foreground/70">
+                            <Icon className="w-3.5 h-3.5 flex-shrink-0" />
+                            <span>{label}</span>
+                          </div>
+                        ))}
                       </div>
-                      <p className="text-[10px] text-muted-foreground/40 mt-1">Photos or videos accepted</p>
+                      <p className="text-[10px] text-muted-foreground/40 flex items-center gap-1"><Video className="w-3 h-3" /> Photos or videos accepted</p>
                     </div>
                   ) : (
                     uploadedPhotos.map(photo => (
