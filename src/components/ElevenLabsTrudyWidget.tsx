@@ -215,7 +215,7 @@ export default function ElevenLabsTrudyWidget() {
             className={`flex items-center justify-center w-10 h-10 rounded-full border border-border bg-card shadow-md hover:bg-accent transition-all duration-200 ${showOptions && !optionsClosing ? 'rotate-180' : ''}`}
             aria-label="More options"
           >
-            <ChevronUp className="h-4 w-4 text-primary" />
+            <ChevronUp className="h-4 w-4 text-primary rotate-180" />
           </button>
         )}
         <button
