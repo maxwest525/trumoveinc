@@ -1413,7 +1413,7 @@ export default function Index() {
                   <div className="tru-qb-form-header tru-qb-form-header-pill">
                     <div className="tru-qb-form-title-group animate-fade-scale-in opacity-0">
                       <span className="tru-qb-form-title tru-qb-form-title-large" style={{ animationDelay: '0.1s' }}>
-                        Start Your Build
+                        Let's Get Moving
                       </span>
                       <span className="tru-qb-form-subtitle-compact" style={{ animationDelay: '0.25s' }}>
                         FMCSA-vetted carriers, AI precision
@@ -1427,7 +1427,7 @@ export default function Index() {
                     {/* Step 1: Route & Date */}
                     {step === 1 && (
                       <div className="tru-qb-step-content" key="step-1">
-                        <h1 className="tru-qb-question tru-qb-question-decorated">START YOUR BUILD</h1>
+                        
                         
                         {/* FROM + TO Row - Side by Side with Route Connector */}
                         <div className="tru-qb-location-row">
