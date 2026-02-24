@@ -1,4 +1,31 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, type ReactNode } from "react";
+
+function ScrollFadeIn({ children, delay = 0 }: { children: ReactNode; delay?: number }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) { setVisible(true); obs.disconnect(); }
+    }, { threshold: 0.2 });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+  return (
+    <div
+      ref={ref}
+      className="transition-all duration-500 ease-out"
+      style={{
+        opacity: visible ? 1 : 0,
+        transform: visible ? 'translateY(0)' : 'translateY(12px)',
+        transitionDelay: `${delay}s`,
+      }}
+    >
+      {children}
+    </div>
+  );
+}
 
 // Scroll to top on mount
 const useScrollToTop = () => {
@@ -348,7 +375,7 @@ export default function ScanRoom() {
           onStartScan={startDemo}
         />
 
-        {/* How It Works - Compact Inline Steps */}
+        {/* How It Works - Compact Inline Steps with scroll animation */}
         <section className="container max-w-3xl mx-auto px-4 py-5">
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-2 sm:gap-0">
             {[
@@ -356,20 +383,18 @@ export default function ScanRoom() {
               { num: "2", title: "AI Scans", desc: "Detects every item" },
               { num: "3", title: "Get Quote", desc: "Instant estimate" },
             ].map((step, i) => (
-              <div
-                key={step.num}
-                className="flex items-center gap-2.5 px-4 py-2.5 animate-fade-in opacity-0"
-                style={{ animationDelay: `${i * 0.15}s`, animationFillMode: 'forwards' }}
-              >
-                <span className="w-6 h-6 rounded-full bg-foreground text-background flex items-center justify-center text-[10px] font-bold flex-shrink-0">
-                  {step.num}
-                </span>
-                <div className="flex flex-col">
-                  <span className="text-xs font-semibold text-foreground leading-tight">{step.title}</span>
-                  <span className="text-[10px] text-muted-foreground/60 leading-tight">{step.desc}</span>
+              <ScrollFadeIn key={step.num} delay={i * 0.15}>
+                <div className="flex items-center gap-2.5 px-4 py-2.5">
+                  <span className="w-6 h-6 rounded-full bg-foreground text-background flex items-center justify-center text-[10px] font-bold flex-shrink-0">
+                    {step.num}
+                  </span>
+                  <div className="flex flex-col">
+                    <span className="text-xs font-semibold text-foreground leading-tight">{step.title}</span>
+                    <span className="text-[10px] text-muted-foreground/60 leading-tight">{step.desc}</span>
+                  </div>
+                  {i < 2 && <span className="hidden sm:block text-muted-foreground/30 ml-3 mr-1">→</span>}
                 </div>
-                {i < 2 && <span className="hidden sm:block text-muted-foreground/30 ml-3 mr-1">→</span>}
-              </div>
+              </ScrollFadeIn>
             ))}
           </div>
         </section>
