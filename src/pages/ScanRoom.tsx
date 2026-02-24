@@ -84,7 +84,7 @@ export default function ScanRoom() {
     { id: 'sample-3', url: sampleRoomKitchen, name: 'Kitchen' },
   ];
   
-  const [uploadedPhotos, setUploadedPhotos] = useState<{ id: string; url: string; name: string }[]>(samplePhotos);
+  const [uploadedPhotos, setUploadedPhotos] = useState<{ id: string; url: string; name: string }[]>([]);
 
   // Simulate live detection with slower speed for better demo experience
   useEffect(() => {
