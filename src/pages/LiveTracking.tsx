@@ -18,9 +18,9 @@ import { MultiStopSummaryCard } from "@/components/tracking/MultiStopSummaryCard
 import { RouteSetupModal } from "@/components/tracking/RouteSetupModal";
 import { useRealtimeETA } from "@/hooks/useRealtimeETA";
 import LocationAutocomplete from "@/components/LocationAutocomplete";
-import Header from "@/components/layout/Header";
+import SiteShell from "@/components/layout/SiteShell";
+import PageHeaderStrip from "@/components/layout/PageHeaderStrip";
 import Footer from "@/components/layout/Footer";
-import logoImg from "@/assets/logo.png";
 import { MAPBOX_TOKEN } from "@/lib/mapboxToken";
 import { getWebGLDiagnostics, type WebGLDiagnostics } from "@/lib/webglDiagnostics";
 import { Button } from "@/components/ui/button";
@@ -594,63 +594,24 @@ export default function LiveTracking() {
     }
   };
 
+  const trackingTrustItems = [
+    { icon: ShieldCheck, text: 'FMCSA VERIFIED' },
+    { icon: Truck, text: 'LIVE GPS' },
+    { icon: Cloud, text: 'REAL-TIME ETA' },
+    { icon: Headphones, text: '24/7 SUPPORT' },
+    { icon: Shield, text: 'INSURED CARGO' },
+  ];
+
   return (
-    <div className="live-tracking-page">
-      {/* Site Header */}
-      <Header />
-      
-      {/* Sticky Header Block - matches Connect With Us offset */}
-      <div className="sticky top-[102px] z-40">
-        <header className="tracking-header">
-        {/* Left - Logo & Title */}
-        <div className="flex items-center gap-3">
-          <img 
-            src={logoImg} 
-            alt="TruMove" 
-            className="h-6 brightness-0 invert"
-          />
-          <span className="text-[11px] font-bold tracking-[0.2em] uppercase text-white/90">
-            Shipment Command Center
-          </span>
-        </div>
-
-        {/* Center - Trust Indicators */}
-        <div className="tracking-header-trust">
-          <span className="tracking-header-trust-item">
-            <ShieldCheck className="w-3.5 h-3.5 text-primary" />
-            FMCSA VERIFIED
-          </span>
-          <span className="tracking-header-trust-dot">•</span>
-          <span className="tracking-header-trust-item">
-            <Truck className="w-3.5 h-3.5 text-primary" />
-            LIVE GPS
-          </span>
-          <span className="tracking-header-trust-dot">•</span>
-          <span className="tracking-header-trust-item">
-            <Cloud className="w-3.5 h-3.5 text-primary" />
-            REAL-TIME ETA
-          </span>
-          <span className="tracking-header-trust-dot">•</span>
-          <span className="tracking-header-trust-item">
-            <Headphones className="w-3.5 h-3.5 text-primary" />
-            24/7 SUPPORT
-          </span>
-          <span className="tracking-header-trust-dot">•</span>
-          <span className="tracking-header-trust-item">
-            <Shield className="w-3.5 h-3.5 text-primary" />
-            INSURED CARGO
-          </span>
-        </div>
-
-        {/* Right - Shipment ID */}
-        <div className="flex items-center gap-4">
-          <div className="text-right">
-            <div className="text-[11px] text-white/80 uppercase tracking-wider">Shipment ID</div>
-            <div className="text-sm font-mono text-white">{bookingInput ? `TM-${bookingInput}` : 'TM-2026-78331681'}</div>
-          </div>
-        </div>
-      </header>
-      </div>
+    <SiteShell hideTrustStrip stickySubHeader={
+      <PageHeaderStrip
+        title="Shipment Command Center"
+        trustItems={trackingTrustItems}
+        rightLabel="Shipment ID"
+        rightValue={bookingInput ? `TM-${bookingInput}` : 'TM-2026-78331681'}
+      />
+    }>
+      <div className="live-tracking-page">
       
       {/* Hero Section - Headline & Subheadline */}
       <div className="tru-page-hero-section">
@@ -971,8 +932,8 @@ export default function LiveTracking() {
       </div>
       
       
-      {/* Site Footer */}
-      <Footer />
-    </div>
+      
+      </div>
+    </SiteShell>
   );
 }

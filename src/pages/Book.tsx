@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import Header from "@/components/layout/Header";
+import SiteShell from "@/components/layout/SiteShell";
 import PageHeaderStrip from "@/components/layout/PageHeaderStrip";
 import Footer from "@/components/layout/Footer";
 import { DailyVideoRoom } from "@/components/video-consult/DailyVideoRoom";
@@ -1779,27 +1779,20 @@ export default function Book() {
   };
 
   return (
-    <div className="video-consult-page">
-      {/* Site Header - Sticky */}
-      <div className="sticky top-0 z-[100]">
-        <Header />
-      </div>
-      
-      {/* Sticky Header Block */}
-      <div className="sticky top-[102px] z-40">
-        <PageHeaderStrip
-          title="Contact Center"
-          trustItems={[
-            { icon: Shield, text: 'SECURE VIDEO' },
-            { icon: BadgeCheck, text: 'LICENSED BROKER' },
-            { icon: Monitor, text: 'SCREEN SHARING' },
-            { icon: FileText, text: 'QUOTE REVIEW' },
-            { icon: Clock, text: 'NO OBLIGATION' },
-          ]}
-          rightLabel="Shipment ID"
-          rightValue={`TM-2026-${String(Date.now()).slice(-8)}`}
-        />
-      </div>
+    <SiteShell hideTrustStrip stickySubHeader={
+      <PageHeaderStrip
+        title="Contact Center"
+        trustItems={[
+          { icon: Shield, text: 'SECURE VIDEO' },
+          { icon: BadgeCheck, text: 'LICENSED BROKER' },
+          { icon: Monitor, text: 'SCREEN SHARING' },
+          { icon: FileText, text: 'QUOTE REVIEW' },
+          { icon: Clock, text: 'NO OBLIGATION' },
+        ]}
+        rightLabel="Shipment ID"
+        rightValue={`TM-2026-${String(Date.now()).slice(-8)}`}
+      />
+    }>
 
       {/* Main Content */}
       <div className="min-h-[80vh] md:min-h-[80vh] flex flex-col items-center justify-center px-4 md:px-6 py-8 md:py-12">
@@ -2842,8 +2835,6 @@ export default function Book() {
         </Tooltip>
       </div>
       
-      {/* Footer */}
-      <Footer />
-    </div>
+    </SiteShell>
   );
 }
