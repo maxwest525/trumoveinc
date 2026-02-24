@@ -645,8 +645,10 @@ export default function ScanRoom() {
                   )}
                 </div>
                 <button
-                  onClick={() => handleStartScanClick()}
-                  disabled={isScanning}
+                  onClick={() => {
+                    setShowIntroModal(true);
+                  }}
+                  disabled={isScanning || uploadedPhotos.length === 0 || uploadedPhotos.every(p => p.id === 'demo-photo')}
                   className="tru-scan-library-analyze-btn tru-scan-library-analyze-btn-compact"
                 >
                   <Sparkles className="w-3.5 h-3.5" />
