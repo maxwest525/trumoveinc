@@ -9,6 +9,7 @@ interface SiteShellProps {
   hideTrustStrip?: boolean;
   hideHeader?: boolean;
   backendMode?: boolean;
+  stickySubHeader?: ReactNode;
 }
 
 function BackendFooter() {
@@ -19,7 +20,7 @@ function BackendFooter() {
   );
 }
 
-export default function SiteShell({ children, centered = false, hideTrustStrip = false, hideHeader = false, backendMode = false }: SiteShellProps) {
+export default function SiteShell({ children, centered = false, hideTrustStrip = false, hideHeader = false, backendMode = false, stickySubHeader }: SiteShellProps) {
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground font-sans">
       {!hideHeader && (
@@ -28,7 +29,8 @@ export default function SiteShell({ children, centered = false, hideTrustStrip =
             <Header />
             {!hideTrustStrip && !backendMode && <SaferTrustStrip />}
           </div>
-          {!backendMode && (
+          {stickySubHeader}
+          {!backendMode && !stickySubHeader && (
             <div className="hidden md:block h-8 bg-gradient-to-b from-background to-transparent -mt-8 pointer-events-none" />
           )}
         </div>
