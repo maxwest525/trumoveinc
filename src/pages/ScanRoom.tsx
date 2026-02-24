@@ -43,7 +43,7 @@ import {
   Smartphone, Box, Clock, Shield, Zap, ChevronRight,
   Ruler, Package, Printer, Download, Square, Trash2, ArrowRightLeft,
   Phone, Video, Minus, Plus, X, Upload, ImageIcon, FolderOpen, Lock, User, Mail,
-  Sofa, BedDouble, UtensilsCrossed, Bath, Warehouse, Check
+  Sofa, BedDouble, UtensilsCrossed, Bath, Warehouse, Check, Pause, Play
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -104,8 +104,9 @@ export default function ScanRoom() {
   
   // Demo step state: 0=idle, 1=photo added to library, 2=photo in scanner, 3+=items detecting
   const [demoStep, setDemoStep] = useState(0);
+  const [demoPlaying, setDemoPlaying] = useState(false);
   const isDemoActive = demoStep > 0;
-  const DEMO_TOTAL_STEPS = 2 + DEMO_ITEMS.length; // step 1: library, step 2: scanner, rest: items
+  const DEMO_TOTAL_STEPS = 2 + DEMO_ITEMS.length;
   
   // Lead capture state
   const [isUnlocked, setIsUnlocked] = useState(true);
@@ -171,18 +172,32 @@ export default function ScanRoom() {
 
   const handleStopDemo = () => {
     setDemoStep(0);
+    setDemoPlaying(false);
     setIsScanning(false);
-    // Keep detected items but clean up demo photo
     setUploadedPhotos(prev => prev.filter(p => p.id !== 'demo-photo'));
     setScannedPhotoIds(new Set());
   };
 
+  // Auto-advance demo when playing
+  useEffect(() => {
+    if (demoPlaying && isDemoActive && demoStep < DEMO_TOTAL_STEPS) {
+      const delay = demoStep === 0 ? 800 : demoStep < 3 ? 1500 : 2000;
+      const timer = setTimeout(() => {
+        handleNextDemoStep();
+      }, delay);
+      return () => clearTimeout(timer);
+    }
+    if (demoStep >= DEMO_TOTAL_STEPS) {
+      setDemoPlaying(false);
+    }
+  }, [demoPlaying, demoStep]);
+
   const handleStartScanClick = () => {
     if (uploadedPhotos.length > 0 && !isDemoActive) {
-      // Real scan flow
       setShowIntroModal(true);
     } else {
-      // Start step demo
+      // Start demo in auto-play mode
+      setDemoPlaying(true);
       handleNextDemoStep();
     }
   };
@@ -540,11 +555,11 @@ export default function ScanRoom() {
                     <>
                       {demoStep < DEMO_TOTAL_STEPS && (
                         <button
-                          onClick={handleNextDemoStep}
+                          onClick={() => setDemoPlaying(prev => !prev)}
                           className="flex-1 flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold bg-foreground text-background hover:opacity-90 transition-opacity"
                         >
-                          <ChevronRight className="w-4 h-4" />
-                          Next Step
+                          {demoPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                          {demoPlaying ? "Pause" : "Play"}
                         </button>
                       )}
                       <button
@@ -557,6 +572,7 @@ export default function ScanRoom() {
                     </>
                   )}
                 </div>
+
 
                 {/* Progress Bar */}
                 {isDemoActive && (
