@@ -1882,22 +1882,18 @@ export default function Index() {
               <div className="feature-trust-item">
                 <Sparkles className="w-4 h-4" />
                 <span>AI-Powered Estimates</span>
-                <span className="feature-trust-dot">•</span>
               </div>
               <div className="feature-trust-item">
                 <ShieldCheck className="w-4 h-4" />
                 <span>FMCSA Verified Carriers</span>
-                <span className="feature-trust-dot">•</span>
               </div>
               <div className="feature-trust-item">
                 <Truck className="w-4 h-4" />
                 <span>Live GPS Tracking</span>
-                <span className="feature-trust-dot">•</span>
               </div>
               <div className="feature-trust-item">
                 <Video className="w-4 h-4" />
                 <span>Video Consultations</span>
-                <span className="feature-trust-dot">•</span>
               </div>
               <div className="feature-trust-item">
                 <Shield className="w-4 h-4" />

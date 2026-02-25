@@ -32765,10 +32765,6 @@ html.dark .tru-summary-header-large,
   color: hsl(0 0% 100%);
 }
 
-.safer-trust-dot {
-  color: hsl(0 0% 100% / 0.4);
-  margin: 0 8px;
-}
 
 /* ========================================
    FEATURE TRUST STRIP - Between sections
@@ -32861,7 +32857,6 @@ html.dark .tru-summary-header-large,
   color: hsl(142 71% 45%);
 }
 
-.trust-strip-dot,
 .stats-strip-dot {
   color: hsl(0 0% 100% / 0.35);
   font-size: 8px;
@@ -33817,9 +33812,6 @@ gmp-map-3d-element .gmnoprint {
     height: 13px;
   }
 
-  .safer-trust-dot {
-    margin: 0 4px;
-  }
 
   /* --- Mobile Menu: Dark, full-width, immersive --- */
   .header-mobile-menu {
