@@ -156,7 +156,7 @@ export default function TrackingWizard({ onSubmit, onDemo }: TrackingWizardProps
           </div>
 
           {/* View Route */}
-          <Button onClick={handleSubmit} disabled={!canSubmit} size="sm" className="tru-qb-continue w-full h-9 text-sm">
+          <Button onClick={handleSubmit} disabled={!canSubmit} size="sm" className="tru-qb-continue w-full h-9 text-sm justify-center">
             <Play className="w-3.5 h-3.5" />
             View Route
           </Button>
