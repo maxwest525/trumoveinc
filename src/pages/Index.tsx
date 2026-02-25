@@ -1871,7 +1871,7 @@ export default function Index() {
             </div>
           </section>
 
-
+          <FeatureTrustStrip />
 
           {/* SHIPMENT TRACKER - Mirrored Layout */}
           <ShipmentTrackerSection navigate={navigate} />
