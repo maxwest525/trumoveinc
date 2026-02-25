@@ -257,11 +257,6 @@ export default function Header({ whiteLogo = false }: HeaderProps) {
                 {item.hasDropdown && activeMenu === item.href && (
                   <div className="header-mega-menu">
                     <div className="mega-menu-content">
-                      {/* Preview Component - visual first */}
-                      {item.dropdownContent && (
-                        <item.dropdownContent.PreviewComponent />
-                      )}
-
                       {/* Compact Header */}
                       {item.dropdownContent && (
                         <div className="mega-menu-header-compact">
@@ -273,7 +268,7 @@ export default function Header({ whiteLogo = false }: HeaderProps) {
                         </div>
                       )}
 
-                      {/* Sub-items for AI Estimator */}
+                      {/* Sub-items (page links) - above preview */}
                       {item.subItems && item.subItems.length > 0 && (
                         <div className="mega-menu-methods-compact">
                           {item.subItems.map((subItem) => (
@@ -290,6 +285,11 @@ export default function Header({ whiteLogo = false }: HeaderProps) {
                             </Link>
                           ))}
                         </div>
+                      )}
+
+                      {/* Preview Component - below page links */}
+                      {item.dropdownContent && (
+                        <item.dropdownContent.PreviewComponent />
                       )}
 
                       {/* CTA - only show if no subitems */}
