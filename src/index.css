@@ -32777,7 +32777,7 @@ html.dark .tru-summary-header-large,
   background: linear-gradient(to bottom, hsl(220 15% 6%), hsl(220 15% 4%));
   border-top: 1px solid hsl(0 0% 100% / 0.08);
   border-bottom: 1px solid hsl(0 0% 100% / 0.08);
-  padding: 8px 24px;
+  padding: 4px 24px;
   overflow-x: auto;
   margin: 2rem 0;
 }
@@ -32798,7 +32798,7 @@ html.dark .tru-summary-header-large,
   flex-direction: row;
   align-items: center;
   gap: 6px;
-  font-size: 12px;
+  font-size: 22px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -32813,8 +32813,8 @@ html.dark .tru-summary-header-large,
 }
 
 .feature-trust-item svg {
-  width: 16px;
-  height: 16px;
+  width: 24px;
+  height: 24px;
   color: hsl(142 71% 45%);
 }
 
