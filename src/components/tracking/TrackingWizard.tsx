@@ -176,7 +176,7 @@ export default function TrackingWizard({ onSubmit, onDemo }: TrackingWizardProps
   return (
     <div className="w-full max-w-md mx-auto">
       <div className="tru-floating-form-card tru-floating-form-compact p-4 sm:p-6">
-        <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-300">
+        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
           {/* Origin Address */}
           <div className="space-y-1.5">
             <Label className="flex items-center gap-2 text-base font-black uppercase tracking-wide text-foreground">
