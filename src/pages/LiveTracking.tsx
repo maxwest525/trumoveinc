@@ -15,7 +15,7 @@ import { CompactRouteWeather } from "@/components/tracking/CompactRouteWeather";
 import { WeighStationChecklist } from "@/components/tracking/WeighStationChecklist";
 import { type MultiStopTruckStatus } from "@/components/tracking/CheckMyTruckModal";
 import { MultiStopSummaryCard } from "@/components/tracking/MultiStopSummaryCard";
-import { RouteSetupModal } from "@/components/tracking/RouteSetupModal";
+import TrackingWizard from "@/components/tracking/TrackingWizard";
 import { useRealtimeETA } from "@/hooks/useRealtimeETA";
 import LocationAutocomplete from "@/components/LocationAutocomplete";
 import SiteShell from "@/components/layout/SiteShell";
@@ -158,8 +158,8 @@ export default function LiveTracking() {
   // Current truck bearing for 3D view
   const [truckBearing, setTruckBearing] = useState(0);
   
-  // Route setup modal state
-  const [showRouteModal, setShowRouteModal] = useState(true);
+  // Route setup state - show wizard when no route configured
+  const [routeConfigured, setRouteConfigured] = useState(false);
   
   // Map view transition state
   const [isViewTransitioning, setIsViewTransitioning] = useState(false);
@@ -273,7 +273,7 @@ export default function LiveTracking() {
       try {
         const data = JSON.parse(pendingRoute);
         if (data.originAddress && data.destAddress) {
-          setShowRouteModal(false); // Skip modal since we have route data
+          setRouteConfigured(true); // Skip wizard since we have route data
           // Geocode and populate
           if (data.originAddress) {
             handleOriginSelect('', '', data.originAddress);
@@ -543,7 +543,7 @@ export default function LiveTracking() {
     if (data.moveDate) {
       setMoveDate(data.moveDate);
     }
-    setShowRouteModal(false);
+    setRouteConfigured(true);
     toast.success('📍 Route configured!');
   };
 
@@ -551,6 +551,7 @@ export default function LiveTracking() {
   const handleDemoClick = () => {
     setBookingInput('12345');
     setIsDemoMode(true);
+    setRouteConfigured(true);
     // Auto-fill move date for demo
     setMoveDate(new Date());
     // Pre-populate New York to Los Angeles demo route (cross-country)
@@ -623,16 +624,18 @@ export default function LiveTracking() {
         </p>
       </div>
 
-      {/* Route Setup Modal */}
-      <RouteSetupModal 
-        open={showRouteModal} 
-        onClose={() => setShowRouteModal(false)}
-        onSubmit={handleRouteModalSubmit}
-        onDemo={handleDemoClick}
-      />
+      {/* Inline Route Setup Wizard */}
+      {!routeConfigured && (
+        <div className="px-4 py-8">
+          <TrackingWizard
+            onSubmit={handleRouteModalSubmit}
+            onDemo={handleDemoClick}
+          />
+        </div>
+      )}
 
-      {/* Main Content - 2 Column Layout */}
-      <div className="tracking-content tracking-content-2col">
+      {/* Main Content - 2 Column Layout (only show after route configured) */}
+      {routeConfigured && <div className="tracking-content tracking-content-2col">
         {/* Left: Map Area */}
         <div className="tracking-map-area">
           {/* Map Container */}
@@ -929,7 +932,7 @@ export default function LiveTracking() {
             onRelocateTruck={() => setFollowMode(true)}
           />
         </div>
-      </div>
+      </div>}
       
       
       
