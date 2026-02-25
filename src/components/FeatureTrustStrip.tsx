@@ -1,12 +1,7 @@
-import { Camera, Truck, Video, Shield, Phone, Zap, Globe, CheckCircle } from "lucide-react";
+import { Sparkles } from "lucide-react";
 
 const FEATURE_ITEMS = [
-  { icon: Camera, text: "AI Room Scanner" },
-  { icon: Truck, text: "Live GPS Tracking" },
-  { icon: Video, text: "Video Consultations" },
-  { icon: Shield, text: "Carrier Vetting" },
-  { icon: Globe, text: "Nationwide Coverage" },
-  { icon: CheckCircle, text: "Verified Estimates" },
+  { icon: Sparkles, text: "AI-Powered Moving" },
 ];
 
 export default function FeatureTrustStrip() {
