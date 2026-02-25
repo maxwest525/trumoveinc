@@ -714,7 +714,7 @@ function ShipmentTrackerSection({ navigate }: {navigate: (path: string) => void;
               map((step) =>
               <div key={step.num} className="tru-ai-step-pill">
                   <span className="tru-ai-step-num">{step.num}</span>
-                  <span className="tru-ai-step-label">{step.label}</span>
+                  
                 </div>
               )}
             </div>
