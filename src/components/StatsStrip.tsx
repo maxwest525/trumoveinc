@@ -13,14 +13,14 @@ export default function StatsStrip() {
   return (
     <div className="stats-strip">
       <div className="stats-strip-inner">
-        {STATS.map((stat, idx) =>
-        <div key={stat.text} className="stats-strip-item">
-            
-            <span>{stat.text}</span>
-            {idx < STATS.length - 1 &&
-          <span className="stats-strip-dot">•</span>
-          }
-          </div>
+        {STATS.map((stat, idx) => {}
+
+
+
+
+
+
+
         )}
       </div>
     </div>);
