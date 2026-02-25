@@ -1813,7 +1813,7 @@ export default function Index() {
                 <div className="tru-ai-content-left">
                   {/* Premium headline block */}
                   <div className="tru-ai-headline-block animate-fade-scale-in opacity-0" style={{ animationDelay: '0ms' }}>
-                    <h3 className="tru-ai-section-title text-lg tracking-widest">AI Analysis Estimator</h3>
+                    
                     <h2 className="tru-ai-main-headline">
                       Scan. Catalog.<br />
                       <span className="tru-ai-headline-accent">Estimate.</span>
