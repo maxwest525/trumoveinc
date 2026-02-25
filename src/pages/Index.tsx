@@ -341,13 +341,13 @@ function ScannerPreview({ isRunning, onStartDemo, visibleCount }: ScannerPreview
         )}
         </>
       }
-      <button
-        className="tru-ai-scanner-badge"
-        onClick={onStartDemo}>
+      
 
-        <Scan className="w-4 h-4" />
-        
-      </button>
+
+
+
+
+
       {/* Start Demo button as overlay - top right */}
       <button
         className="tru-ai-scanner-start-btn"
