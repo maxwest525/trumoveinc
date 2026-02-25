@@ -176,10 +176,13 @@ export default function TrackingWizard({ onSubmit, onDemo }: TrackingWizardProps
   return (
     <div className="w-full max-w-md mx-auto">
       <div className="tru-floating-form-card tru-floating-form-compact overflow-hidden">
-        <div className="bg-muted px-4 sm:px-6 py-4 border-b border-border">
-          <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-[0.08em] text-foreground text-center">
+        <div className="bg-muted px-4 sm:px-6 py-5 border-b border-border text-center space-y-1.5">
+          <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-[0.08em] text-foreground">
             Where Are We Moving?
           </h2>
+          <p className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-medium">
+            GPS • Live Tracking • Weather • ETA
+          </p>
         </div>
         <div className="p-4 sm:p-6 space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
           {/* Origin Address */}
