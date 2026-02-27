@@ -411,7 +411,7 @@ interface EditableSection {
  };
  
 export function AILandingPageGenerator({ isGenerating, onGenerate, prefillData, autoOpenFullScreen }: AILandingPageGeneratorProps) {
-   const [showLandingPage, setShowLandingPage] = useState(false);
+   const [showLandingPage, setShowLandingPage] = useState(true);
    const [businessName, setBusinessName] = useState("TruMove");
    const [targetAudience, setTargetAudience] = useState("Homeowners planning long-distance moves");
    const [mainOffer, setMainOffer] = useState("Get a guaranteed quote in 60 seconds with AI-powered pricing");
@@ -2864,15 +2864,34 @@ export function AILandingPageGenerator({ isGenerating, onGenerate, prefillData, 
        <>
          <div className="space-y-4">
          {/* Control Bar */}
-          <div className="flex flex-col gap-3 p-3 rounded-xl border border-border bg-card">
+           <div className="flex flex-col gap-3 p-3 rounded-xl border border-border bg-card">
             <div className="flex items-center gap-3 flex-wrap">
               <Badge className="gap-1" style={{ background: "#3B82F620", color: "#3B82F6" }}>
                 <CheckCircle2 className="w-3 h-3" />
                 AI Generated
               </Badge>
-             <span className="text-sm text-muted-foreground">
-               {LANDING_PAGE_TEMPLATES.find(t => t.id === selectedTemplate)?.name}
-             </span>
+
+              {/* Template Switcher */}
+              <div className="flex items-center gap-1 bg-muted rounded-lg border border-border p-0.5">
+                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={goToPrevTemplate}>
+                  <ChevronLeft className="w-4 h-4" />
+                </Button>
+                <Select value={selectedTemplate} onValueChange={setSelectedTemplate}>
+                  <SelectTrigger className="w-[130px] h-7 text-xs border-0 bg-transparent">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {LANDING_PAGE_TEMPLATES.map((t) => (
+                      <SelectItem key={t.id} value={t.id}>
+                        {t.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={goToNextTemplate}>
+                  <ChevronRight className="w-4 h-4" />
+                </Button>
+              </div>
             </div>
             <div className="flex flex-wrap gap-2">
               {/* Color Theme Selector */}
