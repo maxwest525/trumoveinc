@@ -459,7 +459,7 @@ export function BrandExtractor({ onApplyTheme, currentThemeId }: BrandExtractorP
               {site.screenshot && (
                 <div className="rounded-lg overflow-hidden border border-border">
                   <img
-                    src={`data:image/png;base64,${site.screenshot}`}
+                    src={site.screenshot}
                     alt={`Screenshot of ${site.url}`}
                     className="w-full h-32 object-cover object-top"
                   />
