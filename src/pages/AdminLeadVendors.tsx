@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import AdminShell from "@/components/layout/AdminShell";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,9 @@ import {
   Plus, Search, Building2, DollarSign, TrendingUp, Users, Phone,
   Mail, Globe, MoreVertical, Pencil, Trash2, ExternalLink,
 } from "lucide-react";
+import {
+  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend,
+} from "recharts";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -52,6 +55,7 @@ const EMPTY_FORM = {
 export default function AdminLeadVendors() {
   const [vendors, setVendors] = useState<LeadVendor[]>([]);
   const [leadCounts, setLeadCounts] = useState<Record<string, number>>({});
+  const [leadsRaw, setLeadsRaw] = useState<{ vendor_id: string | null; created_at: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -62,13 +66,16 @@ export default function AdminLeadVendors() {
     setLoading(true);
     const [vendorsRes, leadsRes] = await Promise.all([
       supabase.from("lead_vendors").select("*").order("created_at", { ascending: false }),
-      supabase.from("leads").select("id, vendor_id, source"),
+      supabase.from("leads").select("id, vendor_id, source, created_at"),
     ]);
     setVendors((vendorsRes.data as LeadVendor[]) || []);
 
+    const allLeads = (leadsRes.data as any[]) || [];
+    setLeadsRaw(allLeads);
+
     // Count leads per vendor
     const counts: Record<string, number> = {};
-    ((leadsRes.data as any[]) || []).forEach((l) => {
+    allLeads.forEach((l) => {
       if (l.vendor_id) counts[l.vendor_id] = (counts[l.vendor_id] || 0) + 1;
     });
     setLeadCounts(counts);
@@ -83,6 +90,42 @@ export default function AdminLeadVendors() {
   const avgCostPerLead = activeVendors.length > 0
     ? activeVendors.reduce((s, v) => s + (v.cost_per_lead || 0), 0) / activeVendors.length
     : 0;
+
+  // Chart data: leads per vendor per week (last 12 weeks)
+  const CHART_COLORS = [
+    "hsl(var(--primary))", "hsl(var(--chart-2))", "hsl(var(--chart-3))",
+    "hsl(var(--chart-4))", "hsl(221 83% 53%)", "hsl(262 83% 58%)",
+  ];
+
+  const chartData = useMemo(() => {
+    const vendorsWithLeads = vendors.filter((v) => leadCounts[v.id] > 0);
+    if (vendorsWithLeads.length === 0) return [];
+
+    const now = new Date();
+    const weeks: { label: string; start: Date; end: Date }[] = [];
+    for (let i = 11; i >= 0; i--) {
+      const end = new Date(now);
+      end.setDate(end.getDate() - i * 7);
+      const start = new Date(end);
+      start.setDate(start.getDate() - 6);
+      const label = `${start.getMonth() + 1}/${start.getDate()}`;
+      weeks.push({ label, start, end });
+    }
+
+    return weeks.map((w) => {
+      const row: Record<string, any> = { week: w.label };
+      vendorsWithLeads.forEach((v) => {
+        row[v.name] = leadsRaw.filter(
+          (l) => l.vendor_id === v.id && new Date(l.created_at) >= w.start && new Date(l.created_at) <= w.end
+        ).length;
+      });
+      return row;
+    });
+  }, [vendors, leadsRaw, leadCounts]);
+
+  const chartVendorNames = useMemo(() => {
+    return vendors.filter((v) => leadCounts[v.id] > 0).map((v) => v.name);
+  }, [vendors, leadCounts]);
 
   const filtered = vendors.filter((v) => {
     const q = search.toLowerCase();
@@ -192,6 +235,24 @@ export default function AdminLeadVendors() {
           })}
         </div>
 
+        {/* Vendor Performance Chart */}
+        {chartData.length > 0 && chartVendorNames.length > 0 && (
+          <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
+            <h2 className="text-sm font-semibold text-foreground mb-3">Leads Sourced by Vendor (Last 12 Weeks)</h2>
+            <ResponsiveContainer width="100%" height={220}>
+              <BarChart data={chartData}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
+                <XAxis dataKey="week" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} allowDecimals={false} />
+                <Tooltip contentStyle={{ borderRadius: 8, border: "1px solid hsl(var(--border))", background: "hsl(var(--card))", fontSize: 12 }} />
+                <Legend wrapperStyle={{ fontSize: 11 }} />
+                {chartVendorNames.map((name, i) => (
+                  <Bar key={name} dataKey={name} fill={CHART_COLORS[i % CHART_COLORS.length]} radius={[3, 3, 0, 0]} stackId="vendors" />
+                ))}
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        )}
         {/* Search */}
         <div className="relative max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
