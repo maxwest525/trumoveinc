@@ -154,8 +154,8 @@ export default function AgentLogin() {
                   <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{role.description}</p>
                 </div>
                 <div className="mt-auto pt-2">
-                  <span className="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium rounded-lg bg-foreground text-background group-hover:gap-3 transition-all">
-                    Enter {role.title} <ArrowRight className="w-3.5 h-3.5" />
+                  <span className="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium rounded-lg bg-foreground text-background group-hover:gap-3 transition-all whitespace-nowrap">
+                    {role.title} <ArrowRight className="w-3.5 h-3.5" />
                   </span>
                 </div>
               </button>
