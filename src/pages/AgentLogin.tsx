@@ -163,9 +163,9 @@ export default function AgentLogin() {
               <button
                 key={role.id}
                 onClick={() => handleClick(role.id, role.href)}
-                className="group flex flex-col gap-4 rounded-xl border border-foreground/10 bg-card p-5 shadow-[0_2px_8px_-2px_hsl(var(--foreground)/0.08)] hover:border-foreground/25 hover:shadow-[0_8px_24px_-6px_hsl(var(--foreground)/0.15)] transition-all duration-200 text-left"
+                className="group flex flex-col gap-4 rounded-xl border border-foreground/15 bg-card p-5 shadow-[0_2px_12px_-3px_hsl(var(--foreground)/0.12),0_1px_3px_hsl(var(--foreground)/0.06)] hover:border-foreground/30 hover:shadow-[0_8px_28px_-6px_hsl(var(--foreground)/0.2),0_4px_12px_-4px_hsl(var(--foreground)/0.1)] transition-all duration-200 text-left"
               >
-                <div className="w-10 h-10 rounded-lg bg-foreground/[0.06] flex items-center justify-center">
+                <div className="w-10 h-10 rounded-lg border border-foreground/10 bg-foreground/[0.04] flex items-center justify-center">
                   <Icon className="w-5 h-5 text-foreground" />
                 </div>
                 <div>
@@ -173,7 +173,7 @@ export default function AgentLogin() {
                   <p className="text-[11px] text-muted-foreground mt-1 leading-relaxed">{role.description}</p>
                 </div>
                 <div className="mt-auto pt-1">
-                  <span className="inline-flex items-center gap-2 px-3.5 py-1.5 text-[11px] font-semibold rounded-lg bg-foreground text-background group-hover:gap-3 transition-all whitespace-nowrap shadow-sm">
+                  <span className="inline-flex items-center gap-2 px-3.5 py-1.5 text-[11px] font-semibold rounded-lg bg-foreground text-background group-hover:gap-3 transition-all whitespace-nowrap shadow-[0_2px_6px_-1px_hsl(var(--foreground)/0.15)]">
                     {role.title} <ArrowRight className="w-3 h-3" />
                   </span>
                 </div>
