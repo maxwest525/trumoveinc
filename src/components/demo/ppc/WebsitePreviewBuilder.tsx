@@ -53,7 +53,7 @@ function getContent(selections: BuildSelections) {
   };
 }
 
-type TProps = { content: ReturnType<typeof getContent>; page: PageTab; darkMode: boolean };
+type TProps = { content: ReturnType<typeof getContent>; page: PageTab; darkMode: boolean; themeOverride?: ThemeColors | null };
 
 interface ThemeColors { fg: string; muted: string; accent: string; border: string; cardBg: string; bg: string; }
 
@@ -151,14 +151,15 @@ function SharedQuote({ fg, muted, accent, border, cardBg, bg }: ThemeColors) {
 //    screenshots scattered at edges, ultra-minimal, dramatic
 // ══════════════════════════════════════════════════════════════════
 
-function EditorialDark({ content, page, darkMode }: TProps) {
-  const bg = darkMode ? '#000000' : '#fafaf9';
-  const fg = darkMode ? '#ffffff' : '#0a0a0a';
-  const muted = darkMode ? '#555' : '#999';
-  const border = darkMode ? '#1a1a1a' : '#e5e5e5';
-  const cardBg = darkMode ? '#0a0a0a' : '#f5f5f4';
+function EditorialDark({ content, page, darkMode, themeOverride }: TProps) {
+  const bg = themeOverride?.bg || (darkMode ? '#000000' : '#fafaf9');
+  const fg = themeOverride?.fg || (darkMode ? '#ffffff' : '#0a0a0a');
+  const muted = themeOverride?.muted || (darkMode ? '#555' : '#999');
+  const border = themeOverride?.border || (darkMode ? '#1a1a1a' : '#e5e5e5');
+  const cardBg = themeOverride?.cardBg || (darkMode ? '#0a0a0a' : '#f5f5f4');
+  const accent = themeOverride?.accent || fg;
 
-  const shared = { fg, muted, accent: fg, border, cardBg, bg };
+  const shared = { fg, muted, accent, border, cardBg, bg };
 
   if (page === 'services') return <SharedServices {...shared} />;
   if (page === 'reviews') return <SharedReviews {...shared} content={content} />;
@@ -346,14 +347,14 @@ function EditorialDark({ content, page, darkMode }: TProps) {
 //    checkmark bullets, browser mockup, airy spacing
 // ══════════════════════════════════════════════════════════════════
 
-function CleanSplitLight({ content, page, darkMode }: TProps) {
-  const bg = darkMode ? '#0f172a' : '#ffffff';
-  const fg = darkMode ? '#f1f5f9' : '#0f172a';
-  const muted = darkMode ? '#94a3b8' : '#64748b';
-  const accent = '#0d9488';
-  const accentBg = darkMode ? '#0d948815' : '#f0fdfa';
-  const cardBg = darkMode ? '#1e293b' : '#f8fafc';
-  const border = darkMode ? '#334155' : '#e2e8f0';
+function CleanSplitLight({ content, page, darkMode, themeOverride }: TProps) {
+  const bg = themeOverride?.bg || (darkMode ? '#0f172a' : '#ffffff');
+  const fg = themeOverride?.fg || (darkMode ? '#f1f5f9' : '#0f172a');
+  const muted = themeOverride?.muted || (darkMode ? '#94a3b8' : '#64748b');
+  const accent = themeOverride?.accent || '#0d9488';
+  const accentBg = darkMode ? accent + '15' : accent + '10';
+  const cardBg = themeOverride?.cardBg || (darkMode ? '#1e293b' : '#f8fafc');
+  const border = themeOverride?.border || (darkMode ? '#334155' : '#e2e8f0');
 
   const shared = { fg, muted, accent, border, cardBg, bg };
 
@@ -509,16 +510,16 @@ function CleanSplitLight({ content, page, darkMode }: TProps) {
 //    NO gradient text — just bold, simple, dramatic
 // ══════════════════════════════════════════════════════════════════
 
-function EnterpriseDarkForm({ content, page, darkMode }: TProps) {
-  const bg = darkMode ? '#0a0a0a' : '#f8fafc';
-  const fg = darkMode ? '#f5f0e8' : '#0f172a';
-  const muted = darkMode ? '#8a8478' : '#94a3b8';
-  const accent = '#f5f0e8';
-  const cardBg = darkMode ? '#141414' : '#ffffff';
-  const border = darkMode ? '#222222' : '#e2e8f0';
+function EnterpriseDarkForm({ content, page, darkMode, themeOverride }: TProps) {
+  const bg = themeOverride?.bg || (darkMode ? '#0a0a0a' : '#f8fafc');
+  const fg = themeOverride?.fg || (darkMode ? '#f5f0e8' : '#0f172a');
+  const muted = themeOverride?.muted || (darkMode ? '#8a8478' : '#94a3b8');
+  const accent = themeOverride?.accent || (darkMode ? '#f5f0e8' : '#0f172a');
+  const cardBg = themeOverride?.cardBg || (darkMode ? '#141414' : '#ffffff');
+  const border = themeOverride?.border || (darkMode ? '#222222' : '#e2e8f0');
   const inputBg = darkMode ? '#1a1a1a' : '#f1f5f9';
 
-  const shared = { fg, muted, accent: darkMode ? '#f5f0e8' : '#0f172a', border, cardBg, bg };
+  const shared = { fg, muted, accent, border, cardBg, bg };
 
   if (page === 'services') return <SharedServices {...shared} />;
   if (page === 'reviews') return <SharedReviews {...shared} content={content} />;
@@ -646,17 +647,17 @@ function EnterpriseDarkForm({ content, page, darkMode }: TProps) {
 //    with dashboard UI below hero
 // ══════════════════════════════════════════════════════════════════
 
-function PromoDarkGradient({ content, page, darkMode }: TProps) {
-  const bg = darkMode ? '#0c0820' : '#faf5ff';
-  const fg = darkMode ? '#f3e8ff' : '#1e1b4b';
-  const muted = darkMode ? '#8b84a8' : '#64748b';
-  const purple = '#8b5cf6';
+function PromoDarkGradient({ content, page, darkMode, themeOverride }: TProps) {
+  const bg = themeOverride?.bg || (darkMode ? '#0c0820' : '#faf5ff');
+  const fg = themeOverride?.fg || (darkMode ? '#f3e8ff' : '#1e1b4b');
+  const muted = themeOverride?.muted || (darkMode ? '#8b84a8' : '#64748b');
+  const purple = themeOverride?.accent || '#8b5cf6';
   const pink = '#ec4899';
   const gradBg = `linear-gradient(135deg, ${purple}, #6366f1)`;
   const gradText = `linear-gradient(135deg, ${purple}, ${pink}, #6366f1)`;
   const glow = `0 4px 40px ${purple}40`;
-  const cardBg = darkMode ? '#110827' : '#ffffff';
-  const border = darkMode ? '#1e1547' : '#e9d5ff';
+  const cardBg = themeOverride?.cardBg || (darkMode ? '#110827' : '#ffffff');
+  const border = themeOverride?.border || (darkMode ? '#1e1547' : '#e9d5ff');
 
   const shared = { fg, muted, accent: purple, border, cardBg, bg };
 
@@ -807,16 +808,16 @@ function PromoDarkGradient({ content, page, darkMode }: TProps) {
 //    split demo video + value prop, comparison table
 // ══════════════════════════════════════════════════════════════════
 
-function CorporateLightVideo({ content, page, darkMode }: TProps) {
-  const bg = darkMode ? '#0f172a' : '#ffffff';
-  const fg = darkMode ? '#f1f5f9' : '#0f172a';
-  const muted = darkMode ? '#94a3b8' : '#64748b';
-  const accent = '#2563eb';
+function CorporateLightVideo({ content, page, darkMode, themeOverride }: TProps) {
+  const bg = themeOverride?.bg || (darkMode ? '#0f172a' : '#ffffff');
+  const fg = themeOverride?.fg || (darkMode ? '#f1f5f9' : '#0f172a');
+  const muted = themeOverride?.muted || (darkMode ? '#94a3b8' : '#64748b');
+  const accent = themeOverride?.accent || '#2563eb';
   const navy = '#1e3a5f';
   const orange = '#f59e0b';
   const heroBg = darkMode ? '#0c1529' : '#e8f1fd';
-  const cardBg = darkMode ? '#1e293b' : '#f8fafc';
-  const border = darkMode ? '#334155' : '#e2e8f0';
+  const cardBg = themeOverride?.cardBg || (darkMode ? '#1e293b' : '#f8fafc');
+  const border = themeOverride?.border || (darkMode ? '#334155' : '#e2e8f0');
 
   const shared = { fg, muted, accent, border, cardBg, bg };
 
@@ -966,15 +967,15 @@ function CorporateLightVideo({ content, page, darkMode }: TProps) {
 // 6. TOP 10 LISTICLE — Review/ranking site
 // ══════════════════════════════════════════════════════════════════
 
-function Top10Listicle({ content, page, darkMode }: TProps) {
-  const bg = darkMode ? '#0f1117' : '#ffffff';
-  const fg = darkMode ? '#e5e7eb' : '#111827';
-  const muted = darkMode ? '#6b7280' : '#9ca3af';
-  const accent = '#4f46e5';
+function Top10Listicle({ content, page, darkMode, themeOverride }: TProps) {
+  const bg = themeOverride?.bg || (darkMode ? '#0f1117' : '#ffffff');
+  const fg = themeOverride?.fg || (darkMode ? '#e5e7eb' : '#111827');
+  const muted = themeOverride?.muted || (darkMode ? '#6b7280' : '#9ca3af');
+  const accent = themeOverride?.accent || '#4f46e5';
   const green = '#22c55e';
   const greenBg = darkMode ? '#22c55e15' : '#f0fdf4';
-  const cardBg = darkMode ? '#1a1d27' : '#f9fafb';
-  const border = darkMode ? '#2a2d37' : '#e5e7eb';
+  const cardBg = themeOverride?.cardBg || (darkMode ? '#1a1d27' : '#f9fafb');
+  const border = themeOverride?.border || (darkMode ? '#2a2d37' : '#e5e7eb');
 
   const shared = { fg, muted, accent, border, cardBg, bg };
 
@@ -1110,7 +1111,8 @@ export function WebsitePreviewBuilder({ selections, onBack }: WebsitePreviewBuil
   const content = getContent(selections);
 
   const renderTemplate = () => {
-    const props = { content, page: activePage, darkMode };
+    const themed = getThemedColors();
+    const props = { content, page: activePage, darkMode, themeOverride: themed };
     switch (template) {
       case 'editorial-dark': return <EditorialDark {...props} />;
       case 'clean-split-light': return <CleanSplitLight {...props} />;
