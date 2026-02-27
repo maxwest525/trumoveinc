@@ -1322,104 +1322,119 @@ export function AILandingPageGenerator({ isGenerating, onGenerate, prefillData, 
         </span>
       </div>
 
-       {/* Hero Section - Dark with blue CTAs */}
+       {/* Hero Section - Mesh gradient with animated orbs */}
        <div 
-         className="relative px-8 py-20 text-center"
-         style={{ background: `linear-gradient(135deg, ${theme.secondary} 0%, #0F172A 50%, ${theme.secondary} 100%)` }}
+         className="relative px-8 py-24 text-center overflow-hidden"
+         style={{ background: `linear-gradient(135deg, ${theme.secondary} 0%, #0a0e1a 40%, ${theme.secondary} 100%)` }}
        >
-         <div className="absolute top-4 left-4 flex gap-2 flex-wrap">
-            <Badge className="bg-green-500/20 text-green-400 border border-green-500/30">
-            <CheckCircle2 className="w-3 h-3 mr-1" />
-            FMCSA Licensed
-          </Badge>
-          <Badge className="bg-green-500/20 text-green-400 border border-green-500/30">
-            <Shield className="w-3 h-3 mr-1" />
-            Bonded & Insured
-          </Badge>
-        </div>
-        <div className="absolute top-4 right-4">
-          <Badge className="bg-amber-500/20 text-amber-400 border border-amber-500/30">
-            ⭐ 4.9/5 Rating • 50K+ Moves
-          </Badge>
-        </div>
+         {/* Animated mesh gradient orbs */}
+         <div className="absolute inset-0 overflow-hidden pointer-events-none">
+           <div className="absolute w-[600px] h-[600px] rounded-full opacity-20 blur-[120px] animate-pulse" 
+             style={{ background: theme.primary, top: '-20%', left: '-10%' }} />
+           <div className="absolute w-[500px] h-[500px] rounded-full opacity-15 blur-[100px] animate-pulse" 
+             style={{ background: theme.accent, bottom: '-15%', right: '-5%', animationDelay: '1s' }} />
+           <div className="absolute w-[300px] h-[300px] rounded-full opacity-10 blur-[80px] animate-pulse" 
+             style={{ background: theme.accentLight, top: '30%', right: '20%', animationDelay: '2s' }} />
+           {/* Grain texture overlay */}
+           <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E")` }} />
+         </div>
 
-        <TruMoveLogo className="h-12 mx-auto mb-6 brightness-0 invert" />
-        
-        <Badge className="mb-6 bg-purple-500/20 text-purple-300 border border-purple-500/30 px-4 py-1.5">
-          <Sparkles className="w-3.5 h-3.5 mr-1.5" />
-          AI-Powered Moving Technology
-        </Badge>
-        
-        <h1 className="text-5xl md:text-6xl font-black text-white mb-4 leading-tight max-w-4xl mx-auto">
-          <EditableText sectionId="main-headline" as="span" className="block" />
-          <span className="text-transparent bg-clip-text" style={{ backgroundImage: `linear-gradient(90deg, ${theme.primary}, ${theme.accentLight}, ${theme.primary})` }}>
-            <EditableText sectionId="sub-headline" as="span" />
-          </span>
-        </h1>
-        
-        <div className="text-xl text-slate-300 mb-10 max-w-2xl mx-auto">
-          <EditableText sectionId="hero-body" as="p" />
-        </div>
+         <div className="absolute top-4 left-4 flex gap-2 flex-wrap z-10">
+           <Badge className="bg-green-500/20 text-green-400 border border-green-500/30 backdrop-blur-sm">
+             <CheckCircle2 className="w-3 h-3 mr-1" />
+             FMCSA Licensed
+           </Badge>
+           <Badge className="bg-green-500/20 text-green-400 border border-green-500/30 backdrop-blur-sm">
+             <Shield className="w-3 h-3 mr-1" />
+             Bonded & Insured
+           </Badge>
+         </div>
+         <div className="absolute top-4 right-4 z-10">
+           <Badge className="bg-amber-500/20 text-amber-400 border border-amber-500/30 backdrop-blur-sm">
+             ⭐ 4.9/5 Rating • 50K+ Moves
+           </Badge>
+         </div>
 
-        {/* Feature checkmarks */}
-        <div className="flex items-center justify-center gap-6 mb-10 text-sm">
-          {[
-            "Instant AI-Powered Quotes",
-            "Verified Carriers Only", 
-            "Price Lock Guarantee",
-            "24/7 Live Support"
-          ].map((item, i) => (
-            <span key={i} className="flex items-center gap-1.5 text-white/90">
-              <CheckCircle2 className="w-4 h-4" style={{ color: theme.primary }} />
-              {item}
-            </span>
-          ))}
-        </div>
+         <div className="relative z-10">
+           <TruMoveLogo className="h-12 mx-auto mb-6 brightness-0 invert" />
+           
+           <Badge className="mb-6 bg-purple-500/20 text-purple-300 border border-purple-500/30 px-4 py-1.5 backdrop-blur-sm">
+             <Sparkles className="w-3.5 h-3.5 mr-1.5" />
+             AI-Powered Moving Technology
+           </Badge>
+           
+           <h1 className="text-5xl md:text-7xl font-black text-white mb-4 leading-[0.95] max-w-4xl mx-auto tracking-tight">
+             <EditableText sectionId="main-headline" as="span" className="block" />
+             <span className="text-transparent bg-clip-text" style={{ backgroundImage: `linear-gradient(90deg, ${theme.primary}, ${theme.accentLight}, ${theme.primary})` }}>
+               <EditableText sectionId="sub-headline" as="span" />
+             </span>
+           </h1>
+           
+           <div className="text-xl text-slate-300 mb-10 max-w-2xl mx-auto">
+             <EditableText sectionId="hero-body" as="p" />
+           </div>
 
-        {/* Quote Form with animated glow */}
-        <div 
-          className="max-w-lg mx-auto rounded-3xl p-8 border-2 shadow-2xl relative overflow-hidden"
-          style={{ 
-            background: 'rgba(255,255,255,0.08)', 
-            borderColor: `${theme.primary}50`,
-            boxShadow: `0 0 60px ${theme.primary}30`
-          }}
-        >
-          <div 
-            className="absolute inset-0 rounded-3xl animate-pulse opacity-30"
-            style={{ background: `linear-gradient(45deg, transparent, ${theme.primary}20, transparent)` }}
-          />
-          <div className="relative">
-            <h3 className="text-white font-bold text-xl mb-4">Get Your Free TruMove Quote</h3>
-            <div className="space-y-3 mb-4">
-              <Input placeholder="Moving from (ZIP code)" className="bg-white/95 border-0 text-slate-900 py-5" />
-              <Input placeholder="Moving to (ZIP code)" className="bg-white/95 border-0 text-slate-900 py-5" />
-              <Input placeholder="Phone number" className="bg-white/95 border-0 text-slate-900 py-5" />
-            </div>
-            <Button 
-              className="w-full py-7 text-lg font-bold gap-2 shadow-lg" 
-              style={{ background: `linear-gradient(135deg, ${theme.primary} 0%, ${theme.primaryDark} 100%)` }}
-            >
-              <EditableText sectionId="cta-primary" as="span" /> <ArrowRight className="w-5 h-5" />
-            </Button>
-            <div className="flex items-center justify-center gap-4 mt-4 text-xs text-slate-400">
-              <span className="flex items-center gap-1"><Lock className="w-3 h-3" /> Secure</span>
-              <span>•</span>
-              <span>No Credit Card</span>
-              <span>•</span>
-              <span>Instant Results</span>
-            </div>
-          </div>
-        </div>
+           {/* Feature checkmarks */}
+           <div className="flex items-center justify-center gap-6 mb-10 text-sm">
+             {[
+               "Instant AI-Powered Quotes",
+               "Verified Carriers Only", 
+               "Price Lock Guarantee",
+               "24/7 Live Support"
+             ].map((item, i) => (
+               <span key={i} className="flex items-center gap-1.5 text-white/90">
+                 <CheckCircle2 className="w-4 h-4" style={{ color: theme.primary }} />
+                 {item}
+               </span>
+             ))}
+           </div>
 
-        {/* As Seen In */}
-        <div className="mt-12 flex items-center justify-center gap-8 text-slate-500">
-          <span className="text-sm">As seen in:</span>
-          <span className="font-bold text-lg opacity-50">Forbes</span>
-          <span className="font-bold text-lg opacity-50">Inc.</span>
-          <span className="font-bold text-lg opacity-50">TechCrunch</span>
-          <span className="font-bold text-lg opacity-50">WSJ</span>
-        </div>
+           {/* Glassmorphism Quote Form */}
+           <div 
+             className="max-w-lg mx-auto rounded-3xl p-8 border shadow-2xl relative overflow-hidden"
+             style={{ 
+               background: 'rgba(255,255,255,0.06)', 
+               backdropFilter: 'blur(24px)',
+               WebkitBackdropFilter: 'blur(24px)',
+               borderColor: `rgba(255,255,255,0.12)`,
+               boxShadow: `0 0 80px ${theme.primary}25, 0 32px 64px rgba(0,0,0,0.4)`
+             }}
+           >
+             {/* Animated border glow */}
+             <div className="absolute -inset-[1px] rounded-3xl opacity-40" style={{
+               background: `linear-gradient(135deg, ${theme.primary}60, transparent 40%, transparent 60%, ${theme.accentLight}60)`,
+             }} />
+             <div className="relative">
+               <h3 className="text-white font-bold text-xl mb-4">Get Your Free TruMove Quote</h3>
+               <div className="space-y-3 mb-4">
+                 <Input placeholder="Moving from (ZIP code)" className="bg-white/95 border-0 text-slate-900 py-5 rounded-xl" />
+                 <Input placeholder="Moving to (ZIP code)" className="bg-white/95 border-0 text-slate-900 py-5 rounded-xl" />
+                 <Input placeholder="Phone number" className="bg-white/95 border-0 text-slate-900 py-5 rounded-xl" />
+               </div>
+               <Button 
+                 className="w-full py-7 text-lg font-bold gap-2 shadow-lg rounded-xl" 
+                 style={{ background: `linear-gradient(135deg, ${theme.primary} 0%, ${theme.primaryDark} 100%)`, boxShadow: `0 8px 32px ${theme.primary}50` }}
+               >
+                 <EditableText sectionId="cta-primary" as="span" /> <ArrowRight className="w-5 h-5" />
+               </Button>
+               <div className="flex items-center justify-center gap-4 mt-4 text-xs text-slate-400">
+                 <span className="flex items-center gap-1"><Lock className="w-3 h-3" /> Secure</span>
+                 <span>•</span>
+                 <span>No Credit Card</span>
+                 <span>•</span>
+                 <span>Instant Results</span>
+               </div>
+             </div>
+           </div>
+
+           {/* As Seen In - scrolling logos */}
+           <div className="mt-16 flex items-center justify-center gap-10 text-slate-500">
+             <span className="text-xs uppercase tracking-widest text-slate-600">As seen in</span>
+             {["Forbes", "Inc.", "TechCrunch", "WSJ"].map(name => (
+               <span key={name} className="font-bold text-lg opacity-30 hover:opacity-60 transition-opacity cursor-default">{name}</span>
+             ))}
+           </div>
+         </div>
       </div>
 
       {/* Social Proof Ticker */}
@@ -1625,24 +1640,51 @@ export function AILandingPageGenerator({ isGenerating, onGenerate, prefillData, 
       {/* Social Proof Ticker */}
       <SocialProofTicker />
 
-      {/* Dark Hero */}
-      <div className="px-8 py-20 text-center" style={{ background: `linear-gradient(135deg, ${theme.secondary} 0%, ${theme.primaryDark} 100%)` }}>
-        <Badge className="mb-4 bg-white/10 text-white border border-white/30">
-          <Award className="w-3 h-3 mr-1" /> #1 Rated Moving Company
-        </Badge>
-        <h1 className="text-5xl font-bold text-white mb-4">
-          We Win on <span style={{ color: theme.primary }}>Every Metric</span>
-        </h1>
-        <p className="text-xl text-white/80 max-w-2xl mx-auto mb-8">
-          Stop guessing. See the facts. Compare {businessName}'s technology, pricing, and service guarantees against traditional movers.
-        </p>
-        <div className="flex justify-center gap-4">
-          <Button className="py-5 px-8 text-lg font-bold gap-2 text-white" style={{ background: theme.primary }}>
-            Get My Free Quote <ArrowRight className="w-5 h-5" />
-          </Button>
-          <Button variant="outline" className="py-5 px-8 text-lg font-bold gap-2 border-white/30 text-white bg-white/10 hover:bg-white/20">
-            <Phone className="w-5 h-5" /> Call Now
-          </Button>
+      {/* Dark Hero — Asymmetric split with floating comparison cards */}
+      <div className="relative overflow-hidden" style={{ background: `linear-gradient(160deg, ${theme.secondary} 0%, #0a0e1a 60%, ${theme.primaryDark}80 100%)` }}>
+        {/* Decorative grid lines */}
+        <div className="absolute inset-0 opacity-[0.04]" style={{
+          backgroundImage: `linear-gradient(${theme.primary}40 1px, transparent 1px), linear-gradient(90deg, ${theme.primary}40 1px, transparent 1px)`,
+          backgroundSize: '60px 60px'
+        }} />
+        {/* Floating glow */}
+        <div className="absolute w-[400px] h-[400px] rounded-full opacity-20 blur-[100px]" style={{ background: theme.primary, top: '-10%', right: '10%' }} />
+        
+        <div className="relative z-10 px-8 py-20 grid md:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
+          <div className="text-left">
+            <Badge className="mb-4 bg-white/10 text-white border border-white/20 backdrop-blur-sm">
+              <Award className="w-3 h-3 mr-1" /> #1 Rated Moving Company
+            </Badge>
+            <h1 className="text-5xl md:text-6xl font-black text-white mb-6 leading-[0.95] tracking-tight">
+              We Win on<br/><span className="text-transparent bg-clip-text" style={{ backgroundImage: `linear-gradient(90deg, ${theme.primary}, ${theme.accentLight})` }}>Every Metric</span>
+            </h1>
+            <p className="text-lg text-white/70 mb-8 max-w-md">
+              Stop guessing. See the facts. Compare {businessName}'s technology, pricing, and service guarantees against traditional movers.
+            </p>
+            <div className="flex gap-3">
+              <Button className="py-5 px-8 text-lg font-bold gap-2 text-white rounded-xl" style={{ background: theme.primary, boxShadow: `0 8px 32px ${theme.primary}40` }}>
+                Get My Free Quote <ArrowRight className="w-5 h-5" />
+              </Button>
+              <Button variant="outline" className="py-5 px-6 text-lg font-bold gap-2 border-white/20 text-white bg-white/5 hover:bg-white/10 backdrop-blur-sm rounded-xl">
+                <Phone className="w-5 h-5" /> Call Now
+              </Button>
+            </div>
+          </div>
+          {/* Floating stat cards — bento grid */}
+          <div className="grid grid-cols-2 gap-3">
+            {[
+              { label: "Avg. Savings", value: "$847", icon: "💰" },
+              { label: "Customer Rating", value: "4.9/5", icon: "⭐" },
+              { label: "Moves Completed", value: "50K+", icon: "🚚" },
+              { label: "Quote Speed", value: "47sec", icon: "⚡" },
+            ].map((stat, i) => (
+              <div key={i} className="p-5 rounded-2xl border border-white/10 backdrop-blur-sm" style={{ background: 'rgba(255,255,255,0.05)' }}>
+                <div className="text-2xl mb-2">{stat.icon}</div>
+                <div className="text-2xl font-black text-white">{stat.value}</div>
+                <div className="text-xs text-white/50">{stat.label}</div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -1843,55 +1885,82 @@ export function AILandingPageGenerator({ isGenerating, onGenerate, prefillData, 
         </span>
       </div>
 
-      {/* Hero with Calculator */}
-      <div className="px-8 py-16" style={{ background: `linear-gradient(135deg, ${theme.secondary} 0%, ${theme.primaryDark} 100%)` }}>
-        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
-          <div className="text-center md:text-left">
-            <Badge className="mb-4 bg-white/10 text-white border border-white/30">
-              <Calculator className="w-3 h-3 mr-1" /> AI-Powered Pricing
-            </Badge>
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-              Know Your <span style={{ color: theme.primary }}>Moving Cost</span> in Seconds
-            </h1>
-            <p className="text-xl text-white/80 mb-6">
-              Our AI analyzes thousands of moves to give you the most accurate estimate — no email or phone call required.
-            </p>
-            <div className="flex items-center gap-6 text-white/70 text-sm justify-center md:justify-start">
-               <span className="flex items-center gap-1"><CheckCircle2 className="w-4 h-4 text-blue-400" /> Instant results</span>
-               <span className="flex items-center gap-1"><CheckCircle2 className="w-4 h-4 text-blue-400" /> No spam</span>
-               <span className="flex items-center gap-1"><CheckCircle2 className="w-4 h-4 text-blue-400" /> 100% free</span>
-            </div>
+      {/* Hero — Bento grid calculator layout */}
+      <div className="relative overflow-hidden" style={{ background: `linear-gradient(160deg, #0a0e1a 0%, ${theme.secondary} 50%, ${theme.primaryDark}60 100%)` }}>
+        {/* Mesh gradient blobs */}
+        <div className="absolute w-[500px] h-[500px] rounded-full opacity-15 blur-[100px]" style={{ background: theme.accent, top: '-15%', left: '50%' }} />
+        <div className="absolute w-[400px] h-[400px] rounded-full opacity-10 blur-[80px]" style={{ background: theme.primary, bottom: '-10%', left: '-5%' }} />
+
+        <div className="relative z-10 px-8 py-16 max-w-6xl mx-auto">
+          {/* Top bento stats row */}
+          <div className="grid grid-cols-4 gap-3 mb-8">
+            {[
+              { label: "Avg. Savings", value: "$847", color: theme.primary },
+              { label: "Quote Time", value: "47 sec", color: theme.accent },
+              { label: "Happy Customers", value: "50K+", color: theme.accentLight },
+              { label: "Accuracy Rate", value: "95%+", color: theme.primary },
+            ].map((stat, i) => (
+              <div key={i} className="p-4 rounded-2xl border border-white/10 backdrop-blur-sm text-center" style={{ background: 'rgba(255,255,255,0.04)' }}>
+                <div className="text-2xl font-black text-white">{stat.value}</div>
+                <div className="text-xs text-white/50">{stat.label}</div>
+              </div>
+            ))}
           </div>
 
-          {/* Calculator Form */}
-          <div className="bg-white rounded-2xl p-8 shadow-2xl border-2" style={{ borderColor: theme.primary }}>
-            <h3 className="text-xl font-bold text-slate-900 mb-6 text-center">Moving Cost Calculator</h3>
-            <div className="space-y-4">
-              <div>
-                <label className="text-sm font-medium text-slate-700 mb-1 block">Moving From</label>
-                <Input placeholder="Enter city or ZIP code" className="bg-slate-50 py-5" />
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div className="text-left">
+              <Badge className="mb-4 bg-white/10 text-white border border-white/20 backdrop-blur-sm">
+                <Calculator className="w-3 h-3 mr-1" /> AI-Powered Pricing
+              </Badge>
+              <h1 className="text-4xl md:text-6xl font-black text-white mb-4 leading-[0.95] tracking-tight">
+                Know Your<br/><span className="text-transparent bg-clip-text" style={{ backgroundImage: `linear-gradient(90deg, ${theme.primary}, ${theme.accentLight})` }}>Moving Cost</span><br/>in Seconds
+              </h1>
+              <p className="text-lg text-white/70 mb-6 max-w-md">
+                Our AI analyzes thousands of moves to give you the most accurate estimate — no email or phone call required.
+              </p>
+              <div className="flex items-center gap-6 text-white/60 text-sm">
+                 <span className="flex items-center gap-1"><CheckCircle2 className="w-4 h-4" style={{ color: theme.primary }} /> Instant results</span>
+                 <span className="flex items-center gap-1"><CheckCircle2 className="w-4 h-4" style={{ color: theme.primary }} /> No spam</span>
+                 <span className="flex items-center gap-1"><CheckCircle2 className="w-4 h-4" style={{ color: theme.primary }} /> 100% free</span>
               </div>
-              <div>
-                <label className="text-sm font-medium text-slate-700 mb-1 block">Moving To</label>
-                <Input placeholder="Enter city or ZIP code" className="bg-slate-50 py-5" />
+            </div>
+
+            {/* Glassmorphism Calculator Form */}
+            <div className="rounded-3xl p-8 border" style={{
+              background: 'rgba(255,255,255,0.06)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              borderColor: 'rgba(255,255,255,0.1)',
+              boxShadow: `0 32px 64px rgba(0,0,0,0.4), 0 0 60px ${theme.primary}15`
+            }}>
+              <h3 className="text-xl font-bold text-white mb-6 text-center">Moving Cost Calculator</h3>
+              <div className="space-y-4">
+                <div>
+                  <label className="text-sm font-medium text-white/70 mb-1 block">Moving From</label>
+                  <Input placeholder="Enter city or ZIP code" className="bg-white/90 border-0 py-5 rounded-xl text-slate-900" />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-white/70 mb-1 block">Moving To</label>
+                  <Input placeholder="Enter city or ZIP code" className="bg-white/90 border-0 py-5 rounded-xl text-slate-900" />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-white/70 mb-1 block">Home Size</label>
+                  <select className="w-full p-4 rounded-xl border-0 bg-white/90 text-slate-900">
+                    <option>Studio / 1 Bedroom</option>
+                    <option>2 Bedroom</option>
+                    <option>3 Bedroom</option>
+                    <option>4+ Bedroom</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-white/70 mb-1 block">Moving Date</label>
+                  <Input type="date" className="bg-white/90 border-0 py-5 rounded-xl text-slate-900" />
+                </div>
+                <Button className="w-full py-6 text-lg font-bold gap-2 text-white rounded-xl" style={{ background: `linear-gradient(135deg, ${theme.primary} 0%, ${theme.primaryDark} 100%)`, boxShadow: `0 8px 32px ${theme.primary}40` }}>
+                  <Calculator className="w-5 h-5" /> Calculate My Cost
+                </Button>
+                <p className="text-xs text-white/40 text-center">🔒 Your information is secure and never shared</p>
               </div>
-              <div>
-                <label className="text-sm font-medium text-slate-700 mb-1 block">Home Size</label>
-                <select className="w-full p-4 rounded-lg border border-slate-200 bg-slate-50 text-slate-900">
-                  <option>Studio / 1 Bedroom</option>
-                  <option>2 Bedroom</option>
-                  <option>3 Bedroom</option>
-                  <option>4+ Bedroom</option>
-                </select>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-slate-700 mb-1 block">Moving Date</label>
-                <Input type="date" className="bg-slate-50 py-5" />
-              </div>
-              <Button className="w-full py-6 text-lg font-bold gap-2 text-white" style={{ background: `linear-gradient(135deg, ${theme.primary} 0%, ${theme.primaryDark} 100%)` }}>
-                <Calculator className="w-5 h-5" /> Calculate My Cost
-              </Button>
-              <p className="text-xs text-slate-500 text-center">🔒 Your information is secure and never shared</p>
             </div>
           </div>
         </div>
@@ -2030,33 +2099,76 @@ export function AILandingPageGenerator({ isGenerating, onGenerate, prefillData, 
         </div>
       </header>
 
-      {/* Hero with Massive Rating */}
-      <div className="px-8 py-20 text-center" style={{ background: `linear-gradient(135deg, ${theme.secondary} 0%, ${theme.primaryDark} 100%)` }}>
-        <div className="flex justify-center mb-6">
-          <div className="flex items-center gap-2 px-6 py-3 rounded-full bg-white/10 border border-white/20">
-            {[1,2,3,4,5].map(i => <Star key={i} className="w-10 h-10 animate-pulse" style={{ fill: "#FBBF24", color: "#FBBF24", animationDelay: `${i * 0.1}s` }} />)}
+      {/* Hero — Warm gradient with floating glassmorphism rating card */}
+      <div className="relative overflow-hidden" style={{ background: `linear-gradient(145deg, ${theme.secondary} 0%, #0a0e1a 50%, ${theme.primaryDark}60 100%)` }}>
+        {/* Warm mesh gradient */}
+        <div className="absolute w-[500px] h-[500px] rounded-full opacity-20 blur-[120px]" style={{ background: '#FBBF24', top: '-20%', left: '30%' }} />
+        <div className="absolute w-[400px] h-[400px] rounded-full opacity-15 blur-[100px]" style={{ background: theme.primary, bottom: '-10%', right: '20%' }} />
+        
+        <div className="relative z-10 px-8 py-20 grid md:grid-cols-5 gap-12 items-center max-w-6xl mx-auto">
+          {/* Left content — 3 cols */}
+          <div className="md:col-span-3 text-left">
+            <Badge className="mb-4 bg-amber-500/20 text-amber-300 border border-amber-500/30 backdrop-blur-sm">
+              <Star className="w-3 h-3 mr-1 fill-amber-300" /> Verified by 50,000+ Customers
+            </Badge>
+            <h1 className="text-5xl md:text-6xl font-black text-white mb-4 leading-[0.95] tracking-tight">
+              Real Families.<br/>
+              <span className="text-transparent bg-clip-text" style={{ backgroundImage: `linear-gradient(90deg, #FBBF24, ${theme.primary})` }}>
+                Real Stories.
+              </span>
+            </h1>
+            <p className="text-xl text-white/70 max-w-lg mb-8">
+              Over 50,000 families have trusted us with their most precious belongings. Here's what they have to say.
+            </p>
+            <div className="flex gap-4 flex-wrap">
+              <Badge className="py-2 px-4 bg-white/5 text-white border border-white/10 backdrop-blur-sm">
+                <img src="https://www.google.com/favicon.ico" alt="Google" className="w-4 h-4 mr-2" /> 4.9 on Google
+              </Badge>
+              <Badge className="py-2 px-4 bg-white/5 text-white border border-white/10 backdrop-blur-sm">
+                <Star className="w-4 h-4 mr-2" style={{ fill: "#FF1A1A", color: "#FF1A1A" }} /> 4.8 on Yelp
+              </Badge>
+              <Badge className="py-2 px-4 bg-white/5 text-white border border-white/10 backdrop-blur-sm">
+                <Award className="w-4 h-4 mr-2" /> BBB A+ Rated
+              </Badge>
+            </div>
           </div>
-        </div>
-        <div className="mb-4">
-          <span className="text-7xl font-bold text-white">4.9</span>
-          <span className="text-3xl text-white/70">/5</span>
-        </div>
-        <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-          Real Families. <span style={{ color: theme.primary }}>Real Stories.</span>
-        </h1>
-        <p className="text-xl text-white/80 max-w-2xl mx-auto mb-8">
-          Over 50,000 families have trusted us with their most precious belongings. Here's what they have to say.
-        </p>
-        <div className="flex justify-center gap-6 flex-wrap">
-          <Badge className="py-2 px-4 bg-white/10 text-white border border-white/20">
-            <img src="https://www.google.com/favicon.ico" alt="Google" className="w-4 h-4 mr-2" /> 4.9 on Google
-          </Badge>
-          <Badge className="py-2 px-4 bg-white/10 text-white border border-white/20">
-            <Star className="w-4 h-4 mr-2" style={{ fill: "#FF1A1A", color: "#FF1A1A" }} /> 4.8 on Yelp
-          </Badge>
-          <Badge className="py-2 px-4 bg-white/10 text-white border border-white/20">
-            <Award className="w-4 h-4 mr-2" /> BBB A+ Rated
-          </Badge>
+          {/* Right — floating glassmorphism rating card — 2 cols */}
+          <div className="md:col-span-2">
+            <div className="rounded-3xl p-8 border text-center" style={{
+              background: 'rgba(255,255,255,0.06)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              borderColor: 'rgba(255,255,255,0.1)',
+              boxShadow: `0 32px 64px rgba(0,0,0,0.4), 0 0 80px rgba(251,191,36,0.1)`
+            }}>
+              <div className="flex justify-center mb-4">
+                {[1,2,3,4,5].map(i => <Star key={i} className="w-10 h-10" style={{ fill: "#FBBF24", color: "#FBBF24" }} />)}
+              </div>
+              <div className="mb-2">
+                <span className="text-7xl font-black text-white">4.9</span>
+                <span className="text-3xl text-white/50">/5</span>
+              </div>
+              <p className="text-white/50 text-sm mb-6">from 12,847 verified reviews</p>
+              <div className="space-y-2">
+                {[
+                  { label: "Service", pct: 98 },
+                  { label: "Punctuality", pct: 96 },
+                  { label: "Value", pct: 95 },
+                  { label: "Communication", pct: 99 },
+                ].map((item, i) => (
+                  <div key={i}>
+                    <div className="flex justify-between text-xs text-white/60 mb-1">
+                      <span>{item.label}</span>
+                      <span>{item.pct}%</span>
+                    </div>
+                    <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
+                      <div className="h-full rounded-full" style={{ width: `${item.pct}%`, background: `linear-gradient(90deg, #FBBF24, ${theme.primary})` }} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -2275,56 +2387,79 @@ export function AILandingPageGenerator({ isGenerating, onGenerate, prefillData, 
           </span>
         </div>
 
-        {/* Location-Specific Hero with Map Style */}
-        <div className="relative">
-          {/* Simulated Map Background */}
-          <div className="absolute inset-0 opacity-10" style={{ 
-            background: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath d='M0 0h100v100H0z' fill='none' stroke='%23999' stroke-width='0.5'/%3E%3Cpath d='M0 50h100M50 0v100' stroke='%23999' stroke-width='0.25'/%3E%3C/svg%3E")` 
+        {/* Location Hero — Floating city badges with mesh gradient */}
+        <div className="relative overflow-hidden" style={{ background: `linear-gradient(160deg, ${theme.secondary} 0%, #0a0e1a 50%, ${theme.primaryDark}60 100%)` }}>
+          {/* Grid pattern */}
+          <div className="absolute inset-0 opacity-[0.03]" style={{
+            backgroundImage: `linear-gradient(${theme.primary}60 1px, transparent 1px), linear-gradient(90deg, ${theme.primary}60 1px, transparent 1px)`,
+            backgroundSize: '80px 80px'
           }} />
-          
-          <div className="relative px-8 py-20" style={{ background: `linear-gradient(135deg, ${theme.secondary}ee 0%, ${theme.primaryDark}ee 100%)` }}>
-            <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
-              <div className="text-center md:text-left">
-                <Badge className="mb-4 bg-white/10 text-white border border-white/30">
-                  <MapPin className="w-3 h-3 mr-1" /> Serving All of {location}
-                </Badge>
-                <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-                  {location}'s Most <span style={{ color: theme.primary }}>Trusted Movers</span>
-                </h1>
-                <p className="text-xl text-white/80 mb-6">
-                  Local experts who know every neighborhood, every route, and every way to save you money on your move.
-                </p>
-                <div className="flex items-center gap-6 text-white/70 text-sm justify-center md:justify-start flex-wrap">
-                   <span className="flex items-center gap-1"><CheckCircle2 className="w-4 h-4 text-blue-400" /> Licensed & Insured</span>
-                   <span className="flex items-center gap-1"><CheckCircle2 className="w-4 h-4 text-blue-400" /> Local Crews</span>
-                   <span className="flex items-center gap-1"><CheckCircle2 className="w-4 h-4 text-blue-400" /> Same-Day Quotes</span>
-                </div>
-              </div>
+          {/* Glow orbs */}
+          <div className="absolute w-[500px] h-[500px] rounded-full opacity-20 blur-[120px]" style={{ background: theme.primary, top: '-20%', right: '0%' }} />
+          <div className="absolute w-[300px] h-[300px] rounded-full opacity-15 blur-[80px]" style={{ background: '#06B6D4', bottom: '-10%', left: '10%' }} />
 
-              {/* Local Quote Form */}
-              <div className="bg-white rounded-2xl p-8 shadow-2xl border-2" style={{ borderColor: theme.primary }}>
-                <div className="text-center mb-6">
-                  <h3 className="text-xl font-bold text-slate-900">Get a Free Local Quote</h3>
-                  <p className="text-sm text-slate-500">Serving all of {location} • Response in &lt;2 hours</p>
+          {/* Floating city name badges — decorative */}
+          <div className="absolute inset-0 pointer-events-none overflow-hidden">
+            {cities.slice(0, 6).map((city, i) => (
+              <div key={city} className="absolute px-3 py-1 rounded-full border border-white/10 text-white/15 text-xs backdrop-blur-sm" style={{
+                top: `${15 + (i * 12) % 60}%`,
+                left: i % 2 === 0 ? `${5 + i * 3}%` : undefined,
+                right: i % 2 !== 0 ? `${5 + i * 3}%` : undefined,
+                transform: `rotate(${(i - 3) * 4}deg)`,
+                background: 'rgba(255,255,255,0.03)',
+              }}>
+                <MapPin className="w-2.5 h-2.5 inline mr-1" />{city}
+              </div>
+            ))}
+          </div>
+          
+          <div className="relative z-10 px-8 py-20 grid md:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
+            <div className="text-left">
+              <Badge className="mb-4 bg-white/10 text-white border border-white/20 backdrop-blur-sm">
+                <MapPin className="w-3 h-3 mr-1" /> Serving All of {location}
+              </Badge>
+              <h1 className="text-4xl md:text-6xl font-black text-white mb-4 leading-[0.95] tracking-tight">
+                {location}'s Most<br/><span className="text-transparent bg-clip-text" style={{ backgroundImage: `linear-gradient(90deg, ${theme.primary}, #06B6D4)` }}>Trusted Movers</span>
+              </h1>
+              <p className="text-lg text-white/70 mb-6 max-w-md">
+                Local experts who know every neighborhood, every route, and every way to save you money on your move.
+              </p>
+              <div className="flex items-center gap-6 text-white/60 text-sm flex-wrap">
+                 <span className="flex items-center gap-1"><CheckCircle2 className="w-4 h-4" style={{ color: theme.primary }} /> Licensed & Insured</span>
+                 <span className="flex items-center gap-1"><CheckCircle2 className="w-4 h-4" style={{ color: theme.primary }} /> Local Crews</span>
+                 <span className="flex items-center gap-1"><CheckCircle2 className="w-4 h-4" style={{ color: theme.primary }} /> Same-Day Quotes</span>
+              </div>
+            </div>
+
+            {/* Glassmorphism Local Quote Form */}
+            <div className="rounded-3xl p-8 border" style={{
+              background: 'rgba(255,255,255,0.06)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              borderColor: 'rgba(255,255,255,0.1)',
+              boxShadow: `0 32px 64px rgba(0,0,0,0.4), 0 0 60px ${theme.primary}15`
+            }}>
+              <div className="text-center mb-6">
+                <h3 className="text-xl font-bold text-white">Get a Free Local Quote</h3>
+                <p className="text-sm text-white/50">Serving all of {location} • Response in &lt;2 hours</p>
+              </div>
+              <div className="space-y-4">
+                <div>
+                  <label className="text-sm font-medium text-white/70 mb-1 block">Your ZIP Code</label>
+                  <Input placeholder="Enter your ZIP" className="bg-white/90 border-0 py-5 rounded-xl text-center text-lg text-slate-900" />
                 </div>
-                <div className="space-y-4">
-                  <div>
-                    <label className="text-sm font-medium text-slate-700 mb-1 block">Your ZIP Code</label>
-                    <Input placeholder="Enter your ZIP" className="bg-slate-50 py-5 text-center text-lg" />
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-slate-700 mb-1 block">Phone Number</label>
-                    <Input placeholder="(555) 123-4567" type="tel" className="bg-slate-50 py-5 text-center text-lg" />
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-slate-700 mb-1 block">Moving Date</label>
-                    <Input type="date" className="bg-slate-50 py-5" />
-                  </div>
-                  <Button className="w-full py-6 text-lg font-bold gap-2 text-white" style={{ background: `linear-gradient(135deg, ${theme.primary} 0%, ${theme.primaryDark} 100%)` }}>
-                    Get My Free Quote <ArrowRight className="w-5 h-5" />
-                  </Button>
-                  <p className="text-xs text-slate-500 text-center">🔒 No spam • No obligation</p>
+                <div>
+                  <label className="text-sm font-medium text-white/70 mb-1 block">Phone Number</label>
+                  <Input placeholder="(555) 123-4567" type="tel" className="bg-white/90 border-0 py-5 rounded-xl text-center text-lg text-slate-900" />
                 </div>
+                <div>
+                  <label className="text-sm font-medium text-white/70 mb-1 block">Moving Date</label>
+                  <Input type="date" className="bg-white/90 border-0 py-5 rounded-xl text-slate-900" />
+                </div>
+                <Button className="w-full py-6 text-lg font-bold gap-2 text-white rounded-xl" style={{ background: `linear-gradient(135deg, ${theme.primary} 0%, ${theme.primaryDark} 100%)`, boxShadow: `0 8px 32px ${theme.primary}40` }}>
+                  Get My Free Quote <ArrowRight className="w-5 h-5" />
+                </Button>
+                <p className="text-xs text-white/40 text-center">🔒 No spam • No obligation</p>
               </div>
             </div>
           </div>
@@ -2484,47 +2619,64 @@ export function AILandingPageGenerator({ isGenerating, onGenerate, prefillData, 
         </div>
       </header>
 
-      {/* Editorial Hero */}
-      <div className="px-8 py-20 max-w-4xl mx-auto">
-        <div className="text-center mb-12">
-          <Badge className="mb-4 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
-            The Complete Guide • Updated Feb 2025
-          </Badge>
-          <h1 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-6 leading-tight">
-            Everything You Need to Know Before Hiring a Moving Company in 2025
-          </h1>
-          <p className="text-xl text-slate-600 dark:text-slate-400 mb-8">
-            A comprehensive guide to saving money, avoiding scams, and finding the perfect mover for your needs.
-          </p>
-          
-          {/* Author/Authority Section */}
-          <div className="flex items-center justify-center gap-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
-            <div className="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold text-white" style={{ background: theme.primary }}>
-              T
+      {/* Editorial Hero — Magazine style with grain texture */}
+      <div className="relative overflow-hidden">
+        {/* Subtle grain texture */}
+        <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E")` }} />
+        {/* Decorative accent line */}
+        <div className="absolute top-0 left-0 w-1 h-full" style={{ background: `linear-gradient(180deg, ${theme.primary}, transparent)` }} />
+        
+        <div className="px-8 py-20 max-w-4xl mx-auto relative z-10">
+          <div className="mb-12">
+            {/* Asymmetric editorial layout */}
+            <div className="flex items-start gap-6 mb-8">
+              <div className="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-black text-white shrink-0" style={{ background: `linear-gradient(135deg, ${theme.primary}, ${theme.primaryDark})` }}>
+                T
+              </div>
+              <div>
+                <Badge className="mb-3 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
+                  The Complete Guide • Updated Feb 2025 • 15 min read
+                </Badge>
+                <h1 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white mb-4 leading-[1.05] tracking-tight">
+                  Everything You Need to Know Before Hiring a Moving Company in 2025
+                </h1>
+              </div>
             </div>
-            <div className="text-left">
-              <p className="font-semibold text-slate-900 dark:text-white">Written by the TruMove Research Team</p>
-              <p className="text-sm text-slate-500">Based on 50,000+ customer moves and industry data</p>
-              <div className="flex items-center gap-2 mt-1">
+            
+            <p className="text-xl text-slate-600 dark:text-slate-400 mb-8 max-w-2xl">
+              A comprehensive guide to saving money, avoiding scams, and finding the perfect mover for your needs.
+            </p>
+            
+            {/* Author strip — editorial style */}
+            <div className="flex items-center gap-4 p-4 rounded-2xl border border-slate-200 dark:border-slate-700" style={{ background: `${theme.primary}05` }}>
+              <div className="w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold text-white" style={{ background: theme.primary }}>
+                T
+              </div>
+              <div className="flex-1">
+                <p className="font-semibold text-slate-900 dark:text-white text-sm">Written by the TruMove Research Team</p>
+                <p className="text-xs text-slate-500">Based on 50,000+ customer moves and industry data</p>
+              </div>
+              <div className="flex items-center gap-1 text-xs text-slate-500">
                 <CheckCircle2 className="w-3 h-3" style={{ color: theme.primary }} />
-                <span className="text-xs text-slate-500">Verified industry experts</span>
+                Verified experts
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Quick Stats */}
-        <div className="grid grid-cols-3 gap-4 mb-12">
-          {[
-            { value: "$847", label: "Avg. Savings" },
-            { value: "50K+", label: "Moves Analyzed" },
-            { value: "99%", label: "Accuracy Rate" },
-          ].map((stat, i) => (
-            <div key={i} className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800 text-center">
-              <p className="text-2xl font-bold" style={{ color: theme.primary }}>{stat.value}</p>
-              <p className="text-xs text-slate-500">{stat.label}</p>
-            </div>
-          ))}
+          {/* Quick Stats — bento grid */}
+          <div className="grid grid-cols-3 gap-3 mb-12">
+            {[
+              { value: "$847", label: "Avg. Savings", icon: "💰" },
+              { value: "50K+", label: "Moves Analyzed", icon: "📊" },
+              { value: "99%", label: "Accuracy Rate", icon: "🎯" },
+            ].map((stat, i) => (
+              <div key={i} className="p-5 rounded-2xl border border-slate-200 dark:border-slate-700 text-center" style={{ background: `${theme.primary}05` }}>
+                <div className="text-xl mb-1">{stat.icon}</div>
+                <p className="text-2xl font-black" style={{ color: theme.primary }}>{stat.value}</p>
+                <p className="text-xs text-slate-500">{stat.label}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
