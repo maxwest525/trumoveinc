@@ -38,7 +38,6 @@ export default function AgentSidebar({ onDialerToggle }: AgentSidebarProps) {
     <aside className="w-52 shrink-0 border-r border-border bg-card flex flex-col min-h-screen">
       <div className="px-4 py-4 flex items-center gap-2">
         <img src={logoImg} alt="TruMove" className="h-6" />
-        <span className="text-sm font-bold text-foreground tracking-tight">TRUMOVE</span>
         <span className="text-[10px] text-muted-foreground ml-1">CRM</span>
       </div>
 
