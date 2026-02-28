@@ -13,23 +13,48 @@ export default function ScaledPreview({ children, contentWidth = 1440, className
   const [scale, setScale] = useState(1);
   const [scaledHeight, setScaledHeight] = useState<number | undefined>(undefined);
   const rafRef = useRef<number>();
+  const lastWidthRef = useRef<number>(0);
   const lastHeightRef = useRef<number>(0);
+  const heightStableRef = useRef(false);
 
   const updateScale = useCallback(() => {
     const container = containerRef.current;
     const content = contentRef.current;
     if (!container) return;
 
-    const newScale = container.clientWidth / contentWidth;
+    const containerWidth = container.clientWidth;
+
+    // Only recalculate if container width actually changed (ignore sub-pixel jitter)
+    if (Math.abs(containerWidth - lastWidthRef.current) < 1) {
+      // Width unchanged — only do a one-time height settle
+      if (!heightStableRef.current && content) {
+        const contentHeight = content.scrollHeight;
+        if (Math.abs(contentHeight - lastHeightRef.current) > 4) {
+          lastHeightRef.current = contentHeight;
+          const s = lastWidthRef.current / contentWidth;
+          setScaledHeight(contentHeight * s);
+        } else {
+          heightStableRef.current = true;
+        }
+      }
+      return;
+    }
+
+    lastWidthRef.current = containerWidth;
+    heightStableRef.current = false;
+    const newScale = containerWidth / contentWidth;
     setScale(newScale);
 
     if (content) {
-      const contentHeight = content.scrollHeight;
-      // Only update height if it changed by more than 2px to prevent jitter
-      if (Math.abs(contentHeight - lastHeightRef.current) > 2) {
-        lastHeightRef.current = contentHeight;
-        setScaledHeight(contentHeight * newScale);
-      }
+      // Use rAF + double-rAF to let layout settle before measuring
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          if (!contentRef.current) return;
+          const contentHeight = contentRef.current.scrollHeight;
+          lastHeightRef.current = contentHeight;
+          setScaledHeight(contentHeight * newScale);
+        });
+      });
     }
   }, [contentWidth]);
 
@@ -39,8 +64,14 @@ export default function ScaledPreview({ children, contentWidth = 1440, className
 
     updateScale();
 
-    // Only observe the container for width changes, not the content
-    const observer = new ResizeObserver(() => {
+    // Only observe the container for width changes
+    const observer = new ResizeObserver((entries) => {
+      // Only respond to width changes on the container
+      const entry = entries[0];
+      if (!entry) return;
+      const newWidth = entry.contentRect.width;
+      if (Math.abs(newWidth - lastWidthRef.current) < 1) return;
+
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
       rafRef.current = requestAnimationFrame(updateScale);
     });
@@ -54,7 +85,8 @@ export default function ScaledPreview({ children, contentWidth = 1440, className
 
   // One-time content height measurement after mount + children change
   useEffect(() => {
-    const timer = setTimeout(updateScale, 100);
+    heightStableRef.current = false;
+    const timer = setTimeout(updateScale, 150);
     return () => clearTimeout(timer);
   }, [children, updateScale]);
 
@@ -81,6 +113,7 @@ export default function ScaledPreview({ children, contentWidth = 1440, className
             position: "absolute",
             top: 0,
             left: 0,
+            willChange: "transform",
           }}
         >
           {children}
