@@ -30,7 +30,7 @@ serve(async (req) => {
     console.log("Fetching conversation token for agent:", ELEVENLABS_AGENT_ID);
 
     const response = await fetch(
-      `https://api.elevenlabs.io/v1/convai/conversation/token?agent_id=${ELEVENLABS_AGENT_ID}`,
+      `https://api.elevenlabs.io/v1/convai/conversation/get-signed-url?agent_id=${ELEVENLABS_AGENT_ID}`,
       {
         method: "GET",
         headers: {
@@ -49,10 +49,10 @@ serve(async (req) => {
     }
 
     const data = await response.json();
-    console.log("Successfully obtained conversation token");
+    console.log("Successfully obtained signed URL");
 
     return new Response(
-      JSON.stringify({ token: data.token }),
+      JSON.stringify({ signed_url: data.signed_url }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error) {
