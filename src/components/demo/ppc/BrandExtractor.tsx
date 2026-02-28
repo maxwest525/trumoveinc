@@ -3,10 +3,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { 
-  Loader2, Plus, X, Palette, Zap, ExternalLink, Check, Sparkles
+  Loader2, Plus, X, Palette, Zap, ExternalLink, Check, Sparkles, ChevronDown
 } from "lucide-react";
 import { firecrawlApi, ExtractedBranding } from "@/lib/api/firecrawl";
 import { PRESET_STYLES } from "./brandPresets";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface ExtractedSite {
   url: string;
@@ -86,10 +93,13 @@ export function BrandExtractor({ onApplyTheme, currentThemeId }: BrandExtractorP
     }
   };
 
-  const handleApplyPreset = (preset: typeof PRESET_STYLES[0]) => {
-    setActivePreset(preset.id);
-    onApplyTheme(preset.branding);
-    toast.success(`Applied ${preset.name} style`);
+  const handleSelectPreset = (presetId: string) => {
+    const preset = PRESET_STYLES.find(p => p.id === presetId);
+    if (preset) {
+      setActivePreset(preset.id);
+      onApplyTheme(preset.branding);
+      toast.success(`Applied ${preset.name} style`);
+    }
   };
 
   const handleApplyExtracted = (site: ExtractedSite) => {
@@ -98,41 +108,56 @@ export function BrandExtractor({ onApplyTheme, currentThemeId }: BrandExtractorP
     toast.success(`Applied style from ${site.title || site.url}`);
   };
 
+  const activePresetData = activePreset ? PRESET_STYLES.find(p => p.id === activePreset) : null;
+
   return (
-    <div className="space-y-5">
-      {/* Quick-Pick Presets — compact horizontal list */}
+    <div className="space-y-4">
+      {/* Preset Dropdown */}
       <div>
         <div className="flex items-center gap-2 mb-2">
           <Sparkles size={14} className="text-primary" />
           <span className="text-xs font-semibold">Steal This Style</span>
         </div>
-        <div className="flex flex-wrap gap-1.5 max-h-[240px] overflow-y-auto pr-1">
-          {PRESET_STYLES.map(p => {
-            const isActive = activePreset === p.id;
-            const colors = [p.branding.colors?.primary, p.branding.colors?.secondary, p.branding.colors?.accent].filter(Boolean);
-            return (
-              <button
-                key={p.id}
-                onClick={() => handleApplyPreset(p)}
-                className={`group flex items-center gap-2 px-2.5 py-1.5 rounded-md border text-left transition-all text-xs hover:border-primary/40 ${
-                  isActive ? 'border-primary bg-primary/5 ring-1 ring-primary/20' : 'border-border'
-                }`}
-              >
-                {/* Color dots */}
-                <div className="flex gap-0.5 shrink-0">
-                  {colors.map((c, i) => (
-                    <div key={i} style={{ background: c }} className="w-2.5 h-2.5 rounded-full border border-border/50" />
-                  ))}
-                </div>
-                <span className="font-medium whitespace-nowrap">{p.name}</span>
-                {isActive && <Check size={10} className="text-primary shrink-0" />}
-              </button>
-            );
-          })}
-        </div>
+        <Select value={activePreset || ""} onValueChange={handleSelectPreset}>
+          <SelectTrigger className="h-9 text-xs">
+            <SelectValue placeholder="Choose a brand style...">
+              {activePresetData && (
+                <span className="flex items-center gap-2">
+                  <span className="flex gap-0.5">
+                    {[activePresetData.branding.colors?.primary, activePresetData.branding.colors?.secondary, activePresetData.branding.colors?.accent]
+                      .filter(Boolean)
+                      .map((c, i) => (
+                        <span key={i} style={{ background: c }} className="w-3 h-3 rounded-full border border-border/50 inline-block" />
+                      ))}
+                  </span>
+                  <span>{activePresetData.name}</span>
+                  <span className="text-muted-foreground ml-1">— {activePresetData.desc}</span>
+                </span>
+              )}
+            </SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            {PRESET_STYLES.map(p => {
+              const colors = [p.branding.colors?.primary, p.branding.colors?.secondary, p.branding.colors?.accent].filter(Boolean);
+              return (
+                <SelectItem key={p.id} value={p.id} className="text-xs py-2">
+                  <span className="flex items-center gap-2.5">
+                    <span className="flex gap-0.5 shrink-0">
+                      {colors.map((c, i) => (
+                        <span key={i} style={{ background: c }} className="w-3 h-3 rounded-full border border-border/50 inline-block" />
+                      ))}
+                    </span>
+                    <span className="font-medium">{p.name}</span>
+                    <span className="text-muted-foreground">{p.desc}</span>
+                  </span>
+                </SelectItem>
+              );
+            })}
+          </SelectContent>
+        </Select>
       </div>
 
-      {/* URL Extraction — inline with Apply */}
+      {/* URL Extraction */}
       <div>
         <div className="flex items-center gap-2 mb-2">
           <Palette size={14} className="text-primary" />
@@ -172,7 +197,7 @@ export function BrandExtractor({ onApplyTheme, currentThemeId }: BrandExtractorP
         </div>
       </div>
 
-      {/* Extracted Results — compact */}
+      {/* Extracted Results */}
       {extractedSites.length > 0 && (
         <div className="space-y-2">
           <span className="text-xs font-semibold">Extracted Styles</span>

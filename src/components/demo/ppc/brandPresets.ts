@@ -64,16 +64,16 @@ export const PRESET_STYLES: { id: string; name: string; desc: string; branding: 
     desc: "Minimal, spacious, SF Pro",
     branding: {
       colorScheme: "light",
-      colors: { primary: "#0071E3", secondary: "#1D1D1F", accent: "#0077ED", background: "#FBFBFD", textPrimary: "#1D1D1F", textSecondary: "#6E6E73" },
+      colors: { primary: "#0066CC", secondary: "#1D1D1F", accent: "#2997FF", background: "#F5F5F7", textPrimary: "#1D1D1F", textSecondary: "#86868B" },
       typography: {
         fontFamilies: { primary: "'SF Pro Display', -apple-system, sans-serif", heading: "'SF Pro Display', -apple-system, sans-serif" },
         fontSizes: { h1: "80px", h2: "48px", h3: "28px", body: "17px" },
-        fontWeights: { regular: 400, medium: 500, bold: 700 },
+        fontWeights: { regular: 400, medium: 500, bold: 600 },
       },
-      spacing: { baseUnit: 8, borderRadius: "16px" },
+      spacing: { baseUnit: 8, borderRadius: "14px" },
       components: {
-        buttonPrimary: { background: "#0071E3", textColor: "#FFFFFF", borderRadius: "999px" },
-        buttonSecondary: { background: "transparent", textColor: "#0071E3", borderRadius: "999px" },
+        buttonPrimary: { background: "#0066CC", textColor: "#FFFFFF", borderRadius: "980px" },
+        buttonSecondary: { background: "transparent", textColor: "#0066CC", borderRadius: "980px" },
       },
     },
   },
