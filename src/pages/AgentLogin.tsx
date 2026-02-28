@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import SiteShell from "@/components/layout/SiteShell";
 import PortalAuthForm from "@/components/auth/PortalAuthForm";
 import {
-  Users, BarChart3, Shield, Crown, ArrowRight, LogOut, Sparkles,
+  Users, BarChart3, Shield, ArrowRight, LogOut, Sparkles,
   DollarSign, Building2, ClipboardCheck,
 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -13,14 +13,14 @@ import type { Session } from "@supabase/supabase-js";
 
 const ROLES = [
   {
-    id: "owner",
-    title: "Owner",
-    description: "Full access to everything — team, data, billing, and all settings.",
-    icon: Crown,
+    id: "admin",
+    title: "Admin",
+    description: "Full access to team, data, users, integrations, billing, and all settings.",
+    icon: Shield,
     href: "/admin/dashboard",
-    accent: "from-amber-500/20 to-orange-500/10",
-    iconAccent: "text-amber-500",
-    ring: "group-hover:ring-amber-500/30",
+    accent: "from-violet-500/20 to-purple-500/10",
+    iconAccent: "text-violet-500",
+    ring: "group-hover:ring-violet-500/30",
   },
   {
     id: "agent",
@@ -41,16 +41,6 @@ const ROLES = [
     accent: "from-emerald-500/20 to-green-500/10",
     iconAccent: "text-emerald-500",
     ring: "group-hover:ring-emerald-500/30",
-  },
-  {
-    id: "admin",
-    title: "Admin",
-    description: "Configure users, integrations, branding, and system settings.",
-    icon: Shield,
-    href: "/admin/dashboard",
-    accent: "from-violet-500/20 to-purple-500/10",
-    iconAccent: "text-violet-500",
-    ring: "group-hover:ring-violet-500/30",
   },
   {
     id: "marketing",
