@@ -10,12 +10,12 @@ import { cn } from "@/lib/utils";
 import { setPortalContext } from "@/hooks/usePortalContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import DemoDataToggle from "@/components/leads/DemoDataToggle";
+import logoImg from "@/assets/logo.png";
 
 const NAV_ITEMS = [
   { label: "Dashboard", icon: LayoutDashboard, href: "/marketing/dashboard" },
   { label: "My KPIs", icon: Gauge, href: "/kpi" },
   { label: "AI Marketing Suite", icon: Sparkles, href: "/marketing/dashboard" },
-  { label: "Website Builder", icon: Globe },
   { label: "Analytics Setup", icon: LineChart },
 ];
 
@@ -49,9 +49,7 @@ export default function MarketingShell({ children, breadcrumb = "" }: MarketingS
   const sidebarContent = (
     <>
       <div className="px-4 py-4 flex items-center gap-2">
-        <div className="w-7 h-7 rounded-lg bg-foreground flex items-center justify-center">
-          <span className="text-background text-xs font-bold">G</span>
-        </div>
+        <img src={logoImg} alt="TruMove" className="h-6" />
         <span className="text-sm font-bold text-foreground tracking-tight">TRUMOVE</span>
         <span className="text-[10px] text-muted-foreground ml-1">Marketing</span>
         {isMobile && (

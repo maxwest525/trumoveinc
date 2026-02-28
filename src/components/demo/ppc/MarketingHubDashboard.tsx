@@ -69,8 +69,8 @@ export function MarketingHubDashboard({
     },
     {
       id: 'manual',
-      title: 'Build Manual',
-      subtitle: 'Choose template, customize, and publish',
+      title: 'Build & Brand',
+      subtitle: 'Clone any brand style, pick a template, and publish',
       icon: Wand2,
       gradient: 'from-sky-400 via-cyan-500 to-blue-500',
       glowColor: 'hsl(200 80% 50% / 0.15)',
