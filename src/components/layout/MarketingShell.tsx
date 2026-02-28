@@ -50,7 +50,6 @@ export default function MarketingShell({ children, breadcrumb = "" }: MarketingS
     <>
       <div className="px-4 py-4 flex items-center gap-2">
         <img src={logoImg} alt="TruMove" className="h-6" />
-        <span className="text-sm font-bold text-foreground tracking-tight">TRUMOVE</span>
         <span className="text-[10px] text-muted-foreground ml-1">Marketing</span>
         {isMobile && (
           <button onClick={() => setSidebarOpen(false)} className="ml-auto p-1 rounded-lg hover:bg-muted">
