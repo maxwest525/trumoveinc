@@ -13,9 +13,18 @@ export default function ScaledPreview({ children, contentWidth = 1440, className
   const [scale, setScale] = useState(1);
   const [scaledHeight, setScaledHeight] = useState<number | undefined>(undefined);
   const lastWidthRef = useRef<number>(0);
-  const heightLockedRef = useRef(false);
+  const mutationObserverRef = useRef<MutationObserver | null>(null);
+  const debounceRef = useRef<number>(0);
 
-  // Measure and set scale + height — only when container width actually changes
+  const measureHeight = useCallback(() => {
+    const content = contentRef.current;
+    if (!content) return;
+    const s = lastWidthRef.current / contentWidth;
+    if (s <= 0) return;
+    const h = content.scrollHeight;
+    setScaledHeight(Math.round(h * s));
+  }, [contentWidth]);
+
   const measure = useCallback(() => {
     const container = containerRef.current;
     const content = contentRef.current;
@@ -26,11 +35,8 @@ export default function ScaledPreview({ children, contentWidth = 1440, className
 
     const widthChanged = Math.abs(containerWidth - lastWidthRef.current) >= 1;
 
-    if (!widthChanged && heightLockedRef.current) return;
-
     if (widthChanged) {
       lastWidthRef.current = containerWidth;
-      heightLockedRef.current = false;
       const s = containerWidth / contentWidth;
       setScale(s);
     }
@@ -38,17 +44,12 @@ export default function ScaledPreview({ children, contentWidth = 1440, className
     // Defer height read to let layout settle
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        const c = contentRef.current;
-        if (!c) return;
-        const s = lastWidthRef.current / contentWidth;
-        const h = c.scrollHeight;
-        setScaledHeight(Math.round(h * s));
-        heightLockedRef.current = true;
+        measureHeight();
       });
     });
-  }, [contentWidth]);
+  }, [contentWidth, measureHeight]);
 
-  // Observe container for width changes only
+  // Observe container for width changes
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -65,9 +66,37 @@ export default function ScaledPreview({ children, contentWidth = 1440, className
     return () => ro.disconnect();
   }, [measure]);
 
-  // Re-measure once after children mount/change, then lock
+  // MutationObserver to detect content changes (style updates, DOM changes)
+  // This is what makes the preview update when brand styles are applied
   useEffect(() => {
-    heightLockedRef.current = false;
+    const content = contentRef.current;
+    if (!content) return;
+
+    mutationObserverRef.current = new MutationObserver(() => {
+      // Debounce to avoid excessive recalculations
+      cancelAnimationFrame(debounceRef.current);
+      debounceRef.current = requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          measureHeight();
+        });
+      });
+    });
+
+    mutationObserverRef.current.observe(content, {
+      attributes: true,
+      childList: true,
+      subtree: true,
+      characterData: true,
+    });
+
+    return () => {
+      mutationObserverRef.current?.disconnect();
+      cancelAnimationFrame(debounceRef.current);
+    };
+  }, [measureHeight]);
+
+  // Initial height settlement
+  useEffect(() => {
     const t = setTimeout(measure, 200);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
