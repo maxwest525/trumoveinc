@@ -291,6 +291,16 @@ export default function HomepageV2() {
           <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[80%] rounded-full opacity-[0.08] blur-[120px]" style={{ background: "hsl(175, 80%, 35%)" }} />
           <div className="absolute bottom-[-30%] right-[-10%] w-[50%] h-[70%] rounded-full opacity-[0.06] blur-[100px]" style={{ background: "hsl(200, 80%, 40%)" }} />
         </div>
+        {/* Faded truck mockup behind hero text */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden">
+          <img
+            src={heroDeviceMockup}
+            alt=""
+            aria-hidden="true"
+            className="w-[90%] max-w-4xl opacity-[0.12]"
+            style={{ filter: "blur(1px) saturate(1.2)", maskImage: "radial-gradient(ellipse at center, black 30%, transparent 75%)", WebkitMaskImage: "radial-gradient(ellipse at center, black 30%, transparent 75%)" }}
+          />
+        </div>
         <HeroParticlesTeal className="z-0" />
 
         <div className="relative max-w-4xl mx-auto px-6 text-center">
@@ -323,19 +333,6 @@ export default function HomepageV2() {
           </Link>
         </div>
 
-        {/* Device Mockup */}
-        <div className="relative max-w-4xl mx-auto px-6 mt-16">
-          <div className="relative">
-            {/* Glow behind image */}
-            <div className="absolute inset-0 -inset-x-8 -inset-y-4 rounded-3xl blur-[60px] opacity-30" style={{ background: `radial-gradient(ellipse at center, hsl(20, 90%, 50%, 0.4), hsl(175, 70%, 40%, 0.3), transparent 70%)` }} />
-            <img
-              src={heroDeviceMockup}
-              alt="TruMove app showing real-time truck tracking on map"
-              className="relative w-full rounded-2xl"
-              style={{ filter: "drop-shadow(0 20px 60px hsl(200, 30%, 4%, 0.8))" }}
-            />
-          </div>
-        </div>
       </section>
 
       {/* ─── HERO PRODUCT SHOWCASE — Quote Form as "Device" ─── */}
