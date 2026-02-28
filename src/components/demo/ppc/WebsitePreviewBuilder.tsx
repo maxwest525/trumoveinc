@@ -1,13 +1,12 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Sun, Moon, ArrowLeft, Star, CheckCircle2, Phone, MapPin, Shield, Clock, Users, Truck, Quote, Play, ChevronRight, Zap, Award, ArrowRight, Lock, BarChart3, Globe, Headphones, Check, X, Palette } from "lucide-react";
+import { Sun, Moon, ArrowLeft, Star, CheckCircle2, Phone, MapPin, Shield, Clock, Users, Truck, Quote, Play, ChevronRight, Zap, Award, ArrowRight, Lock, BarChart3, Globe, Headphones, Check, X, Palette, ChevronDown, ChevronUp } from "lucide-react";
 import ScaledPreview from "@/components/ui/ScaledPreview";
 import { BuildSelections } from "./AnalyticsBuilderPanel";
 import { cn } from "@/lib/utils";
 import { AutomationModeSelector } from "./AutomationModeSelector";
 import { BrandExtractor } from "./BrandExtractor";
 import { ExtractedBranding } from "@/lib/api/firecrawl";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 interface WebsitePreviewBuilderProps {
   selections: BuildSelections;
@@ -1093,6 +1092,7 @@ export function WebsitePreviewBuilder({ selections, onBack }: WebsitePreviewBuil
   const [isWebsite, setIsWebsite] = useState(selections.outputType === 'website');
   const [activePage, setActivePage] = useState<PageTab>('home');
   const [customBranding, setCustomBranding] = useState<ExtractedBranding | null>(null);
+  const [showBrandPanel, setShowBrandPanel] = useState(true);
 
   const getThemedColors = (): { accent: string; fg: string; bg: string; muted: string; border: string; cardBg: string } | null => {
     if (!customBranding?.colors) return null;
@@ -1142,21 +1142,27 @@ export function WebsitePreviewBuilder({ selections, onBack }: WebsitePreviewBuil
             {darkMode ? 'Dark' : 'Light'}
           </button>
 
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant={customBranding ? "default" : "outline"} size="sm" className="gap-1.5 text-xs">
-                <Palette className="w-3.5 h-3.5" />
-                {customBranding ? 'Styled' : 'Style Extractor'}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-[520px] max-h-[70vh] overflow-y-auto" align="end">
-              <BrandExtractor onApplyTheme={setCustomBranding} />
-            </PopoverContent>
-          </Popover>
+          <Button
+            variant={showBrandPanel ? "default" : "outline"}
+            size="sm"
+            onClick={() => setShowBrandPanel(!showBrandPanel)}
+            className="gap-1.5 text-xs"
+          >
+            <Palette className="w-3.5 h-3.5" />
+            {customBranding ? 'Brand Applied' : 'Extract Brand'}
+            {showBrandPanel ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+          </Button>
 
           <AutomationModeSelector />
         </div>
       </div>
+
+      {/* Brand Extractor Panel — inline collapsible */}
+      {showBrandPanel && (
+        <div className="rounded-xl border border-border bg-card p-4 animate-in slide-in-from-top-2 duration-200">
+          <BrandExtractor onApplyTheme={setCustomBranding} />
+        </div>
+      )}
 
       {/* Template Picker */}
       <div className="flex gap-2 overflow-x-auto pb-1">
