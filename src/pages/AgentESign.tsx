@@ -243,9 +243,9 @@ export default function AgentESign() {
                   <Label>Document Type</Label>
                   <div className="grid grid-cols-3 gap-2">
                     {(["estimate", "ccach", "bol"] as DocumentType[]).map(type => (
-                      <Button key={type} variant={newDoc.type === type ? "default" : "outline"} className="h-auto py-3 flex-col gap-1" onClick={() => setNewDoc(prev => ({ ...prev, type }))}>
-                        <FileText className="w-4 h-4" />
-                        <span className="text-xs">{DOCUMENT_LABELS[type]}</span>
+                      <Button key={type} variant={newDoc.type === type ? "default" : "outline"} size="sm" className="gap-1.5 text-xs" onClick={() => setNewDoc(prev => ({ ...prev, type }))}>
+                        <FileText className="w-3.5 h-3.5" />
+                        {DOCUMENT_LABELS[type]}
                       </Button>
                     ))}
                   </div>
@@ -272,13 +272,13 @@ export default function AgentESign() {
                   <div className="space-y-2">
                     <Label>Delivery Method</Label>
                     <div className="flex gap-2">
-                      <Button variant={newDoc.deliveryMethod === "email" ? "default" : "outline"} className="flex-1 gap-2" onClick={() => setNewDoc(prev => ({ ...prev, deliveryMethod: "email" }))}><Mail className="w-4 h-4" />Email</Button>
-                      <Button variant={newDoc.deliveryMethod === "sms" ? "default" : "outline"} className="flex-1 gap-2" onClick={() => setNewDoc(prev => ({ ...prev, deliveryMethod: "sms" }))}><MessageSquare className="w-4 h-4" />SMS</Button>
+                      <Button variant={newDoc.deliveryMethod === "email" ? "default" : "outline"} size="sm" className="flex-1 gap-1.5 text-xs" onClick={() => setNewDoc(prev => ({ ...prev, deliveryMethod: "email" }))}><Mail className="w-3.5 h-3.5" />Email</Button>
+                      <Button variant={newDoc.deliveryMethod === "sms" ? "default" : "outline"} size="sm" className="flex-1 gap-1.5 text-xs" onClick={() => setNewDoc(prev => ({ ...prev, deliveryMethod: "sms" }))}><MessageSquare className="w-3.5 h-3.5" />SMS</Button>
                     </div>
                   </div>
                 </div>
 
-                <Button className="w-full gap-2" size="lg" onClick={handleSendDocument} disabled={isSending}>
+                <Button className="w-full gap-2" onClick={handleSendDocument} disabled={isSending}>
                   {isSending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
                   {isSending ? "Sending..." : `Send ${DOCUMENT_LABELS[newDoc.type]}`}
                 </Button>
