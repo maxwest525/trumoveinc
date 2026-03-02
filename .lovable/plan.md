@@ -1,35 +1,43 @@
 
 
-# New Lead Save Options + E-Sign "View" Button
+# Fix "View" Button: Open E-Sign Document in a Modal (Not New Tab)
+
+## Problem
+The "View" button navigates to `/esign/{refNumber}` in a new tab, but that route doesn't exist in the app -- only `/auth` exists as the signing page. This causes a 404 error.
+
+## Solution
+Replace the `window.open` behavior with a **Dialog modal** that renders the actual e-sign document inline, with full signing/initials functionality.
+
+---
 
 ## Changes
 
-### 1. AgentNewCustomer.tsx -- Add "Save" option alongside "Continue to E-Sign"
-Currently there's only one button: "Save & Continue to E-Sign". We'll split this into two actions:
-- **"Save Lead"** (outline button) -- saves the lead to the database and navigates back to customers/pipeline
-- **"Save & Continue to E-Sign"** (primary button) -- keeps the current behavior
+### 1. Create `ESignViewModal` component
+**New file:** `src/components/esign/ESignViewModal.tsx`
 
-Both buttons will share the same `handleCreate` logic but with a different post-save destination.
+- A Dialog modal that receives the document type (`estimate` | `ccach`) and customer info
+- Renders the appropriate document component inside:
+  - `EstimateAuthDocument` for estimate type
+  - `CCACHDocumentWrapper` for CC/ACH type
+- Includes all the signing state (typed name, initials, signature fields) so the agent can see the full interactive document
+- Modal will be large (max-w-4xl or similar) to show the document at a readable size
+- Read-only or interactive depending on preference -- the agent sees exactly what the customer sees
 
-### 2. AgentESign.tsx -- Replace "Assist" (screen share) with "View" button
-The current "Assist" button triggers a fake screen share session which isn't practical. We'll:
-- Replace the screen share functionality with a **"View" button** that opens the e-sign document in a new tab (navigates to `/esign/[refNumber]` i.e. the Auth page where the customer signs)
-- This lets the agent see exactly what the customer sees so they can guide them by phone
-- The "View" button will appear on all tracked documents (not just "opened" ones) so the agent can preview at any stage
-- Remove the screen share banner and related state since it's no longer needed
+### 2. Update `AgentESign.tsx`
+- Remove the `viewDocument` function that calls `window.open`
+- Add state for the modal: `viewingDoc: DocumentRecord | null`
+- "View" button sets `viewingDoc` to open the modal
+- Render `ESignViewModal` with the selected document's type and customer info
+- Apply the same fix to both the Track tab and Completed tab "View" buttons
 
-### Technical Details
+### 3. Also fix `BOLSendTrack.tsx` (if it has the same pattern)
+- Check and fix any other `window.open` calls to `/esign/` routes
 
-**AgentNewCustomer.tsx:**
-- Refactor `handleCreate` to accept a `destination` parameter (`"esign"` or `"customers"`)
-- Add a second outline-style "Save Lead" button next to the existing primary button
-- "Save Lead" saves then navigates to `/agent/customers`
-- "Save & Continue to E-Sign" keeps navigating to `/agent/esign?leadId=...`
+---
 
-**AgentESign.tsx:**
-- Remove `isScreensharing`, `selectedDoc`, `startScreenshare`, `endScreenshare` state and functions
-- Remove the screen share banner card (lines 239-259)
-- Replace the "Assist" button in the Track tab with a "View" button that opens the signing URL in a new tab (`window.open`)
-- Add a "View" button to all tracked documents (not gated behind "opened" status)
-- Keep the existing "View" button in the Completed tab as-is
+## Technical Notes
+- Reuses existing `EstimateAuthDocument` and `CCACHDocumentWrapper` components -- no duplication
+- Uses the existing `Dialog` component from `@radix-ui/react-dialog`
+- The modal will include a `ScrollArea` for documents that exceed viewport height
+- Document state (signatures, name) is local to the modal -- closing and reopening resets it
 
