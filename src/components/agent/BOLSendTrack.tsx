@@ -13,6 +13,7 @@ import {
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { ClientSearchModal, type ClientData } from "@/components/agent/ClientSearchModal";
+import { ESignViewModal } from "@/components/esign/ESignViewModal";
 
 type DeliveryMethod = "email" | "sms";
 type SigningStatus = "not_sent" | "sent" | "delivered" | "opened" | "signing" | "completed";
@@ -67,6 +68,7 @@ export function BOLSendTrack({ prefillName = "", prefillEmail = "", prefillPhone
   const [documents, setDocuments] = useState<BOLRecord[]>(DEMO_BOLS);
   const [showClientSearch, setShowClientSearch] = useState(false);
   const [isSending, setIsSending] = useState(false);
+  const [viewingDoc, setViewingDoc] = useState<BOLRecord | null>(null);
 
   const [newDoc, setNewDoc] = useState({
     customerName: prefillName,
@@ -144,7 +146,7 @@ export function BOLSendTrack({ prefillName = "", prefillEmail = "", prefillPhone
   };
 
   const viewDocument = (doc: BOLRecord) => {
-    toast.info(`Viewing BOL ${doc.refNumber}`, { description: "BOL document preview coming soon" });
+    setViewingDoc(doc);
   };
 
   const formatTime = (date?: Date) => {
@@ -163,6 +165,15 @@ export function BOLSendTrack({ prefillName = "", prefillEmail = "", prefillPhone
   return (
     <div className="space-y-4">
       <ClientSearchModal open={showClientSearch} onClose={() => setShowClientSearch(false)} onSelect={handleClientSelect} />
+      {viewingDoc && (
+        <ESignViewModal
+          open={!!viewingDoc}
+          onClose={() => setViewingDoc(null)}
+          documentType="bol"
+          customerName={viewingDoc.customerName}
+          refNumber={viewingDoc.refNumber}
+        />
+      )}
 
       <Tabs defaultValue="send" className="space-y-4">
         <TabsList className="grid w-full grid-cols-3">

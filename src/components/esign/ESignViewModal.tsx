@@ -9,13 +9,14 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { EstimateAuthDocument } from "@/components/esign/EstimateAuthDocument";
 import { CCACHDocumentWrapper } from "@/components/esign/CCACHDocumentWrapper";
+import { BOLDocumentWrapper } from "@/components/esign/BOLDocumentWrapper";
 
 type SignatureField = "initial1" | "initial2" | "initial3" | "signature";
 
 interface ESignViewModalProps {
   open: boolean;
   onClose: () => void;
-  documentType: "estimate" | "ccach";
+  documentType: "estimate" | "ccach" | "bol";
   customerName: string;
   refNumber: string;
 }
@@ -63,7 +64,7 @@ export function ESignViewModal({
     day: "numeric",
   });
 
-  const label = documentType === "estimate" ? "Estimate Authorization" : "CC/ACH Authorization";
+  const label = documentType === "estimate" ? "Estimate Authorization" : documentType === "ccach" ? "CC/ACH Authorization" : "Bill of Lading";
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
@@ -90,8 +91,15 @@ export function ESignViewModal({
                 refNumber={refNumber}
                 today={today}
               />
-            ) : (
+            ) : documentType === "ccach" ? (
               <CCACHDocumentWrapper
+                typedName={typedName}
+                onTypedNameChange={setTypedName}
+                isSubmitted={isSubmitted}
+                onSubmit={handleSubmit}
+              />
+            ) : (
+              <BOLDocumentWrapper
                 typedName={typedName}
                 onTypedNameChange={setTypedName}
                 isSubmitted={isSubmitted}
