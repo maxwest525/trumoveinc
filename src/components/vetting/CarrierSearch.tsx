@@ -99,14 +99,18 @@ export function CarrierSearch({ onSelect, className, isLoading: externalLoading 
 
       if (type === 'name') {
         const carriers = data?.content || [];
-        const resultList = (Array.isArray(carriers) ? carriers : []).map((c: any) => ({
-          dotNumber: c.dotNumber?.toString() || '',
-          legalName: c.legalName || '',
-          dbaName: c.dbaName || '',
-          city: c.phyCity || '',
-          state: c.phyState || '',
-          phone: c.telephone || '',
-        })).filter((c: SearchResult) => c.dotNumber);
+        const resultList = (Array.isArray(carriers) ? carriers : []).map((item: any) => {
+          // FMCSA API nests carrier data under .carrier for name search results
+          const c = item.carrier || item;
+          return {
+            dotNumber: c.dotNumber?.toString() || '',
+            legalName: c.legalName || '',
+            dbaName: c.dbaName || '',
+            city: c.phyCity || '',
+            state: c.phyState || '',
+            phone: c.telephone || '',
+          };
+        }).filter((c: SearchResult) => c.dotNumber);
         setResults(resultList.slice(0, 20));
         if (resultList.length === 0) {
           setError('No carriers found matching that name');
@@ -128,15 +132,18 @@ export function CarrierSearch({ onSelect, className, isLoading: externalLoading 
         }
       } else if (type === 'mc') {
         const content = data?.content;
-        const carriers = Array.isArray(content) ? content : content?.carrier ? [content.carrier] : [];
-        const resultList = carriers.map((c: any) => ({
-          dotNumber: c.dotNumber?.toString() || '',
-          legalName: c.legalName || '',
-          dbaName: c.dbaName || '',
-          city: c.phyCity || '',
-          state: c.phyState || '',
-          phone: c.telephone || '',
-        })).filter((c: SearchResult) => c.dotNumber);
+        const items = Array.isArray(content) ? content : content?.carrier ? [content] : [];
+        const resultList = items.map((item: any) => {
+          const c = item.carrier || item;
+          return {
+            dotNumber: c.dotNumber?.toString() || '',
+            legalName: c.legalName || '',
+            dbaName: c.dbaName || '',
+            city: c.phyCity || '',
+            state: c.phyState || '',
+            phone: c.telephone || '',
+          };
+        }).filter((c: SearchResult) => c.dotNumber);
         setResults(resultList.slice(0, 20));
         if (resultList.length === 0) {
           setError('No carrier found with that MC number');
