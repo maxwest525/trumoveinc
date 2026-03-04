@@ -71,7 +71,9 @@ export function CarrierSearch({ onSelect, className, isLoading: externalLoading 
       
       let apiUrl = '';
       if (type === 'name') {
-        const encodedName = encodeURIComponent(searchQuery.trim());
+        // FMCSA requires * wildcards between words for name search
+        const searchName = searchQuery.trim().replace(/\s+/g, '*');
+        const encodedName = encodeURIComponent(searchName);
         apiUrl = `${FMCSA_BASE}/carriers/name/${encodedName}?webKey=${webKey}`;
       } else if (type === 'dot') {
         apiUrl = `${FMCSA_BASE}/carriers/${searchQuery.trim()}?webKey=${webKey}`;
