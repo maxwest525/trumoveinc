@@ -536,6 +536,56 @@ export type Database = {
           },
         ]
       }
+      lead_inventory: {
+        Row: {
+          created_at: string
+          cubic_feet: number
+          id: string
+          image_url: string | null
+          item_name: string
+          lead_id: string
+          quantity: number
+          room: string
+          special_handling: boolean
+          updated_at: string
+          weight: number
+        }
+        Insert: {
+          created_at?: string
+          cubic_feet?: number
+          id?: string
+          image_url?: string | null
+          item_name: string
+          lead_id: string
+          quantity?: number
+          room?: string
+          special_handling?: boolean
+          updated_at?: string
+          weight?: number
+        }
+        Update: {
+          created_at?: string
+          cubic_feet?: number
+          id?: string
+          image_url?: string | null
+          item_name?: string
+          lead_id?: string
+          quantity?: number
+          room?: string
+          special_handling?: boolean
+          updated_at?: string
+          weight?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_inventory_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lead_vendors: {
         Row: {
           contact_email: string | null
@@ -605,6 +655,7 @@ export type Database = {
           notes: string | null
           origin_address: string | null
           phone: string | null
+          price_per_cuft: number | null
           source: Database["public"]["Enums"]["lead_source"]
           status: Database["public"]["Enums"]["lead_status"]
           tags: string[] | null
@@ -625,6 +676,7 @@ export type Database = {
           notes?: string | null
           origin_address?: string | null
           phone?: string | null
+          price_per_cuft?: number | null
           source?: Database["public"]["Enums"]["lead_source"]
           status?: Database["public"]["Enums"]["lead_status"]
           tags?: string[] | null
@@ -645,6 +697,7 @@ export type Database = {
           notes?: string | null
           origin_address?: string | null
           phone?: string | null
+          price_per_cuft?: number | null
           source?: Database["public"]["Enums"]["lead_source"]
           status?: Database["public"]["Enums"]["lead_status"]
           tags?: string[] | null

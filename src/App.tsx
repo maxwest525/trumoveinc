@@ -55,6 +55,7 @@ import AgentTeamChat from "./pages/AgentTeamChat";
 import CustomerPortal from "./pages/CustomerPortal";
 import CustomerPortalDashboard from "./pages/CustomerPortalDashboard";
 import HomepageV2 from "./pages/HomepageV2";
+import AgentInventory from "./pages/AgentInventory";
 
 const queryClient = new QueryClient();
 
@@ -106,6 +107,7 @@ const App = () => (
             
             <Route path="/agent/operations" element={<AgentOperations />} />
             <Route path="/agent/new-customer" element={<AgentNewCustomer />} />
+            <Route path="/agent/inventory/:leadId" element={<AgentInventory />} />
             <Route path="/agent/dialer" element={<AgentDialerPage />} />
             <Route path="/agent/esign" element={<AgentESign />} />
             <Route path="/agent/esign/view" element={<ESignViewPage />} />
