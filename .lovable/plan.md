@@ -1,32 +1,57 @@
 
 
-## Plan: Fix FMCSA Data Mapping Issues
+## Plan: Use FMCSA QC API Data Directly Instead of Relying on Scraper
 
-I compared the raw FMCSA API response for DOT 4285236 with what your edge function returns, and found several fields being lost or misread.
+### Problem
 
-### Issues Found
+Most of the "enhanced" data sections (OOS rates vs national average, inspection breakdown, activity summary) are gated behind `data.scraped` which requires the Firecrawl scraper to succeed. The scraper often returns empty data (`{}`), so these sections never appear. Meanwhile, the FMCSA QC API — already being called — returns much of this data on the carrier object itself.
 
-1. **OOS rates returning 0** — The `/oos` endpoint returns empty data, but OOS rates are actually on the main carrier object (`driverOosRate`, `vehicleOosRate`, `vehicleInsp`, `driverInsp`, etc.). The edge function ignores these.
+### What the QC API already provides (but is hidden behind scraper gates)
 
-2. **Authority status shows "UNKNOWN"** — The raw API returns `commonAuthorityStatus: "I"` (single letter code: A=Active, I=Inactive, N=None). The edge function checks for full words like "ACTIVE" from the `/authority` endpoint, but when that endpoint returns nothing, it falls back to "UNKNOWN" instead of reading the code from the main carrier object.
+| Data Point | QC API Field | Currently Displayed? |
+|---|---|---|
+| Vehicle OOS Rate + National Avg | `vehicleOosRate`, `vehicleOosRateNationalAverage` | Only in `data.oos`, not visualized with bar chart |
+| Driver OOS Rate + National Avg | `driverOosRate`, `driverOosRateNationalAverage` | Same |
+| Hazmat OOS Rate + National Avg | `hazmatOosRate`, `hazmatOosRateNationalAverage` | Same |
+| Vehicle/Driver/Hazmat Inspections | `vehicleInsp`, `driverInsp`, `hazmatInsp` | Not shown |
+| Vehicle/Driver/Hazmat OOS Inspections | `vehicleOosInsp`, `driverOosInsp`, `hazmatOosInsp` | Not shown |
+| BASIC total violations per category | `totalViolation` on each basic | Not shown |
+| BASIC inspections with violations | `totalInspectionWithViolation` | Not shown |
+| BASIC snapshot date | `snapShotDate` | Not shown |
 
-3. **MC number missing** — The carrier has MC-1666506 (visible on SAFER), but neither `carrier.mcNumber` nor the `/docket-numbers` endpoint is returning it. Need to also check `carrier.mcNumber` as a raw number without prefix.
+### What only the scraper can provide
 
-4. **Phone number missing** — SAFER shows (813) 492-4283 but the API returns empty `telephone`. This may be a limitation of the QC API for some carriers.
-
-5. **Insurance data on wrong object** — The main carrier response has `bipdInsuranceOnFile: "0"` directly on it, but the edge function only reads from the `/authority` endpoint. Should merge both sources.
-
-6. **OOS national averages outdated** — The carrier object has current `vehicleOosRateNationalAverage: "20.72"` and `driverOosRateNationalAverage: "5.51"` but the edge function hardcodes fallback values instead of reading from the carrier.
+- Violation details (codes, descriptions, severity weights)
+- Insurance policy details (insurer names, policy numbers, effective dates)
+- BOC-3 filing status and date
+- Authority grant/revoke history
+- Individual inspection reports
 
 ### Changes
 
-**File: `supabase/functions/carrier-lookup/index.ts`**
+**1. `src/components/vetting/CarrierSnapshotCard.tsx`**
 
-- Read OOS data from the main carrier object as primary source, fall back to `/oos` endpoint
-- Map single-letter authority codes (`A`, `I`, `N`) from the carrier object when the `/authority` endpoint returns empty
-- Read `bipdInsuranceOnFile`, `cargoInsuranceOnFile`, `bondInsuranceOnFile` from the carrier object as fallback
-- Use `vehicleOosRateNationalAverage` and `driverOosRateNationalAverage` from carrier object
-- Include inspection counts (`vehicleInsp`, `driverInsp`, `vehicleOosInsp`, `driverOosInsp`, `hazmatInsp`) from carrier object
+Move the following sections OUT of the `data.scraped && !data.scraped.isLoading` gate and render them using `data.oos` directly:
 
-This is all in the edge function — no UI changes needed since the card already handles these fields correctly.
+- **OOS Rates vs National Average** — Use `data.oos.vehicleOosRate` / `data.oos.vehicleOosRateNationalAvg` etc. Always show this section when there are inspections.
+- **Roadside Inspection Breakdown** — Use `data.oos.vehicleInspections`, `data.oos.vehicleOosInsp`, `data.oos.driverInspections`, `data.oos.driverOosInsp`, `data.oos.hazmatInsp`, `data.oos.hazmatOosInsp`. Always show when any inspections exist.
+- **BASIC Score Details** — Under each BASIC bar, show `totalInspectionWithViolation` and `totalViolation` counts from the API data (already in `data.basics`).
+
+Keep scraper-only sections gated behind `data.scraped`:
+- Insurance Policies (Li-Public)
+- BOC-3 Status
+- Authority History
+- Violation Summary (detailed codes/descriptions)
+
+**2. `src/pages/CarrierVetting.tsx`**
+
+Update the `CarrierData` interface `oos` to include `hazmatOosInsp`, `vehicleOosInsp`, `driverOosInsp`, `hazmatOosRate`, `hazmatOosRateNationalAvg` (some of these are already there in the edge function response but not typed on the frontend).
+
+**3. `src/components/vetting/CarrierSnapshotCard.tsx` — BASIC enhancement**
+
+For each BASIC score bar, show the inspection/violation count underneath when available:
+- "10 inspections with violations / 28 total violations"
+- Show snapshot date
+
+This means the full report for DOT 4285236 would show OOS rates (77.8% vehicle, 81.4% driver), inspection counts (43 total), and BASIC details immediately from the API — without waiting for the scraper.
 
