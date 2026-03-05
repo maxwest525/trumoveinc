@@ -295,14 +295,14 @@ export default function CustomerService() {
     }>
       <main className="min-h-screen bg-background">
         {/* ─── HERO ─── */}
-        <section className="relative pt-12 pb-10 px-4 overflow-hidden">
+        <section className="relative pt-14 pb-12 px-6 md:px-10 lg:px-16 overflow-hidden">
           {/* Background gradient layers */}
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.03] via-transparent to-primary/[0.02]" />
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-primary/[0.04] rounded-full blur-[120px] pointer-events-none" />
-          <div className="absolute bottom-0 right-0 w-[400px] h-[300px] bg-primary/[0.03] rounded-full blur-[100px] pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.04] via-background to-primary/[0.03]" />
+          <div className="absolute top-[-100px] left-1/4 w-[900px] h-[600px] bg-primary/[0.05] rounded-full blur-[140px] pointer-events-none" />
+          <div className="absolute bottom-[-50px] right-[10%] w-[500px] h-[400px] bg-primary/[0.04] rounded-full blur-[120px] pointer-events-none" />
           {/* Subtle dot texture */}
           <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle, hsl(var(--foreground)) 0.5px, transparent 0.5px)', backgroundSize: '24px 24px' }} />
-          <div className="relative mx-auto max-w-6xl">
+          <div className="relative mx-auto max-w-7xl">
             <div className="grid lg:grid-cols-[1fr_1.2fr] gap-8 lg:gap-12 items-center">
               {/* Left — text content */}
               <div className="text-center lg:text-left space-y-5">
