@@ -1,53 +1,52 @@
 
 
-## Problem
+## Better Utilize White Space on Meet Trudy Page
 
-The hero section uses `grid lg:grid-cols-2` with `items-start`, creating two unbalanced columns:
-- **Left column**: Small headline ("Meet Trudy"), a tiny subtitle, action buttons, and stats — very short content
-- **Right column**: Full chat box with 340px message area + header + input — much taller
+The page currently has a narrow, vertically stacked layout with constrained max-widths (`max-w-3xl` hero, `max-w-lg` chat, `max-w-5xl` grid) that leaves significant unused space on desktop. The fix is to widen the layout and use a two-section horizontal arrangement where it makes sense.
 
-This creates a massive visual gap below the left column. The headline looks "minimized" in the top-left while the chat dominates the right. The capabilities grid then sits below this uneven layout.
+### Changes in `src/pages/CustomerService.tsx`
 
-## Fix
+**1. Hero section — side-by-side on desktop (lines 298-381)**
 
-Restructure the hero into a **stacked layout** instead of side-by-side columns:
-
-1. **Hero headline + subtitle + action buttons**: Full-width, centered at the top
-2. **Stats row**: Inline below the CTA, centered
-3. **Chat box**: Centered below the hero text, constrained width (`max-w-lg`)
-4. **Capabilities grid**: Follows naturally without a gap
-
-### Changes in `src/pages/CustomerService.tsx` (lines 297-383)
-
-Replace the `grid lg:grid-cols-2` hero with a single-column centered layout:
+Instead of everything stacked in a narrow `max-w-3xl` column, use a two-column layout at `lg:` breakpoint:
+- **Left column**: Headline, subtitle, action buttons, stats — left-aligned on desktop
+- **Right column**: Chat box at full available width (no `max-w-lg` constraint)
+- Container widens to `max-w-6xl`
+- On mobile, stacks vertically as before
 
 ```
-<section className="pt-6 pb-4 px-4">
-  <div className="mx-auto max-w-3xl text-center space-y-4">
-    {/* Headline + subtitle */}
-    <div>
-      <h1 className="text-4xl font-black tracking-tight text-foreground leading-none">Meet Trudy</h1>
-      <p className="text-muted-foreground text-xs mt-1 max-w-sm mx-auto leading-relaxed">
-        AI move coordinator — instant quotes, tracking, scheduling & support by voice.
-      </p>
-    </div>
-
-    {/* Action row - centered */}
-    <div className="flex flex-wrap items-center justify-center gap-2.5">
-      {/* Talk to Trudy / End Call buttons - same as current */}
-      {/* Phone link - same as current */}
-    </div>
-
-    {/* Live status - centered */}
-    {/* Stats row - centered */}
-
-    {/* Chat box - centered, constrained */}
-    <div className="max-w-lg mx-auto">
-      {chatMode === 'demo' ? <TrudyChatBox .../> : <AIChatContainer .../>}
+<section className="pt-8 pb-6 px-4">
+  <div className="mx-auto max-w-6xl">
+    <div className="grid lg:grid-cols-[1fr_1.2fr] gap-8 lg:gap-12 items-center">
+      {/* Left — text content, left-aligned on lg */}
+      <div className="text-center lg:text-left space-y-5">
+        <h1>Meet Trudy</h1>
+        <p>subtitle</p>
+        <action buttons — justify-center lg:justify-start>
+        <stats row — justify-center lg:justify-start>
+      </div>
+      {/* Right — chat box, no max-w constraint */}
+      <div className="w-full max-w-lg mx-auto lg:max-w-none">
+        {chat component}
+      </div>
     </div>
   </div>
 </section>
 ```
 
-This eliminates the two-column imbalance and creates a clean top-down flow: headline → CTA → stats → chat → capabilities.
+This fixes the original gap problem by using `items-center` (vertically centers the shorter left column against the taller chat) instead of the old `items-start`.
+
+**2. Capabilities grid — increase gap and use full width (lines 384-416)**
+
+- Widen from `max-w-5xl` to `max-w-6xl` to match hero
+- Increase grid gap from `gap-3` to `gap-4`
+- Increase section top padding from `pt-10` to `pt-12`
+
+**3. FAQ + Contact section — widen to match (lines 418-518)**
+
+- Widen from `max-w-4xl` to `max-w-6xl`
+- Increase vertical padding from `py-5` to `py-10`
+- Increase grid gap from `gap-6` to `gap-10`
+
+All three sections will share the same `max-w-6xl` container width, creating a consistent, spacious layout that fills the viewport better.
 
