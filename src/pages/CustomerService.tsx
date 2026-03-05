@@ -380,27 +380,27 @@ export default function CustomerService() {
         </section>
 
         {/* ─── CAPABILITIES GRID ─── */}
-        <section className="py-5 px-4">
-          <div className="mx-auto max-w-4xl">
-            <div className="text-center mb-3">
-              <h2 className="text-sm font-bold text-foreground uppercase tracking-wider">What Trudy Handles</h2>
-              <p className="text-[11px] text-muted-foreground mt-0.5">One AI assistant for your entire move</p>
+        <section className="pt-10 pb-8 px-4">
+          <div className="mx-auto max-w-5xl">
+            <div className="text-center mb-6">
+              <h2 className="text-base font-bold text-foreground uppercase tracking-wider">What Trudy Handles</h2>
+              <p className="text-xs text-muted-foreground mt-1">One AI assistant for your entire move</p>
             </div>
-            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               {capabilities.map((cap) => (
                 <Link
                   key={cap.label}
                   to={cap.href}
-                  className="group relative rounded-xl border border-border bg-card p-3 shadow-[0_2px_8px_-2px_hsl(var(--tm-ink)/0.08),0_4px_16px_-4px_hsl(var(--tm-ink)/0.06)] hover:shadow-[0_8px_24px_-4px_hsl(var(--tm-ink)/0.16),0_16px_40px_-8px_hsl(var(--tm-ink)/0.12)] hover:border-foreground/30 hover:-translate-y-1 hover:scale-[1.03] transition-all duration-200 no-underline"
+                  className="group relative rounded-xl border border-border bg-card p-5 shadow-[0_2px_8px_-2px_hsl(var(--tm-ink)/0.08),0_4px_16px_-4px_hsl(var(--tm-ink)/0.06)] hover:shadow-[0_8px_24px_-4px_hsl(var(--tm-ink)/0.16),0_16px_40px_-8px_hsl(var(--tm-ink)/0.12)] hover:border-foreground/30 hover:-translate-y-1 hover:scale-[1.03] transition-all duration-200 no-underline"
                 >
                   {cap.tag && (
-                    <span className="absolute top-2 right-2 text-[9px] font-bold uppercase tracking-wider text-foreground bg-muted px-1.5 py-0.5 rounded group-hover:bg-foreground group-hover:text-background transition-colors duration-200">
+                    <span className="absolute top-2.5 right-2.5 text-[10px] font-bold uppercase tracking-wider text-foreground bg-muted px-2 py-0.5 rounded group-hover:bg-foreground group-hover:text-background transition-colors duration-200">
                       {cap.tag}
                     </span>
                   )}
-                  <cap.icon className="w-4 h-4 text-muted-foreground mb-1.5 group-hover:text-foreground group-hover:scale-110 transition-all duration-200" />
-                  <h3 className="text-xs font-semibold text-foreground">{cap.label}</h3>
-                  <p className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed group-hover:text-foreground/70 transition-colors duration-200">{cap.desc}</p>
+                  <cap.icon className="w-5 h-5 text-muted-foreground mb-2 group-hover:text-foreground group-hover:scale-110 transition-all duration-200" />
+                  <h3 className="text-sm font-semibold text-foreground">{cap.label}</h3>
+                  <p className="text-xs text-muted-foreground mt-1 leading-relaxed group-hover:text-foreground/70 transition-colors duration-200">{cap.desc}</p>
                 </Link>
               ))}
             </div>
