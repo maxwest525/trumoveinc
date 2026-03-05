@@ -74,8 +74,14 @@ interface CarrierData {
     vehicleOosRateNationalAvg: number;
     driverOosRate: number;
     driverOosRateNationalAvg: number;
+    hazmatOosRate: number;
+    hazmatOosRateNationalAvg: number;
     vehicleInspections: number;
     driverInspections: number;
+    hazmatInspections: number;
+    vehicleOosInsp: number;
+    driverOosInsp: number;
+    hazmatOosInsp: number;
   };
   fleet: {
     powerUnits: number;

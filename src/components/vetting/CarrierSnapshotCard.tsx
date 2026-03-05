@@ -265,7 +265,7 @@ function AuthorityStatusChip({ status }: { status?: string }) {
 }
 
 
-function BasicScoreBar({ name, percentile, deficient, threshold = 65 }: { name: string; percentile: number | null; deficient?: boolean; threshold?: number }) {
+function BasicScoreBar({ name, percentile, deficient, threshold = 65, totalInspectionWithViolation, totalViolation, snapShotDate }: { name: string; percentile: number | null; deficient?: boolean; threshold?: number; totalInspectionWithViolation?: number; totalViolation?: number; snapShotDate?: string }) {
   const description = BASIC_DESCRIPTIONS[name] || '';
   
   if (percentile === null) {
@@ -317,6 +317,13 @@ function BasicScoreBar({ name, percentile, deficient, threshold = 65 }: { name: 
               style={{ width: `${Math.min(percentile, 100)}%` }}
             />
           </div>
+          {(totalInspectionWithViolation != null || totalViolation != null) && (
+            <div className="text-[10px] text-muted-foreground leading-tight">
+              {totalInspectionWithViolation != null && <span>{totalInspectionWithViolation} insp w/ violations</span>}
+              {totalInspectionWithViolation != null && totalViolation != null && <span> · </span>}
+              {totalViolation != null && <span>{totalViolation} total</span>}
+            </div>
+          )}
         </div>
       </TooltipTrigger>
       <TooltipContent side="top" className="max-w-[220px]">
@@ -324,6 +331,7 @@ function BasicScoreBar({ name, percentile, deficient, threshold = 65 }: { name: 
           <p>{description}</p>
           {deficient && <p className="text-red-400 font-medium">⚠ FMCSA intervention threshold exceeded</p>}
           <p className="text-muted-foreground">Threshold: {threshold}% | Score: {percentile}%</p>
+          {snapShotDate && <p className="text-muted-foreground">Snapshot: {snapShotDate}</p>}
         </div>
       </TooltipContent>
     </Tooltip>
@@ -739,34 +747,129 @@ function CarrierSnapshotCardInner({ data, onRemove, className }: CarrierSnapshot
                   name="Unsafe Driving" 
                   percentile={data.basics.unsafeDriving?.percentile ?? null}
                   deficient={data.basics.unsafeDriving?.rdsvDeficient === 'Y' || data.basics.unsafeDriving?.svDeficient === 'Y'}
+                  totalInspectionWithViolation={data.basics.unsafeDriving?.totalInspectionWithViolation}
+                  totalViolation={data.basics.unsafeDriving?.totalViolation}
+                  snapShotDate={data.basics.unsafeDriving?.snapShotDate}
                 />
                 <BasicScoreBar 
                   name="HOS Compliance" 
                   percentile={data.basics.hoursOfService?.percentile ?? null}
                   deficient={data.basics.hoursOfService?.rdsvDeficient === 'Y' || data.basics.hoursOfService?.svDeficient === 'Y'}
+                  totalInspectionWithViolation={data.basics.hoursOfService?.totalInspectionWithViolation}
+                  totalViolation={data.basics.hoursOfService?.totalViolation}
+                  snapShotDate={data.basics.hoursOfService?.snapShotDate}
                 />
                 <BasicScoreBar 
                   name="Vehicle Maintenance" 
                   percentile={data.basics.vehicleMaintenance?.percentile ?? null}
                   deficient={data.basics.vehicleMaintenance?.rdsvDeficient === 'Y' || data.basics.vehicleMaintenance?.svDeficient === 'Y'}
+                  totalInspectionWithViolation={data.basics.vehicleMaintenance?.totalInspectionWithViolation}
+                  totalViolation={data.basics.vehicleMaintenance?.totalViolation}
+                  snapShotDate={data.basics.vehicleMaintenance?.snapShotDate}
                 />
                 <BasicScoreBar 
                   name="Controlled Substances" 
                   percentile={data.basics.controlledSubstances?.percentile ?? null}
                   deficient={data.basics.controlledSubstances?.rdsvDeficient === 'Y' || data.basics.controlledSubstances?.svDeficient === 'Y'}
+                  totalInspectionWithViolation={data.basics.controlledSubstances?.totalInspectionWithViolation}
+                  totalViolation={data.basics.controlledSubstances?.totalViolation}
+                  snapShotDate={data.basics.controlledSubstances?.snapShotDate}
                 />
                 <BasicScoreBar 
                   name="Driver Fitness" 
                   percentile={data.basics.driverFitness?.percentile ?? null}
                   deficient={data.basics.driverFitness?.rdsvDeficient === 'Y' || data.basics.driverFitness?.svDeficient === 'Y'}
+                  totalInspectionWithViolation={data.basics.driverFitness?.totalInspectionWithViolation}
+                  totalViolation={data.basics.driverFitness?.totalViolation}
+                  snapShotDate={data.basics.driverFitness?.snapShotDate}
                 />
                 <BasicScoreBar 
                   name="Crash Indicator" 
                   percentile={data.basics.crashIndicator?.percentile ?? null}
                   deficient={data.basics.crashIndicator?.rdsvDeficient === 'Y' || data.basics.crashIndicator?.svDeficient === 'Y'}
+                  totalInspectionWithViolation={data.basics.crashIndicator?.totalInspectionWithViolation}
+                  totalViolation={data.basics.crashIndicator?.totalViolation}
+                  snapShotDate={data.basics.crashIndicator?.snapShotDate}
                 />
               </div>
             </div>
+
+            {/* OOS Rates vs National Average — from API data directly */}
+            {(data.oos.vehicleOosRate > 0 || data.oos.driverOosRate > 0 || (data.oos.hazmatOosRate ?? 0) > 0) && (
+              <>
+                <Separator className="bg-border/60" />
+                <div className="space-y-2 p-3 rounded-lg bg-muted/20 border border-border/50">
+                  <div className="flex items-center gap-2 text-xs font-semibold text-slate-900 dark:text-foreground">
+                    <Gauge className="w-3.5 h-3.5" />
+                    <span>OOS Rates vs National Average</span>
+                  </div>
+                  <div className="space-y-2">
+                    {[
+                      { label: 'Vehicle', rate: data.oos.vehicleOosRate, avg: data.oos.vehicleOosRateNationalAvg },
+                      { label: 'Driver', rate: data.oos.driverOosRate, avg: data.oos.driverOosRateNationalAvg },
+                      ...(data.oos.hazmatOosRate != null && data.oos.hazmatOosRate > 0 ? [{ label: 'Hazmat', rate: data.oos.hazmatOosRate, avg: data.oos.hazmatOosRateNationalAvg ?? 4.44 }] : []),
+                    ].map(row => {
+                      const isAboveAvg = row.rate > row.avg;
+                      return (
+                        <div key={row.label} className="space-y-1">
+                          <div className="flex items-center justify-between text-xs">
+                            <span className="text-muted-foreground">{row.label}</span>
+                            <span className={cn('font-mono font-medium', isAboveAvg ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400')}>
+                              {row.rate.toFixed(1)}% <span className="text-muted-foreground font-normal">vs {row.avg.toFixed(1)}%</span>
+                            </span>
+                          </div>
+                          <div className="h-1.5 bg-muted rounded-full overflow-hidden relative">
+                            <div className="absolute h-full w-px bg-foreground/30" style={{ left: `${Math.min(row.avg, 100)}%` }} />
+                            <div 
+                              className={cn('h-full rounded-full', isAboveAvg ? 'bg-red-500' : 'bg-green-500')}
+                              style={{ width: `${Math.min(row.rate, 100)}%` }}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* Roadside Inspection Breakdown — from API data directly */}
+            {((data.oos.vehicleInspections ?? 0) > 0 || (data.oos.driverInspections ?? 0) > 0) && (
+              <>
+                <Separator className="bg-border/60" />
+                <div className="space-y-2 p-3 rounded-lg bg-muted/20 border border-border/50">
+                  <div className="flex items-center gap-2 text-xs font-semibold text-slate-900 dark:text-foreground">
+                    <ClipboardCheck className="w-3.5 h-3.5" />
+                    <span>Roadside Inspections (24 months)</span>
+                  </div>
+                  <div className="space-y-1">
+                    <div className="grid grid-cols-3 gap-2 text-[10px] font-medium text-muted-foreground uppercase tracking-wider pb-1 border-b border-border/30">
+                      <span>Type</span>
+                      <span className="text-center">Inspections</span>
+                      <span className="text-center">OOS</span>
+                    </div>
+                    {[
+                      { label: 'Vehicle', insp: data.oos.vehicleInspections ?? 0, oos: data.oos.vehicleOosInsp ?? 0 },
+                      { label: 'Driver', insp: data.oos.driverInspections ?? 0, oos: data.oos.driverOosInsp ?? 0 },
+                      { label: 'Hazmat', insp: data.oos.hazmatInspections ?? 0, oos: data.oos.hazmatOosInsp ?? 0 },
+                    ].map(row => (
+                      <div key={row.label} className="grid grid-cols-3 gap-2 text-sm">
+                        <span className="text-muted-foreground">{row.label}</span>
+                        <span className="text-center font-mono text-foreground">{row.insp}</span>
+                        <span className={cn('text-center font-mono', row.oos > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-foreground')}>
+                          {row.oos}
+                        </span>
+                      </div>
+                    ))}
+                    <div className="grid grid-cols-3 gap-2 text-sm pt-1 border-t border-border/30 font-medium">
+                      <span className="text-foreground">Total</span>
+                      <span className="text-center font-mono text-foreground">{(data.oos.vehicleInspections ?? 0) + (data.oos.driverInspections ?? 0) + (data.oos.hazmatInspections ?? 0)}</span>
+                      <span className="text-center font-mono text-foreground">{(data.oos.vehicleOosInsp ?? 0) + (data.oos.driverOosInsp ?? 0) + (data.oos.hazmatOosInsp ?? 0)}</span>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
 
             <Separator className="bg-border/60" />
 
@@ -942,44 +1045,6 @@ function CarrierSnapshotCardInner({ data, onRemove, className }: CarrierSnapshot
                   </>
                 )}
 
-                {/* Inspection Breakdown */}
-                {data.scraped.inspectionDetails && (
-                  <>
-                    <Separator className="bg-border/60" />
-                    <div className="space-y-2 p-3 rounded-lg bg-muted/20 border border-border/50">
-                      <div className="flex items-center gap-2 text-xs font-semibold text-slate-900 dark:text-foreground">
-                        <ClipboardCheck className="w-3.5 h-3.5" />
-                        <span>Roadside Inspections (24 months)</span>
-                      </div>
-                      <div className="space-y-1">
-                        <div className="grid grid-cols-3 gap-2 text-[10px] font-medium text-muted-foreground uppercase tracking-wider pb-1 border-b border-border/30">
-                          <span>Type</span>
-                          <span className="text-center">Inspections</span>
-                          <span className="text-center">OOS</span>
-                        </div>
-                        {[
-                          { label: 'Vehicle', insp: data.scraped.inspectionDetails.vehicleInspections, oos: data.scraped.inspectionDetails.vehicleOos },
-                          { label: 'Driver', insp: data.scraped.inspectionDetails.driverInspections, oos: data.scraped.inspectionDetails.driverOos },
-                          { label: 'Hazmat', insp: data.scraped.inspectionDetails.hazmatInspections, oos: data.scraped.inspectionDetails.hazmatOos },
-                        ].map(row => (
-                          <div key={row.label} className="grid grid-cols-3 gap-2 text-sm">
-                            <span className="text-muted-foreground">{row.label}</span>
-                            <span className="text-center font-mono text-foreground">{row.insp}</span>
-                            <span className={cn('text-center font-mono', row.oos > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-foreground')}>
-                              {row.oos}
-                            </span>
-                          </div>
-                        ))}
-                        <div className="grid grid-cols-3 gap-2 text-sm pt-1 border-t border-border/30 font-medium">
-                          <span className="text-foreground">Total</span>
-                          <span className="text-center font-mono text-foreground">{data.scraped.inspectionDetails.totalInspections}</span>
-                          <span className="text-center font-mono text-foreground">—</span>
-                        </div>
-                      </div>
-                    </div>
-                  </>
-                )}
-
                 {/* Summary of Activities from SMS */}
                 {data.scraped.summaryOfActivities && (
                   <>
@@ -1034,45 +1099,6 @@ function CarrierSnapshotCardInner({ data, onRemove, className }: CarrierSnapshot
                       <p className={cn('text-sm', data.scraped.enforcementCases.toLowerCase().includes('no penalties') ? 'text-green-600' : 'text-amber-600')}>
                         {data.scraped.enforcementCases}
                       </p>
-                    </div>
-                  </>
-                )}
-
-                {/* OOS Rates with National Averages */}
-                {data.scraped.oosRatesWithAverages && (
-                  <>
-                    <Separator className="bg-border/60" />
-                    <div className="space-y-2 p-3 rounded-lg bg-muted/20 border border-border/50">
-                      <div className="flex items-center gap-2 text-xs font-semibold text-slate-900 dark:text-foreground">
-                        <Gauge className="w-3.5 h-3.5" />
-                        <span>OOS Rates vs National Average</span>
-                      </div>
-                      <div className="space-y-2">
-                        {[
-                          { label: 'Vehicle', rate: data.scraped.oosRatesWithAverages.vehicleOosPercent, avg: data.scraped.oosRatesWithAverages.vehicleNationalAvg },
-                          { label: 'Driver', rate: data.scraped.oosRatesWithAverages.driverOosPercent, avg: data.scraped.oosRatesWithAverages.driverNationalAvg },
-                          { label: 'Hazmat', rate: data.scraped.oosRatesWithAverages.hazmatOosPercent, avg: data.scraped.oosRatesWithAverages.hazmatNationalAvg },
-                        ].map(row => {
-                          const isAboveAvg = row.rate > row.avg;
-                          return (
-                            <div key={row.label} className="space-y-1">
-                              <div className="flex items-center justify-between text-xs">
-                                <span className="text-muted-foreground">{row.label}</span>
-                                <span className={cn('font-mono font-medium', isAboveAvg ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400')}>
-                                  {row.rate.toFixed(1)}% <span className="text-muted-foreground font-normal">vs {row.avg.toFixed(1)}%</span>
-                                </span>
-                              </div>
-                              <div className="h-1.5 bg-muted rounded-full overflow-hidden relative">
-                                <div className="absolute h-full w-px bg-foreground/30" style={{ left: `${Math.min(row.avg, 100)}%` }} />
-                                <div 
-                                  className={cn('h-full rounded-full', isAboveAvg ? 'bg-red-500' : 'bg-green-500')}
-                                  style={{ width: `${Math.min(row.rate, 100)}%` }}
-                                />
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
                     </div>
                   </>
                 )}
