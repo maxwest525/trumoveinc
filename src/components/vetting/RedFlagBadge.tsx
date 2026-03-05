@@ -111,9 +111,10 @@ export interface ScrapedData {
 export function generateRedFlags(data: CarrierData, scraped?: ScrapedData): RedFlag[] {
   const flags: RedFlag[] = [];
 
+  // FMCSA API returns insurance values in thousands (e.g., "75" = $75,000, "750" = $750,000)
   const parseInsurance = (value: string) => {
     const num = parseInt(value.replace(/[^0-9]/g, ''));
-    return isNaN(num) ? 0 : num;
+    return isNaN(num) ? 0 : num * 1000;
   };
 
   // Determine if this is a broker-only entity (no carrier authority, only broker authority)

@@ -161,8 +161,9 @@ function calculateRiskGrade(data: ExtendedCarrierData): { grade: string; label: 
   else if (data.authority.commonStatus === 'INACTIVE' || data.authority.commonStatus === 'NOT AUTHORIZED') score -= 40;
   
   // Insurance gaps
-  const bipdAmount = parseInt(data.authority.bipdInsurance?.replace(/[^0-9]/g, '') || '0');
-  const cargoAmount = parseInt(data.authority.cargoInsurance?.replace(/[^0-9]/g, '') || '0');
+  // FMCSA API returns values in thousands (e.g., "750" = $750,000)
+  const bipdAmount = parseInt(data.authority.bipdInsurance?.replace(/[^0-9]/g, '') || '0') * 1000;
+  const cargoAmount = parseInt(data.authority.cargoInsurance?.replace(/[^0-9]/g, '') || '0') * 1000;
   if (bipdAmount < 750000) score -= 15;
   if (cargoAmount < 100000) score -= 10;
   
@@ -339,9 +340,10 @@ function BasicScoreBar({ name, percentile, deficient, threshold = 65, totalInspe
 }
 
 function InsuranceBar({ label, amount, required }: { label: string; amount: string; required: number }) {
+  // FMCSA API returns values in thousands (e.g., "750" = $750,000)
   const parseAmount = (value: string) => {
     const num = parseInt(value.replace(/[^0-9]/g, ''));
-    return isNaN(num) ? 0 : num;
+    return isNaN(num) ? 0 : num * 1000;
   };
 
   const amountNum = parseAmount(amount);
@@ -465,7 +467,7 @@ function CarrierSnapshotCardInner({ data, onRemove, className }: CarrierSnapshot
 
   // Format insurance for summary
   const formatInsurance = () => {
-    const bipdAmount = parseInt(data.authority.bipdInsurance?.replace(/[^0-9]/g, '') || '0');
+    const bipdAmount = parseInt(data.authority.bipdInsurance?.replace(/[^0-9]/g, '') || '0') * 1000;
     if (bipdAmount >= 1000000) return `$${(bipdAmount / 1000000).toFixed(1)}M Insured`;
     if (bipdAmount >= 1000) return `$${(bipdAmount / 1000).toFixed(0)}K Insured`;
     return 'Insurance Unknown';
