@@ -243,13 +243,44 @@ function AuthorityBadge({ status }: { status: string }) {
   );
 }
 
-function BasicScoreBar({ name, percentile, threshold = 65 }: { name: string; percentile: number | null; threshold?: number }) {
+function AuthorityStatusChip({ status }: { status?: string }) {
+  if (!status || status === 'NONE' || status === 'N') {
+    return <span className="text-xs text-muted-foreground font-medium">None</span>;
+  }
+  const isActive = status === 'ACTIVE' || status === 'AUTHORIZED' || status === 'A';
+  const isInactive = status === 'INACTIVE' || status === 'I' || status === 'NOT AUTHORIZED';
+  const isRevoked = status === 'REVOKED';
+  
+  return (
+    <span className={cn(
+      'text-xs font-semibold',
+      isActive ? 'text-green-600 dark:text-green-400' :
+      isRevoked ? 'text-red-600 dark:text-red-400' :
+      isInactive ? 'text-amber-600 dark:text-amber-400' :
+      'text-muted-foreground'
+    )}>
+      {isActive ? 'Active' : isRevoked ? 'Revoked' : isInactive ? 'Inactive' : status}
+    </span>
+  );
+}
+
+
+function BasicScoreBar({ name, percentile, deficient, threshold = 65 }: { name: string; percentile: number | null; deficient?: boolean; threshold?: number }) {
+  const description = BASIC_DESCRIPTIONS[name] || '';
+  
   if (percentile === null) {
     return (
-      <div className="flex items-center justify-between py-1.5">
-        <span className="text-xs text-muted-foreground">{name}</span>
-        <span className="text-xs text-muted-foreground">N/A</span>
-      </div>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div className="flex items-center justify-between py-1.5 cursor-help">
+            <span className="text-xs text-muted-foreground">{name}</span>
+            <span className="text-xs text-muted-foreground">N/A</span>
+          </div>
+        </TooltipTrigger>
+        <TooltipContent side="top" className="max-w-[200px]">
+          <p className="text-xs">{description || 'No data available for this BASIC.'}</p>
+        </TooltipContent>
+      </Tooltip>
     );
   }
 
@@ -260,24 +291,42 @@ function BasicScoreBar({ name, percentile, threshold = 65 }: { name: string; per
   };
 
   return (
-    <div className="space-y-1">
-      <div className="flex items-center justify-between">
-        <span className="text-xs text-muted-foreground">{name}</span>
-        <span className={cn(
-          'text-xs font-medium',
-          percentile >= 75 ? 'text-red-500' : 
-          percentile >= threshold ? 'text-amber-500' : 'text-green-500'
-        )}>
-          {percentile}%
-        </span>
-      </div>
-      <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-        <div 
-          className={cn('h-full rounded-full transition-all', getColor())}
-          style={{ width: `${Math.min(percentile, 100)}%` }}
-        />
-      </div>
-    </div>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <div className="space-y-1 cursor-help">
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-muted-foreground flex items-center gap-1">
+              {name}
+              {deficient && (
+                <AlertTriangle className="w-3 h-3 text-red-500" />
+              )}
+            </span>
+            <span className={cn(
+              'text-xs font-medium',
+              percentile >= 75 ? 'text-red-500' : 
+              percentile >= threshold ? 'text-amber-500' : 'text-green-500'
+            )}>
+              {percentile}%
+            </span>
+          </div>
+          <div className="h-1.5 bg-muted rounded-full overflow-hidden relative">
+            {/* Threshold marker */}
+            <div className="absolute h-full w-px bg-foreground/40" style={{ left: `${threshold}%` }} />
+            <div 
+              className={cn('h-full rounded-full transition-all', getColor())}
+              style={{ width: `${Math.min(percentile, 100)}%` }}
+            />
+          </div>
+        </div>
+      </TooltipTrigger>
+      <TooltipContent side="top" className="max-w-[220px]">
+        <div className="text-xs space-y-1">
+          <p>{description}</p>
+          {deficient && <p className="text-red-400 font-medium">⚠ FMCSA intervention threshold exceeded</p>}
+          <p className="text-muted-foreground">Threshold: {threshold}% | Score: {percentile}%</p>
+        </div>
+      </TooltipContent>
+    </Tooltip>
   );
 }
 
@@ -523,6 +572,24 @@ function CarrierSnapshotCardInner({ data, onRemove, className }: CarrierSnapshot
           </div>
         </div>
 
+        {/* Broker & Contract Authority */}
+        {(data.authority.brokerStatus || data.authority.contractStatus) && (
+          <div className="grid grid-cols-3 gap-2">
+            <div className="p-2 rounded-lg bg-muted/20 border border-border/50 text-center">
+              <div className="text-[10px] text-muted-foreground mb-0.5">Common</div>
+              <AuthorityStatusChip status={data.authority.commonStatus} />
+            </div>
+            <div className="p-2 rounded-lg bg-muted/20 border border-border/50 text-center">
+              <div className="text-[10px] text-muted-foreground mb-0.5">Contract</div>
+              <AuthorityStatusChip status={data.authority.contractStatus} />
+            </div>
+            <div className="p-2 rounded-lg bg-muted/20 border border-border/50 text-center">
+              <div className="text-[10px] text-muted-foreground mb-0.5">Broker</div>
+              <AuthorityStatusChip status={data.authority.brokerStatus} />
+            </div>
+          </div>
+        )}
+
         {/* OOS & Operational Status Badges */}
         <div className="flex flex-wrap items-center gap-2">
           {data.carrier.outOfService === 'Y' && (
@@ -663,27 +730,33 @@ function CarrierSnapshotCardInner({ data, onRemove, className }: CarrierSnapshot
               <div className="grid grid-cols-2 gap-x-4 gap-y-2 p-3 rounded-lg bg-muted/20 border border-border/50">
                 <BasicScoreBar 
                   name="Unsafe Driving" 
-                  percentile={data.basics.unsafeDriving?.percentile ?? null} 
+                  percentile={data.basics.unsafeDriving?.percentile ?? null}
+                  deficient={data.basics.unsafeDriving?.rdsvDeficient === 'Y' || data.basics.unsafeDriving?.svDeficient === 'Y'}
                 />
                 <BasicScoreBar 
                   name="HOS Compliance" 
-                  percentile={data.basics.hoursOfService?.percentile ?? null} 
+                  percentile={data.basics.hoursOfService?.percentile ?? null}
+                  deficient={data.basics.hoursOfService?.rdsvDeficient === 'Y' || data.basics.hoursOfService?.svDeficient === 'Y'}
                 />
                 <BasicScoreBar 
                   name="Vehicle Maintenance" 
-                  percentile={data.basics.vehicleMaintenance?.percentile ?? null} 
+                  percentile={data.basics.vehicleMaintenance?.percentile ?? null}
+                  deficient={data.basics.vehicleMaintenance?.rdsvDeficient === 'Y' || data.basics.vehicleMaintenance?.svDeficient === 'Y'}
                 />
                 <BasicScoreBar 
                   name="Controlled Substances" 
-                  percentile={data.basics.controlledSubstances?.percentile ?? null} 
+                  percentile={data.basics.controlledSubstances?.percentile ?? null}
+                  deficient={data.basics.controlledSubstances?.rdsvDeficient === 'Y' || data.basics.controlledSubstances?.svDeficient === 'Y'}
                 />
                 <BasicScoreBar 
                   name="Driver Fitness" 
-                  percentile={data.basics.driverFitness?.percentile ?? null} 
+                  percentile={data.basics.driverFitness?.percentile ?? null}
+                  deficient={data.basics.driverFitness?.rdsvDeficient === 'Y' || data.basics.driverFitness?.svDeficient === 'Y'}
                 />
                 <BasicScoreBar 
                   name="Crash Indicator" 
-                  percentile={data.basics.crashIndicator?.percentile ?? null} 
+                  percentile={data.basics.crashIndicator?.percentile ?? null}
+                  deficient={data.basics.crashIndicator?.rdsvDeficient === 'Y' || data.basics.crashIndicator?.svDeficient === 'Y'}
                 />
               </div>
             </div>
