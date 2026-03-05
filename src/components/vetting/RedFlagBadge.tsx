@@ -55,18 +55,26 @@ export interface CarrierData {
     rating: string;
   };
   basics: {
-    unsafeDriving: { percentile: number; rdDeficient?: string; rdsvDeficient?: string; svDeficient?: string } | null;
-    hoursOfService: { percentile: number; rdDeficient?: string; rdsvDeficient?: string; svDeficient?: string } | null;
-    vehicleMaintenance: { percentile: number; rdDeficient?: string; rdsvDeficient?: string; svDeficient?: string } | null;
-    controlledSubstances: { percentile: number; rdDeficient?: string; rdsvDeficient?: string; svDeficient?: string } | null;
-    driverFitness: { percentile: number; rdDeficient?: string; rdsvDeficient?: string; svDeficient?: string } | null;
-    crashIndicator: { percentile: number; rdDeficient?: string; rdsvDeficient?: string; svDeficient?: string } | null;
+    unsafeDriving: { percentile: number; rdDeficient?: string; rdsvDeficient?: string; svDeficient?: string; snapShotDate?: string; totalInspectionWithViolation?: number; totalViolation?: number } | null;
+    hoursOfService: { percentile: number; rdDeficient?: string; rdsvDeficient?: string; svDeficient?: string; snapShotDate?: string; totalInspectionWithViolation?: number; totalViolation?: number } | null;
+    vehicleMaintenance: { percentile: number; rdDeficient?: string; rdsvDeficient?: string; svDeficient?: string; snapShotDate?: string; totalInspectionWithViolation?: number; totalViolation?: number } | null;
+    controlledSubstances: { percentile: number; rdDeficient?: string; rdsvDeficient?: string; svDeficient?: string; snapShotDate?: string; totalInspectionWithViolation?: number; totalViolation?: number } | null;
+    driverFitness: { percentile: number; rdDeficient?: string; rdsvDeficient?: string; svDeficient?: string; snapShotDate?: string; totalInspectionWithViolation?: number; totalViolation?: number } | null;
+    crashIndicator: { percentile: number; rdDeficient?: string; rdsvDeficient?: string; svDeficient?: string; snapShotDate?: string; totalInspectionWithViolation?: number; totalViolation?: number } | null;
   };
   oos: {
     vehicleOosRate: number;
     vehicleOosRateNationalAvg: number;
     driverOosRate: number;
     driverOosRateNationalAvg: number;
+    hazmatOosRate?: number;
+    hazmatOosRateNationalAvg?: number;
+    vehicleInspections?: number;
+    driverInspections?: number;
+    hazmatInspections?: number;
+    vehicleOosInsp?: number;
+    driverOosInsp?: number;
+    hazmatOosInsp?: number;
   };
   fleet: {
     mcs150Date: string;
