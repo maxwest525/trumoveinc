@@ -295,14 +295,22 @@ export default function CustomerService() {
     }>
       <main className="min-h-screen bg-background">
         {/* ─── HERO ─── */}
-        <section className="pt-8 pb-6 px-4">
-          <div className="mx-auto max-w-6xl">
+        <section className="relative pt-12 pb-10 px-4 overflow-hidden">
+          {/* Background gradient layers */}
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.03] via-transparent to-primary/[0.02]" />
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-primary/[0.04] rounded-full blur-[120px] pointer-events-none" />
+          <div className="absolute bottom-0 right-0 w-[400px] h-[300px] bg-primary/[0.03] rounded-full blur-[100px] pointer-events-none" />
+          {/* Subtle dot texture */}
+          <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle, hsl(var(--foreground)) 0.5px, transparent 0.5px)', backgroundSize: '24px 24px' }} />
+          <div className="relative mx-auto max-w-6xl">
             <div className="grid lg:grid-cols-[1fr_1.2fr] gap-8 lg:gap-12 items-center">
               {/* Left — text content */}
               <div className="text-center lg:text-left space-y-5">
                 <div>
-                  <h1 className="text-4xl font-black tracking-tight text-foreground leading-none">Meet Trudy</h1>
-                  <p className="text-muted-foreground text-xs mt-1 max-w-sm mx-auto lg:mx-0 leading-relaxed">
+                  <h1 className="text-5xl font-black tracking-tight text-foreground leading-none">
+                    Meet <span className="bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">Trudy</span>
+                  </h1>
+                  <p className="text-muted-foreground text-sm mt-2 max-w-sm mx-auto lg:mx-0 leading-relaxed">
                     AI move coordinator — instant quotes, tracking, scheduling & support by voice.
                   </p>
                 </div>
@@ -383,6 +391,8 @@ export default function CustomerService() {
               </div>
             </div>
           </div>
+          {/* Bottom fade line */}
+          <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-foreground/10 to-transparent" />
         </section>
 
         {/* ─── CAPABILITIES GRID ─── */}
