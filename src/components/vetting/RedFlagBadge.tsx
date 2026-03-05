@@ -45,6 +45,8 @@ export interface CarrierData {
   };
   authority: {
     commonStatus: string;
+    contractStatus?: string;
+    brokerStatus?: string;
     bipdInsurance: string;
     cargoInsurance: string;
   };
