@@ -68,7 +68,7 @@ function MessageBubble({ message, isLast }: { message: Message; isLast: boolean 
 
       {/* Bubble */}
       <div
-        className={`max-w-[75%] px-3.5 py-2.5 text-[12px] leading-relaxed ${
+        className={`max-w-[75%] px-3.5 py-2.5 text-[13px] leading-relaxed ${
           isTrudy
             ? 'bg-muted/60 border border-border/60 text-foreground rounded-2xl rounded-bl-md'
             : 'bg-foreground text-background rounded-2xl rounded-br-md shadow-[0_2px_8px_-2px_hsl(var(--foreground)/0.25)]'
@@ -167,8 +167,8 @@ export default function TrudyChatBox({ onSwitchToLive }: TrudyChatBoxProps) {
                 <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-foreground/70 border-2 border-card" />
               </div>
               <div>
-                <p className="text-[12px] font-semibold text-foreground leading-none">Trudy</p>
-                <p className="text-[10px] text-muted-foreground mt-0.5">AI Move Coordinator · Online</p>
+                <p className="text-[13px] font-semibold text-foreground leading-none">Trudy</p>
+                <p className="text-[11px] text-muted-foreground mt-0.5">AI Move Coordinator · Online</p>
               </div>
             </div>
             <div className="flex items-center gap-1.5">
@@ -210,7 +210,7 @@ export default function TrudyChatBox({ onSwitchToLive }: TrudyChatBoxProps) {
               <button
                 key={prompt}
                 onClick={() => handleQuickPrompt(prompt)}
-                className="text-[10px] font-medium text-foreground/70 bg-muted/60 hover:bg-foreground hover:text-background border border-border/60 hover:border-foreground px-2.5 py-1.5 rounded-full transition-all duration-200 hover:shadow-[0_2px_8px_-2px_hsl(var(--foreground)/0.2)]"
+                className="text-[11px] font-medium text-foreground/70 bg-muted/60 hover:bg-foreground hover:text-background border border-border/60 hover:border-foreground px-2.5 py-1.5 rounded-full transition-all duration-200 hover:shadow-[0_2px_8px_-2px_hsl(var(--foreground)/0.2)]"
               >
                 {prompt}
               </button>
@@ -229,7 +229,7 @@ export default function TrudyChatBox({ onSwitchToLive }: TrudyChatBoxProps) {
               onKeyDown={(e) => e.key === 'Enter' && handleSend()}
               placeholder="Ask Trudy anything…"
               disabled={isTyping}
-              className="flex-1 bg-transparent text-[12px] text-foreground placeholder:text-muted-foreground/60 outline-none"
+              className="flex-1 bg-transparent text-[13px] text-foreground placeholder:text-muted-foreground/60 outline-none"
             />
             <button
               onClick={handleSend}
