@@ -295,7 +295,7 @@ export default function CustomerService() {
     }>
       <main className="min-h-screen bg-background">
         {/* ─── HERO ─── */}
-        <section className="relative pt-14 pb-12 px-6 md:px-10 lg:px-16 overflow-hidden">
+        <section className="relative pt-10 pb-10 px-6 md:px-10 lg:px-16 overflow-hidden">
           {/* Background gradient layers */}
           <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.04] via-background to-primary/[0.03]" />
           <div className="absolute top-[-100px] left-1/4 w-[900px] h-[600px] bg-primary/[0.05] rounded-full blur-[140px] pointer-events-none" />
@@ -303,40 +303,41 @@ export default function CustomerService() {
           {/* Subtle dot texture */}
           <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle, hsl(var(--foreground)) 0.5px, transparent 0.5px)', backgroundSize: '24px 24px' }} />
           <div className="relative mx-auto max-w-7xl">
-            <div className="grid lg:grid-cols-[1fr_1.2fr] gap-8 lg:gap-12 items-center">
+            <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-start">
               {/* Left — text content */}
-              <div className="text-center lg:text-left space-y-5">
+              <div className="text-center lg:text-left space-y-6 lg:pt-8">
                 <div>
-                  <h1 className="text-5xl font-black tracking-tight text-foreground leading-none">
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary mb-3">AI-Powered Support</p>
+                  <h1 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-foreground leading-[1.05]">
                     Meet <span className="bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">Trudy</span>
                   </h1>
-                  <p className="text-muted-foreground text-sm mt-2 max-w-sm mx-auto lg:mx-0 leading-relaxed">
-                    AI move coordinator — instant quotes, tracking, scheduling & support by voice.
+                  <p className="text-muted-foreground text-base mt-4 max-w-md mx-auto lg:mx-0 leading-relaxed">
+                    Your AI move coordinator — get instant quotes, real-time tracking, scheduling & 24/7 support by voice or chat.
                   </p>
                 </div>
 
                 {/* Action row */}
-                <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2.5">
+                <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3">
                   {!isConnected ? (
                     <button
                       onClick={startCall}
                       disabled={isConnecting}
-                      className="tru-modal-primary-btn !w-auto !px-6 !py-2 !text-[11px]"
+                      className="tru-modal-primary-btn !w-auto !px-8 !py-3 !text-sm"
                     >
-                      {isConnecting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Mic className="h-3.5 w-3.5" />}
+                      {isConnecting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Mic className="h-4 w-4" />}
                       {isConnecting ? 'Connecting…' : 'Talk to Trudy'}
                     </button>
                   ) : (
                     <button
                       onClick={endCall}
-                      className="flex items-center gap-2 rounded-full bg-destructive text-destructive-foreground px-5 py-2 text-[11px] font-semibold transition-all hover:opacity-90 active:scale-95"
+                      className="flex items-center gap-2 rounded-full bg-destructive text-destructive-foreground px-6 py-3 text-sm font-semibold transition-all hover:opacity-90 active:scale-95"
                     >
-                      <PhoneOff className="h-3.5 w-3.5" />
+                      <PhoneOff className="h-4 w-4" />
                       End Call
                     </button>
                   )}
-                  <a href="tel:+16097277647" className="tru-secondary-action-btn !text-[11px] !py-1.5 !px-4">
-                    <Phone className="h-3.5 w-3.5" />
+                  <a href="tel:+16097277647" className="tru-secondary-action-btn !text-sm !py-2.5 !px-5">
+                    <Phone className="h-4 w-4" />
                     (609) 727-7647
                   </a>
                 </div>
@@ -353,7 +354,7 @@ export default function CustomerService() {
                 )}
 
                 {/* Stats row */}
-                <div className="flex flex-wrap justify-center lg:justify-start gap-6">
+                <div className="grid grid-cols-4 gap-4 max-w-sm mx-auto lg:mx-0 pt-2">
                   {[
                     { value: '24/7', label: 'Availability' },
                     { value: '<3s', label: 'Response' },
@@ -361,9 +362,18 @@ export default function CustomerService() {
                     { value: '4.9★', label: 'Rating' },
                   ].map((s) => (
                     <div key={s.label} className="text-center lg:text-left">
-                      <p className="text-sm font-black text-foreground tracking-tight">{s.value}</p>
-                      <p className="text-[9px] text-muted-foreground uppercase tracking-widest">{s.label}</p>
+                      <p className="text-lg font-black text-foreground tracking-tight">{s.value}</p>
+                      <p className="text-[10px] text-muted-foreground uppercase tracking-widest">{s.label}</p>
                     </div>
+                  ))}
+                </div>
+
+                {/* Feature pills */}
+                <div className="flex flex-wrap justify-center lg:justify-start gap-2 pt-1">
+                  {['Instant Quotes', 'Live Tracking', 'Smart Scheduling', 'Carrier Vetting'].map((f) => (
+                    <span key={f} className="inline-flex items-center rounded-full border border-border/60 bg-muted/40 px-3 py-1 text-[11px] font-medium text-muted-foreground">
+                      {f}
+                    </span>
                   ))}
                 </div>
               </div>
