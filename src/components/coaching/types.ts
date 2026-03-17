@@ -172,5 +172,6 @@ export const DEMO_TEAM_METRICS: TeamMetrics = {
   conversionRate: 0,
   avgHandleTime: '0:00',
   callsByHour: [],
+  topPerformers: [],
   alertsCount: 0,
 };
