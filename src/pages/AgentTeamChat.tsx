@@ -46,7 +46,7 @@ const DEMO_PROFILES: Profile[] = [];
 const DEMO_CONVERSATIONS: Conversation[] = [];
 const DEMO_MESSAGES: Record<string, Message[]> = {};
 
-export default function AgentTeamChat() {
+export default function AgentTeamChat({ embedded = false }: { embedded?: boolean }) {
   const [activeTab, setActiveTab] = useState("messages");
   const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
   const [messageInput, setMessageInput] = useState("");
