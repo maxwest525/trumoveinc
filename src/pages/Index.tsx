@@ -1645,7 +1645,7 @@ export default function Index() {
                             className="tru-qb-method-card"
                             onClick={() => {
                               handleSubmit(new Event('submit') as any);
-                              navigate("/online-estimate");
+                              navigate("/site/online-estimate");
                             }}
                           >
                             <div className="tru-qb-method-icon-wrap">
