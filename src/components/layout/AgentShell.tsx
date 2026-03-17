@@ -124,6 +124,10 @@ export default function AgentShell({ children, breadcrumb = "" }: AgentShellProp
                   <Settings className="w-4 h-4 mr-2" />
                   Edit Settings
                 </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
+                  {theme === "dark" ? <Sun className="w-4 h-4 mr-2" /> : <Moon className="w-4 h-4 mr-2" />}
+                  {theme === "dark" ? "Light Mode" : "Dark Mode"}
+                </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleSignOut} className="text-destructive focus:text-destructive">
                   <LogOut className="w-4 h-4 mr-2" />
