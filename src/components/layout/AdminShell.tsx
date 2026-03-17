@@ -44,7 +44,7 @@ export default function AdminShell({ children, breadcrumb = "" }: AdminShellProp
 
   const handleResetPreference = () => {
     localStorage.removeItem("truemove_remembered_role");
-    navigate("/agent-login");
+    navigate("/");
   };
 
   return (
