@@ -57,17 +57,12 @@ export function ClientSearchModal({ open, onClose, onSelect }: ClientSearchModal
   const [pastMoves, setPastMoves] = useState<PastMove[]>([]);
   const [activeTab, setActiveTab] = useState("customers");
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     if (!searchQuery.trim()) {
       toast.error("Enter a name, email, or phone to search");
       return;
     }
-    const results = DEMO_CUSTOMERS.filter(
-      (c) =>
-        c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        c.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        c.phone.includes(searchQuery)
-    );
+    const results = await searchCustomersFromDB(searchQuery);
     setCustomers(results);
     if (results.length === 0) {
       toast.info("No customers found");
@@ -76,36 +71,18 @@ export function ClientSearchModal({ open, onClose, onSelect }: ClientSearchModal
     }
   };
 
-  const handleMoveSearch = () => {
+  const handleMoveSearch = async () => {
     if (!moveSearchQuery.trim()) {
       toast.error("Enter a booking ref, name, or address to search");
       return;
     }
-    const results = DEMO_PAST_MOVES.filter(
-      (m) =>
-        m.bookingRef.toLowerCase().includes(moveSearchQuery.toLowerCase()) ||
-        m.customerName.toLowerCase().includes(moveSearchQuery.toLowerCase()) ||
-        m.originAddress.toLowerCase().includes(moveSearchQuery.toLowerCase()) ||
-        m.destAddress.toLowerCase().includes(moveSearchQuery.toLowerCase())
-    );
+    const results = await searchMovesFromDB(moveSearchQuery);
     setPastMoves(results);
     if (results.length === 0) {
       toast.info("No past moves found");
     } else {
       toast.success(`Found ${results.length} move(s)`);
     }
-  };
-
-  const loadAllDemo = () => {
-    setCustomers(DEMO_CUSTOMERS);
-    setSearchQuery("");
-    toast.success("Loaded all demo customers");
-  };
-
-  const loadAllMoveDemo = () => {
-    setPastMoves(DEMO_PAST_MOVES);
-    setMoveSearchQuery("");
-    toast.success("Loaded all demo moves");
   };
 
   const handleSelect = (customer: Customer) => {
