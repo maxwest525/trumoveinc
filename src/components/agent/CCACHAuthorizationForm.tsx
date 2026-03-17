@@ -392,6 +392,7 @@ export function CCACHAuthorizationForm({
             <span>PCI-DSS Compliant • 256-bit Encryption</span>
           </div>
         </div>
+        )}
 
         {/* Document Container - Paper Size */}
         <div className="flex-1 max-w-[8.5in]">
