@@ -95,7 +95,7 @@ export default function LeadsPerformance() {
   if (loading) return <LeadVendorShell breadcrumb=" / Performance"><p className="text-sm text-muted-foreground text-center py-12">Loading...</p></LeadVendorShell>;
 
   return (
-    <LeadVendorShell breadcrumb=" / Performance" onRefresh={handleRefresh}>
+    <LeadVendorShell breadcrumb=" / Performance">
       <div className="space-y-5">
         <div>
           <h1 className="text-xl font-bold text-foreground">Performance Analytics</h1>

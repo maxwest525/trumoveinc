@@ -241,7 +241,7 @@ export default function LeadsVendors() {
   };
 
   return (
-    <LeadVendorShell breadcrumb=" / Vendors" onRefresh={fetchData}>
+    <LeadVendorShell breadcrumb=" / Vendors">
       <div className="space-y-4">
         {/* Header */}
         <div className="flex items-center justify-between">
