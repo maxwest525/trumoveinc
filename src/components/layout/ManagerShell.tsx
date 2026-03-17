@@ -42,7 +42,7 @@ export default function ManagerShell({ children, breadcrumb = "" }: ManagerShell
 
   const handleResetPreference = () => {
     localStorage.removeItem("truemove_remembered_role");
-    navigate("/agent-login");
+    navigate("/");
   };
 
   return (
