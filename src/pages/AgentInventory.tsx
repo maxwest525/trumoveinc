@@ -71,8 +71,9 @@ export default function AgentInventory() {
       }
       // Fallback: pull admin base rate
       supabase.from("pricing_settings").select("setting_value").eq("setting_key", "base_rate_per_cuft").maybeSingle().then(({ data: ps }) => {
-        if (ps?.setting_value?.value && !pricePerCuFt) {
-          setPricePerCuFt(String(ps.setting_value.value));
+        const val = (ps?.setting_value as any)?.value;
+        if (val && !pricePerCuFt) {
+          setPricePerCuFt(String(val));
         }
       });
     });
