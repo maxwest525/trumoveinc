@@ -50,7 +50,7 @@ export default function RecordingsLibrary() {
   const [playingId, setPlayingId] = useState<string | null>(null);
   const [playbackProgress, setPlaybackProgress] = useState(0);
 
-  const filtered = MOCK_RECORDINGS.filter(r => {
+  const filtered = recordings.filter(r => {
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
       if (!r.contactName.toLowerCase().includes(q) && !r.contactPhone.includes(q) && !r.agentName.toLowerCase().includes(q)) return false;
