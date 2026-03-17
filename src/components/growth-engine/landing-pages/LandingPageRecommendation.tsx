@@ -73,7 +73,7 @@ function getRecommendation(s: WizardSelections): Recommendation {
       backup: "Call-First Landing Page",
       why: "Retargeted visitors already know you. A form page re-engages them with a clear next step.",
       cta: "Still planning your move? Get your quote.",
-      routing: "Form → Convoso with retargeting tag",
+      routing: "Form → attribution (retargeting tag) → webhook → Convoso",
       kpi: "Return visit conversion rate",
     };
   }
