@@ -10,6 +10,7 @@ import logoImg from "@/assets/logo.png";
 import { useAgentProfile } from "@/hooks/useAgentProfile";
 import { useNotifications } from "@/hooks/useNotifications";
 import { usePortalStats } from "@/hooks/usePortalStats";
+import { motion } from "framer-motion";
 import type { Session } from "@supabase/supabase-js";
 
 interface RoleConfig {
@@ -18,16 +19,18 @@ interface RoleConfig {
   description: string;
   icon: LucideIcon;
   href: string;
+  /** Which db roles grant access to this card. owner always sees everything. */
+  allowedRoles: string[];
 }
 
 const ROLES: RoleConfig[] = [
-  { id: "admin", title: "Admin", description: "Team, data, users, integrations, billing & all settings.", icon: Settings, href: "/admin/dashboard" },
-  { id: "agent", title: "Agent", description: "Leads, deals & customer relationships.", icon: Users, href: "/agent/pipeline" },
-  { id: "manager", title: "Manager", description: "Team performance, approvals & campaigns.", icon: BarChart3, href: "/manager/dashboard" },
-  { id: "marketing", title: "Marketing", description: "AI campaigns, landing pages & A/B testing.", icon: Megaphone, href: "/marketing/dashboard" },
-  { id: "accounting", title: "Accounting", description: "Invoices, payroll, expenses & revenue.", icon: Receipt, href: "/accounting/dashboard" },
-  { id: "leads", title: "Lead Vendors", description: "Sources, budgets, vendor performance & ROI.", icon: Package, href: "/leads/dashboard" },
-  { id: "compliance", title: "Compliance", description: "FMCSA filings, licensing & insurance audits.", icon: ShieldCheck, href: "/compliance/dashboard" },
+  { id: "admin", title: "Admin", description: "Team, data, users, integrations, billing & all settings.", icon: Settings, href: "/admin/dashboard", allowedRoles: ["owner", "admin"] },
+  { id: "agent", title: "Agent", description: "Leads, deals & customer relationships.", icon: Users, href: "/agent/pipeline", allowedRoles: ["owner", "admin", "agent"] },
+  { id: "manager", title: "Manager", description: "Team performance, approvals & campaigns.", icon: BarChart3, href: "/manager/dashboard", allowedRoles: ["owner", "admin", "manager"] },
+  { id: "marketing", title: "Marketing", description: "AI campaigns, landing pages & A/B testing.", icon: Megaphone, href: "/marketing/dashboard", allowedRoles: ["owner", "admin", "marketing"] },
+  { id: "accounting", title: "Accounting", description: "Invoices, payroll, expenses & revenue.", icon: Receipt, href: "/accounting/dashboard", allowedRoles: ["owner", "admin", "accounting"] },
+  { id: "leads", title: "Lead Vendors", description: "Sources, budgets, vendor performance & ROI.", icon: Package, href: "/leads/dashboard", allowedRoles: ["owner", "admin", "marketing"] },
+  { id: "compliance", title: "Compliance", description: "FMCSA filings, licensing & insurance audits.", icon: ShieldCheck, href: "/compliance/dashboard", allowedRoles: ["owner", "admin", "manager"] },
 ];
 
 const STORAGE_KEY = "truemove_remembered_role";
@@ -39,20 +42,36 @@ function getGreeting(): string {
   return "Good evening";
 }
 
+const cardVariants = {
+  hidden: { opacity: 0, y: 12, scale: 0.97 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { delay: i * 0.06, duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] },
+  }),
+};
+
 function WorkspaceCard({
   role,
   onClick,
   stat,
   statLoading,
+  index,
 }: {
   role: RoleConfig;
   onClick: () => void;
   stat?: string;
   statLoading: boolean;
+  index: number;
 }) {
   const Icon = role.icon;
   return (
-    <button
+    <motion.button
+      custom={index}
+      variants={cardVariants}
+      initial="hidden"
+      animate="visible"
       onClick={onClick}
       className="group relative flex flex-col gap-2 rounded-xl border border-border/40 bg-card p-4 hover:border-border hover:shadow-md transition-all duration-200 text-left"
     >
@@ -75,7 +94,7 @@ function WorkspaceCard({
 
       {/* Description */}
       <p className="text-[11px] text-muted-foreground/70 leading-relaxed pl-[30px]">{role.description}</p>
-    </button>
+    </motion.button>
   );
 }
 
@@ -84,6 +103,8 @@ export default function AgentLogin() {
   const [remember, setRemember] = useState(false);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [userRoles, setUserRoles] = useState<string[]>([]);
+  const [rolesLoading, setRolesLoading] = useState(true);
   const { displayName } = useAgentProfile();
   const { stats, loading: statsLoading } = usePortalStats();
   const { unreadCount } = useNotifications();
@@ -100,6 +121,33 @@ export default function AgentLogin() {
     });
     return () => subscription.unsubscribe();
   }, []);
+
+  // Fetch user roles from DB
+  useEffect(() => {
+    if (!session?.user) {
+      setUserRoles([]);
+      setRolesLoading(false);
+      return;
+    }
+    const fetchRoles = async () => {
+      setRolesLoading(true);
+      const { data } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", session.user.id);
+      setUserRoles((data || []).map((r: any) => r.role));
+      setRolesLoading(false);
+    };
+    fetchRoles();
+  }, [session?.user?.id]);
+
+  // Filter roles based on user's DB roles
+  const visibleRoles = useMemo(() => {
+    if (rolesLoading) return [];
+    // If no roles found at all, show everything (fallback for first user / dev)
+    if (userRoles.length === 0) return ROLES;
+    return ROLES.filter((r) => r.allowedRoles.some((ar) => userRoles.includes(ar)));
+  }, [userRoles, rolesLoading]);
 
   useEffect(() => {
     if (!session) return;
@@ -146,7 +194,12 @@ export default function AgentLogin() {
       <div className="flex flex-col items-center justify-center min-h-[100vh] px-4 py-16">
 
         {/* Header */}
-        <div className="flex flex-col items-center gap-2 mb-12">
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: "easeOut" }}
+          className="flex flex-col items-center gap-2 mb-12"
+        >
           <img src={logoImg} alt="TruMove" className="h-8 dark:invert" />
           <h1 className="text-2xl font-bold tracking-tight text-foreground mt-3 flex items-center gap-2">
             {greeting}, {displayName}
@@ -167,42 +220,60 @@ export default function AgentLogin() {
               <LogOut className="w-3 h-3" /> Sign out
             </button>
           </div>
-        </div>
+        </motion.div>
 
         {/* Cards grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 w-full max-w-[900px]">
-          {ROLES.map((role) => (
-            <WorkspaceCard
-              key={role.id}
-              role={role}
-              onClick={() => handleClick(role.id, role.href)}
-              stat={stats[role.id]}
-              statLoading={statsLoading}
-            />
-          ))}
+          {rolesLoading ? (
+            Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="h-24 rounded-xl" />
+            ))
+          ) : (
+            <>
+              {visibleRoles.map((role, i) => (
+                <WorkspaceCard
+                  key={role.id}
+                  role={role}
+                  onClick={() => handleClick(role.id, role.href)}
+                  stat={stats[role.id]}
+                  statLoading={statsLoading}
+                  index={i}
+                />
+              ))}
 
-          {/* Customer Facing Sites */}
-          <button
-            onClick={() => navigate("/customer-facing-sites")}
-            className="group relative flex flex-col gap-2 rounded-xl border border-border/40 bg-card p-4 hover:border-border hover:shadow-md transition-all duration-200 text-left"
-          >
-            <div className="flex items-center gap-2.5">
-              <Globe className="w-[18px] h-[18px] text-muted-foreground shrink-0" strokeWidth={1.5} />
-              <h3 className="font-semibold text-foreground text-[13px] tracking-tight">Customer Sites</h3>
-            </div>
-            <p className="text-[11px] text-muted-foreground/70 leading-relaxed pl-[30px]">Preview & manage public-facing website variants.</p>
-          </button>
+              {/* Customer Facing Sites — always visible */}
+              <motion.button
+                custom={visibleRoles.length}
+                variants={cardVariants}
+                initial="hidden"
+                animate="visible"
+                onClick={() => navigate("/customer-facing-sites")}
+                className="group relative flex flex-col gap-2 rounded-xl border border-border/40 bg-card p-4 hover:border-border hover:shadow-md transition-all duration-200 text-left"
+              >
+                <div className="flex items-center gap-2.5">
+                  <Globe className="w-[18px] h-[18px] text-muted-foreground shrink-0" strokeWidth={1.5} />
+                  <h3 className="font-semibold text-foreground text-[13px] tracking-tight">Customer Sites</h3>
+                </div>
+                <p className="text-[11px] text-muted-foreground/70 leading-relaxed pl-[30px]">Preview & manage public-facing website variants.</p>
+              </motion.button>
+            </>
+          )}
         </div>
 
         {/* Remember */}
-        <label className="flex items-center gap-2 mt-10 cursor-pointer select-none">
+        <motion.label
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5, duration: 0.3 }}
+          className="flex items-center gap-2 mt-10 cursor-pointer select-none"
+        >
           <Checkbox
             checked={remember}
             onCheckedChange={(v) => setRemember(v === true)}
             className="border-border"
           />
           <span className="text-[11px] text-muted-foreground">Remember my choice on this device</span>
-        </label>
+        </motion.label>
       </div>
     </SiteShell>
   );
