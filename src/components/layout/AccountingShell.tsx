@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 import { setPortalContext } from "@/hooks/usePortalContext";
-import DemoDataToggle from "@/components/leads/DemoDataToggle";
+
 import logoImg from "@/assets/logo.png";
 
 const NAV_ITEMS = [
@@ -117,7 +117,7 @@ export default function AccountingShell({ children, breadcrumb = "" }: Accountin
             <span className="text-xs text-muted-foreground">/ Accounting{breadcrumb}</span>
           </div>
           <div className="flex items-center gap-2">
-            <DemoDataToggle />
+            
             <button onClick={() => setTheme(theme === "dark" ? "light" : "dark")} className="p-1.5 rounded-lg hover:bg-muted transition-colors">
               {theme === "dark" ? <Sun className="w-4 h-4 text-muted-foreground" /> : <Moon className="w-4 h-4 text-muted-foreground" />}
             </button>

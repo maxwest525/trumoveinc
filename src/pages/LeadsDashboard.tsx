@@ -78,10 +78,10 @@ export default function LeadsDashboard() {
     return Object.entries(counts).map(([s, c]) => ({ name: SOURCE_LABELS[s] || s, value: c })).sort((a, b) => b.value - a.value);
   }, [leads]);
 
-  if (loading) return <LeadVendorShell onRefresh={() => setRefreshKey((k) => k + 1)}><p className="text-sm text-muted-foreground text-center py-12">Loading...</p></LeadVendorShell>;
+  if (loading) return <LeadVendorShell><p className="text-sm text-muted-foreground text-center py-12">Loading...</p></LeadVendorShell>;
 
   return (
-    <LeadVendorShell onRefresh={() => setRefreshKey((k) => k + 1)}>
+    <LeadVendorShell>
       <div className="space-y-5">
         <div>
           <h1 className="text-xl font-bold text-foreground">Lead Vendors Overview</h1>
