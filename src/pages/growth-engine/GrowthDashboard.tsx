@@ -247,7 +247,8 @@ export default function GrowthDashboard() {
             <p className="text-[11px] text-muted-foreground mt-1">This month | Avg call duration: 3m 42s</p>
             <div className="mt-3 flex gap-4 text-[11px] text-muted-foreground">
               <span>Booked: <strong className="text-foreground">67</strong></span>
-              <span>Follow-up: <strong className="text-foreground">89</strong></span>
+              <span>In Queue: <strong className="text-foreground">89</strong></span>
+              <span>Not Reached: <strong className="text-amber-500">34</strong></span>
               <span>Missed: <strong className="text-red-500">12</strong></span>
             </div>
           </div>
