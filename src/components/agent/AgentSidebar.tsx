@@ -23,6 +23,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: "Customer Chat", icon: Mail, href: "/agent/messages" },
   { label: "Dialer", icon: Phone, href: "/agent/dialer" },
   { label: "Bookings", icon: CalendarCheck, href: "/agent/operations" },
+  { label: "Pulse Monitor", icon: Activity, href: "/agent/pulse" },
 ];
 
 export default function AgentSidebar({ onDialerToggle }: AgentSidebarProps) {

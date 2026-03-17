@@ -20,6 +20,7 @@ const NAV_ITEMS = [
   { label: "QuickBooks", icon: BookOpen, href: "/admin/quickbooks" },
   { label: "Payroll / Paychex", icon: CreditCard, href: "/admin/payroll" },
   { label: "Developer", icon: Link2, href: "/admin/developer" },
+  { label: "Pulse Settings", icon: Settings2, href: "/admin/pulse" },
 ];
 
 const ADVANCED_ITEMS = [
