@@ -1442,6 +1442,11 @@
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Pulse Compliance tokens */
+    --compliance-pass: 152 69% 50%;
+    --compliance-review: 38 92% 55%;
+    --compliance-fail: 0 72% 55%;
   }
 }
 
