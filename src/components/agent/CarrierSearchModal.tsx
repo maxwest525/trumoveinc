@@ -17,16 +17,6 @@ export interface CarrierMoveData {
 
 // TODO: Fetch from DB
 const PAST_MOVES: CarrierMoveData[] = [];
-  {
-    carrierName: "Coastal Movers LLC",
-    carrierMC: "MC-345678",
-    driverName: "James Thompson",
-    truckNumber: "TRK-5567",
-    dotNumber: "4728193",
-    moveDate: "2025-11-28",
-    route: "Savannah, GA → Charleston, SC",
-  },
-];
 
 interface CarrierSearchModalProps {
   open: boolean;

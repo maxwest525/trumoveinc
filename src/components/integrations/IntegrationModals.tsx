@@ -836,7 +836,7 @@ function RingCentralDemoVisual() {
           </div>
           <div>
             <div className="text-sm font-medium text-white">Active Call</div>
-            <div className="text-xs text-white/80">John Smith • {isLiveMode ? "03:12" : "02:34"}</div>
+            <div className="text-xs text-white/80">Active Call • {isLiveMode ? "03:12" : "02:34"}</div>
           </div>
         </div>
         <div className="flex items-center gap-2">
