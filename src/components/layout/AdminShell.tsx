@@ -17,8 +17,6 @@ const NAV_ITEMS = [
   { label: "Users & Roles", icon: Users, href: "/admin/users" },
   { label: "Employee Requests", icon: FileText, href: "/admin/employee-requests" },
   { label: "Products & Pricing", icon: DollarSign, href: "/admin/pricing" },
-  { label: "QuickBooks", icon: BookOpen, href: "/admin/quickbooks" },
-  { label: "Payroll / Paychex", icon: CreditCard, href: "/admin/payroll" },
   { label: "Developer", icon: Link2, href: "/admin/developer" },
   { label: "Pulse Settings", icon: Settings2, href: "/admin/pulse" },
 ];
