@@ -140,6 +140,10 @@ const App = () => (
             <Route path="/customer-facing-sites" element={<CustomerFacingSites />} />
             <Route path="/tools/:tool" element={<IntegrationPlaceholder />} />
             <Route path="/pulse" element={<PulseHome />} />
+            <Route path="/pulse/agent" element={<PulseAgent />} />
+            <Route path="/pulse/dashboard" element={<PulseDashboard />} />
+            <Route path="/pulse/call/:callId" element={<PulseCallReview />} />
+            <Route path="/pulse/manager" element={<PulseManager />} />
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
