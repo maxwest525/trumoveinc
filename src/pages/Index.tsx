@@ -787,7 +787,7 @@ function StepsCompactSection({ navigate }: { navigate: (path: string) => void })
               key={step.num}
               className={`tru-steps-compact-card tru-steps-parallax-card ${isInView ? 'in-view' : ''}`}
               style={{ '--card-index': index } as React.CSSProperties}
-              onClick={() => navigate("/online-estimate")}
+              onClick={() => navigate("/site/online-estimate")}
             >
               <div className="tru-steps-compact-num">{step.num}</div>
               <div className="tru-steps-compact-card-content">
