@@ -14,6 +14,12 @@ export interface MoveSummaryData {
   notes: string;
 }
 
+interface InventoryStats {
+  totalItems: number;
+  totalCuFt: number;
+  totalWeight: number;
+}
+
 interface MoveSummaryPanelProps {
   form?: MoveSummaryData;
   lead?: {
@@ -28,6 +34,9 @@ interface MoveSummaryPanelProps {
     estimated_value?: number | null;
     notes?: string | null;
   };
+  inventoryStats?: InventoryStats;
+  pricePerCuFt?: string;
+  onPricePerCuFtChange?: (value: string) => void;
 }
 
 /** Known city-pair rough distances (miles) */
