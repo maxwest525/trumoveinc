@@ -46,7 +46,13 @@ export function AgentCommissionBoard({ open, onOpenChange }: AgentCommissionBoar
         </DialogHeader>
 
         <div className="flex-1 overflow-y-auto space-y-1.5">
-          {sorted.map((agent, i) => (
+          {sorted.length === 0 ? (
+            <div className="py-12 text-center text-muted-foreground">
+              <Trophy className="w-10 h-10 mx-auto mb-3 opacity-30" />
+              <p className="text-sm">No agent data yet</p>
+              <p className="text-xs mt-1">Commission data will appear here as deals close.</p>
+            </div>
+          ) : sorted.map((agent, i) => (
             <div key={agent.id} className={cn("flex items-center gap-3 p-2.5 rounded-lg border transition-colors", i < 3 ? "bg-muted/30" : "bg-background")}>
               <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0">{rankIcon(i + 1)}</div>
               <div className="w-8 h-8 rounded-full flex items-center justify-center bg-primary/10 text-primary text-xs font-bold shrink-0">{agent.avatar}</div>
