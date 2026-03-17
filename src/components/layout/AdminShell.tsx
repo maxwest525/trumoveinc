@@ -19,6 +19,7 @@ const NAV_ITEMS = [
   { label: "Products & Pricing", icon: DollarSign, href: "/admin/pricing" },
   { label: "Developer", icon: Link2, href: "/admin/developer" },
   { label: "Pulse Settings", icon: Settings2, href: "/admin/pulse" },
+  { label: "Team Chat", icon: MessageSquare, href: "/admin/team-chat" },
 ];
 
 const ADVANCED_ITEMS = [
