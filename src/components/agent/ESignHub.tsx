@@ -49,48 +49,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
    completed: { label: "Completed", color: "bg-primary/10 text-primary", icon: CheckCircle2 },
  };
  
- // Demo documents
- const DEMO_DOCUMENTS: DocumentRecord[] = [
-   {
-     id: "doc-1",
-     type: "estimate",
-     refNumber: "EST-2026-4521",
-     customerName: "Sarah Johnson",
-     customerEmail: "sarah.johnson@email.com",
-     customerPhone: "(555) 123-4567",
-     status: "opened",
-     sentAt: new Date(Date.now() - 1000 * 60 * 45),
-     openedAt: new Date(Date.now() - 1000 * 60 * 5),
-     deliveryMethod: "email",
-   },
-   {
-     id: "doc-2",
-     type: "ccach",
-     refNumber: "CC-2026-8734",
-     customerName: "Michael Chen",
-     customerEmail: "m.chen@email.com",
-     customerPhone: "(555) 987-6543",
-     status: "sent",
-     sentAt: new Date(Date.now() - 1000 * 60 * 120),
-     deliveryMethod: "sms",
-   },
-   {
-     id: "doc-3",
-     type: "bol",
-     refNumber: "BOL-2026-2156",
-     customerName: "Emily Davis",
-     customerEmail: "emily.d@email.com",
-     customerPhone: "(555) 456-7890",
-     status: "completed",
-     sentAt: new Date(Date.now() - 1000 * 60 * 60 * 24),
-     openedAt: new Date(Date.now() - 1000 * 60 * 60 * 23),
-     completedAt: new Date(Date.now() - 1000 * 60 * 60 * 22),
-     deliveryMethod: "email",
-   },
- ];
  
  export function ESignHub() {
-   const [documents, setDocuments] = useState<DocumentRecord[]>(DEMO_DOCUMENTS);
+   const [documents, setDocuments] = useState<DocumentRecord[]>([]);
    const [selectedDoc, setSelectedDoc] = useState<DocumentRecord | null>(null);
    const [showClientSearch, setShowClientSearch] = useState(false);
    const [isSending, setIsSending] = useState(false);

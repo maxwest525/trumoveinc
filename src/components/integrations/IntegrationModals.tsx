@@ -587,12 +587,7 @@ function RingCentralDemoVisual() {
     };
   }, [isLiveMode]);
 
-  const RC_MESSAGES = [
-     { from: "Sales Team", preview: "New lead from website form...", time: "11:30 AM", unread: true, participants: 8 },
-     { from: "Support Queue", preview: "Escalation: Customer callback needed", time: "10:20 AM", unread: true, participants: 4 },
-     { from: "John Smith", preview: "RE: Contract renewal discussion", time: "9:15 AM", unread: false, participants: 2 },
-     { from: "IT Department", preview: "Phone system update scheduled", time: "Yesterday", unread: false, participants: 12 },
-  ];
+  const RC_MESSAGES: { from: string; preview: string; time: string; unread: boolean; participants: number }[] = [];
    
    const RC_MEETINGS = [
      { title: "Weekly Sales Standup", time: "2:00 PM", duration: "30 min", participants: 8, status: "upcoming" },
@@ -841,7 +836,7 @@ function RingCentralDemoVisual() {
           </div>
           <div>
             <div className="text-sm font-medium text-white">Active Call</div>
-            <div className="text-xs text-white/80">John Smith • {isLiveMode ? "03:12" : "02:34"}</div>
+            <div className="text-xs text-white/80">Active Call • {isLiveMode ? "03:12" : "02:34"}</div>
           </div>
         </div>
         <div className="flex items-center gap-2">

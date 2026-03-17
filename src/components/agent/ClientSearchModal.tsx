@@ -33,92 +33,9 @@ interface PastMove {
   estimatedWeight: string;
 }
 
-const DEMO_CUSTOMERS: Customer[] = [
-  {
-    id: "CUS-001",
-    name: "Sarah Johnson",
-    email: "sarah.johnson@email.com",
-    phone: "(555) 123-4567",
-    address: "1234 Oak Street, Tampa, FL 33601",
-    totalMoves: 2,
-    lifetimeValue: 5200,
-    lastMove: "2026-01-15",
-    status: "active",
-  },
-  {
-    id: "CUS-002",
-    name: "Michael Chen",
-    email: "m.chen@techcorp.com",
-    phone: "(555) 987-6543",
-    address: "456 Palm Ave, Miami, FL 33101",
-    totalMoves: 1,
-    lifetimeValue: 3800,
-    lastMove: "2025-11-10",
-    status: "completed",
-  },
-  {
-    id: "CUS-003",
-    name: "Emily Rodriguez",
-    email: "emily.r@gmail.com",
-    phone: "(555) 456-7890",
-    address: "789 Sunset Blvd, Orlando, FL 32801",
-    totalMoves: 3,
-    lifetimeValue: 8500,
-    lastMove: "2026-01-28",
-    status: "pending",
-  },
-];
-
-const DEMO_PAST_MOVES: PastMove[] = [
-  {
-    id: "MOV-001",
-    bookingRef: "TM-20260115-4521",
-    customerName: "Sarah Johnson",
-    email: "sarah.johnson@email.com",
-    phone: "(555) 123-4567",
-    originAddress: "1234 Oak Street, Tampa, FL 33601",
-    destAddress: "789 Pine Avenue, Orlando, FL 32801",
-    moveDate: "2026-01-15",
-    status: "completed",
-    estimatedWeight: "4,250 lbs",
-  },
-  {
-    id: "MOV-002",
-    bookingRef: "TM-20251110-8823",
-    customerName: "Michael Chen",
-    email: "m.chen@techcorp.com",
-    phone: "(555) 987-6543",
-    originAddress: "456 Palm Ave, Miami, FL 33101",
-    destAddress: "321 Beach Rd, Fort Lauderdale, FL 33301",
-    moveDate: "2025-11-10",
-    status: "completed",
-    estimatedWeight: "3,100 lbs",
-  },
-  {
-    id: "MOV-003",
-    bookingRef: "TM-20260128-1157",
-    customerName: "Emily Rodriguez",
-    email: "emily.r@gmail.com",
-    phone: "(555) 456-7890",
-    originAddress: "789 Sunset Blvd, Orlando, FL 32801",
-    destAddress: "555 Lake View Dr, Jacksonville, FL 32202",
-    moveDate: "2026-01-28",
-    status: "in-progress",
-    estimatedWeight: "5,800 lbs",
-  },
-  {
-    id: "MOV-004",
-    bookingRef: "TM-20250920-3344",
-    customerName: "Sarah Johnson",
-    email: "sarah.johnson@email.com",
-    phone: "(555) 123-4567",
-    originAddress: "567 Maple Lane, St. Petersburg, FL 33701",
-    destAddress: "1234 Oak Street, Tampa, FL 33601",
-    moveDate: "2025-09-20",
-    status: "completed",
-    estimatedWeight: "3,900 lbs",
-  },
-];
+// TODO: Replace with real DB queries
+const searchCustomersFromDB = async (_query: string): Promise<Customer[]> => [];
+const searchMovesFromDB = async (_query: string): Promise<PastMove[]> => [];
 
 export interface ClientData {
   name: string;
@@ -140,17 +57,12 @@ export function ClientSearchModal({ open, onClose, onSelect }: ClientSearchModal
   const [pastMoves, setPastMoves] = useState<PastMove[]>([]);
   const [activeTab, setActiveTab] = useState("customers");
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     if (!searchQuery.trim()) {
       toast.error("Enter a name, email, or phone to search");
       return;
     }
-    const results = DEMO_CUSTOMERS.filter(
-      (c) =>
-        c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        c.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        c.phone.includes(searchQuery)
-    );
+    const results = await searchCustomersFromDB(searchQuery);
     setCustomers(results);
     if (results.length === 0) {
       toast.info("No customers found");
@@ -159,36 +71,18 @@ export function ClientSearchModal({ open, onClose, onSelect }: ClientSearchModal
     }
   };
 
-  const handleMoveSearch = () => {
+  const handleMoveSearch = async () => {
     if (!moveSearchQuery.trim()) {
       toast.error("Enter a booking ref, name, or address to search");
       return;
     }
-    const results = DEMO_PAST_MOVES.filter(
-      (m) =>
-        m.bookingRef.toLowerCase().includes(moveSearchQuery.toLowerCase()) ||
-        m.customerName.toLowerCase().includes(moveSearchQuery.toLowerCase()) ||
-        m.originAddress.toLowerCase().includes(moveSearchQuery.toLowerCase()) ||
-        m.destAddress.toLowerCase().includes(moveSearchQuery.toLowerCase())
-    );
+    const results = await searchMovesFromDB(moveSearchQuery);
     setPastMoves(results);
     if (results.length === 0) {
       toast.info("No past moves found");
     } else {
       toast.success(`Found ${results.length} move(s)`);
     }
-  };
-
-  const loadAllDemo = () => {
-    setCustomers(DEMO_CUSTOMERS);
-    setSearchQuery("");
-    toast.success("Loaded all demo customers");
-  };
-
-  const loadAllMoveDemo = () => {
-    setPastMoves(DEMO_PAST_MOVES);
-    setMoveSearchQuery("");
-    toast.success("Loaded all demo moves");
   };
 
   const handleSelect = (customer: Customer) => {
@@ -267,10 +161,6 @@ export function ClientSearchModal({ open, onClose, onSelect }: ClientSearchModal
               <Button onClick={handleSearch} size="sm">
                 <Search className="w-4 h-4" />
               </Button>
-              <Button onClick={loadAllDemo} variant="outline" size="sm" className="gap-1">
-                <Sparkles className="w-4 h-4" />
-                Demo
-              </Button>
             </div>
 
             {/* Results List */}
@@ -278,7 +168,7 @@ export function ClientSearchModal({ open, onClose, onSelect }: ClientSearchModal
               {customers.length === 0 ? (
                 <div className="py-12 text-center text-muted-foreground">
                   <Users className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                  <p className="text-sm">Search for customers or load demo data</p>
+                  <p className="text-sm">Search for customers by name, email, or phone</p>
                 </div>
               ) : (
                 customers.map((customer) => (
@@ -336,10 +226,6 @@ export function ClientSearchModal({ open, onClose, onSelect }: ClientSearchModal
               <Button onClick={handleMoveSearch} size="sm">
                 <Search className="w-4 h-4" />
               </Button>
-              <Button onClick={loadAllMoveDemo} variant="outline" size="sm" className="gap-1">
-                <Sparkles className="w-4 h-4" />
-                Demo
-              </Button>
             </div>
 
             {/* Past Moves List */}
@@ -347,7 +233,7 @@ export function ClientSearchModal({ open, onClose, onSelect }: ClientSearchModal
               {pastMoves.length === 0 ? (
                 <div className="py-12 text-center text-muted-foreground">
                   <Truck className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                  <p className="text-sm">Search for past moves or load demo data</p>
+                  <p className="text-sm">Search for past moves by booking ref or name</p>
                 </div>
               ) : (
                 pastMoves.map((move) => (

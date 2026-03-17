@@ -29,8 +29,6 @@ import CustomerService from "./pages/CustomerService";
 import AdminSupportTickets from "./pages/AdminSupportTickets";
 import AgentPipeline from "./pages/AgentPipeline";
 import ProfileSettings from "./pages/ProfileSettings";
-import Demo from "./pages/Demo";
-import AgentLoginOld from "./pages/AgentLoginOld";
 import ManagerDashboard from "./pages/ManagerDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminUsersPage from "./pages/AdminUsersPage";
@@ -98,8 +96,6 @@ const App = () => (
             <Route path="/admin/esign-audit" element={<AdminESignAudit />} />
             <Route path="/agent/pipeline" element={<AgentPipeline />} />
             <Route path="/agent/profile" element={<ProfileSettings />} />
-            <Route path="/demo" element={<Demo />} />
-            <Route path="/agent-login-old" element={<AgentLoginOld />} />
             <Route path="/manager/dashboard" element={<ManagerDashboard />} />
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
             <Route path="/admin/users" element={<AdminUsersPage />} />

@@ -22,19 +22,12 @@ interface Recording {
   date: string;
 }
 
-const MOCK_RECORDINGS: Recording[] = [
-  { id: "r1", callId: "c1", contactName: "Jessica Martinez", contactPhone: "+1 (555) 234-5678", agentName: "You", duration: 252, outcome: "Booked", campaign: "Spring Promo", date: "2026-02-24T14:30:00Z" },
-  { id: "r2", callId: "c2", contactName: "Robert Chen", contactPhone: "+1 (555) 345-6789", agentName: "You", duration: 184, outcome: "Follow Up", campaign: "Spring Promo", date: "2026-02-24T11:15:00Z" },
-  { id: "r3", callId: "c3", contactName: "Maria Santos", contactPhone: "+1 (555) 456-7890", agentName: "Sarah K.", duration: 67, outcome: "No Answer", campaign: "Retention", date: "2026-02-23T16:45:00Z" },
-  { id: "r4", callId: "c4", contactName: "Amara Johnson", contactPhone: "+1 (555) 678-9012", agentName: "You", duration: 412, outcome: "Booked", campaign: "Spring Promo", date: "2026-02-23T10:20:00Z" },
-  { id: "r5", callId: "c5", contactName: "David Park", contactPhone: "+1 (555) 789-0123", agentName: "Mike R.", duration: 95, outcome: "Voicemail", campaign: "Retention", date: "2026-02-22T09:00:00Z" },
-  { id: "r6", callId: "c6", contactName: "Sarah Thompson", contactPhone: "+1 (555) 890-1234", agentName: "You", duration: 328, outcome: "Not Interested", campaign: "Spring Promo", date: "2026-02-21T15:30:00Z" },
-  { id: "r7", callId: "c7", contactName: "Li Wei", contactPhone: "+1 (555) 901-2345", agentName: "Jen P.", duration: 540, outcome: "Booked", campaign: "Retention", date: "2026-02-21T11:00:00Z" },
-];
+// TODO: Fetch from DB
+const recordings: Recording[] = [];
 
-const AGENTS = ["You", "Sarah K.", "Mike R.", "Jen P."];
-const CAMPAIGNS = ["Spring Promo", "Retention"];
-const OUTCOMES_FILTER = ["Booked", "Follow Up", "No Answer", "Voicemail", "Not Interested"];
+const AGENTS: string[] = [];
+const CAMPAIGNS: string[] = [];
+const OUTCOMES_FILTER: string[] = [];
 
 const fmtDur = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 
@@ -57,7 +50,7 @@ export default function RecordingsLibrary() {
   const [playingId, setPlayingId] = useState<string | null>(null);
   const [playbackProgress, setPlaybackProgress] = useState(0);
 
-  const filtered = MOCK_RECORDINGS.filter(r => {
+  const filtered = recordings.filter(r => {
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
       if (!r.contactName.toLowerCase().includes(q) && !r.contactPhone.includes(q) && !r.agentName.toLowerCase().includes(q)) return false;
@@ -80,7 +73,7 @@ export default function RecordingsLibrary() {
       setPlaybackProgress(0);
       // Simulate playback progress
       let p = 0;
-      const rec = MOCK_RECORDINGS.find(r => r.id === id);
+      const rec = recordings.find(r => r.id === id);
       const dur = rec?.duration || 60;
       const interval = setInterval(() => {
         p += 1;

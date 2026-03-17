@@ -6,16 +6,8 @@ import { Label } from "@/components/ui/label";
 import LocationAutocomplete from "@/components/LocationAutocomplete";
 import { MAPBOX_TOKEN } from "@/lib/mapboxToken";
 
-const MOCK_BOOKINGS: Record<string, { origin: string; destination: string }> = {
-  '12345': {
-    origin: '4520 Atlantic Blvd, Jacksonville, FL 32207',
-    destination: '1000 Ocean Dr, Miami Beach, FL 33139',
-  },
-  '00000': {
-    origin: '123 Main St, Atlanta, GA 30301',
-    destination: '456 Oak Ave, Tampa, FL 33601',
-  },
-};
+// Booking lookup - will query DB in future
+const MOCK_BOOKINGS: Record<string, { origin: string; destination: string }> = {};
 
 interface TrackingWizardProps {
   onSubmit: (data: { originAddress: string; destAddress: string; bookingNumber?: string }) => void;
