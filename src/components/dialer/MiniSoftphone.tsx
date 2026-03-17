@@ -1,14 +1,15 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   Phone, PhoneOff, Mic, MicOff, Pause, Play, Maximize2, Minimize2,
   Circle, ChevronUp, ChevronDown, Hash, Users, PhoneForwarded,
-  Volume2, VolumeX, UserPlus, GripHorizontal,
+  Volume2, VolumeX, UserPlus, GripHorizontal, ExternalLink, Plus,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DialerProvider } from "./dialerProvider";
 import type { ActiveCallInfo } from "./types";
+import { supabase } from "@/integrations/supabase/client";
 
 const DIALPAD = [
   ["1", "2", "3"],
@@ -24,7 +25,9 @@ export default function MiniSoftphone() {
   const [fullView, setFullView] = useState(false);
   const [showDialpad, setShowDialpad] = useState(false);
   const [speakerOn, setSpeakerOn] = useState(false);
+  const [matchedLead, setMatchedLead] = useState<{ id: string; name: string } | null>(null);
   const location = useLocation();
+  const navigate = useNavigate();
 
   // Drag state
   const [pos, setPos] = useState({ x: 0, y: 0 });
@@ -65,12 +68,78 @@ export default function MiniSoftphone() {
     if (!call) setElapsed(0);
   }, [call?.state, call?.startedAt]);
 
+  // Try to match phone number to a lead
+  useEffect(() => {
+    if (!call?.phoneNumber) {
+      setMatchedLead(null);
+      return;
+    }
+    const digits = call.phoneNumber.replace(/\D/g, "").slice(-10);
+    if (digits.length < 7) return;
+
+    supabase
+      .from("leads")
+      .select("id, first_name, last_name, phone")
+      .or(`phone.ilike.%${digits}%`)
+      .limit(1)
+      .then(({ data }) => {
+        if (data && data.length > 0) {
+          setMatchedLead({ id: data[0].id, name: `${data[0].first_name} ${data[0].last_name}` });
+        } else {
+          setMatchedLead(null);
+        }
+      });
+  }, [call?.phoneNumber]);
+
   const isOnDialer = location.pathname === "/agent/dialer";
   const hasActiveCall = call && call.state !== "idle" && call.state !== "wrap_up";
-  if (isOnDialer || !hasActiveCall) return null;
+
+  // Always show on non-dialer pages (idle = compact ready state)
+  if (isOnDialer) return null;
 
   const fmt = (s: number) => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
-  const isHold = call.state === "on_hold";
+  const isHold = call?.state === "on_hold";
+
+  // ── Idle / Ready state (no active call) ──
+  if (!hasActiveCall) {
+    return (
+      <div
+        ref={cardRef}
+        style={{ transform: `translate(${pos.x}px, ${pos.y}px)` }}
+        className="fixed bottom-4 right-4 z-50 rounded-2xl border border-border bg-card shadow-xl overflow-hidden hidden sm:block w-64"
+      >
+        <div
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+          className="flex items-center justify-center py-1 cursor-grab active:cursor-grabbing select-none"
+        >
+          <GripHorizontal className="w-4 h-4 text-muted-foreground/40" />
+        </div>
+        <div className="px-4 py-3 space-y-2.5">
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-emerald-500" />
+            <span className="text-xs font-medium text-muted-foreground">Ready</span>
+          </div>
+          <Button
+            size="sm"
+            className="w-full gap-1.5 text-xs h-8"
+            onClick={() => navigate("/agent/dialer")}
+          >
+            <Phone className="w-3.5 h-3.5" /> Open Dialer
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full gap-1.5 text-xs h-8"
+            onClick={() => navigate("/agent/new-customer")}
+          >
+            <Plus className="w-3.5 h-3.5" /> New Lead
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -101,7 +170,7 @@ export default function MiniSoftphone() {
           <div className="flex items-center gap-2">
             <Circle className={cn("w-2 h-2 fill-current", isHold ? "text-orange-500" : "text-green-500 animate-pulse")} />
             <span className="text-xs font-medium text-foreground">
-              {call.state === "ringing" ? "Ringing…" : call.state === "dialing" ? "Dialing…" : isHold ? "On Hold" : "Active Call"}
+              {call!.state === "ringing" ? "Ringing…" : call!.state === "dialing" ? "Dialing…" : isHold ? "On Hold" : "Active Call"}
             </span>
           </div>
           <span className={cn("text-sm font-mono font-semibold", isHold ? "text-orange-600" : "text-foreground")}>
@@ -112,24 +181,45 @@ export default function MiniSoftphone() {
         {/* Contact Info */}
         <div className="px-4 py-3">
           <p className="text-sm font-semibold text-foreground truncate">
-            {call.contactName || call.phoneNumber}
+            {call!.contactName || call!.phoneNumber}
           </p>
-          {call.contactName && (
-            <p className="text-xs text-muted-foreground">{call.phoneNumber}</p>
+          {call!.contactName && (
+            <p className="text-xs text-muted-foreground">{call!.phoneNumber}</p>
           )}
-          {call.isRecording && (
+          {call!.isRecording && (
             <div className="flex items-center gap-1 mt-1 text-[10px] text-destructive">
               <Circle className="w-1.5 h-1.5 fill-current animate-pulse" /> Recording
             </div>
           )}
+
+          {/* Customer link / New Lead */}
+          <div className="mt-2 flex gap-1.5">
+            {matchedLead ? (
+              <button
+                onClick={() => navigate(`/agent/customers/${matchedLead.id}`)}
+                className="flex items-center gap-1 px-2 py-1 rounded-md bg-primary/10 text-primary text-[10px] font-medium hover:bg-primary/20 transition-colors"
+              >
+                <ExternalLink className="w-3 h-3" />
+                {matchedLead.name}
+              </button>
+            ) : (
+              <button
+                onClick={() => navigate("/agent/new-customer")}
+                className="flex items-center gap-1 px-2 py-1 rounded-md bg-muted text-muted-foreground text-[10px] font-medium hover:bg-muted/80 transition-colors"
+              >
+                <Plus className="w-3 h-3" />
+                New Lead
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Primary Controls */}
         <div className="px-4 pb-2 flex items-center gap-2">
-          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={() => DialerProvider.mute(!call.isMuted)} title={call.isMuted ? "Unmute" : "Mute"}>
-            {call.isMuted ? <MicOff className="w-3.5 h-3.5 text-destructive" /> : <Mic className="w-3.5 h-3.5" />}
+          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={() => DialerProvider.mute(!call!.isMuted)} title={call!.isMuted ? "Unmute" : "Mute"}>
+            {call!.isMuted ? <MicOff className="w-3.5 h-3.5 text-destructive" /> : <Mic className="w-3.5 h-3.5" />}
           </Button>
-          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={() => DialerProvider.hold(call.state !== "on_hold")} title={isHold ? "Resume" : "Hold"}>
+          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={() => DialerProvider.hold(call!.state !== "on_hold")} title={isHold ? "Resume" : "Hold"}>
             {isHold ? <Play className="w-3.5 h-3.5 text-orange-500" /> : <Pause className="w-3.5 h-3.5" />}
           </Button>
           <Button variant="destructive" size="sm" className="flex-1 h-8 gap-1 text-xs" onClick={() => DialerProvider.hangup()}>
@@ -229,7 +319,7 @@ export default function MiniSoftphone() {
           <div className="flex items-center gap-2">
             <Circle className={cn("w-2 h-2 fill-current", isHold ? "text-orange-500" : "text-green-500 animate-pulse")} />
             <span className="text-sm font-medium text-foreground truncate max-w-[140px]">
-              {call.contactName || call.phoneNumber}
+              {call!.contactName || call!.phoneNumber}
             </span>
           </div>
           <div className="flex items-center gap-3">
@@ -243,20 +333,40 @@ export default function MiniSoftphone() {
         {expanded && (
           <div className="bg-card border-t border-border px-4 pb-5 pt-3 space-y-3">
             <div className="text-center">
-              <p className="text-base font-semibold text-foreground">{call.contactName || call.phoneNumber}</p>
-              {call.contactName && <p className="text-xs text-muted-foreground">{call.phoneNumber}</p>}
-              {call.isRecording && (
+              <p className="text-base font-semibold text-foreground">{call!.contactName || call!.phoneNumber}</p>
+              {call!.contactName && <p className="text-xs text-muted-foreground">{call!.phoneNumber}</p>}
+              {call!.isRecording && (
                 <div className="flex items-center justify-center gap-1 mt-1 text-[10px] text-destructive">
                   <Circle className="w-1.5 h-1.5 fill-current animate-pulse" /> Recording
                 </div>
               )}
+              {/* Customer link / New Lead - Mobile */}
+              <div className="mt-2 flex justify-center gap-1.5">
+                {matchedLead ? (
+                  <button
+                    onClick={() => navigate(`/agent/customers/${matchedLead.id}`)}
+                    className="flex items-center gap-1 px-2.5 py-1 rounded-md bg-primary/10 text-primary text-[11px] font-medium"
+                  >
+                    <ExternalLink className="w-3 h-3" />
+                    {matchedLead.name}
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => navigate("/agent/new-customer")}
+                    className="flex items-center gap-1 px-2.5 py-1 rounded-md bg-muted text-muted-foreground text-[11px] font-medium"
+                  >
+                    <Plus className="w-3 h-3" />
+                    New Lead
+                  </button>
+                )}
+              </div>
             </div>
 
             <div className="flex items-center justify-center gap-4">
-              <Button variant="ghost" size="icon" className={cn("h-12 w-12 rounded-full", call.isMuted && "bg-destructive/10")} onClick={() => DialerProvider.mute(!call.isMuted)}>
-                {call.isMuted ? <MicOff className="w-5 h-5 text-destructive" /> : <Mic className="w-5 h-5" />}
+              <Button variant="ghost" size="icon" className={cn("h-12 w-12 rounded-full", call!.isMuted && "bg-destructive/10")} onClick={() => DialerProvider.mute(!call!.isMuted)}>
+                {call!.isMuted ? <MicOff className="w-5 h-5 text-destructive" /> : <Mic className="w-5 h-5" />}
               </Button>
-              <Button variant="ghost" size="icon" className={cn("h-12 w-12 rounded-full", isHold && "bg-orange-500/10")} onClick={() => DialerProvider.hold(call.state !== "on_hold")}>
+              <Button variant="ghost" size="icon" className={cn("h-12 w-12 rounded-full", isHold && "bg-orange-500/10")} onClick={() => DialerProvider.hold(call!.state !== "on_hold")}>
                 {isHold ? <Play className="w-5 h-5 text-orange-500" /> : <Pause className="w-5 h-5" />}
               </Button>
               <Button variant="destructive" size="icon" className="h-12 w-12 rounded-full" onClick={() => DialerProvider.hangup()}>
