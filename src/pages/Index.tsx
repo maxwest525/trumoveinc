@@ -699,7 +699,7 @@ function ShipmentTrackerSection({ navigate }: { navigate: (path: string) => void
             
             {/* CTA Button */}
             <button 
-              onClick={() => navigate("/track")}
+              onClick={() => navigate("/site/track")}
               className="tru-ai-cta-btn"
             >
               <MapPin className="w-4 h-4" />
