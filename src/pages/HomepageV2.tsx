@@ -264,10 +264,10 @@ export default function HomepageV2() {
             <span className="text-lg font-bold tracking-tight">TruMove</span>
           </Link>
           <div className="hidden md:flex items-center gap-8 text-sm" style={{ color: textSecondary }}>
-            <Link to="/online-estimate" className="hover:text-white transition-colors">Estimate</Link>
-            <Link to="/scan-room" className="hover:text-white transition-colors">AI Scanner</Link>
-            <Link to="/vetting" className="hover:text-white transition-colors">Carrier Vetting</Link>
-            <Link to="/track" className="hover:text-white transition-colors">Track Shipment</Link>
+            <Link to="/site/online-estimate" className="hover:text-white transition-colors">Estimate</Link>
+            <Link to="/site/scan-room" className="hover:text-white transition-colors">AI Scanner</Link>
+            <Link to="/site/vetting" className="hover:text-white transition-colors">Carrier Vetting</Link>
+            <Link to="/site/track" className="hover:text-white transition-colors">Track Shipment</Link>
           </div>
           <div className="flex items-center gap-3">
             <Link to="/">
