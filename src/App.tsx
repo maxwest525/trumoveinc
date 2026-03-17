@@ -60,6 +60,10 @@ import CustomerFacingSites from "./pages/CustomerFacingSites";
 import IntegrationPlaceholder from "./pages/IntegrationPlaceholder";
 import AdminPricing from "./pages/AdminPricing";
 import PulseHome from "./pages/pulse/PulseHome";
+import PulseAgent from "./pages/pulse/PulseAgent";
+import PulseDashboard from "./pages/pulse/PulseDashboard";
+import PulseCallReview from "./pages/pulse/PulseCallReview";
+import PulseManager from "./pages/pulse/PulseManager";
 
 const queryClient = new QueryClient();
 
