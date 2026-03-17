@@ -39,7 +39,6 @@ import KpiDashboard from "./pages/KpiDashboard";
 import ResetPassword from "./pages/ResetPassword";
 import MarketingDashboard from "./pages/MarketingDashboard";
 import AccountingDashboard from "./pages/AccountingDashboard";
-import ComplianceDashboard from "./pages/ComplianceDashboard";
 import AgentOperations from "./pages/AgentOperations";
 import AgentNewCustomer from "./pages/AgentNewCustomer";
 import AgentDialerPage from "./pages/AgentDialerPage";
