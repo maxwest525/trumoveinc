@@ -53,6 +53,20 @@ export default function AgentInventory() {
   const [pricePerCuFt, setPricePerCuFt] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState("manual");
+  const [leadData, setLeadData] = useState<any>(null);
+
+  // Fetch lead data for the summary panel
+  useEffect(() => {
+    if (!leadId) return;
+    supabase
+      .from("leads")
+      .select("*")
+      .eq("id", leadId)
+      .single()
+      .then(({ data }) => {
+        if (data) setLeadData(data);
+      });
+  }, [leadId]);
 
   const suggestions = ROOM_SUGGESTIONS[activeRoom] || [];
 
