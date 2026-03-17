@@ -16,17 +16,17 @@ type MatchType = 'keyword' | 'phrase' | 'regex';
 type Severity = 'low' | 'medium' | 'high' | 'critical';
 type Category = 'legal' | 'anger' | 'escalation' | 'compliance' | 'pii' | 'rebuttal' | 'safety' | 'hipaa' | 'financial' | 'profanity';
 
-const CATEGORY_META: Record<Category, { label: string; icon: React.ElementType; color: string; bg: string }> = {
-  legal: { label: 'Legal', icon: Scale, color: 'text-destructive', bg: 'bg-destructive/10 border-destructive/20' },
-  anger: { label: 'Anger', icon: Flame, color: 'text-orange-500', bg: 'bg-orange-500/10 border-orange-500/20' },
-  escalation: { label: 'Escalation', icon: AlertTriangle, color: 'text-compliance-review', bg: 'bg-compliance-review/10 border-compliance-review/20' },
-  compliance: { label: 'Compliance', icon: Shield, color: 'text-primary', bg: 'bg-primary/10 border-primary/20' },
-  pii: { label: 'PII / NIST', icon: Lock, color: 'text-violet-500', bg: 'bg-violet-500/10 border-violet-500/20' },
-  rebuttal: { label: 'Rebuttal', icon: MessageCircleWarning, color: 'text-cyan-600', bg: 'bg-cyan-600/10 border-cyan-600/20' },
-  safety: { label: 'Safety', icon: HandMetal, color: 'text-red-600', bg: 'bg-red-600/10 border-red-600/20' },
-  hipaa: { label: 'HIPAA', icon: Shield, color: 'text-emerald-600', bg: 'bg-emerald-600/10 border-emerald-600/20' },
-  financial: { label: 'Financial', icon: Scale, color: 'text-amber-600', bg: 'bg-amber-600/10 border-amber-600/20' },
-  profanity: { label: 'Profanity', icon: AlertTriangle, color: 'text-red-500', bg: 'bg-red-500/10 border-red-500/20' },
+const CATEGORY_META: Record<Category, { label: string; icon: React.ElementType; color: string; bg: string; defaultSeverity: Severity }> = {
+  legal: { label: 'Legal', icon: Scale, color: 'text-destructive', bg: 'bg-destructive/10 border-destructive/20', defaultSeverity: 'critical' },
+  anger: { label: 'Anger', icon: Flame, color: 'text-orange-500', bg: 'bg-orange-500/10 border-orange-500/20', defaultSeverity: 'high' },
+  escalation: { label: 'Escalation', icon: AlertTriangle, color: 'text-compliance-review', bg: 'bg-compliance-review/10 border-compliance-review/20', defaultSeverity: 'high' },
+  compliance: { label: 'Compliance', icon: Shield, color: 'text-primary', bg: 'bg-primary/10 border-primary/20', defaultSeverity: 'critical' },
+  pii: { label: 'PII / NIST', icon: Lock, color: 'text-violet-500', bg: 'bg-violet-500/10 border-violet-500/20', defaultSeverity: 'critical' },
+  rebuttal: { label: 'Rebuttal', icon: MessageCircleWarning, color: 'text-cyan-600', bg: 'bg-cyan-600/10 border-cyan-600/20', defaultSeverity: 'medium' },
+  safety: { label: 'Safety', icon: HandMetal, color: 'text-red-600', bg: 'bg-red-600/10 border-red-600/20', defaultSeverity: 'critical' },
+  hipaa: { label: 'HIPAA', icon: Shield, color: 'text-emerald-600', bg: 'bg-emerald-600/10 border-emerald-600/20', defaultSeverity: 'critical' },
+  financial: { label: 'Financial', icon: Scale, color: 'text-amber-600', bg: 'bg-amber-600/10 border-amber-600/20', defaultSeverity: 'critical' },
+  profanity: { label: 'Profanity', icon: AlertTriangle, color: 'text-red-500', bg: 'bg-red-500/10 border-red-500/20', defaultSeverity: 'high' },
 };
 
 interface WatchEntry { id: string; pattern: string; type: MatchType; category?: Category; }
