@@ -654,7 +654,7 @@ export default function HomepageV2() {
                 From AI room scanning to FMCSA-vetted carriers, we've refined every detail to make each move seamlessly stress-free.
               </p>
               <div className="flex flex-wrap gap-4">
-                <Link to="/online-estimate">
+                <Link to="/site/online-estimate">
                   <button className="px-8 py-3 rounded-xl text-sm font-semibold text-white transition-all hover:brightness-110" style={{ background: teal, boxShadow: `0 0 30px hsl(175, 70%, 40%, 0.25)` }}>
                     Get Estimate
                   </button>
