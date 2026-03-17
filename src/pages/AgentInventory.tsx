@@ -178,7 +178,7 @@ export default function AgentInventory() {
   };
 
   const handleSkip = () => {
-    navigate(`/agent/payment?leadId=${leadId}`);
+    navigate(`/agent/esign?leadId=${leadId}&doc=estimate`);
   };
 
   return (
