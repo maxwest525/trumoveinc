@@ -60,6 +60,10 @@ import CustomerFacingSites from "./pages/CustomerFacingSites";
 import IntegrationPlaceholder from "./pages/IntegrationPlaceholder";
 import AdminPricing from "./pages/AdminPricing";
 import PulseHome from "./pages/pulse/PulseHome";
+import PulseAgent from "./pages/pulse/PulseAgent";
+import PulseDashboard from "./pages/pulse/PulseDashboard";
+import PulseCallReview from "./pages/pulse/PulseCallReview";
+import PulseManager from "./pages/pulse/PulseManager";
 
 const queryClient = new QueryClient();
 
@@ -136,6 +140,10 @@ const App = () => (
             <Route path="/customer-facing-sites" element={<CustomerFacingSites />} />
             <Route path="/tools/:tool" element={<IntegrationPlaceholder />} />
             <Route path="/pulse" element={<PulseHome />} />
+            <Route path="/pulse/agent" element={<PulseAgent />} />
+            <Route path="/pulse/dashboard" element={<PulseDashboard />} />
+            <Route path="/pulse/call/:callId" element={<PulseCallReview />} />
+            <Route path="/pulse/manager" element={<PulseManager />} />
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
