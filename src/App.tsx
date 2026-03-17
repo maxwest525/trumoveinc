@@ -59,11 +59,7 @@ import AdminESignAudit from "./pages/AdminESignAudit";
 import CustomerFacingSites from "./pages/CustomerFacingSites";
 import IntegrationPlaceholder from "./pages/IntegrationPlaceholder";
 import AdminPricing from "./pages/AdminPricing";
-import PulseHome from "./pages/pulse/PulseHome";
-import PulseAgent from "./pages/pulse/PulseAgent";
-import PulseDashboard from "./pages/pulse/PulseDashboard";
 import PulseCallReview from "./pages/pulse/PulseCallReview";
-import PulseManager from "./pages/pulse/PulseManager";
 import AgentPulse from "./pages/AgentPulse";
 import ManagerPulse from "./pages/ManagerPulse";
 import AdminPulse from "./pages/AdminPulse";
@@ -147,11 +143,6 @@ const App = () => (
             <Route path="/homepage-2" element={<HomepageV2 />} />
             <Route path="/customer-facing-sites" element={<CustomerFacingSites />} />
             <Route path="/tools/:tool" element={<IntegrationPlaceholder />} />
-            <Route path="/pulse" element={<PulseHome />} />
-            <Route path="/pulse/agent" element={<PulseAgent />} />
-            <Route path="/pulse/dashboard" element={<PulseDashboard />} />
-            <Route path="/pulse/call/:callId" element={<PulseCallReview />} />
-            <Route path="/pulse/manager" element={<PulseManager />} />
             <Route path="/agent/pulse" element={<AgentPulse />} />
             <Route path="/agent/pulse/call/:callId" element={<AgentPulseCallReview />} />
             <Route path="/manager/pulse" element={<ManagerPulse />} />
