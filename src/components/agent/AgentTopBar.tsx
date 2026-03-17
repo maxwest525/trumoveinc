@@ -46,7 +46,7 @@ export default function AgentTopBar({ crumbs, onLogout }: AgentTopBarProps) {
     }
     await supabase.auth.signOut();
     toast({ title: "Signed out successfully" });
-    navigate("/agent-login");
+    navigate("/");
   };
 
   return (
