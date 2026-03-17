@@ -1393,6 +1393,11 @@
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Pulse Compliance tokens */
+    --compliance-pass: 152 69% 41%;
+    --compliance-review: 38 92% 50%;
+    --compliance-fail: 0 72% 51%;
   }
 
   .dark {
