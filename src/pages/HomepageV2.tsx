@@ -275,7 +275,7 @@ export default function HomepageV2() {
                 Log in
               </Button>
             </Link>
-            <Link to="/book">
+            <Link to="/site/book">
               <Button size="sm" className="border-0 rounded-lg px-5 font-semibold" style={{ background: teal, color: "white" }}>
                 Buy Now
               </Button>
