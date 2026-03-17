@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import GrowthEngineShell from "@/components/layout/GrowthEngineShell";
 import { cn } from "@/lib/utils";
 import {
