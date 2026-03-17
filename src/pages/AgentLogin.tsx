@@ -159,13 +159,7 @@ export default function AgentLogin() {
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-gradient-to-b from-primary/[0.04] via-transparent to-transparent rounded-full blur-3xl pointer-events-none" />
 
         {/* Top bar */}
-        <Link
-          to="/"
-          className="absolute top-6 left-6 inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors z-10"
-        >
-          <ArrowRight className="w-3.5 h-3.5 rotate-180" />
-          Back to website
-        </Link>
+        {/* No back link needed — this IS the portal home */}
 
         {/* Logo + Header */}
         <div className="flex flex-col items-center gap-4 mb-14 z-10">
