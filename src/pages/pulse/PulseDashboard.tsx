@@ -57,6 +57,9 @@ const PulseDashboard: React.FC<{ embedded?: boolean; basePath?: string }> = ({ e
   const [liveTranscriptAgent, setLiveTranscriptAgent] = useState<string>('Agent Smith');
   const [transcriptViewMode, setTranscriptViewMode] = useState<'flagged' | 'full'>('flagged');
   const [liveCallData, setLiveCallData] = useState<{ id: string; agent_name: string; client_name: string; transcript: string; flagged_keywords: string[]; status: string } | null>(null);
+  const [transcriptModal, setTranscriptModal] = useState<{ open: boolean; callId: string | null; agentName: string; clientName: string; keyword: string }>({ open: false, callId: null, agentName: '', clientName: '', keyword: '' });
+  const [modalTranscript, setModalTranscript] = useState<{ transcript: string; flagged_keywords: string[] } | null>(null);
+  const [modalLoading, setModalLoading] = useState(false);
 
   const fetchAlerts = useCallback(async () => {
     setIsLoading(true);
