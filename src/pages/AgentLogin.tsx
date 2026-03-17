@@ -26,10 +26,7 @@ const PORTALS = [
     description: "Dialer, pipeline, customers & operations",
     href: "/agent/dashboard",
     icon: Headset,
-    gradient: "from-emerald-500/10 to-emerald-500/5",
-    borderHover: "group-hover:border-emerald-500/40",
-    iconColor: "text-emerald-500",
-    glowColor: "group-hover:shadow-[0_0_40px_-8px_hsl(152,69%,53%,0.25)]",
+    accentHsl: "142 71% 45%",
   },
   {
     key: "managers",
@@ -37,10 +34,7 @@ const PORTALS = [
     description: "Team dashboards, coaching & oversight",
     href: "/manager/dashboard",
     icon: Users,
-    gradient: "from-blue-500/10 to-blue-500/5",
-    borderHover: "group-hover:border-blue-500/40",
-    iconColor: "text-blue-500",
-    glowColor: "group-hover:shadow-[0_0_40px_-8px_hsl(217,91%,60%,0.25)]",
+    accentHsl: "217 91% 60%",
   },
   {
     key: "admin",
@@ -48,10 +42,7 @@ const PORTALS = [
     description: "Marketing, compliance, accounting & settings",
     href: "/admin/dashboard",
     icon: Shield,
-    gradient: "from-amber-500/10 to-amber-500/5",
-    borderHover: "group-hover:border-amber-500/40",
-    iconColor: "text-amber-500",
-    glowColor: "group-hover:shadow-[0_0_40px_-8px_hsl(38,92%,50%,0.25)]",
+    accentHsl: "38 92% 50%",
   },
 ];
 
