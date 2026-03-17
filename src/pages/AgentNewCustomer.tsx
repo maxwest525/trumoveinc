@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { UserPlus, Loader2, ArrowRight, Sparkles, MapPin, Calendar, Phone, Mail, User } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import MoveSummaryPanel from "@/components/agent/MoveSummaryPanel";
 import { toast } from "sonner";
 
 const DEMO_DATA = {
