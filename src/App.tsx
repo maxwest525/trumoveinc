@@ -54,6 +54,7 @@ import CustomerPortal from "./pages/CustomerPortal";
 import CustomerPortalDashboard from "./pages/CustomerPortalDashboard";
 import HomepageV2 from "./pages/HomepageV2";
 import AgentInventory from "./pages/AgentInventory";
+import AgentMoveDetails from "./pages/AgentMoveDetails";
 import AdminESignAudit from "./pages/AdminESignAudit";
 import CustomerFacingSites from "./pages/CustomerFacingSites";
 import IntegrationPlaceholder from "./pages/IntegrationPlaceholder";
@@ -117,6 +118,7 @@ const App = () => (
             
             <Route path="/agent/operations" element={<AgentOperations />} />
             <Route path="/agent/new-customer" element={<AgentNewCustomer />} />
+            <Route path="/agent/move-details/:leadId" element={<AgentMoveDetails />} />
             <Route path="/agent/inventory/:leadId" element={<AgentInventory />} />
             <Route path="/agent/dialer" element={<AgentDialerPage />} />
             <Route path="/agent/esign" element={<AgentESign />} />
