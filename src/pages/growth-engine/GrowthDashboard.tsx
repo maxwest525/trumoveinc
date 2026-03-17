@@ -4,7 +4,7 @@ import {
   DollarSign, MousePointerClick, Target, BarChart3, Zap,
   ArrowUpRight, ArrowDownRight, Activity, Globe, Megaphone,
   Search, Users, Eye, CheckCircle, XCircle, Lightbulb,
-  Clock, Star, Shield, ChevronRight,
+  Clock, Star, Shield, ChevronRight, Server, Database,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -69,14 +69,12 @@ const PRIORITIES = [
 ];
 
 const LEAD_STATUSES = [
-  { label: "New Lead", count: 12, color: "bg-blue-500" },
-  { label: "In Queue", count: 8, color: "bg-indigo-500" },
-  { label: "Attempted", count: 15, color: "bg-violet-500" },
-  { label: "Connected", count: 67, color: "bg-emerald-500" },
-  { label: "Not Reached", count: 34, color: "bg-amber-500" },
-  { label: "Escalated", count: 3, color: "bg-red-500" },
-  { label: "Duplicate", count: 7, color: "bg-muted-foreground" },
-  { label: "Suppressed", count: 2, color: "bg-muted-foreground" },
+  { label: "New", count: 12, color: "bg-blue-500", desc: "Just arrived, not yet queued" },
+  { label: "In Queue", count: 8, color: "bg-indigo-500", desc: "Waiting in Convoso" },
+  { label: "Attempted", count: 15, color: "bg-violet-500", desc: "Call attempted, no answer" },
+  { label: "Connected", count: 67, color: "bg-emerald-500", desc: "Spoke with customer" },
+  { label: "Not Reached", count: 34, color: "bg-amber-500", desc: "Multiple attempts, no contact" },
+  { label: "Escalated", count: 3, color: "bg-red-500", desc: "Needs manager attention" },
 ];
 
 function StatCard({ stat }: { stat: typeof STATS[0] }) {
@@ -126,7 +124,7 @@ export default function GrowthDashboard() {
           </div>
         )}
 
-        {/* Top Priorities + Speed-to-Lead */}
+        {/* Top Priorities + Speed-to-Lead + System Architecture */}
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
           {/* Priorities */}
           <div className="lg:col-span-3 bg-card rounded-xl border border-border p-5">
@@ -197,12 +195,47 @@ export default function GrowthDashboard() {
           </div>
         </div>
 
+        {/* System Architecture at a glance */}
+        <div className="bg-card rounded-xl border border-border p-5">
+          <div className="flex items-center gap-2 mb-3">
+            <Server className="w-4 h-4 text-primary" />
+            <h2 className="text-sm font-semibold text-foreground">System Architecture</h2>
+            <span className="text-[9px] bg-muted text-muted-foreground px-1.5 py-0.5 rounded-full font-bold">AT A GLANCE</span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="bg-emerald-500/5 border border-emerald-500/15 rounded-lg p-3">
+              <div className="text-[10px] font-semibold text-emerald-600 uppercase tracking-wider mb-1">Primary Dialer</div>
+              <div className="text-[13px] font-semibold text-foreground">Convoso</div>
+              <div className="flex items-center gap-1 mt-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                <span className="text-[10px] text-emerald-600">Connected, live</span>
+              </div>
+            </div>
+            <div className="bg-blue-500/5 border border-blue-500/15 rounded-lg p-3">
+              <div className="text-[10px] font-semibold text-blue-600 uppercase tracking-wider mb-1">System of Record</div>
+              <div className="text-[13px] font-semibold text-foreground">Not configured</div>
+              <div className="flex items-center gap-1 mt-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground" />
+                <span className="text-[10px] text-muted-foreground">Set up in Integrations</span>
+              </div>
+            </div>
+            <div className="bg-muted/50 border border-border rounded-lg p-3">
+              <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">Optional Backup Sync</div>
+              <div className="text-[13px] font-semibold text-muted-foreground">None enabled</div>
+              <div className="flex items-center gap-1 mt-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground" />
+                <span className="text-[10px] text-muted-foreground">Optional</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* KPI cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           {STATS.map(stat => <StatCard key={stat.label} stat={stat} />)}
         </div>
 
-        {/* Lead Status Breakdown */}
+        {/* Lead Status Breakdown — cleaner */}
         <div className="bg-card rounded-xl border border-border p-5">
           <div className="flex items-center justify-between mb-4">
             <div>
@@ -211,13 +244,15 @@ export default function GrowthDashboard() {
             </div>
             <span className="text-[10px] text-muted-foreground bg-muted px-2 py-0.5 rounded-full">This month</span>
           </div>
-          <div className="grid grid-cols-4 sm:grid-cols-8 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
             {LEAD_STATUSES.map(s => (
-              <div key={s.label} className="text-center">
-                <div className={cn("w-10 h-10 rounded-lg mx-auto flex items-center justify-center text-sm font-bold text-white", s.color)}>
-                  {s.count}
+              <div key={s.label} className="bg-muted/30 rounded-lg p-3">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className={cn("w-2.5 h-2.5 rounded-full shrink-0", s.color)} />
+                  <span className="text-[11px] font-semibold text-foreground">{s.label}</span>
                 </div>
-                <div className="text-[10px] text-muted-foreground mt-1.5 leading-tight">{s.label}</div>
+                <div className="text-xl font-bold text-foreground">{s.count}</div>
+                <div className="text-[9px] text-muted-foreground mt-0.5">{s.desc}</div>
               </div>
             ))}
           </div>
