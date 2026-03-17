@@ -175,7 +175,6 @@ export default function AdminDashboard() {
       setStats([
         { label: "Total Users", value: String(totalUsers) },
         { label: "Active Sessions", value: String(onlineCount) },
-        { label: "Integrations", value: "—" },
         { label: "Open Tickets", value: String(tickets.length) },
       ]);
 
