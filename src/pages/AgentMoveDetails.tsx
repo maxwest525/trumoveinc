@@ -32,6 +32,7 @@ export default function AgentMoveDetails() {
     fragile_items: false,
     special_treatment_notes: "",
     packing_service: false,
+    auto_transport: false,
   });
 
   const [aiEstimate, setAiEstimate] = useState<{ cuFt?: number; weight?: number; pricePerCuFt?: number } | null>(null);
