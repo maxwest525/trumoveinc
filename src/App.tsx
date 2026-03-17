@@ -45,6 +45,7 @@ import GrowthLandingPages from "./pages/growth-engine/GrowthLandingPages";
 import GrowthTracking from "./pages/growth-engine/GrowthTracking";
 import GrowthLeads from "./pages/growth-engine/GrowthLeads";
 import GrowthAutomation from "./pages/growth-engine/GrowthAutomation";
+import GrowthCampaignSummary from "./pages/growth-engine/GrowthCampaignSummary";
 import AccountingDashboard from "./pages/AccountingDashboard";
 import AgentOperations from "./pages/AgentOperations";
 import AgentNewCustomer from "./pages/AgentNewCustomer";
