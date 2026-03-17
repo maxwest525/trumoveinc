@@ -233,7 +233,7 @@ export function ClientSearchModal({ open, onClose, onSelect }: ClientSearchModal
               {pastMoves.length === 0 ? (
                 <div className="py-12 text-center text-muted-foreground">
                   <Truck className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                  <p className="text-sm">Search for past moves or load demo data</p>
+                  <p className="text-sm">Search for past moves by booking ref or name</p>
                 </div>
               ) : (
                 pastMoves.map((move) => (
