@@ -759,8 +759,8 @@ export default function HomepageV2() {
             <div>
               <h4 className="text-xs font-semibold uppercase tracking-wider mb-4" style={{ color: textPrimary }}>Legal</h4>
               <div className="space-y-2.5">
-                <Link to="/privacy" className="block text-xs transition-colors hover:text-white" style={{ color: textSecondary }}>Privacy Policy</Link>
-                <Link to="/terms" className="block text-xs transition-colors hover:text-white" style={{ color: textSecondary }}>Terms of Service</Link>
+                <Link to="/site/privacy" className="block text-xs transition-colors hover:text-white" style={{ color: textSecondary }}>Privacy Policy</Link>
+                <Link to="/site/terms" className="block text-xs transition-colors hover:text-white" style={{ color: textSecondary }}>Terms of Service</Link>
                 <Link to="/portal" className="block text-xs transition-colors hover:text-white" style={{ color: textSecondary }}>Customer Portal</Link>
                 <Link to="/site" className="block text-xs transition-colors hover:text-white" style={{ color: textSecondary }}>Classic Site</Link>
               </div>
