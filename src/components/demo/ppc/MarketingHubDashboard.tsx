@@ -35,6 +35,7 @@ export function MarketingHubDashboard({
   onViewPage,
   onEditPage
 }: MarketingHubDashboardProps) {
+  const navigate = useNavigate();
   
   const handleCreateLandingPage = () => {
     if (onQuickCreate) {
