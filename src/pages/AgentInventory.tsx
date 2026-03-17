@@ -14,6 +14,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ROOM_SUGGESTIONS, type ItemDefinition, calculateTotalCubicFeet, calculateTotalWeight, DENSITY_FACTOR } from "@/lib/priceCalculator";
 import { cn } from "@/lib/utils";
+import MoveSummaryPanel from "@/components/agent/MoveSummaryPanel";
 import { 
   Sofa, Bed, UtensilsCrossed, Tv, Laptop, Baby, TreePine, Dumbbell,
   type LucideIcon 
