@@ -25,7 +25,7 @@ function getRecommendation(s: WizardSelections): Recommendation {
       backup: "Simple Quote Form LP",
       why: "Meta traffic converts best with in-app forms. No page load friction.",
       cta: "Get My Free Quote (auto-fill)",
-      routing: "Instant form → webhook → Convoso",
+      routing: "Instant form → attribution → webhook → Convoso",
       kpi: "Cost per lead, form completion rate",
     };
   }
