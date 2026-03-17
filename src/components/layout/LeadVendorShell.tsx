@@ -20,10 +20,9 @@ const NAV_ITEMS = [
 interface LeadVendorShellProps {
   children: ReactNode;
   breadcrumb?: string;
-  onRefresh?: () => void;
 }
 
-export default function LeadVendorShell({ children, breadcrumb = "", onRefresh }: LeadVendorShellProps) {
+export default function LeadVendorShell({ children, breadcrumb = "" }: LeadVendorShellProps) {
   const { theme, setTheme } = useTheme();
   const location = useLocation();
   const navigate = useNavigate();
