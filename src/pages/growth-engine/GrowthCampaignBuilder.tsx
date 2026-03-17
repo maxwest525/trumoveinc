@@ -602,24 +602,67 @@ export default function GrowthCampaignBuilder() {
                 </div>
               </div>
 
-              {/* Lead routing path */}
-              <div className="bg-primary/5 border border-primary/10 rounded-xl p-4">
-                <span className="text-[11px] font-semibold text-primary uppercase tracking-wider">Lead Routing Path</span>
-                <div className="flex flex-wrap items-center gap-1.5 mt-2 text-[11px] font-medium text-foreground">
-                  <span className="bg-muted rounded-md px-2.5 py-1.5">Ad Click</span>
-                  <ChevronRight className="w-3 h-3 text-muted-foreground" />
-                  <span className="bg-muted rounded-md px-2.5 py-1.5">Landing Page</span>
-                  <ChevronRight className="w-3 h-3 text-muted-foreground" />
-                  <span className="bg-muted rounded-md px-2.5 py-1.5">Form / Call</span>
-                  <ChevronRight className="w-3 h-3 text-muted-foreground" />
-                  <span className="bg-muted rounded-md px-2.5 py-1.5">Attribution Capture</span>
-                  <ChevronRight className="w-3 h-3 text-muted-foreground" />
-                  <span className="bg-muted rounded-md px-2.5 py-1.5">Webhook / Router</span>
-                  <ChevronRight className="w-3 h-3 text-muted-foreground" />
-                  <span className="bg-emerald-500/10 text-emerald-600 rounded-md px-2.5 py-1.5 ring-1 ring-emerald-500/20">Convoso / CRM / Queue</span>
-                </div>
-                <p className="text-[10px] text-muted-foreground mt-2">Leads are captured on your page, tagged with attribution, then routed via webhook to Convoso for instant agent contact.</p>
-              </div>
+              {/* Lead routing path - conditional by capture type */}
+              {(() => {
+                const page = LANDING_PAGES.find(p => p.id === selectedPage);
+                const captureType = page?.captureType || "form";
+                const isMeta = selectedPlatforms.includes("meta_fb");
+                const isInstant = captureType === "instant";
+                const isCallFirst = captureType === "call";
+
+                const flowSteps = isInstant
+                  ? [
+                      { label: "Meta Ad", highlight: false },
+                      { label: "Instant Form", highlight: false },
+                      { label: "Attribution Capture", highlight: false },
+                      { label: "Webhook / Router", highlight: false },
+                      { label: "Convoso Queue / CRM Sync", highlight: true },
+                    ]
+                  : isCallFirst
+                  ? [
+                      { label: isMeta ? "Meta Ad" : "Ad Click", highlight: false },
+                      { label: "Call Event", highlight: false },
+                      { label: "Attribution Capture", highlight: false },
+                      { label: "Convoso / Callback / CRM", highlight: true },
+                    ]
+                  : [
+                      { label: isMeta ? "Meta Ad Click" : "Ad Click", highlight: false },
+                      { label: "Landing Page", highlight: false },
+                      { label: "Form Submit or Call", highlight: false },
+                      { label: "Attribution Capture", highlight: false },
+                      { label: "Webhook / Router", highlight: false },
+                      { label: "Convoso Queue / CRM Sync", highlight: true },
+                    ];
+
+                return (
+                  <div className="bg-primary/5 border border-primary/10 rounded-xl p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-[11px] font-semibold text-primary uppercase tracking-wider">Lead Routing Path</span>
+                      <span className="text-[9px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full font-medium">
+                        {isInstant ? "Instant form flow" : isCallFirst ? "Call-first flow" : "Landing page flow"}
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-1.5 text-[11px] font-medium text-foreground">
+                      {flowSteps.map((s, i) => (
+                        <div key={s.label} className="flex items-center gap-1.5">
+                          <span className={cn(
+                            "rounded-md px-2.5 py-1.5",
+                            s.highlight ? "bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/20" : "bg-muted"
+                          )}>{s.label}</span>
+                          {i < flowSteps.length - 1 && <ChevronRight className="w-3 h-3 text-muted-foreground" />}
+                        </div>
+                      ))}
+                    </div>
+                    <p className="text-[10px] text-muted-foreground mt-2">
+                      {isInstant
+                        ? "Leads submit in-app on Meta. Tagged with attribution, then routed via webhook to Convoso for instant agent follow-up."
+                        : isCallFirst
+                        ? "Calls are attributed via tracking number, then routed to Convoso for instant dialing or callback queue."
+                        : "Leads are captured on your page, tagged with attribution, then routed via webhook to Convoso for instant agent contact."}
+                    </p>
+                  </div>
+                );
+              })()}
 
               {/* Routing logic */}
               <div className="bg-card rounded-xl border border-border p-4">
