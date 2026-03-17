@@ -5,9 +5,9 @@ import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/ca
 import { motion } from "framer-motion";
 
 const SECTIONS = [
-  { icon: Activity, title: "Agent Monitor", desc: "Live call transcription & keyword alerts" },
-  { icon: BarChart3, title: "Dashboard", desc: "Compliance metrics & analytics" },
-  { icon: Settings2, title: "Logic Manager", desc: "Rules, scripts & alert configuration" },
+  { icon: Activity, title: "Agent Monitor", desc: "Live call transcription & keyword alerts", path: "/pulse/agent" },
+  { icon: BarChart3, title: "Dashboard", desc: "Compliance metrics & analytics", path: "/pulse/dashboard" },
+  { icon: Settings2, title: "Logic Manager", desc: "Rules, scripts & alert configuration", path: "/pulse/manager" },
 ];
 
 export default function PulseHome() {
@@ -43,12 +43,12 @@ export default function PulseHome() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 + i * 0.1 }}
           >
-            <Card className="relative overflow-hidden opacity-60 cursor-default">
-              <div className="absolute top-2 right-2">
-                <Badge variant="outline" className="text-[9px]">Coming Soon</Badge>
-              </div>
+            <Card
+              className="relative overflow-hidden cursor-pointer hover:border-primary/40 hover:shadow-md transition-all"
+              onClick={() => navigate(s.path)}
+            >
               <CardHeader className="pt-8">
-                <s.icon className="w-8 h-8 text-muted-foreground/50 mb-2" />
+                <s.icon className="w-8 h-8 text-primary/70 mb-2" />
                 <CardTitle className="text-sm">{s.title}</CardTitle>
                 <CardDescription className="text-xs">{s.desc}</CardDescription>
               </CardHeader>
