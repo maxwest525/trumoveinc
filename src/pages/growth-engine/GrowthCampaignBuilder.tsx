@@ -95,11 +95,11 @@ const KEYWORD_BUCKETS = [
 ];
 
 const LANDING_PAGES = [
-  { id: "local", name: "Local Movers LP", conv: "8.2%", status: "live", bestFor: "Best for Google Search", reason: "Optimized for 'movers near me' searches. Shows local trust signals, reviews, and a fast quote form.", sections: "Hero, Trust Strip, Reviews, Service Area Map, Quote Form, Sticky CTA" },
-  { id: "quote", name: "Free Quote LP", conv: "6.8%", status: "live", bestFor: "Best for higher quote intent", reason: "Designed for leads who want pricing. Multi-step form captures move details for accurate quoting.", sections: "Hero, Price Calculator Preview, Trust Badges, Multi-Step Form, FAQ" },
-  { id: "longdist", name: "Long Distance LP", conv: "5.4%", status: "live", bestFor: "Best for urgent leads", reason: "Built for interstate searches. Highlights licensing, insurance, and cross-state logistics.", sections: "Hero, Route Map, Licensing Badges, Full-Value Protection, Form, Testimonials" },
-  { id: "meta", name: "Social Traffic LP", conv: "7.1%", status: "live", bestFor: "Best for Meta", reason: "Shorter page designed for social traffic with lower intent. Visual, fast-loading, strong CTA above fold.", sections: "Visual Hero, Offer Strip, 3-Step Process, Reviews, Sticky Form" },
-  { id: "new", name: "+ Create New Landing Page", conv: "", status: "new", bestFor: "", reason: "", sections: "" },
+  { id: "local", name: "Local Movers LP", conv: "8.2%", status: "live", bestFor: "Best for Google Search", tier: "primary", reason: "Optimized for 'movers near me' searches. Shows local trust signals, reviews, and a fast quote form. This is the highest-converting page for paid search traffic.", sections: "Hero, Trust Strip, Reviews, Service Area Map, Quote Form, Sticky CTA" },
+  { id: "quote", name: "Free Quote LP", conv: "6.8%", status: "live", bestFor: "Best for higher quote quality", tier: "primary", reason: "Designed for leads who want pricing. Multi-step form captures move details for accurate quoting. Produces higher-quality leads with more information.", sections: "Hero, Price Calculator Preview, Trust Badges, Multi-Step Form, FAQ" },
+  { id: "meta", name: "Social Traffic LP", conv: "7.1%", status: "live", bestFor: "Best for Meta", tier: "primary", reason: "Shorter page designed for social traffic with lower intent. Visual, fast-loading, strong CTA above fold. Use this for all Facebook and Instagram campaigns.", sections: "Visual Hero, Offer Strip, 3-Step Process, Reviews, Sticky Form" },
+  { id: "longdist", name: "Long Distance LP", conv: "5.4%", status: "live", bestFor: "Best for urgent leads", tier: "secondary", reason: "Built for interstate searches. Highlights licensing, insurance, and cross-state logistics. Only needed if you run long-distance campaigns.", sections: "Hero, Route Map, Licensing Badges, Full-Value Protection, Form, Testimonials" },
+  { id: "new", name: "+ Create New Landing Page", conv: "", status: "new", bestFor: "", tier: "secondary", reason: "", sections: "" },
 ];
 
 export default function GrowthCampaignBuilder() {
