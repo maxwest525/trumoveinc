@@ -48,14 +48,16 @@ const TOP_PAGES = [
 ];
 
 const AI_RECS = [
+  { text: "Lead response time is averaging 4.2 minutes. Target under 60 seconds by reviewing Convoso queue priority rules.", priority: "high" },
   { text: "Your Meta Ads CPL dropped 12% this week. Consider increasing budget by $200/day to scale winners.", priority: "high" },
   { text: "The 'Long Distance LP' conversion rate dropped. Try testing a new hero headline focused on pricing transparency.", priority: "medium" },
   { text: "'Piano movers' keyword has low competition and high intent. Add it to your Google Ads campaign.", priority: "medium" },
-  { text: "You have 4 unclaimed Google reviews this week. Responding within 24hrs improves local rank.", priority: "low" },
+  { text: "23 leads hit the after-hours queue last night. Review your calling block schedule to capture more of these.", priority: "medium" },
 ];
 
 const ALERTS = [
   { text: "Google Ads conversion tracking pixel not firing on /thank-you page", type: "error" },
+  { text: "5 leads not worked within 2 minutes. Check Convoso queue status.", type: "warning" },
   { text: "3 missed calls from paid leads in the last 2 hours", type: "warning" },
   { text: "Meta Ads account spending 15% over daily budget", type: "warning" },
 ];
@@ -246,7 +248,8 @@ export default function GrowthDashboard() {
             <p className="text-[11px] text-muted-foreground mt-1">This month | Avg call duration: 3m 42s</p>
             <div className="mt-3 flex gap-4 text-[11px] text-muted-foreground">
               <span>Booked: <strong className="text-foreground">67</strong></span>
-              <span>Follow-up: <strong className="text-foreground">89</strong></span>
+              <span>In Queue: <strong className="text-foreground">89</strong></span>
+              <span>Not Reached: <strong className="text-amber-500">34</strong></span>
               <span>Missed: <strong className="text-red-500">12</strong></span>
             </div>
           </div>
