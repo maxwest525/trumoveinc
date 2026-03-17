@@ -21,7 +21,6 @@ const NAV_ITEMS: NavItem[] = [
   { label: "My Customers", icon: Users, href: "/agent/customers" },
   { label: "Pipeline", icon: Kanban, href: "/agent/pipeline" },
   { label: "Customer Chat", icon: Mail, href: "/agent/messages" },
-  { label: "Team Chat", icon: MessagesSquare, href: "/agent/team-chat" },
   { label: "Dialer", icon: Phone, href: "/agent/dialer" },
   { label: "Bookings", icon: CalendarCheck, href: "/agent/operations" },
 ];
