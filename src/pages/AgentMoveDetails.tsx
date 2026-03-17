@@ -32,6 +32,7 @@ export default function AgentMoveDetails() {
     fragile_items: false,
     special_treatment_notes: "",
     packing_service: false,
+    auto_transport: false,
   });
 
   const [aiEstimate, setAiEstimate] = useState<{ cuFt?: number; weight?: number; pricePerCuFt?: number } | null>(null);
@@ -58,6 +59,7 @@ export default function AgentMoveDetails() {
           fragile_items: data.fragile_items,
           special_treatment_notes: data.special_treatment_notes || "",
           packing_service: data.packing_service,
+          auto_transport: (data as any).auto_transport ?? false,
         });
       }
     });
@@ -254,6 +256,13 @@ export default function AgentMoveDetails() {
                 <div className="flex items-center justify-between p-3 rounded-lg border col-span-2">
                   <Label className="text-xs">Full Packing Service</Label>
                   <Switch checked={form.packing_service} onCheckedChange={v => set("packing_service", v)} />
+                </div>
+                <div className="flex items-center justify-between p-3 rounded-lg border col-span-2">
+                  <div>
+                    <Label className="text-xs">Auto Transport</Label>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">Vehicle shipping included with this move</p>
+                  </div>
+                  <Switch checked={form.auto_transport} onCheckedChange={v => set("auto_transport", v)} />
                 </div>
               </div>
               <div className="space-y-1.5">

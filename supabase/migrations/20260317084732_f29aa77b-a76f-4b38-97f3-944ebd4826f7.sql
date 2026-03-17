@@ -1,0 +1,1 @@
+ALTER TABLE public.move_details ADD COLUMN auto_transport boolean NOT NULL DEFAULT false;
