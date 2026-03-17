@@ -697,7 +697,21 @@ export default function GrowthCampaignBuilder() {
               </div>
 
               <button
-                onClick={() => toast.success("Campaign created! Leads will route to Convoso instantly when connected.")}
+                onClick={() => {
+                  navigate("/marketing/campaign-summary", {
+                    state: {
+                      campaign: {
+                        name: `${GOALS.find(g => g.id === selectedGoal)?.label || "Interstate"} Campaign`,
+                        goal: GOALS.find(g => g.id === selectedGoal)?.label || "Not set",
+                        platforms: selectedPlatforms.map(p => PLATFORMS.find(pl => pl.id === p)?.label).join(", ") || "None",
+                        geoMode: GEO_MODES.find(m => m.id === geoMode)?.label || "Not set",
+                        budget,
+                        keywords: selectedBuckets.join(", ") || "None",
+                        landingPage: LANDING_PAGES.find(p => p.id === selectedPage)?.name || "Not set",
+                      },
+                    },
+                  });
+                }}
                 className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
               >
                 <Rocket className="w-4 h-4" />
