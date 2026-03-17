@@ -478,6 +478,10 @@ export default function AgentInventory() {
             </div>
           </TabsContent>
         </Tabs>
+        </div>
+
+        {/* Move Summary sidebar */}
+        {leadData && <MoveSummaryPanel lead={leadData} />}
       </div>
     </AgentShell>
   );
