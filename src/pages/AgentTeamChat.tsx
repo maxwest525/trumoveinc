@@ -250,6 +250,13 @@ export default function AgentTeamChat({ embedded = false }: { embedded?: boolean
           )}
         </div>
       </div>
+  );
+
+  if (embedded) return content;
+
+  return (
+    <AgentShell breadcrumb=" / Team Chat">
+      {content}
     </AgentShell>
   );
 }
