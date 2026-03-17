@@ -7,11 +7,6 @@ import { BarChart, Bar, PieChart, Pie, Cell, LineChart, Line, XAxis, YAxis, Tool
 import { subDays, format, startOfDay, subMonths, endOfMonth, startOfMonth } from "date-fns";
 import { ArrowRight, TrendingUp, TrendingDown, Users, CheckCircle2, Activity } from "lucide-react";
 
-const QUICK_SETUP = [
-  { title: "Add new user", sub: "Invite team members" },
-  { title: "Connect DashClicks", sub: "Set up API integration" },
-  { title: "Configure analytics", sub: "Connect tracking pixels" },
-];
 
 
 const ROLE_COLORS = ["hsl(var(--primary))", "hsl(var(--chart-2))", "hsl(var(--chart-3))", "hsl(var(--chart-4))"];
@@ -293,38 +288,22 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Growth + Quick Setup */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {/* Growth line chart */}
-          <div className="rounded-xl border border-border bg-card p-4">
-            <h2 className="text-sm font-semibold text-foreground mb-4">User Growth</h2>
-            {loading ? (
-              <Skeleton className="h-[140px] w-full" />
-            ) : (
-              <ResponsiveContainer width="100%" height={140}>
-                <LineChart data={growthData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-                  <XAxis dataKey="month" tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" />
-                  <YAxis tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" width={30} />
-                  <Tooltip content={<GrowthTooltip growthData={growthData} />} cursor={{ stroke: "hsl(var(--primary))", strokeWidth: 1, strokeDasharray: "4 4" }} />
-                  <Line type="monotone" dataKey="users" stroke="hsl(var(--primary))" strokeWidth={2} dot={{ r: 3, fill: "hsl(var(--primary))" }} activeDot={{ r: 5, strokeWidth: 2, stroke: "hsl(var(--card))" }} />
-                </LineChart>
-              </ResponsiveContainer>
-            )}
-          </div>
-
-          {/* Quick Setup */}
-          <div className="rounded-xl border border-border bg-card p-4">
-            <h2 className="text-sm font-semibold text-foreground mb-3">Quick Setup</h2>
-            {QUICK_SETUP.map((q, i) => (
-              <div key={i} className="flex items-center gap-3 py-3 px-2 rounded-lg hover:bg-muted/50 cursor-pointer transition-colors">
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-foreground">{q.title}</p>
-                  <p className="text-xs text-muted-foreground">{q.sub}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+        {/* Growth */}
+        <div className="rounded-xl border border-border bg-card p-4">
+          <h2 className="text-sm font-semibold text-foreground mb-4">User Growth</h2>
+          {loading ? (
+            <Skeleton className="h-[140px] w-full" />
+          ) : (
+            <ResponsiveContainer width="100%" height={140}>
+              <LineChart data={growthData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+                <XAxis dataKey="month" tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" />
+                <YAxis tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" width={30} />
+                <Tooltip content={<GrowthTooltip growthData={growthData} />} cursor={{ stroke: "hsl(var(--primary))", strokeWidth: 1, strokeDasharray: "4 4" }} />
+                <Line type="monotone" dataKey="users" stroke="hsl(var(--primary))" strokeWidth={2} dot={{ r: 3, fill: "hsl(var(--primary))" }} activeDot={{ r: 5, strokeWidth: 2, stroke: "hsl(var(--card))" }} />
+              </LineChart>
+            </ResponsiveContainer>
+          )}
         </div>
       </div>
     </AdminShell>
