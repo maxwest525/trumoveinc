@@ -125,13 +125,13 @@ const App = () => (
             <Route path="/marketing/dashboard" element={<GrowthDashboard />} />
             <Route path="/marketing/campaigns" element={<GrowthCampaignBuilder />} />
             <Route path="/marketing/integrations" element={<GrowthIntegrations />} />
-            <Route path="/marketing/landing-pages" element={<GrowthStubPage />} />
+            <Route path="/marketing/landing-pages" element={<GrowthLandingPages />} />
             <Route path="/marketing/seo" element={<GrowthStubPage />} />
             <Route path="/marketing/ad-copy" element={<GrowthStubPage />} />
-            <Route path="/marketing/tracking" element={<GrowthStubPage />} />
-            <Route path="/marketing/leads" element={<GrowthStubPage />} />
+            <Route path="/marketing/tracking" element={<GrowthTracking />} />
+            <Route path="/marketing/leads" element={<GrowthLeads />} />
             <Route path="/marketing/reviews" element={<GrowthStubPage />} />
-            <Route path="/marketing/automation" element={<GrowthStubPage />} />
+            <Route path="/marketing/automation" element={<GrowthAutomation />} />
             <Route path="/marketing/competitors" element={<GrowthStubPage />} />
             <Route path="/marketing/settings" element={<GrowthStubPage />} />
             <Route path="/accounting/dashboard" element={<AccountingDashboard />} />
