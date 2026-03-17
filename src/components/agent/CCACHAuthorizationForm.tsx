@@ -17,11 +17,14 @@ type SignatureField = "initial1" | "initial2" | "signature";
 interface CCACHAuthorizationFormProps {
   externalTypedName?: string;
   onExternalTypedNameChange?: (name: string) => void;
+  /** When true, hides the built-in sidebar (used when embedded inside ESignViewPage which provides its own sidebar) */
+  embedded?: boolean;
 }
 
 export function CCACHAuthorizationForm({ 
   externalTypedName, 
-  onExternalTypedNameChange 
+  onExternalTypedNameChange,
+  embedded = false,
 }: CCACHAuthorizationFormProps = {}) {
   useEffect(() => { window.scrollTo(0, 0); }, []);
   
