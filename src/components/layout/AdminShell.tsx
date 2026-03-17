@@ -15,9 +15,11 @@ import { setPortalContext } from "@/hooks/usePortalContext";
 const NAV_ITEMS = [
   { label: "Dashboard", icon: LayoutDashboard, href: "/admin/dashboard" },
   { label: "Users & Roles", icon: Users, href: "/admin/users" },
-  { label: "Developer", icon: Link2, href: "/admin/developer" },
-  { label: "Support Tickets", icon: ScrollText, href: "/admin/support-tickets" },
+  { label: "Employee Requests", icon: FileText, href: "/admin/employee-requests" },
   { label: "Products & Pricing", icon: DollarSign, href: "/admin/pricing" },
+  { label: "QuickBooks", icon: BookOpen, href: "/admin/quickbooks" },
+  { label: "Payroll / Paychex", icon: CreditCard, href: "/admin/payroll" },
+  { label: "Developer", icon: Link2, href: "/admin/developer" },
 ];
 
 const ADVANCED_ITEMS = [
