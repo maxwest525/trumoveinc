@@ -1,5 +1,5 @@
-import { useMemo } from "react";
-import { MapPin, Calendar, DollarSign, Route, Clock, User, Phone, Mail, FileText, ArrowDown } from "lucide-react";
+import { useMemo, useState } from "react";
+import { MapPin, Calendar, DollarSign, Route, Clock, User, Phone, Mail, FileText, ArrowDown, Package, Scale, Box } from "lucide-react";
 
 export interface MoveSummaryData {
   firstName: string;
