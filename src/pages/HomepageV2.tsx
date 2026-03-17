@@ -144,7 +144,7 @@ function ScannerDemoCard() {
               <span>{totalWeight} lbs</span>
             </div>
             {count > 0 && (
-              <Link to="/scan-room" className="text-[10px] hover:underline" style={{ color: "hsl(175, 70%, 55%)" }}>
+              <Link to="/site/scan-room" className="text-[10px] hover:underline" style={{ color: "hsl(175, 70%, 55%)" }}>
                 Try Full Scanner →
               </Link>
             )}
