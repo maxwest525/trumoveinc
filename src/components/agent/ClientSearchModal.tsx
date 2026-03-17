@@ -33,92 +33,9 @@ interface PastMove {
   estimatedWeight: string;
 }
 
-const DEMO_CUSTOMERS: Customer[] = [
-  {
-    id: "CUS-001",
-    name: "Sarah Johnson",
-    email: "sarah.johnson@email.com",
-    phone: "(555) 123-4567",
-    address: "1234 Oak Street, Tampa, FL 33601",
-    totalMoves: 2,
-    lifetimeValue: 5200,
-    lastMove: "2026-01-15",
-    status: "active",
-  },
-  {
-    id: "CUS-002",
-    name: "Michael Chen",
-    email: "m.chen@techcorp.com",
-    phone: "(555) 987-6543",
-    address: "456 Palm Ave, Miami, FL 33101",
-    totalMoves: 1,
-    lifetimeValue: 3800,
-    lastMove: "2025-11-10",
-    status: "completed",
-  },
-  {
-    id: "CUS-003",
-    name: "Emily Rodriguez",
-    email: "emily.r@gmail.com",
-    phone: "(555) 456-7890",
-    address: "789 Sunset Blvd, Orlando, FL 32801",
-    totalMoves: 3,
-    lifetimeValue: 8500,
-    lastMove: "2026-01-28",
-    status: "pending",
-  },
-];
-
-const DEMO_PAST_MOVES: PastMove[] = [
-  {
-    id: "MOV-001",
-    bookingRef: "TM-20260115-4521",
-    customerName: "Sarah Johnson",
-    email: "sarah.johnson@email.com",
-    phone: "(555) 123-4567",
-    originAddress: "1234 Oak Street, Tampa, FL 33601",
-    destAddress: "789 Pine Avenue, Orlando, FL 32801",
-    moveDate: "2026-01-15",
-    status: "completed",
-    estimatedWeight: "4,250 lbs",
-  },
-  {
-    id: "MOV-002",
-    bookingRef: "TM-20251110-8823",
-    customerName: "Michael Chen",
-    email: "m.chen@techcorp.com",
-    phone: "(555) 987-6543",
-    originAddress: "456 Palm Ave, Miami, FL 33101",
-    destAddress: "321 Beach Rd, Fort Lauderdale, FL 33301",
-    moveDate: "2025-11-10",
-    status: "completed",
-    estimatedWeight: "3,100 lbs",
-  },
-  {
-    id: "MOV-003",
-    bookingRef: "TM-20260128-1157",
-    customerName: "Emily Rodriguez",
-    email: "emily.r@gmail.com",
-    phone: "(555) 456-7890",
-    originAddress: "789 Sunset Blvd, Orlando, FL 32801",
-    destAddress: "555 Lake View Dr, Jacksonville, FL 32202",
-    moveDate: "2026-01-28",
-    status: "in-progress",
-    estimatedWeight: "5,800 lbs",
-  },
-  {
-    id: "MOV-004",
-    bookingRef: "TM-20250920-3344",
-    customerName: "Sarah Johnson",
-    email: "sarah.johnson@email.com",
-    phone: "(555) 123-4567",
-    originAddress: "567 Maple Lane, St. Petersburg, FL 33701",
-    destAddress: "1234 Oak Street, Tampa, FL 33601",
-    moveDate: "2025-09-20",
-    status: "completed",
-    estimatedWeight: "3,900 lbs",
-  },
-];
+// TODO: Replace with real DB queries
+const searchCustomersFromDB = async (_query: string): Promise<Customer[]> => [];
+const searchMovesFromDB = async (_query: string): Promise<PastMove[]> => [];
 
 export interface ClientData {
   name: string;
