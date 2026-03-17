@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import GrowthEngineShell from "@/components/layout/GrowthEngineShell";
 import { cn } from "@/lib/utils";
 import {
@@ -21,7 +22,7 @@ const STEPS = [
 ];
 
 const GOALS = [
-  { id: "calls", label: "Phone Calls", desc: "Drive inbound calls from people ready to get a long-distance moving quote. Routes instantly to Convoso.", icon: Phone, recommended: true, tag: "Start here first" },
+  { id: "calls", label: "Phone Calls", desc: "Drive inbound calls from people searching for long-distance movers. Calls are attributed, then routed to Convoso for instant follow-up.", icon: Phone, recommended: true, tag: "Start here first" },
   { id: "forms", label: "Quote Forms", desc: "Capture lead details through a landing page form. Feeds into your instant-call workflow.", icon: FileText, recommended: true, tag: "Best for interstate movers" },
   { id: "retargeting", label: "Retargeting", desc: "Re-show ads to site visitors who didn't convert. Add after you have traffic flowing.", icon: Megaphone, recommended: false, tag: "Good for retargeting" },
   { id: "estimates", label: "Booked Estimates", desc: "Optimize for full booking completions. Requires a working funnel first.", icon: Target, recommended: false, tag: "Optional later" },
@@ -100,6 +101,7 @@ const LANDING_PAGES = [
 ];
 
 export default function GrowthCampaignBuilder() {
+  const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [selectedGoal, setSelectedGoal] = useState<string | null>(null);
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
@@ -631,14 +633,15 @@ export default function GrowthCampaignBuilder() {
                   <ChevronRight className="w-3 h-3 text-muted-foreground" />
                   <span className="bg-muted rounded-md px-2.5 py-1.5">Landing Page</span>
                   <ChevronRight className="w-3 h-3 text-muted-foreground" />
-                  <span className="bg-muted rounded-md px-2.5 py-1.5">Attribution</span>
+                  <span className="bg-muted rounded-md px-2.5 py-1.5">Form / Call</span>
                   <ChevronRight className="w-3 h-3 text-muted-foreground" />
-                  <span className="bg-muted rounded-md px-2.5 py-1.5">Webhook</span>
+                  <span className="bg-muted rounded-md px-2.5 py-1.5">Attribution Capture</span>
                   <ChevronRight className="w-3 h-3 text-muted-foreground" />
-                  <span className="bg-emerald-500/10 text-emerald-600 rounded-md px-2.5 py-1.5 ring-1 ring-emerald-500/20">Convoso Instant Call</span>
+                  <span className="bg-muted rounded-md px-2.5 py-1.5">Webhook / Router</span>
                   <ChevronRight className="w-3 h-3 text-muted-foreground" />
-                  <span className="bg-muted rounded-md px-2.5 py-1.5">CRM Sync</span>
+                  <span className="bg-emerald-500/10 text-emerald-600 rounded-md px-2.5 py-1.5 ring-1 ring-emerald-500/20">Convoso / CRM / Queue</span>
                 </div>
+                <p className="text-[10px] text-muted-foreground mt-2">Leads are captured on your page, tagged with attribution, then routed via webhook to Convoso for instant agent contact.</p>
               </div>
 
               {/* Routing logic */}
@@ -695,7 +698,21 @@ export default function GrowthCampaignBuilder() {
               </div>
 
               <button
-                onClick={() => toast.success("Campaign created! Leads will route to Convoso instantly when connected.")}
+                onClick={() => {
+                  navigate("/marketing/campaign-summary", {
+                    state: {
+                      campaign: {
+                        name: `${GOALS.find(g => g.id === selectedGoal)?.label || "Interstate"} Campaign`,
+                        goal: GOALS.find(g => g.id === selectedGoal)?.label || "Not set",
+                        platforms: selectedPlatforms.map(p => PLATFORMS.find(pl => pl.id === p)?.label).join(", ") || "None",
+                        geoMode: GEO_MODES.find(m => m.id === geoMode)?.label || "Not set",
+                        budget,
+                        keywords: selectedBuckets.join(", ") || "None",
+                        landingPage: LANDING_PAGES.find(p => p.id === selectedPage)?.name || "Not set",
+                      },
+                    },
+                  });
+                }}
                 className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
               >
                 <Rocket className="w-4 h-4" />

@@ -9,9 +9,9 @@ import {
 
 const WORKFLOWS = [
   {
-    name: "New Form Lead → Instant Convoso Route",
+    name: "New Form Lead → Attribution → Convoso Route",
     trigger: "Form submitted on any landing page",
-    steps: ["Capture UTM + lead data", "Deduplicate check", "Push to Convoso via webhook", "Agent dials within seconds"],
+    steps: ["Capture UTM + lead data", "Attribution tagged", "Deduplicate check", "Push to Convoso via webhook", "Agent dials within seconds"],
     status: "active",
     icon: Zap,
     priority: "primary",
@@ -112,15 +112,15 @@ export default function GrowthAutomation() {
               {[
                 { label: "Traffic Source", sub: "Google / Meta" },
                 { label: "Landing Page", sub: "Form / Call" },
-                { label: "Attribution", sub: "UTM capture" },
-                { label: "Webhook", sub: "Instant route" },
-                { label: "Convoso", sub: "Instant call" },
+                { label: "Attribution Capture", sub: "UTM + source" },
+                { label: "Webhook / Router", sub: "Instant route" },
+                { label: "Convoso", sub: "Agent dials" },
                 { label: "CRM Sync", sub: "Record + track" },
                 { label: "Backup Logic", sub: "SMS / Queue" },
               ].map((step, i, arr) => (
                 <div key={step.label} className="flex items-center gap-1.5">
-                  <div className="px-2.5 py-1.5 rounded-lg bg-muted text-center">
-                    <span className="text-[11px] font-semibold text-foreground block">{step.label}</span>
+                  <div className={`px-2.5 py-1.5 rounded-lg text-center ${step.label === "Convoso" ? "bg-green-500/10 ring-1 ring-green-500/20" : "bg-muted"}`}>
+                    <span className={`text-[11px] font-semibold block ${step.label === "Convoso" ? "text-green-600" : "text-foreground"}`}>{step.label}</span>
                     <span className="text-[9px] text-muted-foreground">{step.sub}</span>
                   </div>
                   {i < arr.length - 1 && <ArrowRight className="w-3 h-3 text-muted-foreground shrink-0" />}

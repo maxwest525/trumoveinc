@@ -25,7 +25,7 @@ function getRecommendation(s: WizardSelections): Recommendation {
       backup: "Simple Quote Form LP",
       why: "Meta traffic converts best with in-app forms. No page load friction.",
       cta: "Get My Free Quote (auto-fill)",
-      routing: "Instant form → webhook → Convoso",
+      routing: "Instant form → attribution → webhook → Convoso",
       kpi: "Cost per lead, form completion rate",
     };
   }
@@ -37,7 +37,7 @@ function getRecommendation(s: WizardSelections): Recommendation {
       backup: "Full LP with dual CTA",
       why: "High-intent searchers ready to act. Fastest speed-to-lead for interstate moves.",
       cta: "Call Now for Free Quote (sticky button)",
-      routing: "Click-to-call → CallRail → Convoso",
+      routing: "Call → CallRail attribution → webhook → Convoso",
       kpi: "Call rate, speed-to-answer, booked rate",
     };
   }
@@ -49,7 +49,7 @@ function getRecommendation(s: WizardSelections): Recommendation {
       backup: "Long-form Authority Page",
       why: "Captures detailed move info upfront. Filters casual browsers from serious movers.",
       cta: "Get My Interstate Moving Quote",
-      routing: "Form submit → webhook → Convoso with full context",
+      routing: "Form submit → attribution → webhook → Convoso",
       kpi: "Form rate, lead quality score, close rate",
     };
   }
@@ -61,7 +61,7 @@ function getRecommendation(s: WizardSelections): Recommendation {
       backup: "Call-First Landing Page",
       why: "Structured form captures origin, destination, move date. Better lead context for agents.",
       cta: "Get Your Free Quote",
-      routing: "Form → webhook → Convoso queue",
+      routing: "Form → attribution → webhook → Convoso queue",
       kpi: "Form completion rate, cost per qualified lead",
     };
   }
@@ -73,7 +73,7 @@ function getRecommendation(s: WizardSelections): Recommendation {
       backup: "Call-First Landing Page",
       why: "Retargeted visitors already know you. A form page re-engages them with a clear next step.",
       cta: "Still planning your move? Get your quote.",
-      routing: "Form → Convoso with retargeting tag",
+      routing: "Form → attribution (retargeting tag) → webhook → Convoso",
       kpi: "Return visit conversion rate",
     };
   }
@@ -84,7 +84,7 @@ function getRecommendation(s: WizardSelections): Recommendation {
     backup: "Quote Form Landing Page",
     why: "Start with the highest-converting format for interstate leads from Google Search.",
     cta: "Call Now or Get a Free Quote",
-    routing: "Call/Form → Convoso instant route",
+    routing: "Call/Form → attribution → webhook → Convoso",
     kpi: "Conversion rate, cost per lead",
   };
 }
