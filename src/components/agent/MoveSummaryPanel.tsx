@@ -256,7 +256,7 @@ export default function MoveSummaryPanel({ form, lead, inventoryStats, pricePerC
                 <input
                   type="number"
                   step="0.25"
-                  min="0"
+                  min="4"
                   placeholder="7.50"
                   value={pricePerCuFt || ""}
                   onChange={(e) => onPricePerCuFtChange?.(e.target.value)}
