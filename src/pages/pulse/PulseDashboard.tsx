@@ -190,6 +190,7 @@ const PulseDashboard: React.FC<{ embedded?: boolean; basePath?: string }> = ({ e
             </Button>
           </div>
         </div>
+        <div className="flex items-center gap-3 flex-wrap">
           <div className="flex items-center gap-2"><Filter className="w-3.5 h-3.5 text-muted-foreground" /><span className="text-xs font-medium text-muted-foreground">Filter:</span></div>
           <Select value={selectedAgent} onValueChange={setSelectedAgent}>
             <SelectTrigger className="w-[200px] h-8 text-xs"><SelectValue placeholder="All Agents" /></SelectTrigger>
