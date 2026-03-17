@@ -115,15 +115,10 @@ export default function AdminShell({ children, breadcrumb = "" }: AdminShellProp
         <header className="h-12 border-b border-border bg-card flex items-center justify-between px-4 shrink-0">
           <div className="flex items-center gap-3">
             <Link
-              to="/"
+              to="/agent-login"
               className="flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-border bg-background text-xs font-medium text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-all"
             >
               <Globe className="w-3.5 h-3.5" />
-              <span>Website</span>
-            </Link>
-            <div className="w-px h-4 bg-border" />
-            <Link to="/agent-login" className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
-              <Home className="w-3.5 h-3.5" />
               <span>Portal</span>
             </Link>
             <span className="text-xs text-muted-foreground">/ Admin{breadcrumb}</span>
