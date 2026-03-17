@@ -108,8 +108,7 @@ export default function AgentTeamChat({ embedded = false }: { embedded?: boolean
   const filteredConversations = conversations.filter(conv => getConversationName(conv).toLowerCase().includes(searchQuery.toLowerCase()));
   const filteredProfiles = profiles.filter(p => p.display_name.toLowerCase().includes(searchQuery.toLowerCase()) || p.email.toLowerCase().includes(searchQuery.toLowerCase()));
 
-  return (
-    <AgentShell breadcrumb=" / Team Chat">
+  const content = (
       <div className="flex h-[calc(100vh-3rem)] overflow-hidden">
         {/* Left sidebar */}
         <div className="w-80 border-r flex flex-col">
