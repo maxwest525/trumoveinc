@@ -1,10 +1,10 @@
 import AdminShell from "@/components/layout/AdminShell";
-import PulseDashboard from "@/pages/pulse/PulseDashboard";
+import PulseManager from "@/pages/pulse/PulseManager";
 
 export default function AdminPulse() {
   return (
     <AdminShell breadcrumb="/ Pulse Settings">
-      <PulseDashboard embedded basePath="/admin/pulse" />
+      <PulseManager embedded />
     </AdminShell>
   );
 }
