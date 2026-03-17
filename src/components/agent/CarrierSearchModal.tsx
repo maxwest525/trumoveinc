@@ -15,44 +15,8 @@ export interface CarrierMoveData {
   route?: string;
 }
 
-// Mock past moves with carrier data
-const PAST_MOVES: CarrierMoveData[] = [
-  {
-    carrierName: "Sunrise Moving & Storage LLC",
-    carrierMC: "MC-654321",
-    driverName: "Mike Rodriguez",
-    truckNumber: "TRK-1847",
-    dotNumber: "1847293",
-    moveDate: "2026-01-15",
-    route: "Tampa, FL → Orlando, FL",
-  },
-  {
-    carrierName: "ABC Moving Co.",
-    carrierMC: "MC-123456",
-    driverName: "John Smith",
-    truckNumber: "TRK-4521",
-    dotNumber: "2847193",
-    moveDate: "2026-01-08",
-    route: "Jacksonville, FL → Miami, FL",
-  },
-  {
-    carrierName: "Regional Van Lines Inc",
-    carrierMC: "MC-456789",
-    driverName: "David Chen",
-    truckNumber: "TRK-8823",
-    dotNumber: "2581034",
-    moveDate: "2025-12-20",
-    route: "Charlotte, NC → Atlanta, GA",
-  },
-  {
-    carrierName: "Express Relocation Services",
-    carrierMC: "MC-789012",
-    driverName: "Sarah Williams",
-    truckNumber: "TRK-3301",
-    dotNumber: "3192847",
-    moveDate: "2025-12-12",
-    route: "Nashville, TN → Memphis, TN",
-  },
+// TODO: Fetch from DB
+const PAST_MOVES: CarrierMoveData[] = [];
   {
     carrierName: "Coastal Movers LLC",
     carrierMC: "MC-345678",
