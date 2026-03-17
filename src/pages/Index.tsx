@@ -1515,7 +1515,7 @@ export default function Index() {
                                 originAddress: fromLocationDisplay,
                                 destAddress: toLocationDisplay,
                               }));
-                              navigate('/track');
+                              navigate('/site/track');
                             }}
                           >
                             <Truck className="w-4 h-4" />
