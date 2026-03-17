@@ -924,7 +924,7 @@ export default function ScanRoom() {
         <section className="tru-scan-bottom-cta">
           <div className="tru-scan-bottom-buttons">
             <button
-              onClick={() => navigate("/online-estimate")}
+              onClick={() => navigate("/site/online-estimate")}
               className="tru-scan-alt-btn"
             >
               <Sparkles className="w-4 h-4" />
