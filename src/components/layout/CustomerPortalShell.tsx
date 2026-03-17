@@ -16,7 +16,6 @@ const navItems = [
   { id: "quote", label: "Quote", icon: FileText },
   { id: "documents", label: "Documents", icon: Upload },
   { id: "messages", label: "Messages", icon: MessageCircle },
-  { id: "websites", label: "Websites", icon: Globe },
 ];
 
 export default function CustomerPortalShell({ children, activeTab, onTabChange, customerName }: CustomerPortalShellProps) {
