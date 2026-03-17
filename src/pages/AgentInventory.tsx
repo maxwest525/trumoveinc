@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
-  ArrowRight, Package, Upload, Wrench, Plus, Minus, Trash2, Search, X,
+  ArrowRight, ArrowLeft, Package, Upload, Wrench, Plus, Minus, Trash2, Search, X,
   Scale, Box, DollarSign, Save, Loader2, ChevronRight
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
