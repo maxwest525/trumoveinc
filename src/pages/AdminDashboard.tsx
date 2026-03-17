@@ -145,7 +145,7 @@ export default function AdminDashboard() {
   const [stats, setStats] = useState([
     { label: "Total Users", value: "–" },
     { label: "Active Sessions", value: "–" },
-    { label: "Integrations", value: "0/4", sub: "Connected" },
+    { label: "Integrations", value: "—" },
     { label: "Open Tickets", value: "–" },
   ]);
   const [roleData, setRoleData] = useState<{ role: string; count: number; fill: string }[]>([]);
