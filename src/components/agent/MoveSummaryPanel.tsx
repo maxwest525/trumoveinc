@@ -1,5 +1,5 @@
-import { useMemo } from "react";
-import { MapPin, Calendar, DollarSign, Route, Clock, User, Phone, Mail, FileText, ArrowDown } from "lucide-react";
+import { useMemo, useState } from "react";
+import { MapPin, Calendar, DollarSign, Route, Clock, User, Phone, Mail, FileText, ArrowDown, Package, Scale, Box } from "lucide-react";
 
 export interface MoveSummaryData {
   firstName: string;
@@ -12,6 +12,12 @@ export interface MoveSummaryData {
   moveDate: string;
   estimatedValue: string;
   notes: string;
+}
+
+interface InventoryStats {
+  totalItems: number;
+  totalCuFt: number;
+  totalWeight: number;
 }
 
 interface MoveSummaryPanelProps {
@@ -28,6 +34,9 @@ interface MoveSummaryPanelProps {
     estimated_value?: number | null;
     notes?: string | null;
   };
+  inventoryStats?: InventoryStats;
+  pricePerCuFt?: string;
+  onPricePerCuFtChange?: (value: string) => void;
 }
 
 /** Known city-pair rough distances (miles) */
@@ -104,7 +113,7 @@ function SummaryRow({ icon: Icon, label, value, accent }: { icon: any; label: st
   );
 }
 
-export default function MoveSummaryPanel({ form, lead }: MoveSummaryPanelProps) {
+export default function MoveSummaryPanel({ form, lead, inventoryStats, pricePerCuFt, onPricePerCuFtChange }: MoveSummaryPanelProps) {
   // Normalize data from either source
   const data: MoveSummaryData = useMemo(() => {
     if (form) return form;
@@ -214,6 +223,57 @@ export default function MoveSummaryPanel({ form, lead }: MoveSummaryPanelProps) 
             accent={!!data.estimatedValue}
           />
         </div>
+
+        {/* Inventory & Pricing — only on inventory page */}
+        {inventoryStats && (
+          <div className="rounded-xl border border-border/50 bg-card p-4 space-y-3">
+            <div className="flex items-center gap-1.5 mb-1">
+              <Package className="w-3.5 h-3.5 text-primary" />
+              <p className="text-[10px] uppercase tracking-[0.12em] text-muted-foreground/60 font-semibold">Inventory</p>
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              <div className="text-center p-2 rounded-lg bg-muted/50">
+                <p className="text-lg font-bold text-foreground">{inventoryStats.totalItems}</p>
+                <p className="text-[9px] text-muted-foreground uppercase tracking-wider">Items</p>
+              </div>
+              <div className="text-center p-2 rounded-lg bg-muted/50">
+                <p className="text-lg font-bold text-foreground">{inventoryStats.totalCuFt.toLocaleString()}</p>
+                <p className="text-[9px] text-muted-foreground uppercase tracking-wider">Cu Ft</p>
+              </div>
+              <div className="text-center p-2 rounded-lg bg-muted/50">
+                <p className="text-lg font-bold text-foreground">{inventoryStats.totalWeight.toLocaleString()}</p>
+                <p className="text-[9px] text-muted-foreground uppercase tracking-wider">Lbs</p>
+              </div>
+            </div>
+
+            {/* $/Cu Ft pricing */}
+            <div className="pt-2 border-t border-border/30">
+              <label className="text-[10px] uppercase tracking-wider text-muted-foreground/60 font-semibold block mb-1.5">
+                Price per Cu Ft
+              </label>
+              <div className="relative">
+                <DollarSign className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground/50" />
+                <input
+                  type="number"
+                  step="0.25"
+                  min="0"
+                  placeholder="7.50"
+                  value={pricePerCuFt || ""}
+                  onChange={(e) => onPricePerCuFtChange?.(e.target.value)}
+                  className="w-full h-8 pl-7 pr-3 rounded-lg border border-border bg-background text-sm font-medium text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary/50"
+                />
+              </div>
+              {pricePerCuFt && Number(pricePerCuFt) > 0 && inventoryStats.totalCuFt > 0 && (
+                <div className="mt-2 flex items-center justify-between p-2 rounded-lg bg-primary/5 border border-primary/10">
+                  <span className="text-[10px] text-muted-foreground font-medium">Est. Total</span>
+                  <span className="text-sm font-bold text-primary">
+                    ${(Number(pricePerCuFt) * inventoryStats.totalCuFt).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Notes preview */}
         {data.notes && (

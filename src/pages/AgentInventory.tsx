@@ -480,8 +480,14 @@ export default function AgentInventory() {
         </Tabs>
         </div>
 
-        {/* Move Summary sidebar */}
-        {leadData && <MoveSummaryPanel lead={leadData} />}
+        {leadData && (
+          <MoveSummaryPanel
+            lead={leadData}
+            inventoryStats={{ totalItems, totalCuFt, totalWeight }}
+            pricePerCuFt={pricePerCuFt}
+            onPricePerCuFtChange={setPricePerCuFt}
+          />
+        )}
       </div>
     </AgentShell>
   );
