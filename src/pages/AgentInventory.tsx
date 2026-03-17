@@ -183,10 +183,18 @@ export default function AgentInventory() {
 
   return (
     <AgentShell breadcrumb=" / Inventory">
-      <div className="p-4 h-[calc(100vh-3.5rem)] flex flex-col">
+      <div className="p-4 h-[calc(100vh-3.5rem)] flex gap-6">
+        {/* Main content */}
+        <div className="flex-1 min-w-0 flex flex-col">
         {/* Workflow breadcrumb */}
         <div className="flex items-center gap-2 text-xs text-muted-foreground mb-3">
-          <span className="text-muted-foreground">New Lead</span>
+          <button
+            onClick={() => navigate("/agent/new-customer")}
+            className="flex items-center gap-1 text-primary hover:underline font-semibold"
+          >
+            <ArrowLeft className="w-3 h-3" />
+            New Lead
+          </button>
           <ArrowRight className="w-3 h-3" />
           <span className="text-primary font-semibold">Inventory</span>
           <ArrowRight className="w-3 h-3" />
