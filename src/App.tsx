@@ -57,6 +57,7 @@ import CustomerPortalDashboard from "./pages/CustomerPortalDashboard";
 import HomepageV2 from "./pages/HomepageV2";
 import AgentInventory from "./pages/AgentInventory";
 import AdminESignAudit from "./pages/AdminESignAudit";
+import CustomerFacingSites from "./pages/CustomerFacingSites";
 
 const queryClient = new QueryClient();
 
@@ -122,6 +123,7 @@ const App = () => (
             <Route path="/portal" element={<CustomerPortal />} />
             <Route path="/portal/dashboard" element={<CustomerPortalDashboard />} />
             <Route path="/homepage-2" element={<HomepageV2 />} />
+            <Route path="/customer-facing-sites" element={<CustomerFacingSites />} />
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
