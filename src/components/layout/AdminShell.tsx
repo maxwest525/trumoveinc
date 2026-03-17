@@ -19,7 +19,6 @@ const NAV_ITEMS = [
   { label: "Products & Pricing", icon: DollarSign, href: "/admin/pricing" },
   { label: "Developer", icon: Link2, href: "/admin/developer" },
   { label: "Pulse Settings", icon: Settings2, href: "/admin/pulse" },
-  { label: "Team Chat", icon: MessageSquare, href: "/admin/team-chat" },
 ];
 
 const ADVANCED_ITEMS = [
@@ -119,8 +118,16 @@ export default function AdminShell({ children, breadcrumb = "" }: AdminShellProp
             </Link>
             <span className="text-sm text-muted-foreground">Admin{breadcrumb}</span>
           </div>
-          <div className="flex items-center gap-2">
-            
+          <div className="flex items-center gap-1.5">
+            <Link
+              to="/admin/team-chat"
+              className={`p-1.5 rounded-lg transition-colors relative ${
+                location.pathname === "/admin/team-chat" ? "bg-primary/10 text-primary" : "hover:bg-muted text-muted-foreground"
+              }`}
+            >
+              <MessageSquare className="w-4 h-4" />
+              <span className="absolute top-0.5 right-0.5 w-1.5 h-1.5 rounded-full bg-primary" />
+            </Link>
             <button className="p-1.5 rounded-lg hover:bg-muted transition-colors relative">
               <Bell className="w-4 h-4 text-muted-foreground" />
               <span className="absolute top-0.5 right-0.5 w-1.5 h-1.5 rounded-full" style={{ background: "hsl(142 71% 45%)" }} />
