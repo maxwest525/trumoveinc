@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   Phone, PhoneOff, Mic, MicOff, Pause, Play, Maximize2, Minimize2,
   Circle, ChevronUp, ChevronDown, Hash, Users, PhoneForwarded,
-  Volume2, VolumeX, UserPlus, Keyboard,
+  Volume2, VolumeX, UserPlus, GripHorizontal,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DialerProvider } from "./dialerProvider";
@@ -25,6 +25,31 @@ export default function MiniSoftphone() {
   const [showDialpad, setShowDialpad] = useState(false);
   const [speakerOn, setSpeakerOn] = useState(false);
   const location = useLocation();
+
+  // Drag state
+  const [pos, setPos] = useState({ x: 0, y: 0 });
+  const [dragging, setDragging] = useState(false);
+  const dragRef = useRef<{ startX: number; startY: number; origX: number; origY: number } | null>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  const onPointerDown = useCallback((e: React.PointerEvent) => {
+    e.preventDefault();
+    setDragging(true);
+    dragRef.current = { startX: e.clientX, startY: e.clientY, origX: pos.x, origY: pos.y };
+    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+  }, [pos]);
+
+  const onPointerMove = useCallback((e: React.PointerEvent) => {
+    if (!dragging || !dragRef.current) return;
+    const dx = e.clientX - dragRef.current.startX;
+    const dy = e.clientY - dragRef.current.startY;
+    setPos({ x: dragRef.current.origX + dx, y: dragRef.current.origY + dy });
+  }, [dragging]);
+
+  const onPointerUp = useCallback(() => {
+    setDragging(false);
+    dragRef.current = null;
+  }, []);
 
   useEffect(() => {
     DialerProvider.onCallStateChange(setCall);
@@ -50,10 +75,24 @@ export default function MiniSoftphone() {
   return (
     <>
       {/* ── Desktop floating card (sm+) ── */}
-      <div className={cn(
-        "fixed bottom-4 right-4 z-50 rounded-2xl border border-border bg-card shadow-xl overflow-hidden hidden sm:block transition-all duration-200",
-        fullView ? "w-80" : "w-72"
-      )}>
+      <div
+        ref={cardRef}
+        style={{ transform: `translate(${pos.x}px, ${pos.y}px)` }}
+        className={cn(
+          "fixed bottom-4 right-4 z-50 rounded-2xl border border-border bg-card shadow-xl overflow-hidden hidden sm:block transition-shadow",
+          fullView ? "w-[340px]" : "w-80",
+          dragging && "shadow-2xl"
+        )}
+      >
+        {/* Drag handle */}
+        <div
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+          className="flex items-center justify-center py-1 cursor-grab active:cursor-grabbing select-none"
+        >
+          <GripHorizontal className="w-4 h-4 text-muted-foreground/40" />
+        </div>
         {/* Header */}
         <div className={cn(
           "px-4 py-2 flex items-center justify-between",
