@@ -14,7 +14,7 @@ import { ArrowLeft } from 'lucide-react';
 
 type MatchType = 'keyword' | 'phrase' | 'regex';
 type Severity = 'low' | 'medium' | 'high' | 'critical';
-type Category = 'legal' | 'anger' | 'escalation' | 'compliance' | 'pii' | 'rebuttal' | 'safety';
+type Category = 'legal' | 'anger' | 'escalation' | 'compliance' | 'pii' | 'rebuttal' | 'safety' | 'hipaa' | 'financial' | 'profanity';
 
 const CATEGORY_META: Record<Category, { label: string; icon: React.ElementType; color: string; bg: string }> = {
   legal: { label: 'Legal', icon: Scale, color: 'text-destructive', bg: 'bg-destructive/10 border-destructive/20' },
