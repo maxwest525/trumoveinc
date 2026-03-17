@@ -95,11 +95,11 @@ const KEYWORD_BUCKETS = [
 ];
 
 const LANDING_PAGES = [
-  { id: "local", name: "Local Movers LP", conv: "8.2%", status: "live", bestFor: "Best for Google Search", reason: "Optimized for 'movers near me' searches. Shows local trust signals, reviews, and a fast quote form.", sections: "Hero, Trust Strip, Reviews, Service Area Map, Quote Form, Sticky CTA" },
-  { id: "quote", name: "Free Quote LP", conv: "6.8%", status: "live", bestFor: "Best for higher quote intent", reason: "Designed for leads who want pricing. Multi-step form captures move details for accurate quoting.", sections: "Hero, Price Calculator Preview, Trust Badges, Multi-Step Form, FAQ" },
-  { id: "longdist", name: "Long Distance LP", conv: "5.4%", status: "live", bestFor: "Best for urgent leads", reason: "Built for interstate searches. Highlights licensing, insurance, and cross-state logistics.", sections: "Hero, Route Map, Licensing Badges, Full-Value Protection, Form, Testimonials" },
-  { id: "meta", name: "Social Traffic LP", conv: "7.1%", status: "live", bestFor: "Best for Meta", reason: "Shorter page designed for social traffic with lower intent. Visual, fast-loading, strong CTA above fold.", sections: "Visual Hero, Offer Strip, 3-Step Process, Reviews, Sticky Form" },
-  { id: "new", name: "+ Create New Landing Page", conv: "", status: "new", bestFor: "", reason: "", sections: "" },
+  { id: "local", name: "Local Movers LP", conv: "8.2%", status: "live", bestFor: "Best for Google Search", tier: "primary", reason: "Optimized for 'movers near me' searches. Shows local trust signals, reviews, and a fast quote form. This is the highest-converting page for paid search traffic.", sections: "Hero, Trust Strip, Reviews, Service Area Map, Quote Form, Sticky CTA" },
+  { id: "quote", name: "Free Quote LP", conv: "6.8%", status: "live", bestFor: "Best for higher quote quality", tier: "primary", reason: "Designed for leads who want pricing. Multi-step form captures move details for accurate quoting. Produces higher-quality leads with more information.", sections: "Hero, Price Calculator Preview, Trust Badges, Multi-Step Form, FAQ" },
+  { id: "meta", name: "Social Traffic LP", conv: "7.1%", status: "live", bestFor: "Best for Meta", tier: "primary", reason: "Shorter page designed for social traffic with lower intent. Visual, fast-loading, strong CTA above fold. Use this for all Facebook and Instagram campaigns.", sections: "Visual Hero, Offer Strip, 3-Step Process, Reviews, Sticky Form" },
+  { id: "longdist", name: "Long Distance LP", conv: "5.4%", status: "live", bestFor: "Best for urgent leads", tier: "secondary", reason: "Built for interstate searches. Highlights licensing, insurance, and cross-state logistics. Only needed if you run long-distance campaigns.", sections: "Hero, Route Map, Licensing Badges, Full-Value Protection, Form, Testimonials" },
+  { id: "new", name: "+ Create New Landing Page", conv: "", status: "new", bestFor: "", tier: "secondary", reason: "", sections: "" },
 ];
 
 export default function GrowthCampaignBuilder() {
@@ -527,27 +527,33 @@ export default function GrowthCampaignBuilder() {
           {step === 5 && (
             <div className="space-y-3">
               <h2 className="text-lg font-semibold text-foreground">Choose a landing page</h2>
+
+              {/* Primary recommendations */}
+              <div className="text-[10px] font-bold text-primary uppercase tracking-wider mb-1">Recommended Pages</div>
               <div className="grid grid-cols-1 gap-3">
-                {LANDING_PAGES.map(p => (
+                {LANDING_PAGES.filter(p => p.tier === "primary").map(p => (
                   <button
                     key={p.id}
                     onClick={() => setSelectedPage(p.id)}
                     className={cn(
                       "text-left p-4 rounded-xl border-2 transition-all",
                       selectedPage === p.id ? "border-primary bg-primary/5" : "border-border hover:border-primary/30",
-                      p.status === "new" && "border-dashed"
                     )}
                   >
                     <div className="flex items-center gap-2 mb-1">
                       <span className="text-sm font-semibold text-foreground">{p.name}</span>
                       {p.conv && <span className="text-[11px] text-emerald-600 font-medium">{p.conv} conversion rate</span>}
                     </div>
-                    {p.bestFor && (
-                      <div className="flex gap-1.5 mb-2">
-                        <span className="text-[9px] bg-blue-500/10 text-blue-600 px-1.5 py-0.5 rounded-full font-bold">{p.bestFor}</span>
-                      </div>
-                    )}
-                    {p.reason && <p className="text-[11px] text-muted-foreground mb-2">{p.reason}</p>}
+                    <div className="flex gap-1.5 mb-2">
+                      <span className={cn(
+                        "text-[9px] px-1.5 py-0.5 rounded-full font-bold",
+                        p.bestFor.includes("Google") ? "bg-blue-500/10 text-blue-600" :
+                        p.bestFor.includes("Meta") ? "bg-indigo-500/10 text-indigo-600" :
+                        "bg-emerald-500/10 text-emerald-600"
+                      )}>{p.bestFor}</span>
+                      <span className="text-[9px] bg-emerald-500/10 text-emerald-600 px-1.5 py-0.5 rounded-full font-bold">RECOMMENDED</span>
+                    </div>
+                    <p className="text-[11px] text-muted-foreground mb-2">{p.reason}</p>
                     {p.sections && (
                       <div className="flex flex-wrap gap-1">
                         {p.sections.split(", ").map(s => (
@@ -555,6 +561,31 @@ export default function GrowthCampaignBuilder() {
                         ))}
                       </div>
                     )}
+                  </button>
+                ))}
+              </div>
+
+              {/* Secondary */}
+              <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mt-4 mb-1">Other Options</div>
+              <div className="grid grid-cols-1 gap-3">
+                {LANDING_PAGES.filter(p => p.tier === "secondary").map(p => (
+                  <button
+                    key={p.id}
+                    onClick={() => setSelectedPage(p.id)}
+                    className={cn(
+                      "text-left p-3 rounded-xl border-2 transition-all",
+                      selectedPage === p.id ? "border-primary bg-primary/5" : "border-border/60 hover:border-primary/20",
+                      p.status === "new" && "border-dashed"
+                    )}
+                  >
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-[13px] font-semibold text-foreground">{p.name}</span>
+                      {p.conv && <span className="text-[11px] text-emerald-600 font-medium">{p.conv} conversion rate</span>}
+                    </div>
+                    {p.bestFor && (
+                      <span className="text-[9px] bg-muted text-muted-foreground px-1.5 py-0.5 rounded-full font-bold">{p.bestFor}</span>
+                    )}
+                    {p.reason && <p className="text-[11px] text-muted-foreground mt-1">{p.reason}</p>}
                   </button>
                 ))}
               </div>
@@ -609,10 +640,35 @@ export default function GrowthCampaignBuilder() {
                   <span className="bg-emerald-500/10 text-emerald-600 rounded-md px-2.5 py-1.5 ring-1 ring-emerald-500/20">Convoso Instant Call</span>
                   <ChevronRight className="w-3 h-3 text-muted-foreground" />
                   <span className="bg-muted rounded-md px-2.5 py-1.5">CRM Sync</span>
-                  <ChevronRight className="w-3 h-3 text-muted-foreground" />
-                  <span className="bg-muted rounded-md px-2.5 py-1.5 text-muted-foreground">Backup Logic</span>
                 </div>
-                <p className="text-[11px] text-muted-foreground mt-2">Leads are routed to Convoso for immediate call attempts within seconds. Your CRM receives a synced copy as the system of record. Backup logic handles unreached leads.</p>
+              </div>
+
+              {/* Routing logic by scenario */}
+              <div className="bg-card rounded-xl border border-border p-4">
+                <span className="text-[11px] font-semibold text-foreground uppercase tracking-wider">How Leads Are Handled</span>
+                <div className="mt-3 space-y-3">
+                  <div className="flex items-start gap-3 p-3 bg-emerald-500/5 rounded-lg border border-emerald-500/10">
+                    <Clock className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
+                    <div>
+                      <div className="text-[12px] font-semibold text-foreground">During business hours</div>
+                      <p className="text-[11px] text-muted-foreground mt-0.5">Lead routes instantly to Convoso. First call attempt within seconds of form submission or inbound call.</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3 p-3 bg-blue-500/5 rounded-lg border border-blue-500/10">
+                    <Shield className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
+                    <div>
+                      <div className="text-[12px] font-semibold text-foreground">After hours</div>
+                      <p className="text-[11px] text-muted-foreground mt-0.5">Lead queued for next available calling block. Auto-text sent immediately confirming receipt and next steps.</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3 p-3 bg-amber-500/5 rounded-lg border border-amber-500/10">
+                    <AlertTriangle className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />
+                    <div>
+                      <div className="text-[12px] font-semibold text-foreground">If unreached</div>
+                      <p className="text-[11px] text-muted-foreground mt-0.5">SMS recovery triggered after failed attempts. Escalation alert created if no contact within threshold. Lead stays in callback queue.</p>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               {/* Readiness checklist */}
