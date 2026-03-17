@@ -3,11 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import SiteShell from "@/components/layout/SiteShell";
 import PortalAuthForm from "@/components/auth/PortalAuthForm";
-import { Settings, Users, BarChart3, Megaphone, Receipt, Package, ShieldCheck, Globe, LogOut, type LucideIcon } from "lucide-react";
+import { Settings, Users, BarChart3, Megaphone, Receipt, Package, ShieldCheck, Globe, LogOut, Bell, type LucideIcon } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
 import logoImg from "@/assets/logo.png";
 import { useAgentProfile } from "@/hooks/useAgentProfile";
+import { useNotifications } from "@/hooks/useNotifications";
 import { usePortalStats } from "@/hooks/usePortalStats";
 import type { Session } from "@supabase/supabase-js";
 
@@ -85,6 +86,7 @@ export default function AgentLogin() {
   const [loading, setLoading] = useState(true);
   const { displayName } = useAgentProfile();
   const { stats, loading: statsLoading } = usePortalStats();
+  const { unreadCount } = useNotifications();
   const greeting = useMemo(() => getGreeting(), []);
 
   useEffect(() => {
@@ -146,8 +148,14 @@ export default function AgentLogin() {
         {/* Header */}
         <div className="flex flex-col items-center gap-2 mb-12">
           <img src={logoImg} alt="TruMove" className="h-8 dark:invert" />
-          <h1 className="text-2xl font-bold tracking-tight text-foreground mt-3">
+          <h1 className="text-2xl font-bold tracking-tight text-foreground mt-3 flex items-center gap-2">
             {greeting}, {displayName}
+            {unreadCount > 0 && (
+              <span className="inline-flex items-center gap-1 bg-destructive text-destructive-foreground rounded-full px-2 py-0.5 text-[10px] font-semibold">
+                <Bell className="w-3 h-3" />
+                {unreadCount}
+              </span>
+            )}
           </h1>
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <span>{session.user.email}</span>
