@@ -24,19 +24,8 @@ interface RouteSetupModalProps {
   onDemo?: () => void;
 }
 
-// Mock booking data for demo
-const MOCK_BOOKINGS: Record<string, { origin: string; destination: string; date: Date }> = {
-  '12345': {
-    origin: '4520 Atlantic Blvd, Jacksonville, FL 32207',
-    destination: '1000 Ocean Dr, Miami Beach, FL 33139',
-    date: new Date(),
-  },
-  '00000': {
-    origin: '123 Main St, Atlanta, GA 30301',
-    destination: '456 Oak Ave, Tampa, FL 33601',
-    date: new Date(Date.now() + 86400000), // Tomorrow
-  },
-};
+// Booking lookup - will query DB in future
+const MOCK_BOOKINGS: Record<string, { origin: string; destination: string; date: Date }> = {};
 
 // Geocode address to coordinates
 async function geocodeAddress(address: string): Promise<[number, number] | null> {

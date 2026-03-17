@@ -48,47 +48,9 @@ interface InternalMessagingModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
-// Demo data for when not authenticated
-const DEMO_PROFILES: Profile[] = [
-  { id: "1", email: "sarah.jones@trumove.com", display_name: "Sarah Jones", avatar_url: null, role: "manager", is_online: true, last_seen: new Date().toISOString() },
-  { id: "2", email: "mike.wilson@trumove.com", display_name: "Mike Wilson", avatar_url: null, role: "agent", is_online: true, last_seen: new Date().toISOString() },
-  { id: "3", email: "emma.davis@trumove.com", display_name: "Emma Davis", avatar_url: null, role: "agent", is_online: false, last_seen: new Date(Date.now() - 3600000).toISOString() },
-  { id: "4", email: "james.taylor@trumove.com", display_name: "James Taylor", avatar_url: null, role: "agent", is_online: true, last_seen: new Date().toISOString() },
-  { id: "5", email: "lisa.chen@trumove.com", display_name: "Lisa Chen", avatar_url: null, role: "manager", is_online: false, last_seen: new Date(Date.now() - 7200000).toISOString() },
-];
-
-const DEMO_CONVERSATIONS: Conversation[] = [
-  { 
-    id: "conv1", 
-    name: null, 
-    is_group: false, 
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-    members: [DEMO_PROFILES[0]],
-    last_message: { id: "m1", content: "Can you handle the Johnson move?", sender_id: "1", created_at: new Date(Date.now() - 300000).toISOString() },
-    unread_count: 2
-  },
-  { 
-    id: "conv2", 
-    name: "Team Alpha", 
-    is_group: true, 
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-    members: [DEMO_PROFILES[1], DEMO_PROFILES[2], DEMO_PROFILES[3]],
-    last_message: { id: "m2", content: "Meeting at 3pm today", sender_id: "2", created_at: new Date(Date.now() - 1800000).toISOString() },
-    unread_count: 0
-  },
-  { 
-    id: "conv3", 
-    name: null, 
-    is_group: false, 
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-    members: [DEMO_PROFILES[4]],
-    last_message: { id: "m3", content: "Quote approved!", sender_id: "5", created_at: new Date(Date.now() - 86400000).toISOString() },
-    unread_count: 1
-  },
-];
+// Empty defaults - will be populated from DB
+const DEMO_PROFILES: Profile[] = [];
+const DEMO_CONVERSATIONS: Conversation[] = [];
 
 const DEMO_MESSAGES: Record<string, Message[]> = {
   conv1: [
