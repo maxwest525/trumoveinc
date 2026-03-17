@@ -206,7 +206,7 @@ export default function AgentMoveDetails() {
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-sm flex items-center gap-2">
-                <Stairs className="w-4 h-4 text-primary" /> Access & Long Carry
+                <Footprints className="w-4 h-4 text-primary" /> Access & Long Carry
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
