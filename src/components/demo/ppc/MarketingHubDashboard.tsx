@@ -4,7 +4,7 @@ import {
   Layout, TrendingUp, Target,
   DollarSign, BarChart3,
   ChevronRight, MessageSquare, Sparkles, Rocket, Wand2,
-  Zap, Activity, FlaskConical, Globe
+  Zap, Activity, FlaskConical
 } from "lucide-react";
 import { RecentCreations } from "./RecentCreations";
 import { cn } from "@/lib/utils";
