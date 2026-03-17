@@ -67,6 +67,9 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        "compliance-pass": "hsl(var(--compliance-pass))",
+        "compliance-review": "hsl(var(--compliance-review))",
+        "compliance-fail": "hsl(var(--compliance-fail))",
       },
       borderRadius: {
         lg: "var(--radius)",
