@@ -190,7 +190,7 @@ export default function About() {
               Get an Estimate
             </Link>
             <Link
-              to="/book"
+              to="/site/book"
               className="inline-flex items-center gap-2 h-12 px-6 rounded-xl border border-border/60 bg-card text-foreground text-sm font-bold tracking-wide uppercase transition-all hover:bg-muted/50"
             >
               Book a Consult

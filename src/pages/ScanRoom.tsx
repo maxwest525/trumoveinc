@@ -937,7 +937,7 @@ export default function ScanRoom() {
               <Phone className="w-4 h-4" />
               Prefer to talk?
             </a>
-            <Link to="/book" className="tru-secondary-action-btn">
+            <Link to="/site/book" className="tru-secondary-action-btn">
               <Video className="w-4 h-4" />
               Book Video Consult
             </Link>

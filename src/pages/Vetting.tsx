@@ -220,7 +220,7 @@ export default function Vetting() {
             <p className="tru-vetting-cta-subtext">
               Get matched with verified carriers today.
             </p>
-            <Link to="/online-estimate" className="tru-vetting-cta-btn">
+            <Link to="/site/online-estimate" className="tru-vetting-cta-btn">
               Start Your Quote
               <ArrowRight className="w-5 h-5" />
             </Link>
