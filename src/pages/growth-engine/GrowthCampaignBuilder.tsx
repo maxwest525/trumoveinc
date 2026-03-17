@@ -633,14 +633,15 @@ export default function GrowthCampaignBuilder() {
                   <ChevronRight className="w-3 h-3 text-muted-foreground" />
                   <span className="bg-muted rounded-md px-2.5 py-1.5">Landing Page</span>
                   <ChevronRight className="w-3 h-3 text-muted-foreground" />
-                  <span className="bg-muted rounded-md px-2.5 py-1.5">Attribution</span>
+                  <span className="bg-muted rounded-md px-2.5 py-1.5">Form / Call</span>
                   <ChevronRight className="w-3 h-3 text-muted-foreground" />
-                  <span className="bg-muted rounded-md px-2.5 py-1.5">Webhook</span>
+                  <span className="bg-muted rounded-md px-2.5 py-1.5">Attribution Capture</span>
                   <ChevronRight className="w-3 h-3 text-muted-foreground" />
-                  <span className="bg-emerald-500/10 text-emerald-600 rounded-md px-2.5 py-1.5 ring-1 ring-emerald-500/20">Convoso Instant Call</span>
+                  <span className="bg-muted rounded-md px-2.5 py-1.5">Webhook / Router</span>
                   <ChevronRight className="w-3 h-3 text-muted-foreground" />
-                  <span className="bg-muted rounded-md px-2.5 py-1.5">CRM Sync</span>
+                  <span className="bg-emerald-500/10 text-emerald-600 rounded-md px-2.5 py-1.5 ring-1 ring-emerald-500/20">Convoso / CRM / Queue</span>
                 </div>
+                <p className="text-[10px] text-muted-foreground mt-2">Leads are captured on your page, tagged with attribution, then routed via webhook to Convoso for instant agent contact.</p>
               </div>
 
               {/* Routing logic */}

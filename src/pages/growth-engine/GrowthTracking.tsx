@@ -85,11 +85,12 @@ export default function GrowthTracking() {
           <CardContent className="p-4 space-y-3">
             <h3 className="text-sm font-semibold text-foreground">Your Attribution Flow</h3>
             <div className="flex items-center gap-2 flex-wrap py-2">
-              {["Ad Click", "Landing Page", "Form / Call", "Convoso", "CRM", "Booked / Sale"].map((step, i, arr) => (
+              {["Ad Click", "Landing Page", "Form / Call", "Attribution Capture", "Webhook / Router", "Convoso / CRM", "Booked / Sale"].map((step, i, arr) => (
                 <div key={step} className="flex items-center gap-2">
                   <div className={`px-3 py-1.5 rounded-lg text-xs font-medium ${
                     i === 0 ? 'bg-blue-500/10 text-blue-600' :
                     i === arr.length - 1 ? 'bg-green-500/10 text-green-600' :
+                    i === 5 ? 'bg-emerald-500/10 text-emerald-600' :
                     'bg-muted text-foreground'
                   }`}>
                     {step}
@@ -99,7 +100,7 @@ export default function GrowthTracking() {
               ))}
             </div>
             <p className="text-xs text-muted-foreground">
-              Every lead should carry UTM tags from the first click through to the final sale. This lets you track source-to-sale performance.
+              Leads are captured on your page or form, attributed with UTM tags, then routed via webhook to Convoso and your CRM.
             </p>
           </CardContent>
         </Card>

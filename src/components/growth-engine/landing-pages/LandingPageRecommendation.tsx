@@ -84,7 +84,7 @@ function getRecommendation(s: WizardSelections): Recommendation {
     backup: "Quote Form Landing Page",
     why: "Start with the highest-converting format for interstate leads from Google Search.",
     cta: "Call Now or Get a Free Quote",
-    routing: "Call/Form → Convoso instant route",
+    routing: "Call/Form → attribution → webhook → Convoso",
     kpi: "Conversion rate, cost per lead",
   };
 }
