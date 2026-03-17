@@ -43,7 +43,7 @@ export default function AccountingShell({ children, breadcrumb = "" }: Accountin
 
   const handleResetPreference = () => {
     localStorage.removeItem("truemove_remembered_role");
-    navigate("/agent-login");
+    navigate("/");
   };
 
   return (
