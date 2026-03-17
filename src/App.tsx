@@ -118,6 +118,7 @@ const App = () => (
             
             <Route path="/agent/operations" element={<AgentOperations />} />
             <Route path="/agent/new-customer" element={<AgentNewCustomer />} />
+            <Route path="/agent/move-details/:leadId" element={<AgentMoveDetails />} />
             <Route path="/agent/inventory/:leadId" element={<AgentInventory />} />
             <Route path="/agent/dialer" element={<AgentDialerPage />} />
             <Route path="/agent/esign" element={<AgentESign />} />
