@@ -1622,7 +1622,7 @@ export default function Index() {
                             className="tru-qb-method-card tru-qb-method-primary"
                             onClick={() => {
                               handleSubmit(new Event('submit') as any);
-                              navigate("/scan-room");
+                              navigate("/site/scan-room");
                             }}
                           >
                             <div className="tru-qb-method-icon-wrap tru-qb-method-icon-ai">
