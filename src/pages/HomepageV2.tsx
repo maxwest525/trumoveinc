@@ -741,19 +741,19 @@ export default function HomepageV2() {
             <div>
               <h4 className="text-xs font-semibold uppercase tracking-wider mb-4" style={{ color: textPrimary }}>Company</h4>
               <div className="space-y-2.5">
-                <Link to="/about" className="block text-xs transition-colors hover:text-white" style={{ color: textSecondary }}>About</Link>
-                <Link to="/faq" className="block text-xs transition-colors hover:text-white" style={{ color: textSecondary }}>FAQ</Link>
-                <Link to="/customer-service" className="block text-xs transition-colors hover:text-white" style={{ color: textSecondary }}>Customer Service</Link>
-                <Link to="/book" className="block text-xs transition-colors hover:text-white" style={{ color: textSecondary }}>Book a Call</Link>
+                <Link to="/site/about" className="block text-xs transition-colors hover:text-white" style={{ color: textSecondary }}>About</Link>
+                <Link to="/site/faq" className="block text-xs transition-colors hover:text-white" style={{ color: textSecondary }}>FAQ</Link>
+                <Link to="/site/customer-service" className="block text-xs transition-colors hover:text-white" style={{ color: textSecondary }}>Customer Service</Link>
+                <Link to="/site/book" className="block text-xs transition-colors hover:text-white" style={{ color: textSecondary }}>Book a Call</Link>
               </div>
             </div>
             <div>
               <h4 className="text-xs font-semibold uppercase tracking-wider mb-4" style={{ color: textPrimary }}>Services</h4>
               <div className="space-y-2.5">
-                <Link to="/online-estimate" className="block text-xs transition-colors hover:text-white" style={{ color: textSecondary }}>Online Estimate</Link>
-                <Link to="/scan-room" className="block text-xs transition-colors hover:text-white" style={{ color: textSecondary }}>AI Room Scanner</Link>
-                <Link to="/vetting" className="block text-xs transition-colors hover:text-white" style={{ color: textSecondary }}>Carrier Vetting</Link>
-                <Link to="/track" className="block text-xs transition-colors hover:text-white" style={{ color: textSecondary }}>Live Tracking</Link>
+                <Link to="/site/online-estimate" className="block text-xs transition-colors hover:text-white" style={{ color: textSecondary }}>Online Estimate</Link>
+                <Link to="/site/scan-room" className="block text-xs transition-colors hover:text-white" style={{ color: textSecondary }}>AI Room Scanner</Link>
+                <Link to="/site/vetting" className="block text-xs transition-colors hover:text-white" style={{ color: textSecondary }}>Carrier Vetting</Link>
+                <Link to="/site/track" className="block text-xs transition-colors hover:text-white" style={{ color: textSecondary }}>Live Tracking</Link>
               </div>
             </div>
             <div>
