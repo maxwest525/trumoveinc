@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import SiteShell from "@/components/layout/SiteShell";
 import PortalAuthForm from "@/components/auth/PortalAuthForm";
-import { Settings, Users, BarChart3, Megaphone, Receipt, Package, ShieldCheck, Globe, LogOut, type LucideIcon } from "lucide-react";
+import { Settings, Users, BarChart3, Megaphone, Receipt, Package, ShieldCheck, Globe, LogOut, Bell, type LucideIcon } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
 import logoImg from "@/assets/logo.png";
