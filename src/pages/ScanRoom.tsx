@@ -905,7 +905,7 @@ export default function ScanRoom() {
                           title: "Inventory Migrated Successfully!",
                           description: `${detectedItems.length} items have been synced to the manual builder.`,
                         });
-                        navigate('/online-estimate');
+                        navigate('/site/online-estimate');
                       }}
                       disabled={detectedItems.length === 0}
                       className="tru-scan-btn-dark"
