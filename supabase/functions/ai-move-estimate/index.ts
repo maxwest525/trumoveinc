@@ -169,7 +169,7 @@ IMPORTANT: Start from the company base rate of $${baseRate}/cu ft and adjust bas
     // Fallback heuristic using company base rate
     const baseCuFt = bedrooms * 350;
     const baseWeight = baseCuFt * 7;
-    return new Response(JSON.stringify({ cuFt: baseCuFt, weight: baseWeight, pricePerCuFt: baseRate }), {
+    return new Response(JSON.stringify({ cuFt: baseCuFt, weight: baseWeight, pricePerCuFt: Math.max(4, baseRate) }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
 
