@@ -86,6 +86,7 @@ export default function AgentLogin() {
   const [loading, setLoading] = useState(true);
   const { displayName } = useAgentProfile();
   const { stats, loading: statsLoading } = usePortalStats();
+  const { unreadCount } = useNotifications();
   const greeting = useMemo(() => getGreeting(), []);
 
   useEffect(() => {
