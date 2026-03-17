@@ -325,7 +325,7 @@ const PulseDashboard: React.FC<{ embedded?: boolean; basePath?: string }> = ({ e
                                 {highlightKeywords(alert.context, [alert.matched_text])}
                               </p>
                             )}
-                            {alert.call_id && <Link to={`${basePath}/call/${alert.call_id}`} className="text-[10px] text-primary flex items-center gap-1 hover:underline font-medium"><FileText className="w-3 h-3" />View Full Transcript</Link>}
+                            {alert.call_id && <button onClick={e => { e.stopPropagation(); openTranscriptModal(alert); }} className="text-[10px] text-primary flex items-center gap-1 hover:underline font-medium"><FileText className="w-3 h-3" />View Full Transcript</button>}
                           </div>
                         )}
                       </div>
