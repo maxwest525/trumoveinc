@@ -256,10 +256,14 @@ export default function MoveSummaryPanel({ form, lead, inventoryStats, pricePerC
                 <input
                   type="number"
                   step="0.25"
-                  min="0"
+                  min="4"
                   placeholder="7.50"
                   value={pricePerCuFt || ""}
                   onChange={(e) => onPricePerCuFtChange?.(e.target.value)}
+                  onBlur={(e) => {
+                    const val = Number(e.target.value);
+                    if (e.target.value && val < 4) onPricePerCuFtChange?.("4");
+                  }}
                   className="w-full h-8 pl-7 pr-3 rounded-lg border border-border bg-background text-sm font-medium text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary/50"
                 />
               </div>

@@ -159,6 +159,8 @@ IMPORTANT: Start from the company base rate of $${baseRate}/cu ft and adjust bas
 
     if (toolCall?.function?.arguments) {
       const estimate = JSON.parse(toolCall.function.arguments);
+      // Enforce $4 minimum per cu ft
+      estimate.pricePerCuFt = Math.max(4, estimate.pricePerCuFt);
       return new Response(JSON.stringify(estimate), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -167,7 +169,7 @@ IMPORTANT: Start from the company base rate of $${baseRate}/cu ft and adjust bas
     // Fallback heuristic using company base rate
     const baseCuFt = bedrooms * 350;
     const baseWeight = baseCuFt * 7;
-    return new Response(JSON.stringify({ cuFt: baseCuFt, weight: baseWeight, pricePerCuFt: baseRate }), {
+    return new Response(JSON.stringify({ cuFt: baseCuFt, weight: baseWeight, pricePerCuFt: Math.max(4, baseRate) }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
 
