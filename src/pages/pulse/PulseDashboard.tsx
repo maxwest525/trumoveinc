@@ -125,6 +125,21 @@ const PulseDashboard: React.FC<{ embedded?: boolean; basePath?: string }> = ({ e
     setAlerts([]);
   };
 
+  const sendCoachingMessage = useCallback(async (message: string) => {
+    if (!message.trim() || !coachingTarget) return;
+    setSendingCoaching(true);
+    try {
+      const { error } = await supabase.from('pulse_agent_messages').insert({ agent_name: coachingTarget, message: message.trim() });
+      if (error) throw error;
+      toast.success(`Sent to ${coachingTarget}`);
+      setCoachingMsg('');
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to send');
+    } finally {
+      setSendingCoaching(false);
+    }
+  }, [coachingTarget]);
+
   return (
     <div className={cn(embedded ? "flex flex-col" : "min-h-screen bg-background text-foreground flex flex-col")}>
       {!embedded && (
