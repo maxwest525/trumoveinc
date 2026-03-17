@@ -113,7 +113,7 @@ function SummaryRow({ icon: Icon, label, value, accent }: { icon: any; label: st
   );
 }
 
-export default function MoveSummaryPanel({ form, lead }: MoveSummaryPanelProps) {
+export default function MoveSummaryPanel({ form, lead, inventoryStats, pricePerCuFt, onPricePerCuFtChange }: MoveSummaryPanelProps) {
   // Normalize data from either source
   const data: MoveSummaryData = useMemo(() => {
     if (form) return form;
