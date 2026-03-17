@@ -26,6 +26,8 @@ export default function MiniSoftphone() {
   const [showDialpad, setShowDialpad] = useState(false);
   const [speakerOn, setSpeakerOn] = useState(false);
   const [matchedLead, setMatchedLead] = useState<{ id: string; name: string } | null>(null);
+  const [dialNumber, setDialNumber] = useState("");
+  const [idleShowDialpad, setIdleShowDialpad] = useState(true);
   const location = useLocation();
   const navigate = useNavigate();
 
