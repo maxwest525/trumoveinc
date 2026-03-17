@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { cn } from '@/lib/utils';
 import { AlertTriangle, Clock, User, TrendingUp, TrendingDown, Minus, Search, RefreshCw, Shield, ShieldAlert, ShieldCheck, Filter, Phone, FileText, Mic, Radio, MessageSquare, Send, X, Download, CalendarIcon, ChevronDown, Volume2, VolumeX, Plus } from 'lucide-react';
 import { format, startOfDay, endOfDay, subDays, subHours } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
