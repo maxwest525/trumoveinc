@@ -59,6 +59,7 @@ import AdminESignAudit from "./pages/AdminESignAudit";
 import CustomerFacingSites from "./pages/CustomerFacingSites";
 import IntegrationPlaceholder from "./pages/IntegrationPlaceholder";
 import AdminPricing from "./pages/AdminPricing";
+import PulseHome from "./pages/pulse/PulseHome";
 
 const queryClient = new QueryClient();
 
