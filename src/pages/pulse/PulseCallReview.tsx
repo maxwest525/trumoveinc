@@ -4,6 +4,7 @@ import { ArrowLeft, AlertTriangle, Clock, User, Phone, Shield, ShieldAlert, Shie
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { supabase } from '@/integrations/supabase/client';
+import { cn } from '@/lib/utils';
 
 type Severity = 'low' | 'medium' | 'high' | 'critical';
 const SEVERITY_META: Record<Severity, { label: string; color: string; icon: React.ElementType }> = {
@@ -53,13 +54,14 @@ const PulseCallReview: React.FC<{ embedded?: boolean; basePath?: string }> = ({ 
   return (
     <div className={cn(embedded ? "flex flex-col" : "min-h-screen bg-background text-foreground")}>
       {!embedded && (
-      <header className="sticky top-0 z-40 h-14 flex items-center gap-3 px-6 border-b border-border bg-background/80 backdrop-blur-xl">
-        <Link to={basePath} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"><ArrowLeft className="w-4 h-4" />Back to Dashboard</Link>
-        <div className="w-px h-5 bg-border/50 mx-2" />
-        <span className="font-bold text-lg tracking-tight">Call Review</span>
-        <Badge variant="destructive" className="text-[10px]">BETA</Badge>
-        <div className={`flex items-center gap-1.5 ml-3 ${sevMeta.color}`}><SevIcon className="w-4 h-4" /><span className="text-xs font-bold uppercase">{sevMeta.label}</span></div>
-      </header>
+        <header className="sticky top-0 z-40 h-14 flex items-center gap-3 px-6 border-b border-border bg-background/80 backdrop-blur-xl">
+          <Link to={basePath} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"><ArrowLeft className="w-4 h-4" />Back to Dashboard</Link>
+          <div className="w-px h-5 bg-border/50 mx-2" />
+          <span className="font-bold text-lg tracking-tight">Call Review</span>
+          <Badge variant="destructive" className="text-[10px]">BETA</Badge>
+          <div className={`flex items-center gap-1.5 ml-3 ${sevMeta.color}`}><SevIcon className="w-4 h-4" /><span className="text-xs font-bold uppercase">{sevMeta.label}</span></div>
+        </header>
+      )}
 
       <main className="max-w-6xl mx-auto p-6 space-y-6">
         <div className="flex items-center gap-6 p-4 rounded-xl border border-border bg-secondary/20">
