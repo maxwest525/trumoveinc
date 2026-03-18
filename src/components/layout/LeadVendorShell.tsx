@@ -25,7 +25,6 @@ interface LeadVendorShellProps {
 export default function LeadVendorShell({ children, breadcrumb = "" }: LeadVendorShellProps) {
   const { theme, setTheme } = useTheme();
   const location = useLocation();
-  const navigate = useNavigate();
   const isMobile = useIsMobile();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -35,11 +34,6 @@ export default function LeadVendorShell({ children, breadcrumb = "" }: LeadVendo
   }, []);
 
   useEffect(() => { setSidebarOpen(false); }, [location.pathname]);
-
-  const handleResetPreference = () => {
-    localStorage.removeItem("truemove_remembered_role");
-    navigate("/");
-  };
 
   const sidebarContent = (
     <>

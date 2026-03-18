@@ -34,18 +34,12 @@ interface AdminShellProps {
 export default function AdminShell({ children, breadcrumb = "" }: AdminShellProps) {
   const { theme, setTheme } = useTheme();
   const location = useLocation();
-  const navigate = useNavigate();
   const [showAdvanced] = useState(true);
 
   useEffect(() => {
     setPortalContext("admin");
     window.scrollTo(0, 0);
   }, []);
-
-  const handleResetPreference = () => {
-    localStorage.removeItem("truemove_remembered_role");
-    navigate("/");
-  };
 
   return (
     <div className="flex min-h-screen bg-background text-foreground">

@@ -26,7 +26,6 @@ interface MarketingShellProps {
 export default function MarketingShell({ children, breadcrumb = "" }: MarketingShellProps) {
   const { theme, setTheme } = useTheme();
   const location = useLocation();
-  const navigate = useNavigate();
   const isMobile = useIsMobile();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -35,15 +34,9 @@ export default function MarketingShell({ children, breadcrumb = "" }: MarketingS
     window.scrollTo(0, 0);
   }, []);
 
-  // Close sidebar on route change
   useEffect(() => {
     setSidebarOpen(false);
   }, [location.pathname]);
-
-  const handleResetPreference = () => {
-    localStorage.removeItem("truemove_remembered_role");
-    navigate("/");
-  };
 
   const sidebarContent = (
     <>
