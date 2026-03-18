@@ -575,58 +575,22 @@ function ShipmentTrackerSection({ navigate }: { navigate: (path: string) => void
   return (
     <section className="tru-tracker-section">
       <div className="tru-tracker-inner">
-        <div className="flex items-center gap-8">
+        <div className="flex items-center gap-10 lg:gap-14">
           
-          {/* LEFT: Map canvas */}
-          <div className="flex-1 rounded-xl overflow-hidden border border-foreground/10 shadow-md">
-            <canvas ref={canvasRef} width={580} height={260} className="w-full h-auto block" />
+          {/* LEFT: Map canvas — taller, ~60% width */}
+          <div className="flex-[1.6] rounded-xl overflow-hidden border border-foreground/10 shadow-lg">
+            <canvas ref={canvasRef} width={600} height={340} className="w-full h-auto block" />
           </div>
           
-          {/* RIGHT: Headline + compact ELD info */}
-          <div className="w-[320px] flex-shrink-0 flex flex-col justify-center space-y-5">
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-primary/20 bg-primary/5 w-fit">
-              <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-              <span className="text-[10px] font-semibold tracking-widest uppercase text-primary">ELD Verified</span>
-            </div>
-            
-            <div className="tru-ai-headline-block">
-              <h2 className="tru-ai-main-headline" style={{ textAlign: 'left', fontSize: '1.75rem', lineHeight: '1.2' }}>
-                Real-Time<br />
-                <span className="tru-ai-headline-accent">ELD Tracking.</span>
-              </h2>
-              <p className="tru-ai-subheadline" style={{ textAlign: 'left', fontSize: '0.8rem' }}>
-                Cross-reference carrier ELD data, policy COIs, and tractor VINs — stop double brokering before pickup.
-              </p>
-            </div>
-            
-            {/* Compact ELD data strip */}
-            <div className="rounded-lg border border-foreground/10 bg-muted/20 p-3 space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-[9px] font-semibold tracking-widest uppercase text-muted-foreground">Live ELD Feed</span>
-                <span className="inline-flex items-center gap-1 text-[9px] font-semibold text-primary">
-                  <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                  TRACKING
-                </span>
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <span className="text-[9px] text-muted-foreground block">Tractor</span>
-                  <span className="text-xs font-mono font-semibold text-foreground">8291</span>
-                </div>
-                <div>
-                  <span className="text-[9px] text-muted-foreground block">MC#</span>
-                  <span className="text-xs font-mono font-semibold text-foreground">133655</span>
-                </div>
-                <div>
-                  <span className="text-[9px] text-muted-foreground block">Speed</span>
-                  <span className="text-xs font-mono font-semibold text-foreground">62 mph</span>
-                </div>
-                <div>
-                  <span className="text-[9px] text-muted-foreground block">HOS</span>
-                  <span className="text-xs font-mono font-semibold text-primary">6h 12m left</span>
-                </div>
-              </div>
-            </div>
+          {/* RIGHT: Headline + CTA — centered, clean */}
+          <div className="flex-1 flex flex-col items-center justify-center text-center space-y-5">
+            <h2 className="tru-ai-main-headline" style={{ fontSize: '2rem', lineHeight: '1.15' }}>
+              Real-Time<br />
+              <span className="tru-ai-headline-accent">ELD Tracking.</span>
+            </h2>
+            <p className="tru-ai-subheadline" style={{ fontSize: '0.85rem', maxWidth: '260px' }}>
+              Connect to your carriers ELD and track movements in real-time
+            </p>
             
             <button onClick={() => navigate("/site/track")} className="tru-ai-cta-btn">
               <MapPin className="w-4 h-4" />
