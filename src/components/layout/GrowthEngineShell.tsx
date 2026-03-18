@@ -36,6 +36,7 @@ interface GrowthEngineShellProps {
 }
 
 export default function GrowthEngineShell({ children }: GrowthEngineShellProps) {
+  const [secondaryOpen, setSecondaryOpen] = useState(false);
   const { theme, setTheme } = useTheme();
   const location = useLocation();
   const navigate = useNavigate();
