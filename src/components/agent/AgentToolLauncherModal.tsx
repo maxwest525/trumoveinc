@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Monitor, Phone, Globe, Rocket, Coffee } from "lucide-react";
+import { Monitor, Phone, Globe, Rocket, Volume2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -16,23 +16,75 @@ const TOOLS = [
   { key: "website", label: "TruMove Website", icon: Globe, url: "/site", internal: true },
 ];
 
-const TRUDY_RESPONSES = [
-  "☕ Oh sweetie… I'm literally a bunch of code. I can't even hold a mug. 😂",
-  "☕ Hahahaha you really asked an AI for coffee?? I don't even have hands! 🤖😂",
-  "☕ Sure! Let me just… oh wait. I'm software. Nice try though 😏",
-  "☕ I would LOVE to, but I exist inside a server rack. Rain check? 😂",
+const TRUDY_ASK = "Hey! Want me to grab you a coffee before you start?";
+
+const TRUDY_YES_RESPONSES = [
+  "Oh sweetie, I'm literally a bunch of code. I can't even hold a mug!",
+  "Hahahaha you really asked an AI for coffee? I don't even have hands!",
+  "Sure! Let me just… oh wait. I'm software. Nice try though.",
+  "I would LOVE to, but I exist inside a server rack. Rain check?",
 ];
+
+const TRUDY_NO_RESPONSE = "Fine. More for nobody, I guess.";
+
+async function playTrudySpeech(text: string): Promise<void> {
+  try {
+    const response = await fetch(
+      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/elevenlabs-tts`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({ text }),
+      }
+    );
+
+    if (!response.ok) throw new Error("TTS failed");
+
+    const data = await response.json();
+    const audioUrl = `data:audio/mpeg;base64,${data.audioContent}`;
+    const audio = new Audio(audioUrl);
+    await audio.play();
+  } catch (err) {
+    console.warn("Trudy TTS unavailable:", err);
+  }
+}
 
 export default function AgentToolLauncherModal({ open, onOpenChange }: AgentToolLauncherModalProps) {
   const navigate = useNavigate();
   const [trudyState, setTrudyState] = useState<"ask" | "response">("ask");
   const [trudyMsg, setTrudyMsg] = useState("");
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const hasSpokenRef = useRef(false);
 
-  const handleCoffeeYes = () => {
-    const msg = TRUDY_RESPONSES[Math.floor(Math.random() * TRUDY_RESPONSES.length)];
+  // Trudy asks the coffee question out loud when modal opens
+  useEffect(() => {
+    if (open && !hasSpokenRef.current) {
+      hasSpokenRef.current = true;
+      setIsSpeaking(true);
+      playTrudySpeech(TRUDY_ASK).finally(() => setIsSpeaking(false));
+    }
+  }, [open]);
+
+  const handleCoffeeYes = useCallback(async () => {
+    const msg = TRUDY_YES_RESPONSES[Math.floor(Math.random() * TRUDY_YES_RESPONSES.length)];
     setTrudyMsg(msg);
     setTrudyState("response");
-  };
+    setIsSpeaking(true);
+    await playTrudySpeech(msg);
+    setIsSpeaking(false);
+  }, []);
+
+  const handleCoffeeNo = useCallback(async () => {
+    setTrudyMsg(TRUDY_NO_RESPONSE);
+    setTrudyState("response");
+    setIsSpeaking(true);
+    await playTrudySpeech(TRUDY_NO_RESPONSE);
+    setIsSpeaking(false);
+  }, []);
 
   const handleLaunchAll = () => {
     const sw = window.screen.availWidth;
@@ -59,12 +111,12 @@ export default function AgentToolLauncherModal({ open, onOpenChange }: AgentTool
     navigate("/agent/dashboard");
   };
 
-  // Reset trudy state when modal opens/closes
   const handleOpenChange = (isOpen: boolean) => {
     if (!isOpen) {
       setTimeout(() => {
         setTrudyState("ask");
         setTrudyMsg("");
+        hasSpokenRef.current = false;
       }, 300);
     }
     onOpenChange(isOpen);
@@ -81,7 +133,6 @@ export default function AgentToolLauncherModal({ open, onOpenChange }: AgentTool
         </DialogHeader>
 
         <div className="px-6 pb-4 space-y-3">
-          {/* Tool preview list */}
           <div className="flex flex-col gap-1.5">
             {TOOLS.map((tool) => {
               const Icon = tool.icon;
@@ -104,7 +155,7 @@ export default function AgentToolLauncherModal({ open, onOpenChange }: AgentTool
           </Button>
         </div>
 
-        {/* Trudy coffee bit */}
+        {/* Trudy coffee bit — with voice */}
         <div className="border-t border-border px-6 py-3">
           <AnimatePresence mode="wait">
             {trudyState === "ask" ? (
@@ -113,12 +164,15 @@ export default function AgentToolLauncherModal({ open, onOpenChange }: AgentTool
                 initial={{ opacity: 0, y: 4 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -4 }}
-                className="flex items-center justify-between"
+                className="flex items-center justify-between gap-2"
               >
-                <p className="text-[11px] text-muted-foreground">
-                  <span className="font-semibold text-foreground">Trudy:</span> Want me to grab you a coffee? ☕
+                <p className="text-[11px] text-muted-foreground flex items-center gap-1.5">
+                  {isSpeaking && <Volume2 className="h-3 w-3 text-primary animate-pulse shrink-0" />}
+                  <span>
+                    <span className="font-semibold text-foreground">Trudy:</span> Want me to grab you a coffee? ☕
+                  </span>
                 </p>
-                <div className="flex gap-1.5">
+                <div className="flex gap-1.5 shrink-0">
                   <button
                     onClick={handleCoffeeYes}
                     className="text-[11px] font-medium text-primary hover:text-primary/80 transition-colors px-2 py-0.5 rounded-md hover:bg-primary/5"
@@ -126,7 +180,7 @@ export default function AgentToolLauncherModal({ open, onOpenChange }: AgentTool
                     Yes please!
                   </button>
                   <button
-                    onClick={() => { setTrudyMsg("😤 Fine. More for nobody, I guess."); setTrudyState("response"); }}
+                    onClick={handleCoffeeNo}
                     className="text-[11px] text-muted-foreground hover:text-foreground transition-colors px-2 py-0.5 rounded-md hover:bg-muted/50"
                   >
                     Nah
@@ -140,8 +194,11 @@ export default function AgentToolLauncherModal({ open, onOpenChange }: AgentTool
                 animate={{ opacity: 1, scale: 1 }}
                 className="text-center"
               >
-                <p className="text-[11px] text-muted-foreground leading-relaxed">
-                  <span className="font-semibold text-foreground">Trudy:</span> {trudyMsg}
+                <p className="text-[11px] text-muted-foreground leading-relaxed flex items-center justify-center gap-1.5">
+                  {isSpeaking && <Volume2 className="h-3 w-3 text-primary animate-pulse shrink-0" />}
+                  <span>
+                    <span className="font-semibold text-foreground">Trudy:</span> {trudyMsg}
+                  </span>
                 </p>
               </motion.div>
             )}
