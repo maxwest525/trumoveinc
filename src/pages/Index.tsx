@@ -1216,10 +1216,10 @@ export default function Index() {
                 <Video className="w-4 h-4 text-[hsl(142,71%,45%)]" /> Video Consult
               </button>
               <a href="mailto:support@trumove.com" className="flex items-center gap-2 px-5 py-2 rounded-md bg-white/15 hover:bg-white/25 border border-white/30 hover:border-white/50 shadow-[0_2px_8px_rgba(0,0,0,0.3)] transition-all text-[11px] font-extrabold text-white uppercase tracking-[0.15em]">
-                <Mail className="w-4 h-4 text-[hsl(142,71%,45%)]" /> Email a Rep
+                <Mail className="w-4 h-4 text-[hsl(142,71%,45%)]" /> Email Support
               </a>
               <button className="flex items-center gap-2 px-5 py-2 rounded-md bg-white/15 hover:bg-white/25 border border-white/30 hover:border-white/50 shadow-[0_2px_8px_rgba(0,0,0,0.3)] transition-all text-[11px] font-extrabold text-white uppercase tracking-[0.15em]">
-                <MessageSquare className="w-4 h-4 text-[hsl(142,71%,45%)]" /> Text Support
+                <MessageSquare className="w-4 h-4 text-[hsl(142,71%,45%)]" /> Text a Rep
               </button>
             </div>
           </div>
