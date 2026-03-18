@@ -147,16 +147,15 @@ export default function AgentESign() {
     if (newDoc.deliveryMethod === "sms" && !newDoc.customerPhone) { toast.error("Please enter customer phone"); return; }
 
     setIsSending(true);
-    const refPrefix = newDoc.type === "estimate" ? "EST" : "CC";
-    const refNumber = `${refPrefix}-2026-${String(Math.floor(Math.random() * 9999)).padStart(4, "0")}`;
-    const signingUrl = `${window.location.origin}/esign/${refNumber}`;
+    const estRef = `EST-2026-${String(Math.floor(Math.random() * 9999)).padStart(4, "0")}`;
+    const signingUrl = `${window.location.origin}/esign/${estRef}`;
 
     try {
-      const { data, error } = await supabase.functions.invoke('send-esign-document', {
+      const { error } = await supabase.functions.invoke('send-esign-document', {
         body: {
-          documentType: newDoc.type, customerName: newDoc.customerName,
+          documentType: "estimate", customerName: newDoc.customerName,
           customerEmail: newDoc.customerEmail, customerPhone: newDoc.customerPhone,
-          refNumber, deliveryMethod: newDoc.deliveryMethod, signingUrl,
+          refNumber: estRef, deliveryMethod: newDoc.deliveryMethod, signingUrl,
         },
       });
 
@@ -166,18 +165,13 @@ export default function AgentESign() {
         return;
       }
 
-      const newRecord: DocumentRecord = {
-        id: `doc-${Date.now()}`, type: newDoc.type, refNumber,
-        customerName: newDoc.customerName, customerEmail: newDoc.customerEmail,
-        customerPhone: newDoc.customerPhone, status: "sent", sentAt: new Date(),
-        deliveryMethod: newDoc.deliveryMethod,
-      };
-      setDocuments(prev => [newRecord, ...prev]);
-
       const methodLabel = newDoc.deliveryMethod === "email" ? "email" : "SMS";
-      toast.success(`${DOCUMENT_LABELS[newDoc.type]} sent via ${methodLabel}`, {
-        description: data?.method === "sms" ? "SMS delivery simulated for demo" : `Sent to ${newDoc.customerEmail}`,
+      toast.success(`Documents sent via ${methodLabel}`, {
+        description: `Estimate & CC/ACH Authorization sent to ${newDoc.customerName}`,
       });
+
+      // Navigate directly to the e-sign preview
+      navigate(`/agent/esign/view?type=estimate&name=${encodeURIComponent(newDoc.customerName)}&email=${encodeURIComponent(newDoc.customerEmail)}&ref=${encodeURIComponent(estRef)}`);
     } catch (err) {
       toast.error("Failed to send document");
     } finally {
