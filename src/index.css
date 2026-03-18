@@ -1555,7 +1555,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 5%;
+  object-position: center top;
 }
 
 /* Hero background overlay - no opacity, fully transparent */
