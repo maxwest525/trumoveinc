@@ -192,31 +192,6 @@ export function ESignSidebar({
         isSigned={allSigned}
         refNumber={refNumber}
       />
-
-      {/* Progress (for Estimate Auth) */}
-      {activeDocument === "estimate" && (
-        <Card className="border border-border bg-background shadow-sm">
-          <CardContent className="p-4">
-            <h3 className="font-medium text-[10px] uppercase tracking-wider text-muted-foreground mb-3">Signing Progress</h3>
-            <div className="space-y-1.5">
-              {(["initial1", "initial2", "initial3", "signature"] as SignatureField[]).map((field, i) => (
-                <div key={field} className="flex items-center gap-2 text-xs">
-                  <div
-                    className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] ${
-                      signatures[field] ? "bg-foreground text-background" : "border border-muted-foreground/40"
-                    }`}
-                  >
-                    {signatures[field] ? <Check className="h-2.5 w-2.5" /> : i + 1}
-                  </div>
-                  <span className={signatures[field] ? "text-foreground" : "text-muted-foreground"}>
-                    {field === "signature" ? "Signature" : `Section ${i + 1}`}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
     </div>
   );
 }
