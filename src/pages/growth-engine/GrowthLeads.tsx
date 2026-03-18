@@ -30,8 +30,8 @@ const LEAD_STATUS_BY_SOURCE = [
   { source: "Google Search", total: 234, inQueue: 8, connected: 156, notReached: 32, booked: 42, bookedRate: "18.0%", avgSpeed: "8s" },
   { source: "Meta Ads", total: 156, inQueue: 6, connected: 98, notReached: 24, booked: 18, bookedRate: "11.5%", avgSpeed: "14s" },
   { source: "Meta Instant", total: 84, inQueue: 4, connected: 52, notReached: 18, booked: 6, bookedRate: "7.1%", avgSpeed: "6s" },
-  { source: "Organic", total: 89, inQueue: 2, connected: 68, notReached: 8, booked: 14, bookedRate: "15.7%", avgSpeed: "22s" },
-  { source: "CallRail", total: 67, inQueue: 3, connected: 54, notReached: 4, booked: 12, bookedRate: "17.9%", avgSpeed: "3s" },
+  { source: "Organic / SEO", total: 89, inQueue: 2, connected: 68, notReached: 8, booked: 14, bookedRate: "15.7%", avgSpeed: "22s" },
+  { source: "Inbound Call", total: 67, inQueue: 3, connected: 54, notReached: 4, booked: 12, bookedRate: "17.9%", avgSpeed: "3s" },
 ];
 
 const MOCK_LEADS = [
@@ -44,7 +44,7 @@ const MOCK_LEADS = [
   { id: 7, name: "Jennifer Martinez", source: "Google", campaign: "Interstate CA", keyword: "moving from SF", page: "Call Page", type: "Call", status: "Connected", quality: 95, speed: "5s", sale: "Booked" },
   { id: 8, name: "David Brown", source: "Meta", campaign: "FL Interstate", keyword: "interstate quote", page: "Instant Form", type: "Form", status: "Duplicate", quality: 0, speed: "—", sale: "Suppressed" },
   { id: 9, name: "Amanda Lee", source: "Google", campaign: "Interstate TX", keyword: "TX to CA movers", page: "Quote Funnel", type: "Form", status: "Connected", quality: 82, speed: "11s", sale: "Follow-up" },
-  { id: 10, name: "Chris Patel", source: "CallRail", campaign: "Organic", keyword: null, page: "Homepage", type: "Call", status: "Connected", quality: 70, speed: "Direct", sale: "Booked" },
+  { id: 10, name: "Chris Patel", source: "Inbound", campaign: "Organic", keyword: null, page: "Homepage", type: "Call", status: "Connected", quality: 70, speed: "Direct", sale: "Booked" },
 ];
 
 const getStatusBadge = (status: string) => {
@@ -150,7 +150,7 @@ export default function GrowthLeads() {
               <SelectItem value="all">All Sources</SelectItem>
               <SelectItem value="Google">Google</SelectItem>
               <SelectItem value="Meta">Meta</SelectItem>
-              <SelectItem value="CallRail">CallRail</SelectItem>
+              <SelectItem value="Inbound">Inbound</SelectItem>
             </SelectContent>
           </Select>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
