@@ -7,8 +7,35 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-// Trudy's voice — Sarah (warm, friendly female)
-const DEFAULT_VOICE_ID = "EXAVITQu4vr4xnSDxMaL";
+// Cache the agent's voice ID so we don't look it up every call
+let cachedVoiceId: string | null = null;
+
+async function getAgentVoiceId(apiKey: string): Promise<string> {
+  if (cachedVoiceId) return cachedVoiceId;
+
+  const agentId = Deno.env.get("ELEVENLABS_AGENT_ID");
+  if (agentId) {
+    try {
+      const res = await fetch(`https://api.elevenlabs.io/v1/convai/agents/${agentId}`, {
+        headers: { "xi-api-key": apiKey },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const voiceId = data?.conversation_config?.tts?.voice_id;
+        if (voiceId) {
+          cachedVoiceId = voiceId;
+          console.log("Using agent voice:", voiceId);
+          return voiceId;
+        }
+      }
+    } catch (e) {
+      console.warn("Could not fetch agent voice, using fallback:", e);
+    }
+  }
+
+  // Fallback: Sarah
+  return "EXAVITQu4vr4xnSDxMaL";
+}
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -24,7 +51,7 @@ serve(async (req) => {
       );
     }
 
-    const { text, voiceId } = await req.json();
+    const { text } = await req.json();
     if (!text) {
       return new Response(
         JSON.stringify({ error: "text is required" }),
@@ -32,8 +59,10 @@ serve(async (req) => {
       );
     }
 
+    const voiceId = await getAgentVoiceId(ELEVENLABS_API_KEY);
+
     const response = await fetch(
-      `https://api.elevenlabs.io/v1/text-to-speech/${voiceId || DEFAULT_VOICE_ID}?output_format=mp3_44100_128`,
+      `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}?output_format=mp3_44100_128`,
       {
         method: "POST",
         headers: {
