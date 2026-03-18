@@ -33,11 +33,8 @@ import previewPropertyLookup from "@/assets/preview-property-lookup.jpg";
 import sampleRoomLiving from "@/assets/sample-room-living.jpg";
 import scanRoomPreview from "@/assets/scan-room-preview.jpg";
 import heroFamilyMove from "@/assets/hero-family-move.jpg";
-import trudyAvatar from "@/assets/trudy-model.jpg";
 
-import TrudyChatBox from "@/components/TrudyChatBox";
 import ContactHumanTabs from "@/components/ContactHumanTabs";
-import ChatModal from "@/components/chat/ChatModal";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
@@ -1700,62 +1697,11 @@ export default function Index() {
 
           <FeatureTrustStrip />
 
-          {/* MEET TRUDY CHATBOT SECTION */}
-          <section className="tru-ai-steps-section">
-            <div className="tru-ai-steps-inner">
-              <div className="flex flex-col lg:flex-row items-center justify-center gap-10 lg:gap-16 w-full">
-                {/* LEFT: Description content */}
-                <div className="flex flex-col items-start gap-5 max-w-md">
-                  <div className="tru-ai-headline-block">
-                    <span className="inline-block text-xs font-semibold tracking-widest uppercase text-primary bg-primary/10 px-3 py-1 rounded-full mb-3">AI-Powered Support</span>
-                    <h2 className="tru-ai-main-headline">
-                      Meet Trudy.<br />
-                      <span className="tru-ai-headline-accent">Your AI Assistant.</span>
-                    </h2>
-                    <p className="tru-ai-subheadline">
-                      Get instant moving quotes, track shipments, schedule pickups, and more—all through a simple conversation with Trudy.
-                    </p>
-                  </div>
-                  
-                  {/* Capability grid */}
-                  <div className="grid grid-cols-2 gap-2 w-full">
-                    {[
-                    { label: "Instant Quotes", desc: "AI-powered estimates in seconds" },
-                    { label: "Live Tracking", desc: "Real-time GPS location & ETA" },
-                    { label: "Scheduling", desc: "Book or reschedule moves" },
-                    { label: "Carrier Vetting", desc: "FMCSA safety verified" },
-                    { label: "Room Scanner", desc: "Photo-based inventory" },
-                    { label: "Packing Help", desc: "Tips & checklists" },
-                    { label: "Video Consult", desc: "Live virtual walk-through" },
-                    { label: "General Support", desc: "Insurance, claims, storage" }].
-                    map((item) =>
-                    <div
-                      key={item.label}
-                      className="flex flex-col rounded-lg border border-border/60 bg-muted/30 px-3 py-2">
-                      
-                        <span className="text-[11px] font-semibold text-foreground leading-tight">{item.label}</span>
-                        <span className="text-[10px] text-muted-foreground leading-snug mt-0.5">{item.desc}</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-                
-                {/* RIGHT: Trudy Chat */}
-                <div className="w-full max-w-lg">
-                  <TrudyChatBox />
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* CONTACT A HUMAN */}
+          {/* CONTACT US */}
           <section className="py-16 px-4">
             <div className="max-w-xl mx-auto">
-              <div className="flex items-center gap-2 mb-1">
-                <h2 className="text-sm font-bold tracking-widest uppercase text-foreground">Contact a Human</h2>
-                <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground bg-muted px-2 py-0.5 rounded-full">Optional</span>
-              </div>
-              <p className="text-xs text-muted-foreground mb-6">Trudy handles 95% of requests. For the rest, we're here.</p>
+              <h2 className="text-sm font-bold tracking-widest uppercase text-foreground mb-1">Contact Us</h2>
+              <p className="text-xs text-muted-foreground mb-6">Have questions? Reach out to our team directly.</p>
 
               <ContactHumanTabs />
             </div>
