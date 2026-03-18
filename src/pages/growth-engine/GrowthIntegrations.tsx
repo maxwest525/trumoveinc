@@ -1,22 +1,28 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import GrowthEngineShell from "@/components/layout/GrowthEngineShell";
 import { cn } from "@/lib/utils";
 import {
   Check, X, RefreshCw, Settings,
-  Plug, Clock, ChevronDown, ChevronUp,
+  Plug, Clock, ChevronDown, ChevronUp, Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
-interface Integration {
+interface IntegrationDef {
   id: string;
   name: string;
   role: string;
   group: string;
   description: string;
-  connected: boolean;
-  lastSync?: string;
-  status?: "healthy" | "warning" | "error";
   tag?: string;
+}
+
+interface ConnectionState {
+  integration_id: string;
+  connected: boolean;
+  status: string;
+  last_sync: string | null;
 }
 
 const INTEGRATION_GROUPS = [
@@ -26,44 +32,102 @@ const INTEGRATION_GROUPS = [
   { id: "crm", label: "CRM / System of Record", desc: "Where lead data lives" },
 ];
 
-const INTEGRATIONS: Integration[] = [
-  // Traffic
-  { id: "google_ads", name: "Google Ads", role: "Primary traffic source", group: "traffic", description: "High-intent search campaigns for interstate moving leads. Keyword, campaign, and conversion data.", connected: true, lastSync: "2 min ago", status: "healthy", tag: "Primary" },
-  { id: "meta_ads", name: "Meta Ads", role: "Primary traffic source", group: "traffic", description: "Facebook and Instagram ad performance, instant forms, retargeting, and creative metrics.", connected: true, lastSync: "5 min ago", status: "healthy", tag: "Primary" },
-
-  // Routing
-  { id: "convoso", name: "Convoso", role: "Dialer / queue / callback", group: "routing", description: "Instant-call engine. Leads route here via webhook for immediate dial attempts, callback handling, and queue management.", connected: true, lastSync: "Live", status: "healthy", tag: "Essential" },
-  { id: "webhooks", name: "Custom Webhooks", role: "Event routing", group: "routing", description: "Send or receive lead events via webhook endpoints. Powers the routing between forms, Convoso, and CRM.", connected: true, lastSync: "Just now", status: "healthy", tag: "Essential" },
-
-  // Research
-  { id: "semrush", name: "SEMrush", role: "Keyword & competitor research", group: "research", description: "Keyword rankings, competitor ad spend, backlink analysis. Used for research, not as a traffic source.", connected: false, tag: "Research" },
-  { id: "firecrawl", name: "Firecrawl", role: "Page scraping & monitoring", group: "research", description: "Scrape competitor landing pages, monitor changes, extract page structures for analysis.", connected: false, tag: "Research" },
-  { id: "ga4", name: "Google Analytics (GA4)", role: "Site analytics", group: "research", description: "Website traffic, behavior flows, and conversion funnels.", connected: true, lastSync: "1 min ago", status: "healthy" },
-  { id: "gsc", name: "Search Console", role: "Organic search data", group: "research", description: "Organic impressions, clicks, CTR, and keyword positions.", connected: true, lastSync: "1 hr ago", status: "healthy" },
-
-  // CRM
-  { id: "ghl", name: "GoHighLevel (GHL)", role: "CRM / sequences / reporting", group: "crm", description: "Lead management, follow-up sequences, pipeline reporting. Can serve as primary CRM or backup sync.", connected: false, tag: "Recommended" },
-  { id: "granot", name: "Granot CRM", role: "System of record", group: "crm", description: "Moving-specific CRM. Sync lead records, move details, and disposition history.", connected: false, tag: "Optional" },
-  { id: "custom_crm", name: "Custom CRM / API", role: "Flexible integration", group: "crm", description: "Connect any CRM via REST API. Map fields and configure sync rules.", connected: false, tag: "Flexible" },
+const INTEGRATIONS: IntegrationDef[] = [
+  { id: "google_ads", name: "Google Ads", role: "Primary traffic source", group: "traffic", description: "High-intent search campaigns for interstate moving leads. Keyword, campaign, and conversion data.", tag: "Primary" },
+  { id: "meta_ads", name: "Meta Ads", role: "Primary traffic source", group: "traffic", description: "Facebook and Instagram ad performance, instant forms, retargeting, and creative metrics.", tag: "Primary" },
+  { id: "convoso", name: "Convoso", role: "Dialer / queue / callback", group: "routing", description: "Instant-call engine. Leads route here via webhook for immediate dial attempts, callback handling, and queue management.", tag: "Essential" },
+  { id: "webhooks", name: "Custom Webhooks", role: "Event routing", group: "routing", description: "Send or receive lead events via webhook endpoints. Powers the routing between forms, Convoso, and CRM.", tag: "Essential" },
+  { id: "semrush", name: "SEMrush", role: "Keyword & competitor research", group: "research", description: "Keyword rankings, competitor ad spend, backlink analysis. Used for research, not as a traffic source.", tag: "Research" },
+  { id: "firecrawl", name: "Firecrawl", role: "Page scraping & monitoring", group: "research", description: "Scrape competitor landing pages, monitor changes, extract page structures for analysis.", tag: "Research" },
+  { id: "ga4", name: "Google Analytics (GA4)", role: "Site analytics", group: "research", description: "Website traffic, behavior flows, and conversion funnels." },
+  { id: "gsc", name: "Search Console", role: "Organic search data", group: "research", description: "Organic impressions, clicks, CTR, and keyword positions." },
+  { id: "ghl", name: "GoHighLevel (GHL)", role: "CRM / sequences / reporting", group: "crm", description: "Lead management, follow-up sequences, pipeline reporting. Can serve as primary CRM or backup sync.", tag: "Recommended" },
+  { id: "granot", name: "Granot CRM", role: "System of record", group: "crm", description: "Moving-specific CRM. Sync lead records, move details, and disposition history.", tag: "Optional" },
+  { id: "custom_crm", name: "Custom CRM / API", role: "Flexible integration", group: "crm", description: "Connect any CRM via REST API. Map fields and configure sync rules.", tag: "Flexible" },
 ];
 
-const OPTIONAL_LATER: Integration[] = [
-  { id: "dashclicks", name: "DashClicks", role: "White-label management", group: "routing", description: "Agency campaign management and fulfillment.", connected: false, tag: "Optional" },
-  { id: "zapier", name: "Zapier", role: "Automation glue", group: "routing", description: "Connect tools with automated workflows.", connected: false, tag: "Optional" },
-  { id: "make", name: "Make (Integromat)", role: "Advanced automation", group: "routing", description: "Multi-step automation builder.", connected: false, tag: "Optional" },
+const OPTIONAL_LATER: IntegrationDef[] = [
+  { id: "dashclicks", name: "DashClicks", role: "White-label management", group: "routing", description: "Agency campaign management and fulfillment.", tag: "Optional" },
+  { id: "zapier", name: "Zapier", role: "Automation glue", group: "routing", description: "Connect tools with automated workflows.", tag: "Optional" },
+  { id: "make", name: "Make (Integromat)", role: "Advanced automation", group: "routing", description: "Multi-step automation builder.", tag: "Optional" },
 ];
 
-function IntegrationCard({ integration }: { integration: Integration }) {
+function useIntegrationConnections() {
+  return useQuery({
+    queryKey: ["integration-connections"],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return [] as ConnectionState[];
+
+      const { data, error } = await supabase
+        .from("integration_connections")
+        .select("integration_id, connected, status, last_sync");
+
+      if (error) throw error;
+      return (data ?? []) as ConnectionState[];
+    },
+  });
+}
+
+function useToggleConnection() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ integrationId, connect }: { integrationId: string; connect: boolean }) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+
+      if (connect) {
+        const { error } = await supabase
+          .from("integration_connections")
+          .upsert({
+            user_id: user.id,
+            integration_id: integrationId,
+            connected: true,
+            status: "healthy",
+            last_sync: "Just now",
+          }, { onConflict: "user_id,integration_id" });
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from("integration_connections")
+          .update({ connected: false, status: "off", last_sync: null })
+          .eq("integration_id", integrationId)
+          .eq("user_id", user.id);
+        if (error) throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["integration-connections"] });
+    },
+  });
+}
+
+function IntegrationCard({
+  integration,
+  connection,
+  onConnect,
+  onDisconnect,
+  isLoading,
+}: {
+  integration: IntegrationDef;
+  connection?: ConnectionState;
+  onConnect: () => void;
+  onDisconnect: () => void;
+  isLoading: boolean;
+}) {
+  const connected = connection?.connected ?? false;
+
   return (
     <div className={cn(
       "bg-card rounded-xl border p-4 transition-all hover:shadow-md",
-      integration.connected ? "border-emerald-500/20" : "border-border"
+      connected ? "border-emerald-500/20" : "border-border"
     )}>
       <div className="flex items-start justify-between mb-2">
         <div className="flex items-center gap-2">
           <div className={cn(
             "w-8 h-8 rounded-lg flex items-center justify-center",
-            integration.connected ? "bg-emerald-500/10 text-emerald-600" : "bg-muted text-muted-foreground"
+            connected ? "bg-emerald-500/10 text-emerald-600" : "bg-muted text-muted-foreground"
           )}>
             <Plug className="w-3.5 h-3.5" />
           </div>
@@ -84,7 +148,7 @@ function IntegrationCard({ integration }: { integration: Integration }) {
             <span className="text-[10px] text-muted-foreground">{integration.role}</span>
           </div>
         </div>
-        {integration.connected ? (
+        {connected ? (
           <span className="flex items-center gap-1 text-[10px] font-medium text-emerald-600">
             <Check className="w-3 h-3" /> Connected
           </span>
@@ -97,15 +161,15 @@ function IntegrationCard({ integration }: { integration: Integration }) {
 
       <p className="text-[11px] text-muted-foreground mb-3">{integration.description}</p>
 
-      {integration.lastSync && (
+      {connected && connection?.last_sync && (
         <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground mb-2">
           <Clock className="w-3 h-3" />
-          Sync: {integration.lastSync}
+          Sync: {connection.last_sync}
         </div>
       )}
 
       <div className="flex gap-2">
-        {integration.connected ? (
+        {connected ? (
           <>
             <button
               onClick={() => toast.info(`Testing ${integration.name}...`)}
@@ -119,13 +183,23 @@ function IntegrationCard({ integration }: { integration: Integration }) {
             >
               <Settings className="w-3 h-3" /> Configure
             </button>
+            <button
+              onClick={onDisconnect}
+              disabled={isLoading}
+              className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-[11px] font-medium text-red-600 hover:bg-red-500/10 transition-colors ml-auto"
+            >
+              {isLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <X className="w-3 h-3" />}
+              Disconnect
+            </button>
           </>
         ) : (
           <button
-            onClick={() => toast.success(`${integration.name} setup wizard opened`)}
+            onClick={onConnect}
+            disabled={isLoading}
             className="flex items-center gap-1 px-4 py-1.5 rounded-lg text-[11px] font-medium bg-primary text-primary-foreground hover:opacity-90 transition-opacity"
           >
-            <Plug className="w-3 h-3" /> Connect
+            {isLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Plug className="w-3 h-3" />}
+            Connect
           </button>
         )}
       </div>
@@ -135,7 +209,25 @@ function IntegrationCard({ integration }: { integration: Integration }) {
 
 export default function GrowthIntegrations() {
   const [showOptional, setShowOptional] = useState(false);
-  const connectedCount = INTEGRATIONS.filter(i => i.connected).length;
+  const { data: connections = [], isLoading: loadingConnections } = useIntegrationConnections();
+  const toggleMutation = useToggleConnection();
+
+  const getConnection = (id: string) => connections.find(c => c.integration_id === id);
+  const connectedCount = connections.filter(c => c.connected).length;
+
+  const handleConnect = (id: string, name: string) => {
+    toggleMutation.mutate(
+      { integrationId: id, connect: true },
+      { onSuccess: () => toast.success(`${name} connected`) }
+    );
+  };
+
+  const handleDisconnect = (id: string, name: string) => {
+    toggleMutation.mutate(
+      { integrationId: id, connect: false },
+      { onSuccess: () => toast.success(`${name} disconnected`) }
+    );
+  };
 
   return (
     <GrowthEngineShell>
@@ -147,20 +239,28 @@ export default function GrowthIntegrations() {
           </p>
         </div>
 
-        {/* Grouped integrations */}
         {INTEGRATION_GROUPS.map(group => {
           const items = INTEGRATIONS.filter(i => i.group === group.id);
           if (items.length === 0) return null;
-          const connected = items.filter(i => i.connected).length;
+          const groupConnected = items.filter(i => getConnection(i.id)?.connected).length;
           return (
             <div key={group.id}>
               <div className="flex items-center gap-3 mb-3">
                 <h2 className="text-sm font-semibold text-foreground">{group.label}</h2>
                 <span className="text-[10px] text-muted-foreground">{group.desc}</span>
-                <span className="text-[10px] bg-muted px-2 py-0.5 rounded-full text-muted-foreground ml-auto">{connected}/{items.length}</span>
+                <span className="text-[10px] bg-muted px-2 py-0.5 rounded-full text-muted-foreground ml-auto">{groupConnected}/{items.length}</span>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mb-6">
-                {items.map(i => <IntegrationCard key={i.id} integration={i} />)}
+                {items.map(i => (
+                  <IntegrationCard
+                    key={i.id}
+                    integration={i}
+                    connection={getConnection(i.id)}
+                    onConnect={() => handleConnect(i.id, i.name)}
+                    onDisconnect={() => handleDisconnect(i.id, i.name)}
+                    isLoading={toggleMutation.isPending && toggleMutation.variables?.integrationId === i.id}
+                  />
+                ))}
               </div>
             </div>
           );
@@ -187,7 +287,12 @@ export default function GrowthIntegrations() {
                     <span className="text-[11px] font-medium text-muted-foreground">{i.name}</span>
                     <span className="text-[9px] bg-muted text-muted-foreground px-1.5 py-0.5 rounded-full">{i.role}</span>
                   </div>
-                  <button onClick={() => toast.success(`${i.name} setup opened`)} className="text-[10px] font-medium text-primary hover:underline">Connect</button>
+                  <button
+                    onClick={() => handleConnect(i.id, i.name)}
+                    className="text-[10px] font-medium text-primary hover:underline"
+                  >
+                    Connect
+                  </button>
                 </div>
               ))}
             </div>

@@ -536,6 +536,42 @@ export type Database = {
           },
         ]
       }
+      integration_connections: {
+        Row: {
+          config: Json | null
+          connected: boolean
+          created_at: string
+          id: string
+          integration_id: string
+          last_sync: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          config?: Json | null
+          connected?: boolean
+          created_at?: string
+          id?: string
+          integration_id: string
+          last_sync?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          config?: Json | null
+          connected?: boolean
+          created_at?: string
+          id?: string
+          integration_id?: string
+          last_sync?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       lead_inventory: {
         Row: {
           created_at: string
