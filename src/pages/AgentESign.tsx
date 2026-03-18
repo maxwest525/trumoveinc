@@ -147,16 +147,15 @@ export default function AgentESign() {
     if (newDoc.deliveryMethod === "sms" && !newDoc.customerPhone) { toast.error("Please enter customer phone"); return; }
 
     setIsSending(true);
-    const refPrefix = newDoc.type === "estimate" ? "EST" : "CC";
-    const refNumber = `${refPrefix}-2026-${String(Math.floor(Math.random() * 9999)).padStart(4, "0")}`;
-    const signingUrl = `${window.location.origin}/esign/${refNumber}`;
+    const estRef = `EST-2026-${String(Math.floor(Math.random() * 9999)).padStart(4, "0")}`;
+    const signingUrl = `${window.location.origin}/esign/${estRef}`;
 
     try {
-      const { data, error } = await supabase.functions.invoke('send-esign-document', {
+      const { error } = await supabase.functions.invoke('send-esign-document', {
         body: {
-          documentType: newDoc.type, customerName: newDoc.customerName,
+          documentType: "estimate", customerName: newDoc.customerName,
           customerEmail: newDoc.customerEmail, customerPhone: newDoc.customerPhone,
-          refNumber, deliveryMethod: newDoc.deliveryMethod, signingUrl,
+          refNumber: estRef, deliveryMethod: newDoc.deliveryMethod, signingUrl,
         },
       });
 
@@ -166,18 +165,13 @@ export default function AgentESign() {
         return;
       }
 
-      const newRecord: DocumentRecord = {
-        id: `doc-${Date.now()}`, type: newDoc.type, refNumber,
-        customerName: newDoc.customerName, customerEmail: newDoc.customerEmail,
-        customerPhone: newDoc.customerPhone, status: "sent", sentAt: new Date(),
-        deliveryMethod: newDoc.deliveryMethod,
-      };
-      setDocuments(prev => [newRecord, ...prev]);
-
       const methodLabel = newDoc.deliveryMethod === "email" ? "email" : "SMS";
-      toast.success(`${DOCUMENT_LABELS[newDoc.type]} sent via ${methodLabel}`, {
-        description: data?.method === "sms" ? "SMS delivery simulated for demo" : `Sent to ${newDoc.customerEmail}`,
+      toast.success(`Documents sent via ${methodLabel}`, {
+        description: `Estimate & CC/ACH Authorization sent to ${newDoc.customerName}`,
       });
+
+      // Navigate directly to the e-sign preview
+      navigate(`/agent/esign/view?type=estimate&name=${encodeURIComponent(newDoc.customerName)}&email=${encodeURIComponent(newDoc.customerEmail)}&ref=${encodeURIComponent(estRef)}`);
     } catch (err) {
       toast.error("Failed to send document");
     } finally {
@@ -270,19 +264,9 @@ export default function AgentESign() {
           {/* SEND TAB */}
           <TabsContent value="send" className="space-y-4">
             <Card>
-              <CardHeader><CardTitle className="text-lg flex items-center gap-2"><Send className="w-5 h-5" />Send Document for Signature</CardTitle></CardHeader>
+              <CardHeader><CardTitle className="text-lg flex items-center gap-2"><Send className="w-5 h-5" />Send Documents for Signature</CardTitle></CardHeader>
               <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label>Document Type</Label>
-                  <div className="flex gap-2">
-                    {(["estimate", "ccach"] as DocumentType[]).map(type => (
-                      <Button key={type} variant={newDoc.type === type ? "default" : "outline"} size="sm" className="gap-1.5 text-xs" onClick={() => setNewDoc(prev => ({ ...prev, type }))}>
-                        <FileText className="w-3.5 h-3.5" />
-                        {DOCUMENT_LABELS[type]}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
+                <p className="text-xs text-muted-foreground">Both Estimate Authorization and CC/ACH Authorization will be sent together.</p>
 
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
@@ -314,7 +298,7 @@ export default function AgentESign() {
 
                 <Button className="w-full gap-2" onClick={handleSendDocument} disabled={isSending}>
                   {isSending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-                  {isSending ? "Sending..." : `Send ${DOCUMENT_LABELS[newDoc.type]}`}
+                  {isSending ? "Sending..." : "Send & Open Preview"}
                 </Button>
               </CardContent>
             </Card>
