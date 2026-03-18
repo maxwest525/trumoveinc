@@ -262,17 +262,7 @@ export function EstimateAuthDocument({
           </section>
 
           {/* Footer Actions */}
-          <div className="flex items-center justify-between pt-4 border-t border-muted">
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm" className="gap-2">
-                <Printer className="h-4 w-4" />
-                Print
-              </Button>
-              <Button variant="outline" size="sm" className="gap-2">
-                <Download className="h-4 w-4" />
-                Download
-              </Button>
-            </div>
+          <div className="flex items-center justify-end pt-4 border-t border-muted">
 
             <div className="flex gap-2">
               {!isSubmitted ? (
