@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Eye, CheckSquare, FileText, CalendarCheck, ChevronRight, DollarSign, TrendingUp, Users, Clock } from "lucide-react";
+import { Eye, CheckSquare, FileText, CalendarCheck, ChevronRight, DollarSign, TrendingUp, Users, Clock, Wrench } from "lucide-react";
+import AgentToolLauncherModal from "./AgentToolLauncherModal";
 import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -27,6 +28,7 @@ export default function AgentDashboardContent() {
   const [weeklyLeads, setWeeklyLeads] = useState<{ day: string; leads: number; booked: number }[]>([]);
   const [pipelineData, setPipelineData] = useState<{ stage: string; count: number }[]>([]);
   const [tasks, setTasks] = useState<TaskItem[]>([]);
+  const [launcherOpen, setLauncherOpen] = useState(() => !sessionStorage.getItem("agent_launcher_shown"));
 
   useEffect(() => {
     const fetchData = async () => {
@@ -135,9 +137,20 @@ export default function AgentDashboardContent() {
 
   return (
     <div className="p-6 max-w-[1400px] mx-auto space-y-6">
-      <div>
-        <h1 className="text-xl font-bold text-foreground">Dashboard</h1>
-        <p className="text-sm text-muted-foreground">Welcome back! Here's what needs your attention today.</p>
+      <AgentToolLauncherModal open={launcherOpen} onOpenChange={setLauncherOpen} />
+
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-xl font-bold text-foreground">Dashboard</h1>
+          <p className="text-sm text-muted-foreground">Welcome back! Here's what needs your attention today.</p>
+        </div>
+        <button
+          onClick={() => setLauncherOpen(true)}
+          className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:border-primary/40 transition-all"
+        >
+          <Wrench className="h-3.5 w-3.5" />
+          My Tools
+        </button>
       </div>
 
       {/* KPI Stats */}
