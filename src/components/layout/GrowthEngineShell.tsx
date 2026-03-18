@@ -13,17 +13,20 @@ import { setPortalContext } from "@/hooks/usePortalContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import logoImg from "@/assets/logo.png";
 
-const NAV_SECTIONS = [
+const NAV_PRIMARY = [
   { label: "Dashboard", icon: LayoutDashboard, href: "/marketing/dashboard" },
+  { label: "Tracking", icon: Crosshair, href: "/marketing/tracking" },
+  { label: "Leads & Pipeline", icon: Users, href: "/marketing/leads" },
+  { label: "Automation", icon: Zap, href: "/marketing/automation" },
+  { label: "Integrations", icon: Plug, href: "/marketing/integrations" },
+];
+
+const NAV_SECONDARY = [
   { label: "Campaign Builder", icon: Rocket, href: "/marketing/campaigns" },
   { label: "Landing Pages", icon: FileText, href: "/marketing/landing-pages" },
   { label: "SEO Hub", icon: Search, href: "/marketing/seo" },
   { label: "Ad Copy Studio", icon: PenTool, href: "/marketing/ad-copy" },
-  { label: "Integrations", icon: Plug, href: "/marketing/integrations" },
-  { label: "Tracking", icon: Crosshair, href: "/marketing/tracking" },
-  { label: "Leads & Pipeline", icon: Users, href: "/marketing/leads" },
   { label: "Reviews", icon: Star, href: "/marketing/reviews" },
-  { label: "Automation", icon: Zap, href: "/marketing/automation" },
   { label: "Competitor Intel", icon: Eye, href: "/marketing/competitors" },
   { label: "Settings", icon: Settings, href: "/marketing/settings" },
 ];
@@ -33,6 +36,7 @@ interface GrowthEngineShellProps {
 }
 
 export default function GrowthEngineShell({ children }: GrowthEngineShellProps) {
+  const [secondaryOpen, setSecondaryOpen] = useState(false);
   const { theme, setTheme } = useTheme();
   const location = useLocation();
   const navigate = useNavigate();
@@ -77,7 +81,7 @@ export default function GrowthEngineShell({ children }: GrowthEngineShellProps) 
 
       {/* Navigation */}
       <nav className="flex-1 px-2 py-3 space-y-0.5 overflow-y-auto">
-        {NAV_SECTIONS.map((item) => {
+        {NAV_PRIMARY.map((item) => {
           const Icon = item.icon;
           const active = isActive(item.href);
           return (
@@ -92,6 +96,34 @@ export default function GrowthEngineShell({ children }: GrowthEngineShellProps) 
               )}
             >
               <Icon className="w-4 h-4 shrink-0" />
+              <span className="truncate">{item.label}</span>
+            </Link>
+          );
+        })}
+
+        {/* Secondary collapsed */}
+        <button
+          onClick={() => setSecondaryOpen(!secondaryOpen)}
+          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[11px] font-medium text-muted-foreground/60 hover:text-muted-foreground transition-colors mt-3"
+        >
+          <ChevronRight className={cn("w-3 h-3 transition-transform", secondaryOpen && "rotate-90")} />
+          <span>More</span>
+        </button>
+        {secondaryOpen && NAV_SECONDARY.map((item) => {
+          const Icon = item.icon;
+          const active = isActive(item.href);
+          return (
+            <Link
+              key={item.label}
+              to={item.href}
+              className={cn(
+                "flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-[12px] font-medium transition-all duration-150 ml-2",
+                active
+                  ? "bg-primary/10 text-primary"
+                  : "text-muted-foreground/60 hover:bg-muted hover:text-foreground"
+              )}
+            >
+              <Icon className="w-3.5 h-3.5 shrink-0" />
               <span className="truncate">{item.label}</span>
             </Link>
           );
@@ -154,7 +186,7 @@ export default function GrowthEngineShell({ children }: GrowthEngineShellProps) 
               </button>
             )}
             <span className="text-sm font-medium text-foreground truncate">
-              {NAV_SECTIONS.find(s => isActive(s.href))?.label || "Growth Engine"}
+              {[...NAV_PRIMARY, ...NAV_SECONDARY].find(s => isActive(s.href))?.label || "Growth Engine"}
             </span>
           </div>
           <div className="flex items-center gap-2">
