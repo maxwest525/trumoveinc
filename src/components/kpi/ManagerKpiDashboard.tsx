@@ -217,6 +217,8 @@ export default function ManagerKpiDashboard() {
           );
         })}
       </div>
+
+      <AgentBreakdownTable />
     </div>
   );
 }
