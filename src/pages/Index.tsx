@@ -575,28 +575,57 @@ function ShipmentTrackerSection({ navigate }: { navigate: (path: string) => void
   return (
     <section className="tru-tracker-section">
       <div className="tru-tracker-inner">
-        <div className="flex items-center gap-6" style={{ maxHeight: 'var(--demo-panel-height)' }}>
+        <div className="flex items-center gap-8">
           
           {/* LEFT: Map canvas */}
-          <div className="flex-1 rounded-xl overflow-hidden border border-foreground/10 shadow-md" style={{ height: 'var(--demo-panel-height)' }}>
-            <canvas ref={canvasRef} width={580} height={260} className="w-full h-full object-cover" />
+          <div className="flex-1 rounded-xl overflow-hidden border border-foreground/10 shadow-md">
+            <canvas ref={canvasRef} width={580} height={260} className="w-full h-auto block" />
           </div>
           
-          {/* CENTER: Headline + CTA */}
-          <div className="w-[260px] flex-shrink-0 space-y-4" style={{ justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
-            <div className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full border border-primary/20 bg-primary/5 w-fit">
+          {/* RIGHT: Headline + compact ELD info */}
+          <div className="w-[320px] flex-shrink-0 flex flex-col justify-center space-y-5">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-primary/20 bg-primary/5 w-fit">
               <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
               <span className="text-[10px] font-semibold tracking-widest uppercase text-primary">ELD Verified</span>
             </div>
             
             <div className="tru-ai-headline-block">
-              <h2 className="tru-ai-main-headline" style={{ textAlign: 'left', fontSize: '2rem' }}>
+              <h2 className="tru-ai-main-headline" style={{ textAlign: 'left', fontSize: '1.75rem', lineHeight: '1.2' }}>
                 Real-Time<br />
                 <span className="tru-ai-headline-accent">ELD Tracking.</span>
               </h2>
-              <p className="tru-ai-subheadline" style={{ textAlign: 'left' }}>
-                Cross-reference carrier ELD data, policy COIs, and tractor VINs to stop double brokering before pickup.
+              <p className="tru-ai-subheadline" style={{ textAlign: 'left', fontSize: '0.8rem' }}>
+                Cross-reference carrier ELD data, policy COIs, and tractor VINs — stop double brokering before pickup.
               </p>
+            </div>
+            
+            {/* Compact ELD data strip */}
+            <div className="rounded-lg border border-foreground/10 bg-muted/20 p-3 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[9px] font-semibold tracking-widest uppercase text-muted-foreground">Live ELD Feed</span>
+                <span className="inline-flex items-center gap-1 text-[9px] font-semibold text-primary">
+                  <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                  TRACKING
+                </span>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <span className="text-[9px] text-muted-foreground block">Tractor</span>
+                  <span className="text-xs font-mono font-semibold text-foreground">8291</span>
+                </div>
+                <div>
+                  <span className="text-[9px] text-muted-foreground block">MC#</span>
+                  <span className="text-xs font-mono font-semibold text-foreground">133655</span>
+                </div>
+                <div>
+                  <span className="text-[9px] text-muted-foreground block">Speed</span>
+                  <span className="text-xs font-mono font-semibold text-foreground">62 mph</span>
+                </div>
+                <div>
+                  <span className="text-[9px] text-muted-foreground block">HOS</span>
+                  <span className="text-xs font-mono font-semibold text-primary">6h 12m left</span>
+                </div>
+              </div>
             </div>
             
             <button onClick={() => navigate("/site/track")} className="tru-ai-cta-btn">
@@ -604,59 +633,6 @@ function ShipmentTrackerSection({ navigate }: { navigate: (path: string) => void
               Track Shipment
               <ArrowRight className="w-4 h-4" />
             </button>
-          </div>
-          
-          {/* RIGHT: ELD Verification Card */}
-          <div className="w-[220px] flex-shrink-0">
-            <div className="rounded-xl border border-foreground/10 bg-background shadow-md p-4 space-y-3">
-              <div>
-                <span className="text-[9px] font-semibold tracking-widest uppercase text-muted-foreground">Verified Carrier</span>
-                <p className="text-base font-bold text-foreground mt-0.5">ABC Freight</p>
-              </div>
-              
-              <div className="border border-foreground/8 rounded-lg p-2.5 space-y-0.5 bg-muted/30">
-                <div className="flex items-center justify-between">
-                  <span className="text-[9px] font-semibold tracking-wider uppercase text-muted-foreground">Location</span>
-                  <span className="inline-flex items-center gap-1 text-[9px] font-semibold text-primary">
-                    <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                    LIVE
-                  </span>
-                </div>
-                <p className="text-xs font-semibold text-foreground">I-10 East, Los Angeles</p>
-                <p className="text-[10px] text-muted-foreground">Tractor 8291 · MC 133655</p>
-              </div>
-              
-              <div className="border border-foreground/8 rounded-lg p-2.5 space-y-2 bg-muted/30">
-                <div className="flex items-center justify-between">
-                  <span className="text-[9px] font-semibold tracking-wider uppercase text-muted-foreground">Cross-Reference</span>
-                  <span className="inline-flex items-center gap-1 text-[9px] font-semibold text-primary">
-                    <CheckCircle className="w-2.5 h-2.5" />
-                    Match
-                  </span>
-                </div>
-                
-                <div className="flex items-center justify-between py-1 border-b border-foreground/5">
-                  <div className="flex items-center gap-1.5">
-                    <Database className="w-3 h-3 text-muted-foreground" />
-                    <span className="text-[10px] text-foreground">ELD Sensor</span>
-                  </div>
-                  <span className="text-[10px] font-mono text-foreground">1GDT••••849</span>
-                </div>
-                
-                <div className="flex items-center justify-between py-1">
-                  <div className="flex items-center gap-1.5">
-                    <ShieldCheck className="w-3 h-3 text-muted-foreground" />
-                    <span className="text-[10px] text-foreground">Policy COI</span>
-                  </div>
-                  <span className="text-[10px] font-mono text-foreground">1GDT••••849</span>
-                </div>
-              </div>
-              
-              <div className="flex items-center justify-center gap-1.5 py-2 rounded-lg bg-primary/8 border border-primary/15">
-                <CheckCircle className="w-3 h-3 text-primary" />
-                <span className="text-[10px] font-bold tracking-wide uppercase text-primary">Identity Confirmed</span>
-              </div>
-            </div>
           </div>
         </div>
       </div>
