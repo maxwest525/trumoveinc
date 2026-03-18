@@ -34,6 +34,7 @@ import scanRoomPreview from "@/assets/scan-room-preview.jpg";
 import heroFamilyMove from "@/assets/hero-family-move.jpg";
 import trudyAvatar from "@/assets/trudy-model.jpg";
 
+import TrudyChatBox from "@/components/TrudyChatBox";
 import ChatModal from "@/components/chat/ChatModal";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
