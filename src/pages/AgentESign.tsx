@@ -274,7 +274,7 @@ export default function AgentESign() {
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <Label>Document Type</Label>
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="flex gap-2">
                     {(["estimate", "ccach"] as DocumentType[]).map(type => (
                       <Button key={type} variant={newDoc.type === type ? "default" : "outline"} size="sm" className="gap-1.5 text-xs" onClick={() => setNewDoc(prev => ({ ...prev, type }))}>
                         <FileText className="w-3.5 h-3.5" />
@@ -284,30 +284,31 @@ export default function AgentESign() {
                   </div>
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <Label>Customer Name</Label>
-                      <Button variant="ghost" size="sm" className="h-6 text-xs gap-1" onClick={() => setShowClientSearch(true)}>
-                        <Users className="w-3 h-3" />Import
-                      </Button>
-                    </div>
-                    <Input value={newDoc.customerName} onChange={e => setNewDoc(prev => ({ ...prev, customerName: e.target.value }))} placeholder="John Smith" />
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label>Customer Name</Label>
+                    <Button variant="ghost" size="sm" className="h-6 text-xs gap-1" onClick={() => setShowClientSearch(true)}>
+                      <Users className="w-3 h-3" />Import
+                    </Button>
                   </div>
-                  <div className="space-y-2">
-                    <Label>Email Address</Label>
-                    <Input type="email" value={newDoc.customerEmail} onChange={e => setNewDoc(prev => ({ ...prev, customerEmail: e.target.value }))} placeholder="customer@email.com" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Phone Number</Label>
-                    <Input value={newDoc.customerPhone} onChange={e => setNewDoc(prev => ({ ...prev, customerPhone: e.target.value }))} placeholder="(555) 123-4567" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Delivery Method</Label>
-                    <div className="flex gap-2">
-                      <Button variant={newDoc.deliveryMethod === "email" ? "default" : "outline"} size="sm" className="flex-1 gap-1.5 text-xs" onClick={() => setNewDoc(prev => ({ ...prev, deliveryMethod: "email" }))}><Mail className="w-3.5 h-3.5" />Email</Button>
-                      <Button variant={newDoc.deliveryMethod === "sms" ? "default" : "outline"} size="sm" className="flex-1 gap-1.5 text-xs" onClick={() => setNewDoc(prev => ({ ...prev, deliveryMethod: "sms" }))}><MessageSquare className="w-3.5 h-3.5" />SMS</Button>
-                    </div>
+                  <Input value={newDoc.customerName} onChange={e => setNewDoc(prev => ({ ...prev, customerName: e.target.value }))} placeholder="John Smith" />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Email Address</Label>
+                  <Input type="email" value={newDoc.customerEmail} onChange={e => setNewDoc(prev => ({ ...prev, customerEmail: e.target.value }))} placeholder="customer@email.com" />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Phone Number</Label>
+                  <Input value={newDoc.customerPhone} onChange={e => setNewDoc(prev => ({ ...prev, customerPhone: e.target.value }))} placeholder="(555) 123-4567" />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Delivery Method</Label>
+                  <div className="flex gap-2">
+                    <Button variant={newDoc.deliveryMethod === "email" ? "default" : "outline"} size="sm" className="flex-1 gap-1.5 text-xs" onClick={() => setNewDoc(prev => ({ ...prev, deliveryMethod: "email" }))}><Mail className="w-3.5 h-3.5" />Email</Button>
+                    <Button variant={newDoc.deliveryMethod === "sms" ? "default" : "outline"} size="sm" className="flex-1 gap-1.5 text-xs" onClick={() => setNewDoc(prev => ({ ...prev, deliveryMethod: "sms" }))}><MessageSquare className="w-3.5 h-3.5" />SMS</Button>
                   </div>
                 </div>
 
