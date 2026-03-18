@@ -1384,9 +1384,9 @@ export default function Index() {
                               <input
                                 type="tel"
                                 value={contactPhone}
-                                onChange={(e) => setContactPhone(e.target.value)}
+                                onChange={(e) => setContactPhone(formatPhoneNumber(e.target.value))}
                                 placeholder="Phone"
-                                className="tru-qb-text-input"
+                                className="tru-qb-input"
                               />
                             </div>
                           </div>
