@@ -508,7 +508,7 @@ function ShipmentTrackerSection({ navigate }: { navigate: (path: string) => void
     drawSmooth(pts);
     
     // Route line
-    const grad = ctx.createLinearGradient(35, 195, 545, 58);
+    const grad = ctx.createLinearGradient(40, 280, 570, 80);
     grad.addColorStop(0, 'hsla(142, 71%, 45%, 0.3)');
     grad.addColorStop(0.5, 'hsl(142, 71%, 45%)');
     grad.addColorStop(1, 'hsla(142, 71%, 45%, 0.4)');
@@ -525,11 +525,11 @@ function ShipmentTrackerSection({ navigate }: { navigate: (path: string) => void
     const ty = pts[si][1] + (pts[si + 1][1] - pts[si][1]) * t;
     
     // Glow
-    const glow = ctx.createRadialGradient(tx, ty, 0, tx, ty, 18);
+    const glow = ctx.createRadialGradient(tx, ty, 0, tx, ty, 20);
     glow.addColorStop(0, 'hsla(142, 71%, 45%, 0.3)');
     glow.addColorStop(1, 'hsla(142, 71%, 45%, 0)');
     ctx.fillStyle = glow;
-    ctx.beginPath(); ctx.arc(tx, ty, 18, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(tx, ty, 20, 0, Math.PI * 2); ctx.fill();
     
     // Truck dot
     ctx.fillStyle = 'hsl(220, 15%, 6%)';
@@ -559,16 +559,16 @@ function ShipmentTrackerSection({ navigate }: { navigate: (path: string) => void
     
     // Endpoints
     ctx.fillStyle = 'hsl(142, 71%, 45%)';
-    ctx.beginPath(); ctx.arc(35, 195, 4, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(40, 280, 5, 0, Math.PI * 2); ctx.fill();
     ctx.fillStyle = 'hsl(0, 72%, 51%)';
-    ctx.beginPath(); ctx.arc(545, 58, 4, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(570, 80, 5, 0, Math.PI * 2); ctx.fill();
     
     // City labels
     ctx.fillStyle = 'hsl(220, 15%, 40%)';
-    ctx.font = '8px sans-serif';
+    ctx.font = '9px sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('Los Angeles', 50, 215);
-    ctx.fillText('New York', 530, 48);
+    ctx.fillText('Los Angeles', 55, 298);
+    ctx.fillText('New York', 555, 68);
     
   }, [truckProgress]);
 
