@@ -466,25 +466,25 @@ function ShipmentTrackerSection({ navigate }: { navigate: (path: string) => void
     // Grid
     ctx.strokeStyle = 'hsl(220, 15%, 12%)';
     ctx.lineWidth = 0.5;
-    for (let i = 0; i < w; i += 24) { ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, h); ctx.stroke(); }
-    for (let i = 0; i < h; i += 24) { ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(w, i); ctx.stroke(); }
+    for (let i = 0; i < w; i += 28) { ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, h); ctx.stroke(); }
+    for (let i = 0; i < h; i += 28) { ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(w, i); ctx.stroke(); }
     
-    // Road network
+    // Road network hints
     ctx.strokeStyle = 'hsl(220, 15%, 14%)';
     ctx.lineWidth = 1;
-    [[30, 60, 560, 55], [30, 130, 560, 125], [30, 200, 560, 195],
-     [80, 10, 85, 250], [200, 10, 195, 250], [330, 10, 340, 250], [460, 10, 455, 250]
+    [[30, 80, 570, 75], [30, 170, 570, 165], [30, 260, 570, 255],
+     [100, 10, 105, 330], [220, 10, 215, 330], [360, 10, 365, 330], [490, 10, 485, 330]
     ].forEach(([x1, y1, x2, y2]) => {
       ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
     });
     
-    // Realistic curved route (LA → Phoenix → Albuquerque → Dallas → Memphis → Knoxville → NYC)
+    // Realistic curved route (LA → NYC) scaled to 600x340
     const pts: [number, number][] = [
-      [35, 195], [55, 188], [80, 176], [105, 172], [130, 180],
-      [150, 170], [175, 155], [200, 148], [220, 152], [240, 140],
-      [265, 132], [290, 140], [310, 128], [335, 118], [360, 110],
-      [385, 105], [405, 112], [425, 100], [445, 92], [465, 85],
-      [485, 78], [505, 72], [525, 65], [545, 58],
+      [40, 280], [65, 270], [90, 255], [115, 248], [140, 256],
+      [165, 244], [190, 225], [215, 215], [240, 220], [265, 205],
+      [290, 195], [315, 204], [340, 188], [365, 175], [390, 165],
+      [415, 158], [440, 166], [460, 150], [480, 138], [500, 125],
+      [520, 115], [540, 105], [555, 92], [570, 80],
     ];
     
     // Bezier-smooth drawing helper
@@ -508,7 +508,7 @@ function ShipmentTrackerSection({ navigate }: { navigate: (path: string) => void
     drawSmooth(pts);
     
     // Route line
-    const grad = ctx.createLinearGradient(35, 195, 545, 58);
+    const grad = ctx.createLinearGradient(40, 280, 570, 80);
     grad.addColorStop(0, 'hsla(142, 71%, 45%, 0.3)');
     grad.addColorStop(0.5, 'hsl(142, 71%, 45%)');
     grad.addColorStop(1, 'hsla(142, 71%, 45%, 0.4)');
@@ -525,11 +525,11 @@ function ShipmentTrackerSection({ navigate }: { navigate: (path: string) => void
     const ty = pts[si][1] + (pts[si + 1][1] - pts[si][1]) * t;
     
     // Glow
-    const glow = ctx.createRadialGradient(tx, ty, 0, tx, ty, 18);
+    const glow = ctx.createRadialGradient(tx, ty, 0, tx, ty, 20);
     glow.addColorStop(0, 'hsla(142, 71%, 45%, 0.3)');
     glow.addColorStop(1, 'hsla(142, 71%, 45%, 0)');
     ctx.fillStyle = glow;
-    ctx.beginPath(); ctx.arc(tx, ty, 18, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(tx, ty, 20, 0, Math.PI * 2); ctx.fill();
     
     // Truck dot
     ctx.fillStyle = 'hsl(220, 15%, 6%)';
@@ -559,74 +559,38 @@ function ShipmentTrackerSection({ navigate }: { navigate: (path: string) => void
     
     // Endpoints
     ctx.fillStyle = 'hsl(142, 71%, 45%)';
-    ctx.beginPath(); ctx.arc(35, 195, 4, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(40, 280, 5, 0, Math.PI * 2); ctx.fill();
     ctx.fillStyle = 'hsl(0, 72%, 51%)';
-    ctx.beginPath(); ctx.arc(545, 58, 4, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(570, 80, 5, 0, Math.PI * 2); ctx.fill();
     
     // City labels
     ctx.fillStyle = 'hsl(220, 15%, 40%)';
-    ctx.font = '8px sans-serif';
+    ctx.font = '9px sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('Los Angeles', 50, 215);
-    ctx.fillText('New York', 530, 48);
+    ctx.fillText('Los Angeles', 55, 298);
+    ctx.fillText('New York', 555, 68);
     
   }, [truckProgress]);
 
   return (
     <section className="tru-tracker-section">
       <div className="tru-tracker-inner">
-        <div className="flex items-center gap-8">
+        <div className="flex items-center gap-10 lg:gap-14">
           
-          {/* LEFT: Map canvas */}
-          <div className="flex-1 rounded-xl overflow-hidden border border-foreground/10 shadow-md">
-            <canvas ref={canvasRef} width={580} height={260} className="w-full h-auto block" />
+          {/* LEFT: Map canvas — taller, ~60% width */}
+          <div className="flex-[1.6] rounded-xl overflow-hidden border border-foreground/10 shadow-lg">
+            <canvas ref={canvasRef} width={600} height={340} className="w-full h-auto block" />
           </div>
           
-          {/* RIGHT: Headline + compact ELD info */}
-          <div className="w-[320px] flex-shrink-0 flex flex-col justify-center space-y-5">
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-primary/20 bg-primary/5 w-fit">
-              <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-              <span className="text-[10px] font-semibold tracking-widest uppercase text-primary">ELD Verified</span>
-            </div>
-            
-            <div className="tru-ai-headline-block">
-              <h2 className="tru-ai-main-headline" style={{ textAlign: 'left', fontSize: '1.75rem', lineHeight: '1.2' }}>
-                Real-Time<br />
-                <span className="tru-ai-headline-accent">ELD Tracking.</span>
-              </h2>
-              <p className="tru-ai-subheadline" style={{ textAlign: 'left', fontSize: '0.8rem' }}>
-                Cross-reference carrier ELD data, policy COIs, and tractor VINs — stop double brokering before pickup.
-              </p>
-            </div>
-            
-            {/* Compact ELD data strip */}
-            <div className="rounded-lg border border-foreground/10 bg-muted/20 p-3 space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-[9px] font-semibold tracking-widest uppercase text-muted-foreground">Live ELD Feed</span>
-                <span className="inline-flex items-center gap-1 text-[9px] font-semibold text-primary">
-                  <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                  TRACKING
-                </span>
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <span className="text-[9px] text-muted-foreground block">Tractor</span>
-                  <span className="text-xs font-mono font-semibold text-foreground">8291</span>
-                </div>
-                <div>
-                  <span className="text-[9px] text-muted-foreground block">MC#</span>
-                  <span className="text-xs font-mono font-semibold text-foreground">133655</span>
-                </div>
-                <div>
-                  <span className="text-[9px] text-muted-foreground block">Speed</span>
-                  <span className="text-xs font-mono font-semibold text-foreground">62 mph</span>
-                </div>
-                <div>
-                  <span className="text-[9px] text-muted-foreground block">HOS</span>
-                  <span className="text-xs font-mono font-semibold text-primary">6h 12m left</span>
-                </div>
-              </div>
-            </div>
+          {/* RIGHT: Headline + CTA — centered, clean */}
+          <div className="flex-1 flex flex-col items-center justify-center text-center space-y-5">
+            <h2 className="tru-ai-main-headline" style={{ fontSize: '2rem', lineHeight: '1.15' }}>
+              Real-Time<br />
+              <span className="tru-ai-headline-accent">ELD Tracking.</span>
+            </h2>
+            <p className="tru-ai-subheadline" style={{ fontSize: '0.85rem', maxWidth: '260px' }}>
+              Connect to your carriers ELD and track movements in real-time
+            </p>
             
             <button onClick={() => navigate("/site/track")} className="tru-ai-cta-btn">
               <MapPin className="w-4 h-4" />
