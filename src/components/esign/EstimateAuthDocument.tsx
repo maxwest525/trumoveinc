@@ -2,6 +2,7 @@ import { useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Check, Download, Printer, ArrowRight } from "lucide-react";
+import { ESignConsentBanner } from "@/components/esign/ESignConsentBanner";
 import logo from "@/assets/logo.png";
 
 type SignatureField = "initial1" | "initial2" | "initial3" | "signature";
@@ -17,6 +18,8 @@ interface EstimateAuthDocumentProps {
   isSubmitted?: boolean;
   refNumber: string;
   today: string;
+  consentGiven?: boolean;
+  onConsentChange?: (given: boolean) => void;
 }
 
 export function EstimateAuthDocument({
@@ -30,6 +33,8 @@ export function EstimateAuthDocument({
   isSubmitted = false,
   refNumber,
   today,
+  consentGiven = false,
+  onConsentChange,
 }: EstimateAuthDocumentProps) {
   const fieldRefs = {
     initial1: useRef<HTMLSpanElement>(null),
@@ -205,6 +210,15 @@ export function EstimateAuthDocument({
                 will perform the transportation services.
               </p>
 
+              {/* Electronic Consent - above signature */}
+              {onConsentChange && (
+                <ESignConsentBanner
+                  consentGiven={consentGiven}
+                  onConsentChange={onConsentChange}
+                  className="my-4"
+                />
+              )}
+
               <div className="flex items-end gap-8 mt-6">
                 <div className="flex-1">
                   <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">Customer Signature</p>
@@ -239,6 +253,11 @@ export function EstimateAuthDocument({
                   </div>
                 </div>
               </div>
+
+              {/* Disclaimer below signature */}
+              <p className="text-[10px] text-muted-foreground leading-relaxed mt-4">
+                Your IP address, browser, and timestamp will be recorded for compliance. This document is legally binding upon submission.
+              </p>
             </div>
           </section>
 

@@ -210,6 +210,8 @@ export default function ESignViewPage() {
                   isSubmitted={completedDocuments.estimate}
                   refNumber={refNumber}
                   today={today}
+                  consentGiven={consentGiven}
+                  onConsentChange={handleConsentChange}
                 />
               ) : (
                 <CCACHDocumentWrapper
@@ -222,12 +224,6 @@ export default function ESignViewPage() {
             </div>
           </div>
 
-          {/* Consent Banner */}
-          <ESignConsentBanner
-            consentGiven={consentGiven}
-            onConsentChange={handleConsentChange}
-            className="mt-6"
-          />
         </div>
       </div>
     </AgentShell>
