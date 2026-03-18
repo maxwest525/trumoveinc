@@ -63,6 +63,7 @@ export default function AgentLogin() {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [launcherOpen, setLauncherOpen] = useState(false);
+  const [workspaceOpen, setWorkspaceOpen] = useState(false);
   const { displayName } = useAgentProfile();
   const { unreadCount } = useNotifications();
   const greeting = useMemo(() => getGreeting(), []);
