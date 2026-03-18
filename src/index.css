@@ -1581,10 +1581,10 @@
   grid-template-columns: 1fr 1fr;
   gap: 48px;
   align-items: center;
-  padding: 32px 64px 80px;
+  padding: 32px 64px 32px;
   max-width: 1480px;
   margin: 0 auto;
-  min-height: calc(100vh - 280px);
+  min-height: auto;
 }
 
 /* LEFT COLUMN - Text Content */
