@@ -15,6 +15,7 @@ import { setPortalContext } from "@/hooks/usePortalContext";
 const NAV_ITEMS = [
   { label: "Dashboard", icon: LayoutDashboard, href: "/manager/dashboard" },
   { label: "My KPIs", icon: Gauge, href: "/kpi" },
+  { label: "Leaderboard", icon: Trophy, href: "/leaderboard" },
   { label: "Pulse Dashboard", icon: Activity, href: "/manager/pulse" },
 ];
 
