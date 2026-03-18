@@ -1739,7 +1739,7 @@ export default function Index() {
                 </div>
 
                 {/* Send a Message — center, larger */}
-                <div className="group relative flex flex-col rounded-2xl border border-border bg-card p-8 hover:border-primary/40 hover:-translate-y-1 hover:shadow-lg transition-all duration-200">
+                <div className="group relative flex flex-col rounded-2xl border border-foreground/15 bg-card p-8 shadow-md hover:border-primary/40 hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(0,0,0,0.25)] transition-all duration-200">
                   <div className="flex flex-col items-center text-center mb-5">
                     <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
                       <MessageSquare className="h-5 w-5 text-primary" />
