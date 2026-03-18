@@ -439,12 +439,10 @@ function ShipmentTrackerSection({ navigate }: { navigate: (path: string) => void
   const [truckProgress, setTruckProgress] = useState(0.62);
   
   useEffect(() => {
-    let p = 0.62;
-    let direction = 1;
+    let p = 0;
     const tick = () => {
-      p += 0.0003 * direction;
-      if (p > 0.72) direction = -1;
-      if (p < 0.58) direction = 1;
+      p += 0.0008;
+      if (p > 1) p = 0;
       setTruckProgress(p);
       animationRef.current = requestAnimationFrame(tick);
     };
@@ -474,36 +472,49 @@ function ShipmentTrackerSection({ navigate }: { navigate: (path: string) => void
     // Road network
     ctx.strokeStyle = 'hsl(220, 15%, 14%)';
     ctx.lineWidth = 1;
-    [[30, 60, 560, 50], [30, 130, 560, 140], [30, 200, 560, 210],
-     [80, 10, 90, 250], [200, 10, 195, 250], [330, 10, 335, 250], [450, 10, 445, 250]
+    [[30, 60, 560, 55], [30, 130, 560, 125], [30, 200, 560, 195],
+     [80, 10, 85, 250], [200, 10, 195, 250], [330, 10, 340, 250], [460, 10, 455, 250]
     ].forEach(([x1, y1, x2, y2]) => {
       ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
     });
     
-    // Route
+    // Realistic curved route (LA → Phoenix → Albuquerque → Dallas → Memphis → Knoxville → NYC)
     const pts: [number, number][] = [
-      [40, 210], [110, 185], [180, 165], [250, 145], [320, 130],
-      [380, 115], [440, 95], [510, 75], [550, 60],
+      [35, 195], [55, 188], [80, 176], [105, 172], [130, 180],
+      [150, 170], [175, 155], [200, 148], [220, 152], [240, 140],
+      [265, 132], [290, 140], [310, 128], [335, 118], [360, 110],
+      [385, 105], [405, 112], [425, 100], [445, 92], [465, 85],
+      [485, 78], [505, 72], [525, 65], [545, 58],
     ];
     
+    // Bezier-smooth drawing helper
+    function drawSmooth(points: [number, number][]) {
+      ctx.beginPath();
+      ctx.moveTo(points[0][0], points[0][1]);
+      for (let i = 0; i < points.length - 1; i++) {
+        const xc = (points[i][0] + points[i + 1][0]) / 2;
+        const yc = (points[i][1] + points[i + 1][1]) / 2;
+        ctx.quadraticCurveTo(points[i][0], points[i][1], xc, yc);
+      }
+      const last = points[points.length - 1];
+      ctx.lineTo(last[0], last[1]);
+      ctx.stroke();
+    }
+    
     // Route glow
-    ctx.strokeStyle = 'hsla(142, 71%, 45%, 0.1)';
-    ctx.lineWidth = 10;
+    ctx.strokeStyle = 'hsla(142, 71%, 45%, 0.08)';
+    ctx.lineWidth = 14;
     ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-    ctx.beginPath();
-    pts.forEach((p, i) => i === 0 ? ctx.moveTo(p[0], p[1]) : ctx.lineTo(p[0], p[1]));
-    ctx.stroke();
+    drawSmooth(pts);
     
     // Route line
-    const grad = ctx.createLinearGradient(40, 210, 550, 60);
-    grad.addColorStop(0, 'hsla(142, 71%, 45%, 0.4)');
+    const grad = ctx.createLinearGradient(35, 195, 545, 58);
+    grad.addColorStop(0, 'hsla(142, 71%, 45%, 0.3)');
     grad.addColorStop(0.5, 'hsl(142, 71%, 45%)');
-    grad.addColorStop(1, 'hsla(142, 71%, 45%, 0.5)');
+    grad.addColorStop(1, 'hsla(142, 71%, 45%, 0.4)');
     ctx.strokeStyle = grad;
     ctx.lineWidth = 2.5;
-    ctx.beginPath();
-    pts.forEach((p, i) => i === 0 ? ctx.moveTo(p[0], p[1]) : ctx.lineTo(p[0], p[1]));
-    ctx.stroke();
+    drawSmooth(pts);
     
     // Truck position
     const segs = pts.length - 1;
@@ -514,78 +525,107 @@ function ShipmentTrackerSection({ navigate }: { navigate: (path: string) => void
     const ty = pts[si][1] + (pts[si + 1][1] - pts[si][1]) * t;
     
     // Glow
-    const glow = ctx.createRadialGradient(tx, ty, 0, tx, ty, 24);
-    glow.addColorStop(0, 'hsla(142, 71%, 45%, 0.35)');
+    const glow = ctx.createRadialGradient(tx, ty, 0, tx, ty, 18);
+    glow.addColorStop(0, 'hsla(142, 71%, 45%, 0.3)');
     glow.addColorStop(1, 'hsla(142, 71%, 45%, 0)');
     ctx.fillStyle = glow;
-    ctx.beginPath(); ctx.arc(tx, ty, 24, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(tx, ty, 18, 0, Math.PI * 2); ctx.fill();
     
-    // Truck ring
+    // Truck dot
     ctx.fillStyle = 'hsl(220, 15%, 6%)';
-    ctx.beginPath(); ctx.arc(tx, ty, 11, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(tx, ty, 8, 0, Math.PI * 2); ctx.fill();
     ctx.strokeStyle = 'hsl(142, 71%, 45%)';
     ctx.lineWidth = 1.5;
-    ctx.beginPath(); ctx.arc(tx, ty, 11, 0, Math.PI * 2); ctx.stroke();
+    ctx.beginPath(); ctx.arc(tx, ty, 8, 0, Math.PI * 2); ctx.stroke();
     ctx.fillStyle = 'hsl(142, 71%, 45%)';
-    ctx.beginPath(); ctx.arc(tx, ty, 7, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(tx, ty, 5, 0, Math.PI * 2); ctx.fill();
     ctx.fillStyle = '#fff';
-    ctx.font = '9px sans-serif';
+    ctx.font = '7px sans-serif';
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     ctx.fillText('🚛', tx, ty);
     
     // LIVE badge
-    const bx = tx + 15, by = ty - 16;
+    const bx = tx + 12, by = ty - 14;
     ctx.fillStyle = 'hsl(142, 71%, 45%)';
     ctx.beginPath();
-    ctx.roundRect(bx, by, 36, 15, 7);
+    ctx.roundRect(bx, by, 32, 13, 6);
     ctx.fill();
     ctx.fillStyle = '#fff';
-    ctx.beginPath(); ctx.arc(bx + 9, by + 7.5, 2, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(bx + 8, by + 6.5, 1.5, 0, Math.PI * 2); ctx.fill();
     ctx.fillStyle = 'hsl(220, 15%, 6%)';
-    ctx.font = 'bold 8px sans-serif';
+    ctx.font = 'bold 7px sans-serif';
     ctx.textAlign = 'left';
-    ctx.fillText('LIVE', bx + 14, by + 10);
+    ctx.fillText('LIVE', bx + 12, by + 8.5);
     
     // Endpoints
     ctx.fillStyle = 'hsl(142, 71%, 45%)';
-    ctx.beginPath(); ctx.arc(40, 210, 4, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(35, 195, 4, 0, Math.PI * 2); ctx.fill();
     ctx.fillStyle = 'hsl(0, 72%, 51%)';
-    ctx.beginPath(); ctx.arc(550, 60, 4, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(545, 58, 4, 0, Math.PI * 2); ctx.fill();
     
-    // Labels
-    ctx.fillStyle = 'hsl(220, 15%, 35%)';
-    ctx.font = '9px sans-serif';
+    // City labels
+    ctx.fillStyle = 'hsl(220, 15%, 40%)';
+    ctx.font = '8px sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('LA', 40, 230);
-    ctx.fillText('NYC', 550, 50);
+    ctx.fillText('Los Angeles', 50, 215);
+    ctx.fillText('New York', 530, 48);
     
   }, [truckProgress]);
 
   return (
     <section className="tru-tracker-section">
       <div className="tru-tracker-inner">
-        <div className="flex items-center gap-6" style={{ maxHeight: 'var(--demo-panel-height)' }}>
+        <div className="flex items-center gap-8">
           
           {/* LEFT: Map canvas */}
-          <div className="flex-1 rounded-xl overflow-hidden border border-foreground/10 shadow-md" style={{ height: 'var(--demo-panel-height)' }}>
-            <canvas ref={canvasRef} width={580} height={260} className="w-full h-full object-cover" />
+          <div className="flex-1 rounded-xl overflow-hidden border border-foreground/10 shadow-md">
+            <canvas ref={canvasRef} width={580} height={260} className="w-full h-auto block" />
           </div>
           
-          {/* CENTER: Headline + CTA */}
-          <div className="w-[260px] flex-shrink-0 space-y-4" style={{ justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
-            <div className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full border border-primary/20 bg-primary/5 w-fit">
+          {/* RIGHT: Headline + compact ELD info */}
+          <div className="w-[320px] flex-shrink-0 flex flex-col justify-center space-y-5">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-primary/20 bg-primary/5 w-fit">
               <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
               <span className="text-[10px] font-semibold tracking-widest uppercase text-primary">ELD Verified</span>
             </div>
             
             <div className="tru-ai-headline-block">
-              <h2 className="tru-ai-main-headline" style={{ textAlign: 'left', fontSize: '2rem' }}>
+              <h2 className="tru-ai-main-headline" style={{ textAlign: 'left', fontSize: '1.75rem', lineHeight: '1.2' }}>
                 Real-Time<br />
                 <span className="tru-ai-headline-accent">ELD Tracking.</span>
               </h2>
-              <p className="tru-ai-subheadline" style={{ textAlign: 'left' }}>
-                Cross-reference carrier ELD data, policy COIs, and tractor VINs to stop double brokering before pickup.
+              <p className="tru-ai-subheadline" style={{ textAlign: 'left', fontSize: '0.8rem' }}>
+                Cross-reference carrier ELD data, policy COIs, and tractor VINs — stop double brokering before pickup.
               </p>
+            </div>
+            
+            {/* Compact ELD data strip */}
+            <div className="rounded-lg border border-foreground/10 bg-muted/20 p-3 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[9px] font-semibold tracking-widest uppercase text-muted-foreground">Live ELD Feed</span>
+                <span className="inline-flex items-center gap-1 text-[9px] font-semibold text-primary">
+                  <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                  TRACKING
+                </span>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <span className="text-[9px] text-muted-foreground block">Tractor</span>
+                  <span className="text-xs font-mono font-semibold text-foreground">8291</span>
+                </div>
+                <div>
+                  <span className="text-[9px] text-muted-foreground block">MC#</span>
+                  <span className="text-xs font-mono font-semibold text-foreground">133655</span>
+                </div>
+                <div>
+                  <span className="text-[9px] text-muted-foreground block">Speed</span>
+                  <span className="text-xs font-mono font-semibold text-foreground">62 mph</span>
+                </div>
+                <div>
+                  <span className="text-[9px] text-muted-foreground block">HOS</span>
+                  <span className="text-xs font-mono font-semibold text-primary">6h 12m left</span>
+                </div>
+              </div>
             </div>
             
             <button onClick={() => navigate("/site/track")} className="tru-ai-cta-btn">
@@ -593,59 +633,6 @@ function ShipmentTrackerSection({ navigate }: { navigate: (path: string) => void
               Track Shipment
               <ArrowRight className="w-4 h-4" />
             </button>
-          </div>
-          
-          {/* RIGHT: ELD Verification Card */}
-          <div className="w-[220px] flex-shrink-0">
-            <div className="rounded-xl border border-foreground/10 bg-background shadow-md p-4 space-y-3">
-              <div>
-                <span className="text-[9px] font-semibold tracking-widest uppercase text-muted-foreground">Verified Carrier</span>
-                <p className="text-base font-bold text-foreground mt-0.5">ABC Freight</p>
-              </div>
-              
-              <div className="border border-foreground/8 rounded-lg p-2.5 space-y-0.5 bg-muted/30">
-                <div className="flex items-center justify-between">
-                  <span className="text-[9px] font-semibold tracking-wider uppercase text-muted-foreground">Location</span>
-                  <span className="inline-flex items-center gap-1 text-[9px] font-semibold text-primary">
-                    <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                    LIVE
-                  </span>
-                </div>
-                <p className="text-xs font-semibold text-foreground">I-10 East, Los Angeles</p>
-                <p className="text-[10px] text-muted-foreground">Tractor 8291 · MC 133655</p>
-              </div>
-              
-              <div className="border border-foreground/8 rounded-lg p-2.5 space-y-2 bg-muted/30">
-                <div className="flex items-center justify-between">
-                  <span className="text-[9px] font-semibold tracking-wider uppercase text-muted-foreground">Cross-Reference</span>
-                  <span className="inline-flex items-center gap-1 text-[9px] font-semibold text-primary">
-                    <CheckCircle className="w-2.5 h-2.5" />
-                    Match
-                  </span>
-                </div>
-                
-                <div className="flex items-center justify-between py-1 border-b border-foreground/5">
-                  <div className="flex items-center gap-1.5">
-                    <Database className="w-3 h-3 text-muted-foreground" />
-                    <span className="text-[10px] text-foreground">ELD Sensor</span>
-                  </div>
-                  <span className="text-[10px] font-mono text-foreground">1GDT••••849</span>
-                </div>
-                
-                <div className="flex items-center justify-between py-1">
-                  <div className="flex items-center gap-1.5">
-                    <ShieldCheck className="w-3 h-3 text-muted-foreground" />
-                    <span className="text-[10px] text-foreground">Policy COI</span>
-                  </div>
-                  <span className="text-[10px] font-mono text-foreground">1GDT••••849</span>
-                </div>
-              </div>
-              
-              <div className="flex items-center justify-center gap-1.5 py-2 rounded-lg bg-primary/8 border border-primary/15">
-                <CheckCircle className="w-3 h-3 text-primary" />
-                <span className="text-[10px] font-bold tracking-wide uppercase text-primary">Identity Confirmed</span>
-              </div>
-            </div>
           </div>
         </div>
       </div>
