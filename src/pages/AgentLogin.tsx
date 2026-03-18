@@ -103,7 +103,7 @@ export default function AgentLogin() {
   if (!session) {
     return (
       <SiteShell centered backendMode hideHeader>
-        <div className="flex items-center justify-center min-h-[60vh] px-4 py-16">
+        <div className="flex items-center justify-center min-h-[60vh] px-4 py-16 bg-[hsl(220,15%,8%)]">
           <PortalAuthForm onAuthenticated={() => {}} />
         </div>
       </SiteShell>
