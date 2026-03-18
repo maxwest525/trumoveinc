@@ -169,11 +169,6 @@ export default function ESignViewPage() {
             Back to E-Sign Hub
           </button>
 
-          {/* Consent Banner */}
-          <ESignConsentBanner
-            consentGiven={consentGiven}
-            onConsentChange={handleConsentChange}
-          />
 
           <div className="flex gap-6 mt-4">
             {/* Sidebar */}
