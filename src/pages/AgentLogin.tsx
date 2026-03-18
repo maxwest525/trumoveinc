@@ -112,7 +112,7 @@ export default function AgentLogin() {
 
   return (
     <SiteShell centered backendMode hideHeader>
-      <div className="flex flex-col items-center justify-center min-h-[100vh] px-4 py-20">
+      <div className="flex flex-col items-center justify-center min-h-[100vh] px-4 py-20 bg-[hsl(220,15%,8%)] text-white">
 
         {/* Header */}
         <motion.div
