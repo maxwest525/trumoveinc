@@ -1,4 +1,5 @@
 import { useState, useCallback, useMemo, useRef, useEffect } from "react";
+import eldMapImg from "@/assets/eld-map.jpg";
 
 // Scroll to top on mount
 const useScrollToTop = () => {
