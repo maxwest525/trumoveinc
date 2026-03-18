@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Monitor, Phone, Globe, ChevronRight, Maximize2 } from "lucide-react";
+import { Monitor, Phone, Globe, Rocket } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface AgentToolLauncherModalProps {
   open: boolean;
@@ -8,39 +9,32 @@ interface AgentToolLauncherModalProps {
 }
 
 const TOOLS = [
-  {
-    key: "granot",
-    label: "Granot CRM",
-    description: "Customer & move management",
-    icon: Monitor,
-    url: "https://app.granot.com",
-  },
-  {
-    key: "convoso",
-    label: "Convoso Dialer",
-    description: "Power dialer & campaigns",
-    icon: Phone,
-    url: "https://app.convoso.com",
-  },
-  {
-    key: "website",
-    label: "TruMove Website",
-    description: "Company site & estimator",
-    icon: Globe,
-    url: "/site",
-    internal: true,
-  },
+  { key: "granot", label: "Granot CRM", icon: Monitor, url: "https://app.granot.com" },
+  { key: "convoso", label: "Convoso Dialer", icon: Phone, url: "https://app.convoso.com" },
+  { key: "website", label: "TruMove Website", icon: Globe, url: "/site", internal: true },
 ];
 
 export default function AgentToolLauncherModal({ open, onOpenChange }: AgentToolLauncherModalProps) {
   const navigate = useNavigate();
 
-  const openFullscreen = (url: string, isInternal?: boolean) => {
-    if (isInternal) {
-      window.open(window.location.origin + url, "_blank", "noopener");
-    } else {
-      window.open(url, "_blank", "noopener");
-    }
+  const handleLaunchAll = () => {
+    const sw = window.screen.availWidth;
+    const sh = window.screen.availHeight;
+    const sl = (window.screen as any).availLeft ?? 0;
+    const st = (window.screen as any).availTop ?? 0;
+    const count = TOOLS.length;
+    const w = Math.floor(sw / count);
+
+    TOOLS.forEach((tool, i) => {
+      const url = tool.internal ? window.location.origin + tool.url : tool.url;
+      window.open(
+        url,
+        `tool_${tool.key}`,
+        `left=${sl + i * w},top=${st},width=${w},height=${sh},menubar=no,toolbar=no,location=yes,status=no`
+      );
+    });
+
+    onOpenChange(false);
   };
 
   const handleGoToDashboard = () => {
@@ -50,34 +44,36 @@ export default function AgentToolLauncherModal({ open, onOpenChange }: AgentTool
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg p-0 gap-0 overflow-hidden border-border rounded-2xl">
+      <DialogContent className="sm:max-w-sm p-0 gap-0 overflow-hidden border-border rounded-2xl">
         <DialogHeader className="p-6 pb-3">
-          <DialogTitle className="text-base font-bold text-foreground">What are you working in today?</DialogTitle>
+          <DialogTitle className="text-base font-bold text-foreground">Ready to work?</DialogTitle>
           <DialogDescription className="text-xs text-muted-foreground">
-            Open your tools fullscreen, or head to the dashboard.
+            Opens Granot, Convoso & Website side-by-side across your screen.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex flex-col gap-2 px-6 pb-4">
-          {TOOLS.map((tool) => {
-            const Icon = tool.icon;
-            return (
-              <button
-                key={tool.key}
-                onClick={() => openFullscreen(tool.url, (tool as any).internal)}
-                className="group flex items-center gap-4 rounded-xl border border-border bg-card p-4 text-left transition-all duration-200 hover:border-primary/40 hover:shadow-[0_0_16px_hsl(var(--primary)/0.1)] hover:bg-muted/40"
-              >
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted group-hover:bg-primary/10 transition-colors">
-                  <Icon className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+        <div className="px-6 pb-4 space-y-3">
+          {/* Tool preview list */}
+          <div className="flex flex-col gap-1.5">
+            {TOOLS.map((tool) => {
+              const Icon = tool.icon;
+              return (
+                <div key={tool.key} className="flex items-center gap-3 rounded-lg bg-muted/50 px-3 py-2">
+                  <Icon className="h-4 w-4 text-muted-foreground shrink-0" />
+                  <span className="text-sm text-foreground">{tool.label}</span>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-foreground">{tool.label}</p>
-                  <p className="text-[11px] text-muted-foreground mt-0.5">{tool.description}</p>
-                </div>
-                <Maximize2 className="h-3.5 w-3.5 shrink-0 text-muted-foreground/40 group-hover:text-primary/60 transition-colors" />
-              </button>
-            );
-          })}
+              );
+            })}
+          </div>
+
+          <Button
+            onClick={handleLaunchAll}
+            className="w-full h-11 rounded-xl gap-2 font-semibold"
+            size="lg"
+          >
+            <Rocket className="h-4 w-4" />
+            Launch All
+          </Button>
         </div>
 
         <div className="border-t border-border px-6 py-3 text-center">
