@@ -26,9 +26,6 @@ const NAV_ITEMS: NavItem[] = [
   { label: "Bookings", icon: CalendarCheck, href: "/agent/operations" },
   { label: "Pulse Monitor", icon: Activity, href: "/agent/pulse" },
 ];
-  { label: "Bookings", icon: CalendarCheck, href: "/agent/operations" },
-  { label: "Pulse Monitor", icon: Activity, href: "/agent/pulse" },
-];
 
 export default function AgentSidebar({ onDialerToggle }: AgentSidebarProps) {
   const location = useLocation();
