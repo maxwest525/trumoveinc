@@ -10,7 +10,7 @@ import { useAgentProfile } from "@/hooks/useAgentProfile";
 import { useNotifications } from "@/hooks/useNotifications";
 import { motion } from "framer-motion";
 import type { Session } from "@supabase/supabase-js";
-import AgentToolLauncherModal from "@/components/agent/AgentToolLauncherModal";
+
 import AgentToolWorkspace from "@/components/agent/AgentToolWorkspace";
 import GreenParticles from "@/components/portal/GreenParticles";
 
@@ -62,7 +62,7 @@ export default function AgentLogin() {
   const navigate = useNavigate();
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
-  const [launcherOpen, setLauncherOpen] = useState(false);
+  
   const [workspaceOpen, setWorkspaceOpen] = useState(false);
   const { displayName } = useAgentProfile();
   const { unreadCount } = useNotifications();
@@ -164,21 +164,13 @@ export default function AgentLogin() {
               accentHsl={portal.accentHsl}
               index={i}
               onClick={() => {
-                if (portal.key === "agents") {
-                  if (sessionStorage.getItem("agent_tools_launched") === "true") {
-                    navigate("/agent/dashboard");
-                  } else {
-                    setLauncherOpen(true);
-                  }
-                } else {
-                  navigate(portal.href);
-                }
+                navigate(portal.key === "agents" ? "/agent/dashboard" : portal.href);
               }}
             />
           ))}
         </div>
 
-        <AgentToolLauncherModal open={launcherOpen} onOpenChange={setLauncherOpen} />
+        
       </div>
     </PageShell>
   );
