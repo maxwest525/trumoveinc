@@ -812,6 +812,9 @@ export default function Index() {
   }, [scanDemoRunning]);
   
   // Form state
+  const [contactName, setContactName] = useState("");
+  const [contactPhone, setContactPhone] = useState("");
+  const [contactEmail, setContactEmail] = useState("");
   const [fromZip, setFromZip] = useState("");
   const [toZip, setToZip] = useState("");
   const [fromCity, setFromCity] = useState("");
@@ -1331,8 +1334,14 @@ export default function Index() {
               <h1 className="tru-hero-headline">
                 The Smarter Way To <span className="tru-hero-accent">Move</span>
               </h1>
-              <p className="tru-hero-feature-line">
-                AI-powered inventory · FMCSA-vetted carriers · Live video consults · Shipment Tracking
+              <ul className="tru-hero-bullets">
+                <li>Scan, document, and build your own inventory — your items stay private and secure</li>
+                <li>Meet your broker virtually, face to face, from anywhere</li>
+                <li>Track your most valuable belongings every step of the way</li>
+                <li>See the full history and performance record of your movers</li>
+              </ul>
+              <p className="tru-hero-cta-prompt">
+                Fill out the form on the right to get started <ArrowRight className="w-4 h-4 inline-block ml-1" />
               </p>
             </div>
 
@@ -1349,28 +1358,57 @@ export default function Index() {
                 <div className="tru-floating-form-card">
                   {/* Progress bar removed per user request */}
                   
-                  <div className="tru-qb-form-header tru-qb-form-header-pill">
-                    <div className="tru-qb-form-title-group animate-fade-scale-in opacity-0">
-                      <span className="tru-qb-form-title tru-qb-form-title-large" style={{ animationDelay: '0.1s' }}>
-                        Let's Get Moving
-                      </span>
-                      <span className="tru-qb-form-subtitle-compact" style={{ animationDelay: '0.25s' }}>
-                        FMCSA-vetted carriers, AI precision
-                      </span>
-                    </div>
-                  </div>
-
                   {/* Form Content */}
                   <div className="tru-floating-form-content">
 
-                    {/* Step 1: Route & Date */}
+                    {/* Step 1: Contact + Route */}
                     {step === 1 && (
                       <div className="tru-qb-step-content" key="step-1">
                         
-                        
-                        {/* FROM + TO Row - Side by Side with Route Connector */}
+                        {/* Name + Phone Row */}
                         <div className="tru-qb-location-row">
-                        <div className="tru-qb-location-col">
+                          <div className="tru-qb-location-col">
+                            <div className="tru-qb-input-wrap tru-qb-input-enhanced">
+                              <input
+                                type="text"
+                                value={contactName}
+                                onChange={(e) => {
+                                  setContactName(e.target.value);
+                                  if (e.target.value.length > 0 && !isEngaged) setIsEngaged(true);
+                                }}
+                                placeholder="First and Last Name"
+                                className="tru-qb-text-input"
+                                autoFocus
+                              />
+                            </div>
+                          </div>
+                          <div className="tru-qb-location-col">
+                            <div className="tru-qb-input-wrap tru-qb-input-enhanced">
+                              <input
+                                type="tel"
+                                value={contactPhone}
+                                onChange={(e) => setContactPhone(e.target.value)}
+                                placeholder="Phone"
+                                className="tru-qb-text-input"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Email Row */}
+                        <div className="tru-qb-input-wrap tru-qb-input-enhanced" style={{ marginTop: '12px' }}>
+                          <input
+                            type="email"
+                            value={contactEmail}
+                            onChange={(e) => setContactEmail(e.target.value)}
+                            placeholder="Email"
+                            className="tru-qb-text-input"
+                          />
+                        </div>
+                        
+                        {/* FROM + TO Row */}
+                        <div className="tru-qb-location-row" style={{ marginTop: '12px' }}>
+                          <div className="tru-qb-location-col">
                             <p className="tru-qb-section-label"><MapPin className="w-3 h-3" /> From</p>
                             <div className="tru-qb-input-wrap tru-qb-zip-wrap tru-qb-input-enhanced">
                               <LocationAutocomplete
@@ -1385,17 +1423,14 @@ export default function Index() {
                                   setFromLocationDisplay(fullAddress || `${city} ${zip}`);
                                   const state = city.split(',')[1]?.trim() || '';
                                   triggerCarrierSearch(state);
-                                  // Geocode for static map
                                   const coords = await geocodeLocation(`${city} ${zip}`);
                                   if (coords) setFromCoords(coords);
                                 }}
                                 placeholder="City or ZIP"
-                                autoFocus
                               />
                             </div>
                           </div>
 
-                          {/* Route Connector */}
                           <div className="tru-qb-route-connector">
                             <ArrowRight className="w-4 h-4" />
                           </div>
@@ -1417,7 +1452,6 @@ export default function Index() {
                                     const state = city.split(',')[1]?.trim() || '';
                                     triggerCarrierSearch(state);
                                   }
-                                  // Geocode for static map
                                   const coords = await geocodeLocation(`${city} ${zip}`);
                                   if (coords) setToCoords(coords);
                                 }}
@@ -1427,63 +1461,17 @@ export default function Index() {
                           </div>
                         </div>
 
-
-                        {/* Move Date */}
-                        <p className="tru-qb-section-label" style={{ marginTop: '1.25rem' }}>Move Date</p>
-                        <div className="tru-qb-input-wrap">
-                          <Popover open={datePopoverOpen} onOpenChange={setDatePopoverOpen}>
-                            <PopoverTrigger asChild>
-                              <button type="button" className="tru-qb-date-btn">
-                                <CalendarIcon className="w-5 h-5" />
-                                <span>{moveDate ? format(moveDate, "MMMM d, yyyy") : "Select a date"}</span>
-                              </button>
-                            </PopoverTrigger>
-                            <PopoverContent className="form-date-popover" align="center">
-                              <CalendarComponent
-                                mode="single"
-                                selected={moveDate || undefined}
-                                onSelect={(date) => {
-                                  setMoveDate(date || null);
-                                  setDatePopoverOpen(false);
-                                }}
-                                disabled={(date) => date < new Date()}
-                                className="pointer-events-auto"
-                              />
-                            </PopoverContent>
-                          </Popover>
-                        </div>
-
                         <button
                           type="button"
-                          className={`tru-qb-continue tru-engine-btn ${isSearchingCarriers || isAnalyzing ? 'is-scanning' : ''}`}
-                          disabled={!canContinue() || isSearchingCarriers || isAnalyzing}
+                          className="tru-qb-continue tru-engine-btn"
                           onClick={goNext}
+                          style={{ marginTop: '16px' }}
                         >
-                          <Scan className="w-4 h-4 tru-btn-scan" />
-                          <span>{isSearchingCarriers || isAnalyzing ? 'Analyzing...' : 'Analyze Route'}</span>
-                          {!isSearchingCarriers && !isAnalyzing && <ArrowRight className="w-5 h-5 tru-btn-arrow" />}
+                          <span>Talk to Support</span>
+                          <ArrowRight className="w-5 h-5 tru-btn-arrow" />
                         </button>
                         
-                        {/* Micro-copy below Analyze Route */}
                         <p className="tru-qb-microcopy">A moving specialist will call you shortly.</p>
-                        
-                        {/* Track My Move Button */}
-                        {fromLocationDisplay && toLocationDisplay && (
-                          <button
-                            type="button"
-                            className="w-full py-2.5 text-sm text-muted-foreground hover:text-foreground border border-dashed border-border/50 hover:border-primary/40 hover:shadow-[0_0_6px_hsl(var(--primary)/0.08)] rounded-lg transition-all flex items-center justify-center gap-2 mt-2"
-                            onClick={() => {
-                              localStorage.setItem('trumove_pending_route', JSON.stringify({
-                                originAddress: fromLocationDisplay,
-                                destAddress: toLocationDisplay,
-                              }));
-                              navigate('/site/track');
-                            }}
-                          >
-                            <Truck className="w-4 h-4" />
-                            <span>Track My Move</span>
-                          </button>
-                        )}
                       </div>
                     )}
 
