@@ -108,6 +108,9 @@ export default function ESignViewPage() {
       setCompletedDocuments((prev) => ({ ...prev, estimate: true }));
       logAuditEvent("document_signed", { documentType: "estimate", documentHash: generateDocHash() });
       toast.success("Estimate Authorization submitted successfully");
+      // Auto-advance to next document
+      setActiveDocument("ccach");
+      window.scrollTo(0, 0);
     }
   };
 
