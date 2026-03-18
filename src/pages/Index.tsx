@@ -1340,9 +1340,6 @@ export default function Index() {
                 <li>Track your most valuable belongings every step of the way</li>
                 <li>See the full history and performance record of your movers</li>
               </ul>
-              <p className="tru-hero-cta-prompt">
-                Fill out the form on the right to get started <ArrowRight className="w-4 h-4 inline-block ml-1" />
-              </p>
             </div>
 
             {/* RIGHT COLUMN: Form + CTAs */}
