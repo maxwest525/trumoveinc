@@ -32202,7 +32202,7 @@ footer {
 /* Build Your Move header - match Move Summary styling EXACTLY */
 .tru-summary-header-large h3,
 .tru-summary-header-large .text-lg {
-  font-size: 18px !important;
+  font-size: 20px !important;
   font-weight: 800 !important;
   color: hsl(var(--foreground)) !important;
 }
