@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 interface AgentToolLauncherModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onLaunchWorkspace?: () => void;
 }
 
 const TOOLS = [
@@ -91,7 +92,7 @@ function SoundWave({ active }: { active: boolean }) {
   );
 }
 
-export default function AgentToolLauncherModal({ open, onOpenChange }: AgentToolLauncherModalProps) {
+export default function AgentToolLauncherModal({ open, onOpenChange, onLaunchWorkspace }: AgentToolLauncherModalProps) {
   const navigate = useNavigate();
   const [trudyState, setTrudyState] = useState<"ask" | "response">("ask");
   const [trudyMsg, setTrudyMsg] = useState("");
@@ -129,23 +130,8 @@ export default function AgentToolLauncherModal({ open, onOpenChange }: AgentTool
   }, []);
 
   const handleLaunchAll = () => {
-    const sw = window.screen.availWidth;
-    const sh = window.screen.availHeight;
-    const sl = (window.screen as any).availLeft ?? 0;
-    const st = (window.screen as any).availTop ?? 0;
-    const count = TOOLS.length;
-    const w = Math.floor(sw / count);
-
-    TOOLS.forEach((tool, i) => {
-      const url = tool.internal ? window.location.origin + tool.url : tool.url;
-      window.open(
-        url,
-        `tool_${tool.key}`,
-        `left=${sl + i * w},top=${st},width=${w},height=${sh},menubar=no,toolbar=no,location=yes,status=no`
-      );
-    });
-
     onOpenChange(false);
+    onLaunchWorkspace?.();
   };
 
   const handleGoToDashboard = () => {

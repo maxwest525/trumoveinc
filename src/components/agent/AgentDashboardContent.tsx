@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Eye, CheckSquare, FileText, CalendarCheck, ChevronRight, DollarSign, TrendingUp, Users, Clock, Wrench } from "lucide-react";
 import AgentToolLauncherModal from "./AgentToolLauncherModal";
+import AgentToolWorkspace from "./AgentToolWorkspace";
 import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -29,6 +30,7 @@ export default function AgentDashboardContent() {
   const [pipelineData, setPipelineData] = useState<{ stage: string; count: number }[]>([]);
   const [tasks, setTasks] = useState<TaskItem[]>([]);
   const [launcherOpen, setLauncherOpen] = useState(() => !sessionStorage.getItem("agent_launcher_shown"));
+  const [workspaceOpen, setWorkspaceOpen] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -137,7 +139,8 @@ export default function AgentDashboardContent() {
 
   return (
     <div className="p-6 max-w-[1400px] mx-auto space-y-6">
-      <AgentToolLauncherModal open={launcherOpen} onOpenChange={setLauncherOpen} />
+      <AgentToolLauncherModal open={launcherOpen} onOpenChange={setLauncherOpen} onLaunchWorkspace={() => setWorkspaceOpen(true)} />
+      <AgentToolWorkspace open={workspaceOpen} onClose={() => setWorkspaceOpen(false)} />
 
       <div className="flex items-center justify-between">
         <div>
