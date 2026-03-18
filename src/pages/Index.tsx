@@ -439,12 +439,10 @@ function ShipmentTrackerSection({ navigate }: { navigate: (path: string) => void
   const [truckProgress, setTruckProgress] = useState(0.62);
   
   useEffect(() => {
-    let p = 0.62;
-    let direction = 1;
+    let p = 0;
     const tick = () => {
-      p += 0.0003 * direction;
-      if (p > 0.72) direction = -1;
-      if (p < 0.58) direction = 1;
+      p += 0.0008;
+      if (p > 1) p = 0;
       setTruckProgress(p);
       animationRef.current = requestAnimationFrame(tick);
     };
