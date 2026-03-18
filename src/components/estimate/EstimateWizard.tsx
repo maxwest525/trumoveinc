@@ -259,8 +259,6 @@ export default function EstimateWizard({ onComplete, initialDetails }: EstimateW
             {/* Step 1: Moving FROM Details + Parking */}
             {step === 1 && (
             <div className="tru-qb-step-content" key="step-1">
-              <h1 className="tru-qb-question">Where are you moving from?</h1>
-              
 
               <p className="tru-qb-section-label">Current Address</p>
               <div className="tru-qb-input-wrap tru-qb-zip-wrap">
