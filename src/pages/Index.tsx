@@ -1,5 +1,4 @@
 import { useState, useCallback, useMemo, useRef, useEffect } from "react";
-import eldMapImg from "@/assets/eld-map.jpg";
 
 // Scroll to top on mount
 const useScrollToTop = () => {
@@ -47,14 +46,14 @@ import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext
 import { calculateDistance } from "@/lib/distanceCalculator";
 import { formatPhoneNumber, isValidPhoneNumber, getDigitsOnly } from "@/lib/phoneFormat";
 import { calculateEstimate, formatCurrency } from "@/lib/priceCalculator";
-import { 
+import {
   Shield, Video, Boxes, CheckCircle, Info, FileText,
   MapPin, Route, Clock, DollarSign, Headphones, Phone, ArrowRight, ArrowDown, ArrowUp,
   CalendarIcon, ChevronLeft, Lock, Truck, Sparkles, Star, Users,
   Database, ChevronRight, Radar, CreditCard, ShieldCheck, BarChart3, Zap,
   Home, Building2, MoveVertical, ArrowUpDown, Scan, ChevronUp, ChevronDown, Camera, Globe,
-  Play, Pause, MapPinned, Calendar, Mail, MessageSquare
-} from "lucide-react";
+  Play, Pause, MapPinned, Calendar, Mail, MessageSquare } from
+"lucide-react";
 
 
 // ZIP lookup
@@ -63,7 +62,7 @@ const ZIP_LOOKUP: Record<string, string> = {
   "10016": "New York, NY", "77001": "Houston, TX", "60601": "Chicago, IL",
   "33101": "Miami, FL", "85001": "Phoenix, AZ", "98101": "Seattle, WA",
   "80201": "Denver, CO", "02101": "Boston, MA", "20001": "Washington, DC",
-  "33431": "Boca Raton, FL", "33432": "Boca Raton, FL", "33433": "Boca Raton, FL",
+  "33431": "Boca Raton, FL", "33432": "Boca Raton, FL", "33433": "Boca Raton, FL"
 };
 
 async function lookupZip(zip: string): Promise<string | null> {
@@ -98,20 +97,20 @@ async function geocodeLocation(location: string): Promise<[number, number] | nul
 }
 
 const MOVE_SIZES = [
-  { label: "Studio", value: "Studio" },
-  { label: "1 Bed", value: "1 Bedroom" },
-  { label: "2 Bed", value: "2 Bedroom" },
-  { label: "3 Bed", value: "3 Bedroom" },
-  { label: "4+ Bed", value: "4+ Bedroom" },
-  { label: "Office", value: "Office" },
-];
+{ label: "Studio", value: "Studio" },
+{ label: "1 Bed", value: "1 Bedroom" },
+{ label: "2 Bed", value: "2 Bedroom" },
+{ label: "3 Bed", value: "3 Bedroom" },
+{ label: "4+ Bed", value: "4+ Bedroom" },
+{ label: "Office", value: "Office" }];
+
 
 const FLOOR_OPTIONS = [
-  { label: "Ground/1st", value: 1 },
-  { label: "2nd", value: 2 },
-  { label: "3rd", value: 3 },
-  { label: "4th+", value: 4 },
-];
+{ label: "Ground/1st", value: 1 },
+{ label: "2nd", value: 2 },
+{ label: "3rd", value: 3 },
+{ label: "4th+", value: 4 }];
+
 
 // AI Messages based on context
 function getAiHint(step: number, fromCity: string, toCity: string, distance: number, moveDate: Date | null): string {
@@ -144,12 +143,12 @@ function getAiHint(step: number, fromCity: string, toCity: string, distance: num
 
 // Demo items for live scan preview
 const SCAN_DEMO_ITEMS = [
-  { name: "3-Seat Sofa", weight: 350, cuft: 45, image: "/inventory/living-room/sofa-3-cushion.png" },
-  { name: "Coffee Table", weight: 45, cuft: 8, image: "/inventory/living-room/coffee-table.png" },
-  { name: "TV Stand", weight: 80, cuft: 12, image: "/inventory/living-room/tv-stand.png" },
-  { name: "Armchair", weight: 85, cuft: 18, image: "/inventory/living-room/armchair.png" },
-  { name: "Floor Lamp", weight: 15, cuft: 4, image: "/inventory/living-room/lamp-floor.png" },
-];
+{ name: "3-Seat Sofa", weight: 350, cuft: 45, image: "/inventory/living-room/sofa-3-cushion.png" },
+{ name: "Coffee Table", weight: 45, cuft: 8, image: "/inventory/living-room/coffee-table.png" },
+{ name: "TV Stand", weight: 80, cuft: 12, image: "/inventory/living-room/tv-stand.png" },
+{ name: "Armchair", weight: 85, cuft: 18, image: "/inventory/living-room/armchair.png" },
+{ name: "Floor Lamp", weight: 15, cuft: 4, image: "/inventory/living-room/lamp-floor.png" }];
+
 
 // Move Summary Modal - Hero Right Side
 import { X } from "lucide-react";
@@ -167,11 +166,11 @@ interface MoveSummaryModalProps {
 
 import React from "react";
 
-const MoveSummaryModal = React.forwardRef<HTMLDivElement, MoveSummaryModalProps>(({ 
-  fromCity, 
-  toCity, 
-  distance, 
-  fromCoords, 
+const MoveSummaryModal = React.forwardRef<HTMLDivElement, MoveSummaryModalProps>(({
+  fromCity,
+  toCity,
+  distance,
+  fromCoords,
   toCoords,
   moveDate,
   estimatedDuration,
@@ -185,15 +184,15 @@ const MoveSummaryModal = React.forwardRef<HTMLDivElement, MoveSummaryModalProps>
   return (
     <div className="tru-move-summary-modal" ref={ref}>
       {/* Close Button */}
-      {onClose && (
-        <button 
-          onClick={onClose} 
-          className="tru-move-summary-close"
-          aria-label="Close move summary"
-        >
+      {onClose &&
+      <button
+        onClick={onClose}
+        className="tru-move-summary-close"
+        aria-label="Close move summary">
+        
           <X className="w-4 h-4" />
         </button>
-      )}
+      }
       
       {/* Header with Sparkle */}
       <div className="tru-move-summary-header">
@@ -210,16 +209,16 @@ const MoveSummaryModal = React.forwardRef<HTMLDivElement, MoveSummaryModalProps>
         {/* Origin */}
         <div className="tru-move-summary-location">
           <div className="tru-move-summary-map tru-move-summary-map-lg">
-            {fromCoords ? (
-              <img 
-                src={`https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v12/static/${fromCoords[0]},${fromCoords[1]},14,0/280x280@2x?access_token=${MAPBOX_TOKEN}`}
-                alt="Origin satellite view"
-              />
-            ) : (
-              <div className="tru-move-summary-map-placeholder">
+            {fromCoords ?
+            <img
+              src={`https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v12/static/${fromCoords[0]},${fromCoords[1]},14,0/280x280@2x?access_token=${MAPBOX_TOKEN}`}
+              alt="Origin satellite view" /> :
+
+
+            <div className="tru-move-summary-map-placeholder">
                 <MapPin className="w-6 h-6" />
               </div>
-            )}
+            }
           </div>
           <div className="tru-move-summary-location-info">
             <span className="label">Origin</span>
@@ -238,16 +237,16 @@ const MoveSummaryModal = React.forwardRef<HTMLDivElement, MoveSummaryModalProps>
         {/* Destination */}
         <div className="tru-move-summary-location">
           <div className="tru-move-summary-map tru-move-summary-map-lg">
-            {toCoords ? (
-              <img 
-                src={`https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v12/static/${toCoords[0]},${toCoords[1]},14,0/280x280@2x?access_token=${MAPBOX_TOKEN}`}
-                alt="Destination satellite view"
-              />
-            ) : (
-              <div className="tru-move-summary-map-placeholder">
+            {toCoords ?
+            <img
+              src={`https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v12/static/${toCoords[0]},${toCoords[1]},14,0/280x280@2x?access_token=${MAPBOX_TOKEN}`}
+              alt="Destination satellite view" /> :
+
+
+            <div className="tru-move-summary-map-placeholder">
                 <Truck className="w-6 h-6" />
               </div>
-            )}
+            }
           </div>
           <div className="tru-move-summary-location-info">
             <span className="label">Destination</span>
@@ -257,22 +256,22 @@ const MoveSummaryModal = React.forwardRef<HTMLDivElement, MoveSummaryModalProps>
       </div>
       
       {/* Move Date & ETA Row */}
-      {(moveDate || estimatedDuration) && (
-        <div className="tru-move-summary-details">
-          {moveDate && (
-            <div className="tru-move-summary-detail">
+      {(moveDate || estimatedDuration) &&
+      <div className="tru-move-summary-details">
+          {moveDate &&
+        <div className="tru-move-summary-detail">
               <Calendar className="w-4 h-4" />
               <span>{format(moveDate, "MMM d, yyyy")}</span>
             </div>
-          )}
-          {estimatedDuration && (
-            <div className="tru-move-summary-detail">
+        }
+          {estimatedDuration &&
+        <div className="tru-move-summary-detail">
               <Clock className="w-4 h-4" />
               <span>ETA: {estimatedDuration}</span>
             </div>
-          )}
+        }
         </div>
-      )}
+      }
       
       {/* Status Indicators */}
       <div className="tru-move-summary-status">
@@ -289,20 +288,20 @@ const MoveSummaryModal = React.forwardRef<HTMLDivElement, MoveSummaryModalProps>
           <span>Carrier matching ready</span>
         </div>
       </div>
-    </div>
-  );
+    </div>);
+
 });
 
 MoveSummaryModal.displayName = "MoveSummaryModal";
 
 // Furniture positions for detection overlay on sample living room image
 const FURNITURE_POSITIONS = [
-  { id: 0, name: "Sofa", confidence: 98, top: "42%", left: "1%", width: "34%", height: "50%" },
-  { id: 1, name: "Coffee Table", confidence: 96, top: "64%", left: "32%", width: "22%", height: "16%" },
-  { id: 2, name: "TV Console", confidence: 97, top: "32%", left: "28%", width: "36%", height: "26%" },
-  { id: 3, name: "Armchair", confidence: 94, top: "42%", left: "70%", width: "24%", height: "42%" },
-  { id: 4, name: "Floor Lamp", confidence: 91, top: "16%", left: "60%", width: "7%", height: "44%" },
-];
+{ id: 0, name: "Sofa", confidence: 98, top: "42%", left: "1%", width: "34%", height: "50%" },
+{ id: 1, name: "Coffee Table", confidence: 96, top: "64%", left: "32%", width: "22%", height: "16%" },
+{ id: 2, name: "TV Console", confidence: 97, top: "32%", left: "28%", width: "36%", height: "26%" },
+{ id: 3, name: "Armchair", confidence: 94, top: "42%", left: "70%", width: "24%", height: "42%" },
+{ id: 4, name: "Floor Lamp", confidence: 91, top: "16%", left: "60%", width: "7%", height: "44%" }];
+
 
 // Scanner Component - Center column
 interface ScannerPreviewProps {
@@ -315,23 +314,23 @@ function ScannerPreview({ isRunning, onStartDemo, visibleCount }: ScannerPreview
   return (
     <div className="tru-ai-live-scanner">
       <img src={sampleRoomLiving} alt="Room being scanned" />
-      {isRunning && (
-        <>
+      {isRunning &&
+      <>
           <div className="tru-ai-scanner-overlay">
             <div className="tru-ai-scanner-line" />
           </div>
           {/* Furniture detection boxes */}
-          {FURNITURE_POSITIONS.slice(0, visibleCount).map((item) => (
-            <div 
-              key={item.id}
-              className="tru-ai-detection-box"
-              style={{ 
-                top: item.top, 
-                left: item.left, 
-                width: item.width, 
-                height: item.height 
-              }}
-            >
+          {FURNITURE_POSITIONS.slice(0, visibleCount).map((item) =>
+        <div
+          key={item.id}
+          className="tru-ai-detection-box"
+          style={{
+            top: item.top,
+            left: item.left,
+            width: item.width,
+            height: item.height
+          }}>
+          
               <span className="tru-ai-detection-corner tru-ai-corner-tl" />
               <span className="tru-ai-detection-corner tru-ai-corner-tr" />
               <span className="tru-ai-detection-corner tru-ai-corner-bl" />
@@ -341,19 +340,19 @@ function ScannerPreview({ isRunning, onStartDemo, visibleCount }: ScannerPreview
                 <span className="tru-ai-detection-confidence">{item.confidence}%</span>
               </span>
             </div>
-          ))}
+        )}
         </>
-      )}
+      }
       {/* Start Demo button as overlay - top right */}
-      <button 
+      <button
         className="tru-ai-scanner-start-btn"
-        onClick={onStartDemo}
-      >
+        onClick={onStartDemo}>
+        
         <Sparkles className="w-3.5 h-3.5" />
         {isRunning ? "Running..." : "Start AI Analysis Demo"}
       </button>
-    </div>
-  );
+    </div>);
+
 }
 
 // Detection List Component - Right column
@@ -375,17 +374,17 @@ function DetectionList({ visibleCount }: DetectionListProps) {
         <span>Live Inventory Detection</span>
       </div>
       <div className={`tru-ai-live-items ${!isRunning ? 'is-sample' : ''}`}>
-        {displayItems.map((item, i) => (
-          <div 
-            key={`${item.name}-${i}`} 
-            className={`tru-ai-live-item ${!isRunning ? 'is-sample' : ''}`}
-            style={{ animationDelay: isRunning ? `${i * 0.1}s` : '0s' }}
-          >
+        {displayItems.map((item, i) =>
+        <div
+          key={`${item.name}-${i}`}
+          className={`tru-ai-live-item ${!isRunning ? 'is-sample' : ''}`}
+          style={{ animationDelay: isRunning ? `${i * 0.1}s` : '0s' }}>
+          
             <img src={item.image} alt={item.name} />
             <span className="tru-ai-live-item-name">{item.name}</span>
             <span className="tru-ai-live-item-weight">{item.weight} lbs</span>
           </div>
-        ))}
+        )}
       </div>
       <div className="tru-ai-live-totals">
         <span>
@@ -398,8 +397,8 @@ function DetectionList({ visibleCount }: DetectionListProps) {
           <span className="tru-ai-total-label">Volume:</span> {totalCuFt} cu ft
         </span>
       </div>
-    </div>
-  );
+    </div>);
+
 }
 
 // Tracking Preview Component - Left column (mirrored layout)
@@ -421,193 +420,224 @@ const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://nhoagucgcqjfb
 
 // Route waypoints from NY to LA (simplified path)
 const ROUTE_WAYPOINTS = [
-  { lat: 40.7128, lng: -74.0060 },   // NYC
-  { lat: 40.4406, lng: -79.9959 },   // Pittsburgh
-  { lat: 39.7684, lng: -86.1581 },   // Indianapolis
-  { lat: 38.6270, lng: -90.1994 },   // St. Louis
-  { lat: 39.0997, lng: -94.5786 },   // Kansas City
-  { lat: 35.4676, lng: -97.5164 },   // Oklahoma City
-  { lat: 35.0844, lng: -106.6504 },  // Albuquerque
-  { lat: 33.4484, lng: -112.0740 },  // Phoenix
-  { lat: 34.0522, lng: -118.2437 },  // LA
+{ lat: 40.7128, lng: -74.0060 }, // NYC
+{ lat: 40.4406, lng: -79.9959 }, // Pittsburgh
+{ lat: 39.7684, lng: -86.1581 }, // Indianapolis
+{ lat: 38.6270, lng: -90.1994 }, // St. Louis
+{ lat: 39.0997, lng: -94.5786 }, // Kansas City
+{ lat: 35.4676, lng: -97.5164 }, // Oklahoma City
+{ lat: 35.0844, lng: -106.6504 }, // Albuquerque
+{ lat: 33.4484, lng: -112.0740 }, // Phoenix
+{ lat: 34.0522, lng: -118.2437 } // LA
 ];
 
 // Note: useTruckAnimation hook preserved for use on other pages (e.g., live tracking)
 // Homepage now uses static demo preview - no animation needed
 
 // Shipment Tracker Section - Compact ELD verification layout
-function ShipmentTrackerSection({ navigate }: { navigate: (path: string) => void }) {
-  const [truckProgress, setTruckProgress] = useState(0);
+function ShipmentTrackerSection({ navigate }: {navigate: (path: string) => void;}) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number>();
+  const [truckProgress, setTruckProgress] = useState(0);
 
   useEffect(() => {
     let p = 0;
     const tick = () => {
-      p += 0.0008;
+      p += 0.0006;
       if (p > 1) p = 0;
       setTruckProgress(p);
       animationRef.current = requestAnimationFrame(tick);
     };
     tick();
-    return () => { if (animationRef.current) cancelAnimationFrame(animationRef.current); };
+    return () => {if (animationRef.current) cancelAnimationFrame(animationRef.current);};
   }, []);
 
-  // Routes mapped to the map image coordinates (percentage-based for responsiveness)
+  // Route definitions: multiple trucks on different paths
   const routes = useMemo(() => [
-    {
-      label: 'LA → NYC',
-      color: 'hsl(142, 71%, 45%)',
-      offset: 0,
-      speed: 1,
-      // Los Angeles to New York
-      path: 'M 12,68 C 18,65 25,60 32,58 C 40,55 48,52 55,48 C 62,44 70,40 78,35 C 84,30 88,26 92,22',
-    },
-    {
-      label: 'CHI → MIA',
-      color: 'hsl(200, 80%, 55%)',
-      offset: 0.35,
-      speed: 1.2,
-      // Chicago to Miami
-      path: 'M 62,25 C 65,32 67,40 70,48 C 73,55 75,62 78,70 C 80,75 82,80 84,85',
-    },
-    {
-      label: 'SEA → DEN',
-      color: 'hsl(35, 90%, 55%)',
-      offset: 0.6,
-      speed: 0.9,
-      // Seattle to Denver
-      path: 'M 12,14 C 18,18 24,24 30,30 C 36,35 42,40 48,44',
-    },
-    {
-      label: 'DAL → ATL',
-      color: 'hsl(280, 65%, 60%)',
-      offset: 0.15,
-      speed: 1.4,
-      // Dallas to Atlanta
-      path: 'M 45,70 C 50,66 56,62 62,58 C 68,55 74,52 78,50',
-    },
-  ], []);
+  {
+    label: 'LA → NYC',
+    color: 'hsl(142, 71%, 45%)',
+    colorAlpha: 'hsla(142, 71%, 45%,',
+    startLabel: 'Los Angeles', endLabel: 'New York',
+    offset: 0,
+    speed: 1,
+    pts: [
+    [40, 280], [65, 270], [90, 255], [115, 248], [140, 256],
+    [165, 244], [190, 225], [215, 215], [240, 220], [265, 205],
+    [290, 195], [315, 204], [340, 188], [365, 175], [390, 165],
+    [415, 158], [440, 166], [460, 150], [480, 138], [500, 125],
+    [520, 115], [540, 105], [555, 92], [570, 80]] as
+    [number, number][]
+  },
+  {
+    label: 'CHI → MIA',
+    color: 'hsl(200, 80%, 55%)',
+    colorAlpha: 'hsla(200, 80%, 55%,',
+    startLabel: 'Chicago', endLabel: 'Miami',
+    offset: 0.35,
+    speed: 1.2,
+    pts: [
+    [320, 90], [330, 105], [338, 125], [350, 145], [365, 158],
+    [380, 175], [395, 190], [415, 208], [430, 225], [448, 240],
+    [460, 258], [472, 272], [488, 285], [505, 298], [520, 310]] as
+    [number, number][]
+  },
+  {
+    label: 'SEA → DEN',
+    color: 'hsl(35, 90%, 55%)',
+    colorAlpha: 'hsla(35, 90%, 55%,',
+    startLabel: 'Seattle', endLabel: 'Denver',
+    offset: 0.6,
+    speed: 0.9,
+    pts: [
+    [55, 55], [72, 65], [95, 80], [118, 95], [140, 108],
+    [165, 118], [188, 130], [210, 145], [235, 155], [258, 168],
+    [278, 178], [298, 185]] as
+    [number, number][]
+  },
+  {
+    label: 'DAL → ATL',
+    color: 'hsl(280, 65%, 60%)',
+    colorAlpha: 'hsla(280, 65%, 60%,',
+    startLabel: 'Dallas', endLabel: 'Atlanta',
+    offset: 0.15,
+    speed: 1.4,
+    pts: [
+    [260, 270], [280, 260], [302, 248], [325, 238], [348, 225],
+    [370, 218], [392, 210], [412, 205], [432, 200]] as
+    [number, number][]
+  }],
+  []);
 
-  // Calculate position along SVG path at a given progress
-  const getPointOnPath = useCallback((pathD: string, progress: number) => {
-    if (typeof document === 'undefined') return { x: 0, y: 0 };
-    const svgNS = 'http://www.w3.org/2000/svg';
-    const path = document.createElementNS(svgNS, 'path');
-    path.setAttribute('d', pathD);
-    const len = path.getTotalLength();
-    const pt = path.getPointAtLength(progress * len);
-    return { x: pt.x, y: pt.y };
-  }, []);
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const w = canvas.width;
+    const h = canvas.height;
+
+    ctx.fillStyle = 'hsl(220, 15%, 6%)';
+    ctx.fillRect(0, 0, w, h);
+
+    // Grid
+    ctx.strokeStyle = 'hsl(220, 15%, 12%)';
+    ctx.lineWidth = 0.5;
+    for (let i = 0; i < w; i += 28) {ctx.beginPath();ctx.moveTo(i, 0);ctx.lineTo(i, h);ctx.stroke();}
+    for (let i = 0; i < h; i += 28) {ctx.beginPath();ctx.moveTo(0, i);ctx.lineTo(w, i);ctx.stroke();}
+
+    // Road network hints
+    ctx.strokeStyle = 'hsl(220, 15%, 14%)';
+    ctx.lineWidth = 1;
+    [[30, 80, 570, 75], [30, 170, 570, 165], [30, 260, 570, 255],
+    [100, 10, 105, 330], [220, 10, 215, 330], [360, 10, 365, 330], [490, 10, 485, 330]].
+    forEach(([x1, y1, x2, y2]) => {
+      ctx.beginPath();ctx.moveTo(x1, y1);ctx.lineTo(x2, y2);ctx.stroke();
+    });
+
+    // Bezier-smooth drawing helper
+    function drawSmooth(points: [number, number][]) {
+      ctx.beginPath();
+      ctx.moveTo(points[0][0], points[0][1]);
+      for (let i = 0; i < points.length - 1; i++) {
+        const xc = (points[i][0] + points[i + 1][0]) / 2;
+        const yc = (points[i][1] + points[i + 1][1]) / 2;
+        ctx.quadraticCurveTo(points[i][0], points[i][1], xc, yc);
+      }
+      const last = points[points.length - 1];
+      ctx.lineTo(last[0], last[1]);
+      ctx.stroke();
+    }
+
+    // Draw each route
+    routes.forEach((route) => {
+      const { pts, color, colorAlpha, startLabel, endLabel, offset, speed } = route;
+      const progress = (truckProgress * speed + offset) % 1;
+
+      // Route glow
+      ctx.strokeStyle = `${colorAlpha} 0.08)`;
+      ctx.lineWidth = 10;
+      ctx.lineCap = 'round';ctx.lineJoin = 'round';
+      drawSmooth(pts);
+
+      // Route line
+      const start = pts[0],end = pts[pts.length - 1];
+      const grad = ctx.createLinearGradient(start[0], start[1], end[0], end[1]);
+      grad.addColorStop(0, `${colorAlpha} 0.3)`);
+      grad.addColorStop(0.5, color);
+      grad.addColorStop(1, `${colorAlpha} 0.4)`);
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = 2;
+      drawSmooth(pts);
+
+      // Truck position
+      const segs = pts.length - 1;
+      const sf = progress * segs;
+      const si = Math.min(Math.floor(sf), segs - 1);
+      const t = sf - si;
+      const tx = pts[si][0] + (pts[si + 1][0] - pts[si][0]) * t;
+      const ty = pts[si][1] + (pts[si + 1][1] - pts[si][1]) * t;
+
+      // Glow
+      const glow = ctx.createRadialGradient(tx, ty, 0, tx, ty, 16);
+      glow.addColorStop(0, `${colorAlpha} 0.3)`);
+      glow.addColorStop(1, `${colorAlpha} 0)`);
+      ctx.fillStyle = glow;
+      ctx.beginPath();ctx.arc(tx, ty, 16, 0, Math.PI * 2);ctx.fill();
+
+      // Truck dot
+      ctx.fillStyle = 'hsl(220, 15%, 6%)';
+      ctx.beginPath();ctx.arc(tx, ty, 6, 0, Math.PI * 2);ctx.fill();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();ctx.arc(tx, ty, 6, 0, Math.PI * 2);ctx.stroke();
+      ctx.fillStyle = color;
+      ctx.beginPath();ctx.arc(tx, ty, 3.5, 0, Math.PI * 2);ctx.fill();
+
+      // Endpoints
+      ctx.fillStyle = color;
+      ctx.beginPath();ctx.arc(start[0], start[1], 3.5, 0, Math.PI * 2);ctx.fill();
+      ctx.fillStyle = `${colorAlpha} 0.6)`;
+      ctx.beginPath();ctx.arc(end[0], end[1], 3.5, 0, Math.PI * 2);ctx.fill();
+
+      // City labels
+      ctx.fillStyle = 'hsl(220, 15%, 40%)';
+      ctx.font = '8px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(startLabel, start[0], start[1] + 14);
+      ctx.fillText(endLabel, end[0], end[1] - 10);
+    });
+
+    // LIVE badge on first truck
+    const mainRoute = routes[0];
+    const mainProgress = (truckProgress * mainRoute.speed + mainRoute.offset) % 1;
+    const mainSegs = mainRoute.pts.length - 1;
+    const mainSf = mainProgress * mainSegs;
+    const mainSi = Math.min(Math.floor(mainSf), mainSegs - 1);
+    const mainT = mainSf - mainSi;
+    const mainTx = mainRoute.pts[mainSi][0] + (mainRoute.pts[mainSi + 1][0] - mainRoute.pts[mainSi][0]) * mainT;
+    const mainTy = mainRoute.pts[mainSi][1] + (mainRoute.pts[mainSi + 1][1] - mainRoute.pts[mainSi][1]) * mainT;
+    const bx = mainTx + 10,by = mainTy - 12;
+    ctx.fillStyle = 'hsl(142, 71%, 45%)';
+    ctx.beginPath();ctx.roundRect(bx, by, 30, 12, 5);ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.beginPath();ctx.arc(bx + 7, by + 6, 1.5, 0, Math.PI * 2);ctx.fill();
+    ctx.fillStyle = 'hsl(220, 15%, 6%)';
+    ctx.font = 'bold 6.5px sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText('LIVE', bx + 11, by + 7.8);
+
+  }, [truckProgress, routes]);
 
   return (
     <section className="tru-ai-steps-section">
       <div className="tru-ai-steps-inner">
         <div className="flex flex-col lg:flex-row items-center justify-center gap-10 lg:gap-16 w-full">
-          {/* Map with animated routes */}
+          {/* Map canvas */}
           <div className="w-full max-w-[600px]">
-            <div className="relative rounded-xl overflow-hidden border border-foreground/10 shadow-lg">
-              <img src={eldMapImg} alt="Real-Time ELD Tracking Map" className="w-full h-auto block" />
-              
-              {/* SVG overlay for routes */}
-              <svg
-                viewBox="0 0 100 100"
-                preserveAspectRatio="none"
-                className="absolute inset-0 w-full h-full"
-                style={{ pointerEvents: 'none' }}
-              >
-                <defs>
-                  {routes.map((route, i) => (
-                    <filter key={`glow-${i}`} id={`route-glow-${i}`}>
-                      <feGaussianBlur stdDeviation="0.8" result="blur" />
-                      <feMerge>
-                        <feMergeNode in="blur" />
-                        <feMergeNode in="SourceGraphic" />
-                      </feMerge>
-                    </filter>
-                  ))}
-                </defs>
-
-                {routes.map((route, i) => {
-                  const progress = ((truckProgress * route.speed) + route.offset) % 1;
-                  const truckPos = getPointOnPath(route.path, progress);
-
-                  return (
-                    <g key={i}>
-                      {/* Route glow */}
-                      <path
-                        d={route.path}
-                        fill="none"
-                        stroke={route.color}
-                        strokeWidth="0.8"
-                        strokeOpacity="0.15"
-                        filter={`url(#route-glow-${i})`}
-                      />
-                      {/* Route line */}
-                      <path
-                        d={route.path}
-                        fill="none"
-                        stroke={route.color}
-                        strokeWidth="0.3"
-                        strokeOpacity="0.6"
-                        strokeDasharray="1 0.8"
-                      />
-                      {/* Truck glow */}
-                      <circle
-                        cx={truckPos.x}
-                        cy={truckPos.y}
-                        r="2"
-                        fill={route.color}
-                        opacity="0.25"
-                      />
-                      {/* Truck dot outer */}
-                      <circle
-                        cx={truckPos.x}
-                        cy={truckPos.y}
-                        r="1"
-                        fill="hsl(220, 15%, 6%)"
-                        stroke={route.color}
-                        strokeWidth="0.3"
-                      />
-                      {/* Truck dot inner */}
-                      <circle
-                        cx={truckPos.x}
-                        cy={truckPos.y}
-                        r="0.5"
-                        fill={route.color}
-                      />
-                    </g>
-                  );
-                })}
-
-                {/* LIVE badge on first truck */}
-                {(() => {
-                  const mainProgress = ((truckProgress * routes[0].speed) + routes[0].offset) % 1;
-                  const pos = getPointOnPath(routes[0].path, mainProgress);
-                  return (
-                    <g>
-                      <rect
-                        x={pos.x + 1.5}
-                        y={pos.y - 3}
-                        width="6"
-                        height="2.5"
-                        rx="0.8"
-                        fill="hsl(142, 71%, 45%)"
-                      />
-                      <circle cx={pos.x + 3} cy={pos.y - 1.75} r="0.35" fill="white" />
-                      <text
-                        x={pos.x + 4}
-                        y={pos.y - 1.3}
-                        fill="hsl(220, 15%, 6%)"
-                        fontSize="1.3"
-                        fontWeight="bold"
-                        fontFamily="sans-serif"
-                      >
-                        LIVE
-                      </text>
-                    </g>
-                  );
-                })()}
-              </svg>
+            <div className="rounded-xl overflow-hidden border border-foreground/10 shadow-lg">
+              <canvas ref={canvasRef} width={600} height={340} className="w-full h-auto block" />
             </div>
           </div>
           
@@ -616,7 +646,7 @@ function ShipmentTrackerSection({ navigate }: { navigate: (path: string) => void
             <div className="tru-ai-headline-block">
               <h2 className="tru-ai-main-headline">
                 Real-Time<br />
-                <span className="tru-ai-headline-accent">Truck Tracking.</span>
+                <span className="tru-ai-headline-accent">ELD Tracking.</span>
               </h2>
               <p className="tru-ai-subheadline">
                 Connect to your carriers ELD and track movements in real-time
@@ -631,8 +661,8 @@ function ShipmentTrackerSection({ navigate }: { navigate: (path: string) => void
           </div>
         </div>
       </div>
-    </section>
-  );
+    </section>);
+
 }
 
 // Trust Compact Section with scroll-triggered staggered reveal
@@ -640,14 +670,14 @@ function TrustCompactSection() {
   const [sectionRef, isInView] = useScrollAnimation<HTMLElement>({
     threshold: 0.2,
     rootMargin: "0px",
-    triggerOnce: true,
+    triggerOnce: true
   });
 
   const stats = [
-    { icon: Database, label: "Federal SAFER Data" },
-    { icon: CreditCard, label: "Secure Payments" },
-    { icon: ShieldCheck, label: "Vetted Movers" },
-  ];
+  { icon: Database, label: "Federal SAFER Data" },
+  { icon: CreditCard, label: "Secure Payments" },
+  { icon: ShieldCheck, label: "Vetted Movers" }];
+
 
   const badges = ["FMCSA Authorized", "USDOT Compliant", "Insured & Bonded"];
 
@@ -655,46 +685,46 @@ function TrustCompactSection() {
     <section className="tru-trust-compact" ref={sectionRef}>
       <div className="tru-trust-compact-inner">
         <div className="tru-trust-compact-stats">
-          {stats.map((stat, index) => (
-            <div 
-              key={stat.label}
-              className={`tru-trust-compact-stat ${isInView ? 'in-view' : ''}`}
-              style={{ '--stagger-index': index } as React.CSSProperties}
-            >
+          {stats.map((stat, index) =>
+          <div
+            key={stat.label}
+            className={`tru-trust-compact-stat ${isInView ? 'in-view' : ''}`}
+            style={{ '--stagger-index': index } as React.CSSProperties}>
+            
               <stat.icon className="w-5 h-5" />
               <span>{stat.label}</span>
             </div>
-          ))}
+          )}
         </div>
         <div className="tru-trust-compact-badges">
-          {badges.map((badge, index) => (
-            <span 
-              key={badge} 
-              className={`tru-trust-compact-badge ${isInView ? 'in-view' : ''}`}
-              style={{ '--stagger-index': index + 3 } as React.CSSProperties}
-            >
+          {badges.map((badge, index) =>
+          <span
+            key={badge}
+            className={`tru-trust-compact-badge ${isInView ? 'in-view' : ''}`}
+            style={{ '--stagger-index': index + 3 } as React.CSSProperties}>
+            
               {badge}
             </span>
-          ))}
+          )}
         </div>
       </div>
-    </section>
-  );
+    </section>);
+
 }
 
 // Steps Compact Section with parallax effect
-function StepsCompactSection({ navigate }: { navigate: (path: string) => void }) {
+function StepsCompactSection({ navigate }: {navigate: (path: string) => void;}) {
   const [sectionRef, isInView] = useScrollAnimation<HTMLElement>({
     threshold: 0.1,
     rootMargin: "0px",
-    triggerOnce: true,
+    triggerOnce: true
   });
 
   const steps = [
-    { num: 1, title: "Build Your Inventory", desc: "AI-powered tools calculate weight and volume from real data." },
-    { num: 2, title: "Get Carrier Matches", desc: "We analyze SAFER Web data to find the best fit." },
-    { num: 3, title: "Book with Confidence", desc: "Secure payment. Licensed, vetted movers only." },
-  ];
+  { num: 1, title: "Build Your Inventory", desc: "AI-powered tools calculate weight and volume from real data." },
+  { num: 2, title: "Get Carrier Matches", desc: "We analyze SAFER Web data to find the best fit." },
+  { num: 3, title: "Book with Confidence", desc: "Secure payment. Licensed, vetted movers only." }];
+
 
   return (
     <section className="tru-steps-compact" ref={sectionRef}>
@@ -704,13 +734,13 @@ function StepsCompactSection({ navigate }: { navigate: (path: string) => void })
           <h2 className="tru-steps-compact-title">Get matched with the right mover.</h2>
         </div>
         <div className="tru-steps-compact-grid">
-          {steps.map((step, index) => (
-            <div 
-              key={step.num}
-              className={`tru-steps-compact-card tru-steps-parallax-card ${isInView ? 'in-view' : ''}`}
-              style={{ '--card-index': index } as React.CSSProperties}
-              onClick={() => navigate("/site/online-estimate")}
-            >
+          {steps.map((step, index) =>
+          <div
+            key={step.num}
+            className={`tru-steps-compact-card tru-steps-parallax-card ${isInView ? 'in-view' : ''}`}
+            style={{ '--card-index': index } as React.CSSProperties}
+            onClick={() => navigate("/site/online-estimate")}>
+            
               <div className="tru-steps-compact-num">{step.num}</div>
               <div className="tru-steps-compact-card-content">
                 <h3>{step.title}</h3>
@@ -718,11 +748,11 @@ function StepsCompactSection({ navigate }: { navigate: (path: string) => void })
               </div>
               <ArrowRight className="w-4 h-4 tru-steps-compact-arrow" />
             </div>
-          ))}
+          )}
         </div>
       </div>
-    </section>
-  );
+    </section>);
+
 }
 
 export default function Index() {
@@ -730,21 +760,21 @@ export default function Index() {
   const navigate = useNavigate();
   const quoteBuilderRef = useRef<HTMLDivElement>(null);
   const heroSectionRef = useRef<HTMLElement>(null);
-  
+
   // Scroll-triggered animation for hero content
   const [heroContentRef, isHeroInView] = useScrollAnimation<HTMLDivElement>({
     threshold: 0.1,
     rootMargin: "0px",
-    triggerOnce: true,
+    triggerOnce: true
   });
-  
+
   // Parallax effects for hero elements
   const [parallaxHeadlineRef, headlineParallax] = useParallax<HTMLDivElement>({ speed: 0.15, direction: "up" });
   const [parallaxFormRef, formParallax] = useParallax<HTMLDivElement>({ speed: 0.05, direction: "up" });
-  
+
   // Step tracking (1-4)
   const [step, setStep] = useState(1);
-  
+
   // Analyzing transition state
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analyzePhase, setAnalyzePhase] = useState(0); // 0: origin, 1: destination, 2: route
@@ -752,23 +782,23 @@ export default function Index() {
   const [toCoords, setToCoords] = useState<[number, number] | null>(null);
   const [routeProgress, setRouteProgress] = useState(0); // 0-100 for route drawing animation
   const [routeGeometry, setRouteGeometry] = useState<string | null>(null);
-  
+
   // UI engagement state - cards expand when user starts typing
   const [isEngaged, setIsEngaged] = useState(false);
-  
+
   // Chat state
   const [chatOpen, setChatOpen] = useState(false);
-  
+
   // Lead capture modal state
   const [leadCaptureOpen, setLeadCaptureOpen] = useState(false);
   const [leadCaptureTarget, setLeadCaptureTarget] = useState<"manual" | "ai">("manual");
   const [hasProvidedContactInfo, setHasProvidedContactInfo] = useState(false);
-  
+
   // AI Scan Demo state
   const [scanDemoRunning, setScanDemoRunning] = useState(false);
   const [scanVisibleCount, setScanVisibleCount] = useState(0);
   const scanPreviewRef = useRef<HTMLDivElement>(null);
-  
+
   // Sync visibleCount with scan running state
   useEffect(() => {
     if (!scanDemoRunning) {
@@ -776,11 +806,11 @@ export default function Index() {
       return;
     }
     const interval = setInterval(() => {
-      setScanVisibleCount(prev => prev >= SCAN_DEMO_ITEMS.length ? prev : prev + 1);
+      setScanVisibleCount((prev) => prev >= SCAN_DEMO_ITEMS.length ? prev : prev + 1);
     }, 1500);
     return () => clearInterval(interval);
   }, [scanDemoRunning]);
-  
+
   // Form state
   const [contactName, setContactName] = useState("");
   const [contactPhone, setContactPhone] = useState("");
@@ -800,76 +830,76 @@ export default function Index() {
   const [datePopoverOpen, setDatePopoverOpen] = useState(false);
   const [formError, setFormError] = useState("");
   const [submitted, setSubmitted] = useState(false);
-  
+
   // Carrier search animation states
   const [isSearchingCarriers, setIsSearchingCarriers] = useState(false);
   const [searchPhase, setSearchPhase] = useState(0);
   const [carrierCount, setCarrierCount] = useState(0);
   const [foundCarriers, setFoundCarriers] = useState(0);
-  
+
   // Track which summary fields just updated (for animation)
   const [updatedFields, setUpdatedFields] = useState<Set<string>>(new Set());
-  
+
   // Why TruMove feature selection state
   const [activeFeature, setActiveFeature] = useState<number | null>(null);
-  
-  
+
+
   // Why TruMove features data - Updated per plan
   const whyTruMoveFeatures = [
-    {
-      id: 'ai-scanner',
-      icon: Scan,
-      title: 'Computer Vision Inventory',
-      shortDesc: 'AI scans your rooms in seconds',
-      longDesc: 'Our proprietary neural network detects furniture, estimates cubic footage, and calculates weight — eliminating the guesswork that leads to surprise fees on move day.',
-      hoverTip: 'Skip the clipboard. Snap photos and let AI do the counting.'
-    },
-    {
-      id: 'video-consults',
-      icon: Video,
-      title: 'Live Video Walk-Through',
-      shortDesc: 'Real-time consultation with experts',
-      longDesc: 'A TruMove specialist joins you via video to walk your home room-by-room. They catch details photos miss and build a quote you can actually trust.',
-      hoverTip: 'Like FaceTime, but with a moving pro on the other end.'
-    },
-    {
-      id: 'fmcsa-vetting',
-      icon: ShieldCheck,
-      title: 'FMCSA Safety Intelligence',
-      shortDesc: 'Federal database cross-reference',
-      longDesc: 'We pull real-time data from the SAFER Web Services API — checking operating authority, crash history, and compliance ratings before any carrier makes our list.',
-      hoverTip: 'Same data the feds use. Zero guesswork.'
-    },
-    {
-      id: 'authority-check',
-      icon: Shield,
-      title: 'License Verification Engine',
-      shortDesc: 'Active authority confirmation',
-      longDesc: 'Every carrier is validated for active MC and USDOT numbers. Revoked, suspended, or lapsed licenses get flagged instantly — you only see vetted options.',
-      hoverTip: "If it's not active, you won't see it."
-    },
-    {
-      id: 'insurance-check',
-      icon: CreditCard,
-      title: 'Coverage Validation',
-      shortDesc: 'Insurance limits verified on file',
-      longDesc: 'We confirm cargo, liability, and bodily injury coverage meets or exceeds federal minimums — so your belongings are protected before they leave the driveway.',
-      hoverTip: 'Proof of coverage, not just promises.'
-    },
-    {
-      id: 'transparency',
-      icon: Zap,
-      title: 'Zero Black Box',
-      shortDesc: 'Full visibility at every stage',
-      longDesc: 'From carrier matching to move-day coordination, you see exactly what we see. Real-time status updates, no hidden fees, no corporate runaround.',
-      hoverTip: "You're in the loop. Always."
-    }
-  ];
-  
+  {
+    id: 'ai-scanner',
+    icon: Scan,
+    title: 'Computer Vision Inventory',
+    shortDesc: 'AI scans your rooms in seconds',
+    longDesc: 'Our proprietary neural network detects furniture, estimates cubic footage, and calculates weight — eliminating the guesswork that leads to surprise fees on move day.',
+    hoverTip: 'Skip the clipboard. Snap photos and let AI do the counting.'
+  },
+  {
+    id: 'video-consults',
+    icon: Video,
+    title: 'Live Video Walk-Through',
+    shortDesc: 'Real-time consultation with experts',
+    longDesc: 'A TruMove specialist joins you via video to walk your home room-by-room. They catch details photos miss and build a quote you can actually trust.',
+    hoverTip: 'Like FaceTime, but with a moving pro on the other end.'
+  },
+  {
+    id: 'fmcsa-vetting',
+    icon: ShieldCheck,
+    title: 'FMCSA Safety Intelligence',
+    shortDesc: 'Federal database cross-reference',
+    longDesc: 'We pull real-time data from the SAFER Web Services API — checking operating authority, crash history, and compliance ratings before any carrier makes our list.',
+    hoverTip: 'Same data the feds use. Zero guesswork.'
+  },
+  {
+    id: 'authority-check',
+    icon: Shield,
+    title: 'License Verification Engine',
+    shortDesc: 'Active authority confirmation',
+    longDesc: 'Every carrier is validated for active MC and USDOT numbers. Revoked, suspended, or lapsed licenses get flagged instantly — you only see vetted options.',
+    hoverTip: "If it's not active, you won't see it."
+  },
+  {
+    id: 'insurance-check',
+    icon: CreditCard,
+    title: 'Coverage Validation',
+    shortDesc: 'Insurance limits verified on file',
+    longDesc: 'We confirm cargo, liability, and bodily injury coverage meets or exceeds federal minimums — so your belongings are protected before they leave the driveway.',
+    hoverTip: 'Proof of coverage, not just promises.'
+  },
+  {
+    id: 'transparency',
+    icon: Zap,
+    title: 'Zero Black Box',
+    shortDesc: 'Full visibility at every stage',
+    longDesc: 'From carrier matching to move-day coordination, you see exactly what we see. Real-time status updates, no hidden fees, no corporate runaround.',
+    hoverTip: "You're in the loop. Always."
+  }];
+
+
   // Calculate real distance
   const distance = useMemo(() => calculateDistance(fromZip, toZip), [fromZip, toZip]);
   const moveType = distance > 150 ? "long-distance" : "local";
-  
+
   // Previous values to detect changes (for animation)
   const prevFromCity = useRef(fromCity);
   const prevToCity = useRef(toCity);
@@ -877,18 +907,18 @@ export default function Index() {
   const prevMoveDate = useRef(moveDate);
   const prevSize = useRef(size);
   const prevPropertyType = useRef(propertyType);
-  
+
   // Animate summary value updates (kept for potential future use)
   useEffect(() => {
     const fieldsToUpdate: string[] = [];
-    
+
     if (fromCity && fromCity !== prevFromCity.current) fieldsToUpdate.push('from');
     if (toCity && toCity !== prevToCity.current) fieldsToUpdate.push('to');
     if (distance > 0 && distance !== prevDistance.current) fieldsToUpdate.push('distance');
     if (moveDate && moveDate !== prevMoveDate.current) fieldsToUpdate.push('date');
     if (size && size !== prevSize.current) fieldsToUpdate.push('size');
     if (propertyType && propertyType !== prevPropertyType.current) fieldsToUpdate.push('propertyType');
-    
+
     // Update refs
     prevFromCity.current = fromCity;
     prevToCity.current = toCity;
@@ -896,7 +926,7 @@ export default function Index() {
     prevMoveDate.current = moveDate;
     prevSize.current = size;
     prevPropertyType.current = propertyType;
-    
+
     if (fieldsToUpdate.length > 0) {
       setUpdatedFields(new Set(fieldsToUpdate));
       const timer = setTimeout(() => setUpdatedFields(new Set()), 500);
@@ -905,9 +935,9 @@ export default function Index() {
   }, [fromCity, toCity, distance, moveDate, size, propertyType]);
 
   // AI hint for current step
-  const aiHint = useMemo(() => 
-    getAiHint(step, fromCity, toCity, distance, moveDate),
-    [step, fromCity, toCity, distance, moveDate]
+  const aiHint = useMemo(() =>
+  getAiHint(step, fromCity, toCity, distance, moveDate),
+  [step, fromCity, toCity, distance, moveDate]
   );
 
   // Dynamic ticker content based on progress
@@ -939,28 +969,28 @@ export default function Index() {
   // Calculate estimate
   const estimate = useMemo(() => {
     if (!size) return null;
-    
+
     const sizeWeights: Record<string, number> = {
       'Studio': 2000,
       '1 Bedroom': 3000,
       '2 Bedroom': 5000,
       '3 Bedroom': 7000,
       '4+ Bedroom': 10000,
-      'Office': 4000,
+      'Office': 4000
     };
     const weight = sizeWeights[size] || 4000;
     const base = calculateEstimate(weight, distance, moveType);
-    
+
     let min = base.min;
     let max = base.max;
-    
+
     // Add floor surcharge for apartments with stairs
     if (propertyType === 'apartment' && !hasElevator && floor > 1) {
       const floorSurcharge = (floor - 1) * 75;
       min += floorSurcharge;
       max += floorSurcharge;
     }
-    
+
     return { min, max };
   }, [size, distance, moveType, propertyType, floor, hasElevator]);
 
@@ -970,7 +1000,7 @@ export default function Index() {
     setSearchPhase(1);
     setCarrierCount(0);
     setFoundCarriers(0);
-    
+
     // Phase 1: Scanning (0-2s)
     setTimeout(() => {
       setSearchPhase(2);
@@ -985,13 +1015,13 @@ export default function Index() {
         setCarrierCount(count);
       }, 150);
     }, 1500);
-    
+
     // Phase 2: Analyzing (2-4s)
     setTimeout(() => {
       setSearchPhase(3);
       setFoundCarriers(Math.floor(Math.random() * 6) + 8); // 8-14 carriers
     }, 3500);
-    
+
     // Complete (4s+)
     setTimeout(() => {
       setIsSearchingCarriers(false);
@@ -1033,16 +1063,16 @@ export default function Index() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Store lead data with full address display
     localStorage.setItem("tm_lead", JSON.stringify({
-      name, fromZip, toZip, fromCity, toCity, 
+      name, fromZip, toZip, fromCity, toCity,
       fromLocationDisplay: fromLocationDisplay || `${fromCity} ${fromZip}`,
       toLocationDisplay: toLocationDisplay || `${toCity} ${toZip}`,
       moveDate: moveDate?.toISOString(),
       size, propertyType, floor, hasElevator, email, phone, ts: Date.now()
     }));
-    
+
     // Show confirmation
     setSubmitted(true);
   };
@@ -1058,13 +1088,13 @@ export default function Index() {
     }
   };
 
-  const handleLeadCaptureSubmit = (data: { name: string; email: string; phone: string }) => {
+  const handleLeadCaptureSubmit = (data: {name: string;email: string;phone: string;}) => {
     setName(data.name);
     setEmail(data.email);
     setPhoneNum(data.phone);
     setHasProvidedContactInfo(true);
     setLeadCaptureOpen(false);
-    
+
     // Store the lead data
     localStorage.setItem("tm_lead_contact", JSON.stringify({
       name: data.name,
@@ -1072,7 +1102,7 @@ export default function Index() {
       phone: data.phone,
       ts: Date.now()
     }));
-    
+
     // Navigate to the selected flow
     navigate(leadCaptureTarget === "ai" ? "/scan-room" : "/online-estimate");
   };
@@ -1083,10 +1113,10 @@ export default function Index() {
   // Step 3: Choose estimate method (AI or Manual)
   const canContinue = () => {
     switch (step) {
-      case 1: return fromZip.length === 5 && fromCity && toZip.length === 5 && toCity && moveDate !== null;
-      case 2: return name.trim().length >= 2 && email.includes("@") && isValidPhoneNumber(phone);
-      case 3: return true; // Always can proceed from method selection
-      default: return false;
+      case 1:return fromZip.length === 5 && fromCity && toZip.length === 5 && toCity && moveDate !== null;
+      case 2:return name.trim().length >= 2 && email.includes("@") && isValidPhoneNumber(phone);
+      case 3:return true; // Always can proceed from method selection
+      default:return false;
     }
   };
 
@@ -1096,7 +1126,7 @@ export default function Index() {
       if (step === 1) {
         setIsAnalyzing(true);
         setAnalyzePhase(0);
-        
+
         // Fetch route geometry for the third map
         if (fromCoords && toCoords) {
           try {
@@ -1114,7 +1144,7 @@ export default function Index() {
             console.error('Failed to fetch route:', e);
           }
         }
-        
+
         // Slower timing for popup modal experience
         // Phase 0: Show origin (0-2s)
         setTimeout(() => setAnalyzePhase(1), 2000);
@@ -1170,11 +1200,11 @@ export default function Index() {
           <div className="flex items-center justify-between w-full max-w-[1480px]">
             {/* Logo & Title */}
             <div className="flex items-center gap-3">
-              <img 
-                src={logoImg} 
-                alt="TruMove" 
-                className="h-6 brightness-0 invert"
-              />
+              <img
+                src={logoImg}
+                alt="TruMove"
+                className="h-6 brightness-0 invert" />
+              
               <span className="text-[11px] font-bold tracking-[0.2em] uppercase text-white/90">
                 TruMove Command Center
               </span>
@@ -1205,11 +1235,11 @@ export default function Index() {
         <div className="tru-hero-wrapper">
           {/* Full-width background image with parallax */}
           <div className="tru-hero-bg">
-            <img 
-              src={heroFamilyMove} 
-              alt="Happy family moving into their new home" 
-              className="tru-hero-bg-image"
-            />
+            <img
+                src={heroFamilyMove}
+                alt="Happy family moving into their new home"
+                className="tru-hero-bg-image" />
+              
             <div className="tru-hero-bg-overlay" />
           </div>
           
@@ -1220,7 +1250,7 @@ export default function Index() {
             
             
             {/* Full-Page Analyzing Overlay */}
-            {isAnalyzing && (
+            {isAnalyzing &&
               <div className="tru-analyze-fullpage-overlay">
                 <div className="tru-analyze-popup-modal">
                   <div className="tru-analyze-popup-header">
@@ -1241,15 +1271,15 @@ export default function Index() {
                       </div>
                       <div className="tru-analyze-strip-frame">
                         <div className="tru-analyze-strip-shimmer" />
-                        <img 
+                        <img
                           src={fromCoords ? `https://maps.googleapis.com/maps/api/streetview?size=720x440&location=${fromCoords[1]},${fromCoords[0]}&fov=90&heading=0&pitch=5&key=AIzaSyCWDpAPlxVRXnl1w5rz0Df5S3vGsHY6Xoo` : ''}
                           alt="Origin location"
                           className="tru-analyze-strip-img"
                           onLoad={(e) => e.currentTarget.classList.add('is-loaded')}
                           onError={(e) => {
                             e.currentTarget.src = `https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v12/static/${fromCoords?.[0]},${fromCoords?.[1]},16,0/720x440@2x?access_token=pk.eyJ1IjoibWF4d2VzdDUyNSIsImEiOiJjbWtuZTY0cTgwcGIzM2VweTN2MTgzeHc3In0.nlM6XCog7Y0nrPt-5v-E2g`;
-                          }}
-                        />
+                          }} />
+                        
                         <div className="tru-analyze-strip-city">{fromCity}</div>
                       </div>
                     </div>
@@ -1262,14 +1292,14 @@ export default function Index() {
                       </div>
                       <div className="tru-analyze-strip-frame tru-analyze-strip-route-frame">
                         <div className="tru-analyze-strip-shimmer" />
-                        {fromCoords && toCoords && routeGeometry && (
-                          <AnimatedRouteMap
-                            fromCoords={fromCoords}
-                            toCoords={toCoords}
-                            routeGeometry={routeGeometry}
-                            progress={routeProgress}
-                          />
-                        )}
+                        {fromCoords && toCoords && routeGeometry &&
+                        <AnimatedRouteMap
+                          fromCoords={fromCoords}
+                          toCoords={toCoords}
+                          routeGeometry={routeGeometry}
+                          progress={routeProgress} />
+
+                        }
                       </div>
                     </div>
                     
@@ -1281,22 +1311,22 @@ export default function Index() {
                       </div>
                       <div className="tru-analyze-strip-frame">
                         <div className="tru-analyze-strip-shimmer" />
-                        <img 
+                        <img
                           src={toCoords ? `https://maps.googleapis.com/maps/api/streetview?size=720x440&location=${toCoords[1]},${toCoords[0]}&fov=90&heading=0&pitch=5&key=AIzaSyCWDpAPlxVRXnl1w5rz0Df5S3vGsHY6Xoo` : ''}
                           alt="Destination location"
                           className="tru-analyze-strip-img"
                           onLoad={(e) => e.currentTarget.classList.add('is-loaded')}
                           onError={(e) => {
                             e.currentTarget.src = `https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v12/static/${toCoords?.[0]},${toCoords?.[1]},16,0/720x440@2x?access_token=pk.eyJ1IjoibWF4d2VzdDUyNSIsImEiOiJjbWtuZTY0cTgwcGIzM2VweTN2MTgzeHc3In0.nlM6XCog7Y0nrPt-5v-E2g`;
-                          }}
-                        />
+                          }} />
+                        
                         <div className="tru-analyze-strip-city">{toCity}</div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-            )}
+              }
 
             {/* LEFT COLUMN: Text Content */}
             <div className="tru-hero-left-column">
@@ -1313,13 +1343,13 @@ export default function Index() {
             </div>
 
             {/* RIGHT COLUMN: Form + CTAs */}
-            <div 
-              ref={parallaxFormRef}
-              className="tru-hero-right-column"
-              style={{
-                transform: `translateY(${formParallax.y}px)`,
-              }}
-            >
+            <div
+                ref={parallaxFormRef}
+                className="tru-hero-right-column"
+                style={{
+                  transform: `translateY(${formParallax.y}px)`
+                }}>
+                
               <div className="tru-hero-form-panel" ref={quoteBuilderRef}>
                 {/* TOP ROW: Form Card */}
                 <div className="tru-floating-form-card">
@@ -1336,7 +1366,7 @@ export default function Index() {
                   <div className="tru-floating-form-content">
 
                     {/* Step 1: Contact + Route */}
-                    {step === 1 && (
+                    {step === 1 &&
                       <div className="tru-qb-step-content" key="step-1">
                         
                         {/* Name + Phone Row */}
@@ -1352,8 +1382,8 @@ export default function Index() {
                                 }}
                                 placeholder="First and Last Name"
                                 className="tru-qb-input"
-                                autoFocus
-                              />
+                                autoFocus />
+                              
                             </div>
                           </div>
                           <div className="tru-qb-location-col">
@@ -1363,8 +1393,8 @@ export default function Index() {
                                 value={contactPhone}
                                 onChange={(e) => setContactPhone(formatPhoneNumber(e.target.value))}
                                 placeholder="Phone"
-                                className="tru-qb-input"
-                              />
+                                className="tru-qb-input" />
+                              
                             </div>
                           </div>
                         </div>
@@ -1376,8 +1406,8 @@ export default function Index() {
                             value={contactEmail}
                             onChange={(e) => setContactEmail(e.target.value)}
                             placeholder="Email"
-                            className="tru-qb-input"
-                          />
+                            className="tru-qb-input" />
+                          
                         </div>
                         
                         {/* FROM + TO Row */}
@@ -1400,8 +1430,8 @@ export default function Index() {
                                   const coords = await geocodeLocation(`${city} ${zip}`);
                                   if (coords) setFromCoords(coords);
                                 }}
-                                placeholder="City or ZIP"
-                              />
+                                placeholder="City or ZIP" />
+                              
                             </div>
                           </div>
 
@@ -1429,15 +1459,15 @@ export default function Index() {
                                   const coords = await geocodeLocation(`${city} ${zip}`);
                                   if (coords) setToCoords(coords);
                                 }}
-                                placeholder="City or ZIP"
-                              />
+                                placeholder="City or ZIP" />
+                              
                             </div>
                           </div>
                         </div>
 
-                        {formError && (
-                          <p style={{ color: 'hsl(0 70% 55%)', fontSize: '13px', textAlign: 'center', margin: '4px 0 0' }}>{formError}</p>
-                        )}
+                        {formError &&
+                        <p style={{ color: 'hsl(0 70% 55%)', fontSize: '13px', textAlign: 'center', margin: '4px 0 0' }}>{formError}</p>
+                        }
                         <button
                           type="button"
                           className="tru-qb-continue tru-engine-btn"
@@ -1445,25 +1475,25 @@ export default function Index() {
                             const name = contactName.trim();
                             const email = contactEmail.trim();
                             const phone = contactPhone.trim();
-                            if (!name) { setFormError('Please enter your name.'); return; }
-                            if (!email || !email.includes('@') || !email.includes('.')) { setFormError('Please enter a valid email.'); return; }
-                            if (!isValidPhoneNumber(phone)) { setFormError('Please enter a valid 10-digit phone number.'); return; }
+                            if (!name) {setFormError('Please enter your name.');return;}
+                            if (!email || !email.includes('@') || !email.includes('.')) {setFormError('Please enter a valid email.');return;}
+                            if (!isValidPhoneNumber(phone)) {setFormError('Please enter a valid 10-digit phone number.');return;}
                             setFormError('');
                             goNext();
                           }}
-                          style={{ marginTop: '16px' }}
-                        >
+                          style={{ marginTop: '16px' }}>
+                          
                           <span>Talk to Support</span>
                           <ArrowRight className="w-5 h-5 tru-btn-arrow" />
                         </button>
                         
                         <p className="tru-qb-microcopy">A moving specialist will call you shortly.</p>
                       </div>
-                    )}
+                      }
 
 
                     {/* Step 2: Contact Information (moved from step 3) */}
-                    {step === 2 && (
+                    {step === 2 &&
                       <div className="tru-qb-step-content tru-qb-step-compact" key="step-2">
                         <h1 className="tru-qb-question">How can we reach you?</h1>
                         <p className="tru-qb-subtitle">We'll save your progress and send updates</p>
@@ -1475,9 +1505,9 @@ export default function Index() {
                               className={`tru-qb-input ${formError && !name.trim() ? 'has-error' : ''}`}
                               placeholder="Your full name"
                               value={name}
-                              onChange={(e) => { setName(e.target.value); setFormError(""); }}
-                              autoFocus
-                            />
+                              onChange={(e) => {setName(e.target.value);setFormError("");}}
+                              autoFocus />
+                            
                           </div>
                           
                           <div className="tru-qb-input-wrap">
@@ -1486,9 +1516,9 @@ export default function Index() {
                               className={`tru-qb-input ${formError && !email.includes('@') ? 'has-error' : ''}`}
                               placeholder="Email address"
                               value={email}
-                              onChange={(e) => { setEmail(e.target.value); setFormError(""); }}
-                              onKeyDown={handleKeyDown}
-                            />
+                              onChange={(e) => {setEmail(e.target.value);setFormError("");}}
+                              onKeyDown={handleKeyDown} />
+                            
                           </div>
                           
                           <div className="tru-qb-input-wrap">
@@ -1497,18 +1527,18 @@ export default function Index() {
                               className={`tru-qb-input ${formError && !isValidPhoneNumber(phone) ? 'has-error' : ''}`}
                               placeholder="(555) 123-4567"
                               value={phone}
-                              onChange={(e) => { 
-                                setPhoneNum(formatPhoneNumber(e.target.value)); 
-                                setFormError(""); 
+                              onChange={(e) => {
+                                setPhoneNum(formatPhoneNumber(e.target.value));
+                                setFormError("");
                               }}
-                              onKeyDown={handleKeyDown}
-                            />
+                              onKeyDown={handleKeyDown} />
+                            
                           </div>
                         </div>
 
-                        {formError && (
-                          <p className="tru-qb-error">{formError}</p>
-                        )}
+                        {formError &&
+                        <p className="tru-qb-error">{formError}</p>
+                        }
 
                         <button
                           type="button"
@@ -1528,8 +1558,8 @@ export default function Index() {
                             } else {
                               setFormError("Please enter your name, a valid email, and phone number.");
                             }
-                          }}
-                        >
+                          }}>
+                          
                           <span>Continue</span>
                           <ArrowRight className="w-5 h-5 tru-btn-arrow" />
                         </button>
@@ -1543,24 +1573,24 @@ export default function Index() {
                           <Lock className="w-3 h-3 inline" /> Your info is secure & never sold.
                         </p>
                       </div>
-                    )}
+                      }
 
                     {/* Step 3: Choose Estimate Method */}
-                    {step === 3 && !submitted && (
+                    {step === 3 && !submitted &&
                       <div className="tru-qb-step-content" key="step-3">
                         <h1 className="tru-qb-question">How would you like to build your inventory?</h1>
                         <p className="tru-qb-subtitle">Choose the method that works best for you</p>
                         
                         <div className="tru-qb-method-options">
                           {/* AI Estimate Option */}
-                          <button 
-                            type="button" 
+                          <button
+                            type="button"
                             className="tru-qb-method-card tru-qb-method-primary"
                             onClick={() => {
                               handleSubmit(new Event('submit') as any);
                               navigate("/site/scan-room");
-                            }}
-                          >
+                            }}>
+                            
                             <div className="tru-qb-method-icon-wrap tru-qb-method-icon-ai">
                               <Scan className="w-6 h-6" />
                             </div>
@@ -1576,14 +1606,14 @@ export default function Index() {
                           </button>
                           
                           {/* Manual Inventory Option */}
-                          <button 
-                            type="button" 
+                          <button
+                            type="button"
                             className="tru-qb-method-card"
                             onClick={() => {
                               handleSubmit(new Event('submit') as any);
                               navigate("/site/online-estimate");
-                            }}
-                          >
+                            }}>
+                            
                             <div className="tru-qb-method-icon-wrap">
                               <Boxes className="w-6 h-6" />
                             </div>
@@ -1595,14 +1625,14 @@ export default function Index() {
                           </button>
                           
                           {/* Video Consult Option */}
-                          <button 
-                            type="button" 
+                          <button
+                            type="button"
                             className="tru-qb-method-card"
                             onClick={() => {
                               handleSubmit(new Event('submit') as any);
                               navigate("/site/book");
-                            }}
-                          >
+                            }}>
+                            
                             <div className="tru-qb-method-icon-wrap">
                               <Video className="w-6 h-6" />
                             </div>
@@ -1623,10 +1653,10 @@ export default function Index() {
                           <span>Back</span>
                         </button>
                       </div>
-                    )}
+                      }
 
                     {/* Post-Submission Confirmation - shown after selecting a method */}
-                    {submitted && (
+                    {submitted &&
                       <div className="tru-qb-step-content tru-qb-confirmation" key="step-confirmed">
                         <div className="tru-qb-confirmation-icon">
                           <CheckCircle className="w-12 h-12" />
@@ -1641,42 +1671,42 @@ export default function Index() {
                         </div>
                         
                         <div className="tru-qb-options-stack-full">
-                          <button 
-                            type="button" 
+                          <button
+                            type="button"
                             className="tru-qb-option-card"
-                            onClick={() => navigate("/site/scan-room")}
-                          >
+                            onClick={() => navigate("/site/scan-room")}>
+                            
                             <Scan className="w-5 h-5" />
                             <div className="tru-qb-option-text">
                               <span className="tru-qb-option-title">AI Inventory</span>
                               <span className="tru-qb-option-desc">Upload photos or video</span>
                             </div>
                           </button>
-                          <button 
-                            type="button" 
+                          <button
+                            type="button"
                             className="tru-qb-option-card tru-qb-option-card-outline"
-                            onClick={() => navigate("/site/online-estimate")}
-                          >
+                            onClick={() => navigate("/site/online-estimate")}>
+                            
                             <Boxes className="w-5 h-5" />
                             <div className="tru-qb-option-text">
                               <span className="tru-qb-option-title">Manual Builder</span>
                               <span className="tru-qb-option-desc">Select items room-by-room</span>
                             </div>
                           </button>
-                          <button 
-                            type="button" 
+                          <button
+                            type="button"
                             className="tru-qb-option-card tru-qb-option-card-outline"
-                            onClick={() => navigate("/site/book")}
-                          >
+                            onClick={() => navigate("/site/book")}>
+                            
                             <Video className="w-5 h-5" />
                             <div className="tru-qb-option-text">
                               <span className="tru-qb-option-title">Video Consult</span>
-                              <span className="tru-qb-option-desc">Schedule a walkthrough</span>
+                              <span className="tru-qb-option-desc py-[6px]">Schedule a walkthrough</span>
                             </div>
                           </button>
                         </div>
                       </div>
-                    )}
+                      }
                   </div>
                   
                   {/* Footer inside form card - with trust indicators */}
@@ -1719,11 +1749,11 @@ export default function Index() {
                   </div>
                   
                   {/* CTA Button */}
-                  <button 
+                  <button
                     onClick={() => navigate("/site/scan-room")}
                     className="tru-ai-cta-btn animate-fade-scale-in opacity-0"
-                    style={{ animationDelay: '350ms' }}
-                  >
+                    style={{ animationDelay: '350ms' }}>
+                    
                     <Home className="w-4 h-4" />
                     Scan Your Home
                     <ArrowRight className="w-4 h-4" />
@@ -1732,16 +1762,16 @@ export default function Index() {
                 
                 {/* CENTER: Room Scanner Demo */}
                 <div className={`tru-ai-scanner-center ${scanDemoRunning ? 'is-running' : ''}`}>
-                  <ScannerPreview 
-                    isRunning={scanDemoRunning} 
+                  <ScannerPreview
+                    isRunning={scanDemoRunning}
                     visibleCount={scanVisibleCount}
                     onStartDemo={() => {
-                      setScanDemoRunning(prev => !prev);
+                      setScanDemoRunning((prev) => !prev);
                       setTimeout(() => {
                         scanPreviewRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
                       }, 100);
-                    }} 
-                  />
+                    }} />
+                  
                 </div>
                 
                 {/* RIGHT: Detection List */}
@@ -1779,23 +1809,23 @@ export default function Index() {
                   {/* Capability grid */}
                   <div className="grid grid-cols-2 gap-2 w-full">
                     {[
-                      { label: "Instant Quotes", desc: "AI-powered estimates in seconds" },
-                      { label: "Live Tracking", desc: "Real-time GPS location & ETA" },
-                      { label: "Scheduling", desc: "Book or reschedule moves" },
-                      { label: "Carrier Vetting", desc: "FMCSA safety verified" },
-                      { label: "Room Scanner", desc: "Photo-based inventory" },
-                      { label: "Packing Help", desc: "Tips & checklists" },
-                      { label: "Video Consult", desc: "Live virtual walk-through" },
-                      { label: "General Support", desc: "Insurance, claims, storage" },
-                    ].map((item) => (
-                      <div
-                        key={item.label}
-                        className="flex flex-col rounded-lg border border-border/60 bg-muted/30 px-3 py-2"
-                      >
+                    { label: "Instant Quotes", desc: "AI-powered estimates in seconds" },
+                    { label: "Live Tracking", desc: "Real-time GPS location & ETA" },
+                    { label: "Scheduling", desc: "Book or reschedule moves" },
+                    { label: "Carrier Vetting", desc: "FMCSA safety verified" },
+                    { label: "Room Scanner", desc: "Photo-based inventory" },
+                    { label: "Packing Help", desc: "Tips & checklists" },
+                    { label: "Video Consult", desc: "Live virtual walk-through" },
+                    { label: "General Support", desc: "Insurance, claims, storage" }].
+                    map((item) =>
+                    <div
+                      key={item.label}
+                      className="flex flex-col rounded-lg border border-border/60 bg-muted/30 px-3 py-2">
+                      
                         <span className="text-[11px] font-semibold text-foreground leading-tight">{item.label}</span>
                         <span className="text-[10px] text-muted-foreground leading-snug mt-0.5">{item.desc}</span>
                       </div>
-                    ))}
+                    )}
                   </div>
                 </div>
                 
@@ -1830,9 +1860,9 @@ export default function Index() {
         isOpen={leadCaptureOpen}
         onClose={() => setLeadCaptureOpen(false)}
         onSubmit={handleLeadCaptureSubmit}
-        targetFlow={leadCaptureTarget}
-      />
+        targetFlow={leadCaptureTarget} />
+      
 
-    </SiteShell>
-  );
+    </SiteShell>);
+
 }
