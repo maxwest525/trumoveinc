@@ -48,6 +48,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { CustomItemModal } from "./CustomItemModal";
 import { InventoryItemImage } from "./InventoryItemImage";
+import scanRoomPreview from "@/assets/scan-room-preview.jpg";
 import {
   Command,
   CommandEmpty,
