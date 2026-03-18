@@ -33,29 +33,26 @@ function SortableWidget({ widget, onRemove }: { widget: KpiWidgetDef; onRemove: 
       ref={setNodeRef}
       style={{ transform: CSS.Transform.toString(transform), transition }}
       className={cn(
-        "rounded-xl border border-border bg-card p-4 relative group",
+        "rounded-xl border border-border bg-card p-3.5 relative group",
         isDragging && "opacity-50 shadow-lg z-50"
       )}
     >
       <button
         {...attributes}
         {...listeners}
-        className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing p-0.5"
+        className="absolute top-1.5 left-1.5 opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing p-0.5"
       >
-        <GripVertical className="w-3.5 h-3.5 text-muted-foreground" />
+        <GripVertical className="w-3 h-3 text-muted-foreground" />
       </button>
       <button
         onClick={onRemove}
-        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity p-0.5 hover:bg-destructive/10 rounded"
+        className="absolute top-1.5 right-1.5 opacity-0 group-hover:opacity-100 transition-opacity p-0.5 hover:bg-destructive/10 rounded"
       >
-        <X className="w-3.5 h-3.5 text-muted-foreground hover:text-destructive" />
+        <X className="w-3 h-3 text-muted-foreground hover:text-destructive" />
       </button>
-      <div className="flex items-start justify-between">
-        <span className="text-xs text-muted-foreground">{widget.label}</span>
-        <Icon className="w-4 h-4 text-muted-foreground/50" />
-      </div>
-      <div className="mt-2 text-2xl font-bold text-foreground">{widget.defaultValue}</div>
-      {widget.defaultSub && <span className="text-[11px] text-muted-foreground">{widget.defaultSub}</span>}
+      <span className="text-[11px] text-muted-foreground">{widget.label}</span>
+      <div className="mt-1 text-xl font-bold text-foreground">{widget.defaultValue}</div>
+      {widget.defaultSub && <span className="text-[10px] text-muted-foreground">{widget.defaultSub}</span>}
     </div>
   );
 }
