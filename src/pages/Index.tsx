@@ -1374,7 +1374,7 @@ export default function Index() {
                                   if (e.target.value.length > 0 && !isEngaged) setIsEngaged(true);
                                 }}
                                 placeholder="First and Last Name"
-                                className="tru-qb-text-input"
+                                className="tru-qb-input"
                                 autoFocus
                               />
                             </div>
