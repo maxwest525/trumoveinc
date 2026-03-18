@@ -210,6 +210,15 @@ export function EstimateAuthDocument({
                 will perform the transportation services.
               </p>
 
+              {/* Electronic Consent - above signature */}
+              {onConsentChange && (
+                <ESignConsentBanner
+                  consentGiven={consentGiven}
+                  onConsentChange={onConsentChange}
+                  className="my-4"
+                />
+              )}
+
               <div className="flex items-end gap-8 mt-6">
                 <div className="flex-1">
                   <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">Customer Signature</p>
@@ -244,6 +253,11 @@ export function EstimateAuthDocument({
                   </div>
                 </div>
               </div>
+
+              {/* Disclaimer below signature */}
+              <p className="text-[10px] text-muted-foreground leading-relaxed mt-4">
+                Your IP address, browser, and timestamp will be recorded for compliance. This document is legally binding upon submission.
+              </p>
             </div>
           </section>
 
