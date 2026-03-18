@@ -92,7 +92,7 @@ function SoundWave({ active }: { active: boolean }) {
   );
 }
 
-export default function AgentToolLauncherModal({ open, onOpenChange }: AgentToolLauncherModalProps) {
+export default function AgentToolLauncherModal({ open, onOpenChange, onLaunchWorkspace }: AgentToolLauncherModalProps) {
   const navigate = useNavigate();
   const [trudyState, setTrudyState] = useState<"ask" | "response">("ask");
   const [trudyMsg, setTrudyMsg] = useState("");
