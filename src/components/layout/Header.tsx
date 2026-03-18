@@ -157,7 +157,12 @@ export default function Header({ whiteLogo = false }: HeaderProps) {
         <div className="header-inner">
           {/* Logo */}
           <Link to="/site" className="header-logo" aria-label="TruMove Home">
-            <img src={logo} alt="TruMove" className={whiteLogo ? "brightness-0 invert" : ""} />
+            <img 
+              src={logo} 
+              alt="TruMove" 
+              className={whiteLogo ? "brightness-0 invert" : ""}
+              style={whiteLogo ? { filter: 'brightness(0) invert(1) drop-shadow(0 0 8px rgba(255,255,255,0.8)) drop-shadow(0 0 20px rgba(255,255,255,0.4))' } : undefined}
+            />
           </Link>
 
           {/* Desktop Nav with Mega-Menus */}
