@@ -131,9 +131,9 @@ export default function AgentLogin() {
               </span>
             )}
           </h1>
-          <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
+          <div className="flex items-center gap-2 text-[11px] text-white/50">
             <span>{session.user.email}</span>
-            <span className="text-border">·</span>
+            <span className="text-white/20">·</span>
             <button
               onClick={handleSignOut}
               className="inline-flex items-center gap-1 hover:text-destructive transition-colors"
