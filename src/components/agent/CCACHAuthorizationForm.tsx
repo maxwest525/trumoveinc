@@ -716,18 +716,7 @@ export function CCACHAuthorizationForm({
 
               {/* Action Footer */}
               <div className="border-t border-foreground/10 px-10 py-4 bg-muted/5">
-                <div className="flex flex-wrap items-center justify-between gap-4">
-                  <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="sm" className="text-muted-foreground gap-1.5 h-8 text-xs">
-                      <Printer className="h-3.5 w-3.5" />
-                      Print
-                    </Button>
-                    <Button variant="ghost" size="sm" className="text-muted-foreground gap-1.5 h-8 text-xs">
-                      <Download className="h-3.5 w-3.5" />
-                      Download PDF
-                    </Button>
-                  </div>
-
+                <div className="flex flex-wrap items-center justify-end gap-4">
                   <Button
                     onClick={handleSubmit}
                     disabled={!allSigned}
