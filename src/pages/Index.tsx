@@ -658,7 +658,6 @@ function ShipmentTrackerSection({ navigate }: { navigate: (path: string) => void
             </button>
           </div>
         </div>
-        </div>
       </div>
     </section>
   );
