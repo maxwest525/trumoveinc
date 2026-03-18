@@ -71,14 +71,6 @@ export default function ElevenLabsTrudyWidget() {
   useEffect(() => { transcriptRef.current = transcript; }, [transcript]);
   useEffect(() => { scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' }); }, [transcript]);
 
-  // Listen for programmatic start from other components
-  useEffect(() => {
-    const handleStart = () => { if (!isConnecting && conversation.status === 'disconnected') startConversation(); };
-    window.addEventListener('trudy-start', handleStart);
-    return () => window.removeEventListener('trudy-start', handleStart);
-  }, [startConversation, isConnecting, conversation.status]);
-
-
   const startConversation = useCallback(async () => {
     if (isConnecting) return;
     setIsConnecting(true);
@@ -95,6 +87,13 @@ export default function ElevenLabsTrudyWidget() {
   }, [conversation, isConnecting]);
 
   const stopConversation = useCallback(async () => { await conversation.endSession(); }, [conversation]);
+
+  // Listen for programmatic start from other components
+  useEffect(() => {
+    const handleStart = () => { if (!isConnecting && conversation.status === 'disconnected') startConversation(); };
+    window.addEventListener('trudy-start', handleStart);
+    return () => window.removeEventListener('trudy-start', handleStart);
+  }, [startConversation, isConnecting, conversation.status]);
 
   const formatText = (entries: TranscriptEntry[]) => entries.map(e => `${e.speaker === 'trudy' ? 'Trudy' : 'You'}: ${e.text}`).join('\n');
 
