@@ -130,23 +130,8 @@ export default function AgentToolLauncherModal({ open, onOpenChange, onLaunchWor
   }, []);
 
   const handleLaunchAll = () => {
-    const sw = window.screen.availWidth;
-    const sh = window.screen.availHeight;
-    const sl = (window.screen as any).availLeft ?? 0;
-    const st = (window.screen as any).availTop ?? 0;
-    const count = TOOLS.length;
-    const w = Math.floor(sw / count);
-
-    TOOLS.forEach((tool, i) => {
-      const url = tool.internal ? window.location.origin + tool.url : tool.url;
-      window.open(
-        url,
-        `tool_${tool.key}`,
-        `left=${sl + i * w},top=${st},width=${w},height=${sh},menubar=no,toolbar=no,location=yes,status=no`
-      );
-    });
-
     onOpenChange(false);
+    onLaunchWorkspace?.();
   };
 
   const handleGoToDashboard = () => {
