@@ -1702,9 +1702,9 @@ export default function Index() {
           {/* GET IN TOUCH */}
           <section className="py-20 px-4">
             <div className="max-w-6xl mx-auto">
-              <div className="flex flex-col md:flex-row gap-6 items-stretch">
-                {/* Col 1: Headline */}
-                <div className="md:w-56 shrink-0 flex flex-col items-center justify-center text-center rounded-xl border-2 border-black bg-card p-8" style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.5), 0 8px 40px rgba(0,0,0,0.3), inset 0 2px 8px rgba(0,0,0,0.15)' }}>
+              <div className="flex flex-col md:flex-row items-stretch">
+                {/* Col 1: Headline — separated left */}
+                <div className="md:w-56 shrink-0 flex flex-col items-center justify-center text-center rounded-xl border-2 border-black bg-card p-8 mr-12" style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.5), 0 8px 40px rgba(0,0,0,0.3), inset 0 2px 8px rgba(0,0,0,0.15)' }}>
                   <h2 className="text-3xl font-black tracking-tight text-foreground mb-3">Contact Us.</h2>
                   <p className="text-sm text-muted-foreground leading-relaxed mb-5">Our team is standing by. Voice, video, text, or email.</p>
                   <a href="tel:+16097277647" className="inline-flex items-center gap-2 bg-foreground text-background px-6 py-2.5 rounded-full text-sm font-semibold hover:opacity-90 transition-opacity">
@@ -1714,11 +1714,13 @@ export default function Index() {
                   </a>
                 </div>
 
+                {/* Right group: remaining cards */}
+                <div className="flex flex-col md:flex-row gap-6 flex-1 items-stretch">
                 {/* Col 2: Talk to Trudy + Book Video Consult stacked */}
                 <div className="flex flex-col gap-4 md:w-44 shrink-0">
                   <button
                     onClick={() => window.dispatchEvent(new CustomEvent('trudy-start'))}
-                    className="group relative flex flex-col items-center text-center rounded-2xl border-2 border-black bg-card p-6 hover:-translate-y-1 transition-all duration-200" style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.5), 0 8px 40px rgba(0,0,0,0.3), inset 0 2px 8px rgba(0,0,0,0.15)' }}
+                    className="group relative flex flex-col items-center text-center rounded-2xl border-2 border-black bg-card p-6 hover:-translate-y-1 transition-all duration-200 flex-1" style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.5), 0 8px 40px rgba(0,0,0,0.3), inset 0 2px 8px rgba(0,0,0,0.15)' }}
                   >
                     <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center mb-3 group-hover:bg-primary/20 transition-colors">
                       <Mic className="h-4 w-4 text-primary" />
@@ -1732,7 +1734,7 @@ export default function Index() {
 
                   <button
                     onClick={() => navigate("/book")}
-                    className="group relative flex flex-col items-center text-center rounded-2xl border-2 border-black bg-card p-6 hover:-translate-y-1 transition-all duration-200" style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.5), 0 8px 40px rgba(0,0,0,0.3), inset 0 2px 8px rgba(0,0,0,0.15)' }}
+                    className="group relative flex flex-col items-center text-center rounded-2xl border-2 border-black bg-card p-6 hover:-translate-y-1 transition-all duration-200 flex-1" style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.5), 0 8px 40px rgba(0,0,0,0.3), inset 0 2px 8px rgba(0,0,0,0.15)' }}
                   >
                     <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center mb-3 group-hover:bg-primary/20 transition-colors">
                       <Video className="h-4 w-4 text-primary" />
@@ -1773,7 +1775,7 @@ export default function Index() {
                 <div className="flex flex-col gap-4 md:w-44 shrink-0">
                   <a
                     href="tel:+16097277647"
-                    className="group relative flex flex-col items-center text-center rounded-2xl border-2 border-black bg-card p-6 hover:-translate-y-1 transition-all duration-200" style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.5), 0 8px 40px rgba(0,0,0,0.3), inset 0 2px 8px rgba(0,0,0,0.15)' }}
+                    className="group relative flex flex-col items-center text-center rounded-2xl border-2 border-black bg-card p-6 hover:-translate-y-1 transition-all duration-200 flex-1" style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.5), 0 8px 40px rgba(0,0,0,0.3), inset 0 2px 8px rgba(0,0,0,0.15)' }}
                   >
                     <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center mb-3 group-hover:bg-primary/20 transition-colors">
                       <Phone className="h-4 w-4 text-primary" />
@@ -1788,7 +1790,7 @@ export default function Index() {
 
                   <a
                     href="sms:+16097277647"
-                    className="group relative flex flex-col items-center text-center rounded-2xl border-2 border-black bg-card p-6 hover:-translate-y-1 transition-all duration-200" style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.5), 0 8px 40px rgba(0,0,0,0.3), inset 0 2px 8px rgba(0,0,0,0.15)' }}
+                    className="group relative flex flex-col items-center text-center rounded-2xl border-2 border-black bg-card p-6 hover:-translate-y-1 transition-all duration-200 flex-1" style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.5), 0 8px 40px rgba(0,0,0,0.3), inset 0 2px 8px rgba(0,0,0,0.15)' }}
                   >
                     <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center mb-3 group-hover:bg-primary/20 transition-colors">
                       <MessageSquare className="h-4 w-4 text-primary" />
@@ -1799,6 +1801,7 @@ export default function Index() {
                       Send a text <ArrowRight className="h-3 w-3" />
                     </span>
                   </a>
+                </div>
                 </div>
               </div>
             </div>
