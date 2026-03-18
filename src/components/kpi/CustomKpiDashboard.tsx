@@ -93,16 +93,13 @@ export default function CustomKpiDashboard() {
   const categories = ["revenue", "pipeline", "operations", "team"] as const;
 
   return (
-    <div className="p-6 max-w-[1400px] mx-auto space-y-6">
+    <div className="space-y-5">
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-bold text-foreground">My KPI Dashboard</h1>
-          <p className="text-sm text-muted-foreground">Drag to rearrange. Add or remove the metrics you care about most.</p>
-        </div>
+        <h1 className="text-lg font-semibold text-foreground">My KPIs</h1>
         <button
           onClick={() => setShowPicker(!showPicker)}
           className={cn(
-            "flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-colors border",
+            "flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors border",
             showPicker
               ? "bg-foreground text-background border-foreground"
               : "border-border text-muted-foreground hover:bg-muted hover:text-foreground"
