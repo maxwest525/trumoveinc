@@ -224,12 +224,6 @@ export default function ESignViewPage() {
             </div>
           </div>
 
-          {/* Consent Banner */}
-          <ESignConsentBanner
-            consentGiven={consentGiven}
-            onConsentChange={handleConsentChange}
-            className="mt-6"
-          />
         </div>
       </div>
     </AgentShell>
