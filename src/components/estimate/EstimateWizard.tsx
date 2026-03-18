@@ -251,8 +251,7 @@ export default function EstimateWizard({ onComplete, initialDetails }: EstimateW
           {/* Header - Matching homepage style */}
           <div className="tru-qb-form-header tru-qb-form-header-pill">
             <div className="tru-qb-form-title-group">
-              <span className="tru-qb-form-title tru-qb-form-title-large">BUILD YOUR <span className="tru-qb-title-accent">MOVE</span></span>
-              <span className="tru-qb-form-subtitle-compact">Carriers vetted against FMCSA safety records</span>
+              <span className="tru-qb-form-title tru-qb-form-title-large">WHERE ARE YOU <span className="tru-qb-title-accent">MOVING</span> FROM?</span>
             </div>
           </div>
 
@@ -261,7 +260,7 @@ export default function EstimateWizard({ onComplete, initialDetails }: EstimateW
             {step === 1 && (
             <div className="tru-qb-step-content" key="step-1">
               <h1 className="tru-qb-question">Where are you moving from?</h1>
-              <p className="tru-qb-subtitle">Enter your current address details</p>
+              
 
               <p className="tru-qb-section-label">Current Address</p>
               <div className="tru-qb-input-wrap tru-qb-zip-wrap">
