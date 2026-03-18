@@ -150,10 +150,6 @@ export default function AgentNewCustomer() {
                       <Input type="date" value={form.moveDate} onChange={e => updateField("moveDate", e.target.value)} />
                     </div>
                     <div className="space-y-1.5">
-                      <Label className="text-xs">Estimated Value ($)</Label>
-                      <Input type="number" value={form.estimatedValue} onChange={e => updateField("estimatedValue", e.target.value)} placeholder="3,500" />
-                    </div>
-                    <div className="space-y-1.5">
                       <Label className="text-xs">Lead Source</Label>
                       <Select value={form.source} onValueChange={v => updateField("source", v)}>
                         <SelectTrigger><SelectValue /></SelectTrigger>
