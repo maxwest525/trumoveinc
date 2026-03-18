@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Eye, CheckSquare, FileText, CalendarCheck, ChevronRight, DollarSign, TrendingUp, Users, Clock } from "lucide-react";
+import { Eye, CheckSquare, FileText, CalendarCheck, ChevronRight, DollarSign, TrendingUp, Users, Clock, Wrench } from "lucide-react";
+import AgentToolLauncherModal from "./AgentToolLauncherModal";
 import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
 
