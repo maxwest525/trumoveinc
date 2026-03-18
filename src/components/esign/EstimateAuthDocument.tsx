@@ -2,6 +2,7 @@ import { useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Check, Download, Printer, ArrowRight } from "lucide-react";
+import { ESignConsentBanner } from "@/components/esign/ESignConsentBanner";
 import logo from "@/assets/logo.png";
 
 type SignatureField = "initial1" | "initial2" | "initial3" | "signature";
