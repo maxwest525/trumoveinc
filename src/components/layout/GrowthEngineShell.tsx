@@ -186,7 +186,7 @@ export default function GrowthEngineShell({ children }: GrowthEngineShellProps) 
               </button>
             )}
             <span className="text-sm font-medium text-foreground truncate">
-              {NAV_SECTIONS.find(s => isActive(s.href))?.label || "Growth Engine"}
+              {[...NAV_PRIMARY, ...NAV_SECONDARY].find(s => isActive(s.href))?.label || "Growth Engine"}
             </span>
           </div>
           <div className="flex items-center gap-2">
