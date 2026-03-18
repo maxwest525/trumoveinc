@@ -13,17 +13,20 @@ import { setPortalContext } from "@/hooks/usePortalContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import logoImg from "@/assets/logo.png";
 
-const NAV_SECTIONS = [
+const NAV_PRIMARY = [
   { label: "Dashboard", icon: LayoutDashboard, href: "/marketing/dashboard" },
+  { label: "Tracking", icon: Crosshair, href: "/marketing/tracking" },
+  { label: "Leads & Pipeline", icon: Users, href: "/marketing/leads" },
+  { label: "Automation", icon: Zap, href: "/marketing/automation" },
+  { label: "Integrations", icon: Plug, href: "/marketing/integrations" },
+];
+
+const NAV_SECONDARY = [
   { label: "Campaign Builder", icon: Rocket, href: "/marketing/campaigns" },
   { label: "Landing Pages", icon: FileText, href: "/marketing/landing-pages" },
   { label: "SEO Hub", icon: Search, href: "/marketing/seo" },
   { label: "Ad Copy Studio", icon: PenTool, href: "/marketing/ad-copy" },
-  { label: "Integrations", icon: Plug, href: "/marketing/integrations" },
-  { label: "Tracking", icon: Crosshair, href: "/marketing/tracking" },
-  { label: "Leads & Pipeline", icon: Users, href: "/marketing/leads" },
   { label: "Reviews", icon: Star, href: "/marketing/reviews" },
-  { label: "Automation", icon: Zap, href: "/marketing/automation" },
   { label: "Competitor Intel", icon: Eye, href: "/marketing/competitors" },
   { label: "Settings", icon: Settings, href: "/marketing/settings" },
 ];
