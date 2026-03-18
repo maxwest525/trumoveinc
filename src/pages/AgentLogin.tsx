@@ -93,8 +93,8 @@ export default function AgentLogin() {
   if (loading) {
     return (
       <SiteShell centered backendMode hideHeader>
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <div className="w-5 h-5 border-2 border-foreground/20 border-t-foreground rounded-full animate-spin" />
+        <div className="flex items-center justify-center min-h-[60vh] bg-[hsl(220,15%,8%)]">
+          <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
         </div>
       </SiteShell>
     );
@@ -103,7 +103,7 @@ export default function AgentLogin() {
   if (!session) {
     return (
       <SiteShell centered backendMode hideHeader>
-        <div className="flex items-center justify-center min-h-[60vh] px-4 py-16">
+        <div className="flex items-center justify-center min-h-[60vh] px-4 py-16 bg-[hsl(220,15%,8%)]">
           <PortalAuthForm onAuthenticated={() => {}} />
         </div>
       </SiteShell>
@@ -112,7 +112,7 @@ export default function AgentLogin() {
 
   return (
     <SiteShell centered backendMode hideHeader>
-      <div className="flex flex-col items-center justify-center min-h-[100vh] px-4 py-20">
+      <div className="flex flex-col items-center justify-center min-h-[100vh] px-4 py-20 bg-[hsl(220,15%,8%)] text-white">
 
         {/* Header */}
         <motion.div
@@ -121,8 +121,8 @@ export default function AgentLogin() {
           transition={{ duration: 0.35 }}
           className="flex flex-col items-center gap-1.5 mb-16"
         >
-          <img src={logoImg} alt="TruMove" className="h-7 dark:invert" />
-          <h1 className="text-lg font-semibold tracking-tight text-foreground mt-2 flex items-center gap-2">
+          <img src={logoImg} alt="TruMove" className="h-7 invert" />
+          <h1 className="text-lg font-semibold tracking-tight text-white mt-2 flex items-center gap-2">
             {greeting}, {displayName}
             {unreadCount > 0 && (
               <span className="inline-flex items-center gap-1 bg-destructive text-destructive-foreground rounded-full px-1.5 py-0.5 text-[9px] font-semibold">
@@ -131,9 +131,9 @@ export default function AgentLogin() {
               </span>
             )}
           </h1>
-          <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
+          <div className="flex items-center gap-2 text-[11px] text-white/50">
             <span>{session.user.email}</span>
-            <span className="text-border">·</span>
+            <span className="text-white/20">·</span>
             <button
               onClick={handleSignOut}
               className="inline-flex items-center gap-1 hover:text-destructive transition-colors"
