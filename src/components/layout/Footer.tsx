@@ -15,12 +15,6 @@ export default function Footer() {
           <Link className="footer-link" to="/site/about">
             About
           </Link>
-          <Link className="footer-link" to="/site/carrier-vetting">
-            Carrier Vetting
-          </Link>
-          <Link className="footer-link" to="/site/book">
-            Book a consult
-          </Link>
           <Link className="footer-link" to="/site/faq">
             FAQ
           </Link>
