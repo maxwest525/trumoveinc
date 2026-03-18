@@ -116,7 +116,9 @@ export default function ManagerKpiDashboard() {
       });
       setLoading(false);
     }
-    fetch();
+    fetchData();
+    interval = setInterval(fetchData, REFRESH_MS);
+    return () => clearInterval(interval);
   }, []);
 
   if (loading) {
