@@ -1265,7 +1265,7 @@ export default function Index() {
                 <div className="tru-floating-form-card">
                   {/* Form Header */}
                   <div className="tru-qb-form-header tru-qb-form-header-pill">
-                    <img src={logoImg} alt="TruMove" className="tru-qb-header-logo" />
+                    
                     <div className="tru-qb-form-title-group">
                       <h2 className="tru-qb-form-title tru-qb-form-title-large">Let's Get Moving</h2>
                       <p className="tru-qb-form-subtitle-compact">FMCSA-vetted carriers, AI precision</p>
