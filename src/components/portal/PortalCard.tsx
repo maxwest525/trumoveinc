@@ -58,7 +58,7 @@ export default function PortalCard({ label, description, icon: Icon, accentHsl, 
       />
 
       {/* Card body */}
-      <div className="relative rounded-2xl border border-border/40 bg-card overflow-hidden transition-all duration-500 group-hover:border-transparent">
+      <div className="relative rounded-2xl border border-white/30 bg-white/60 backdrop-blur-md overflow-hidden transition-all duration-500 group-hover:border-transparent group-hover:bg-white/70 shadow-[0_2px_16px_hsla(0,0%,0%,0.06)]">
 
         {/* Idle breathing glow orb */}
         <div
