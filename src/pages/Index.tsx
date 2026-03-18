@@ -45,7 +45,7 @@ import { calculateDistance } from "@/lib/distanceCalculator";
 import { formatPhoneNumber, isValidPhoneNumber, getDigitsOnly } from "@/lib/phoneFormat";
 import { calculateEstimate, formatCurrency } from "@/lib/priceCalculator";
 import { 
-  Shield, Video, Boxes, CheckCircle, Info,
+  Shield, Video, Boxes, CheckCircle, Info, FileText,
   MapPin, Route, Clock, DollarSign, Headphones, Phone, ArrowRight, ArrowDown, ArrowUp,
   CalendarIcon, ChevronLeft, Lock, Truck, Sparkles, Star, Users,
   Database, ChevronRight, Radar, CreditCard, ShieldCheck, BarChart3, Zap,
