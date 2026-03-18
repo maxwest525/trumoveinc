@@ -1555,20 +1555,30 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 5%;
+  object-position: center top;
 }
 
-/* Hero background overlay - no opacity, fully transparent */
+/* Hero background overlay - dark tint for text legibility */
 .tru-hero-bg-overlay {
   position: absolute;
   inset: 0;
-  background: transparent;
+  background: linear-gradient(
+    180deg,
+    hsl(0 0% 0% / 0.45) 0%,
+    hsl(0 0% 0% / 0.35) 50%,
+    hsl(0 0% 0% / 0.5) 100%
+  );
   z-index: 1;
 }
 
-/* Dark mode hero background - no overlay */
+/* Dark mode hero background overlay */
 .dark .tru-hero-bg-overlay {
-  background: transparent;
+  background: linear-gradient(
+    180deg,
+    hsl(0 0% 0% / 0.55) 0%,
+    hsl(0 0% 0% / 0.45) 50%,
+    hsl(0 0% 0% / 0.6) 100%
+  );
 }
 
 /* =============================================
@@ -1690,8 +1700,10 @@
   padding-left: 20px;
   position: relative;
   text-shadow:
-    0 2px 6px hsl(0 0% 0% / 0.9),
-    0 4px 16px hsl(0 0% 0% / 0.7);
+    0 1px 3px hsl(0 0% 0% / 1),
+    0 2px 8px hsl(0 0% 0% / 0.9),
+    0 4px 16px hsl(0 0% 0% / 0.7),
+    0 0 40px hsl(0 0% 0% / 0.5);
 }
 
 .tru-hero-bullets li::before {
