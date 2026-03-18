@@ -165,7 +165,11 @@ export default function AgentLogin() {
               index={i}
               onClick={() => {
                 if (portal.key === "agents") {
-                  setLauncherOpen(true);
+                  if (sessionStorage.getItem("agent_tools_launched") === "true") {
+                    navigate("/agent/dashboard");
+                  } else {
+                    setLauncherOpen(true);
+                  }
                 } else {
                   navigate(portal.href);
                 }
