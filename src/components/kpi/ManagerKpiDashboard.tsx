@@ -40,7 +40,7 @@ export default function ManagerKpiDashboard() {
   useEffect(() => {
     const REFRESH_MS = 30_000;
     let interval: ReturnType<typeof setInterval>;
-    async function fetch() {
+    async function fetchData() {
       const today = startOfDay();
       const week = startOfWeek();
 
