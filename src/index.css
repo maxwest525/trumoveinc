@@ -1581,10 +1581,10 @@
   grid-template-columns: 1fr 1fr;
   gap: 48px;
   align-items: center;
-  padding: 32px 64px 80px;
+  padding: 32px 64px 32px;
   max-width: 1480px;
   margin: 0 auto;
-  min-height: calc(100vh - 280px);
+  min-height: auto;
 }
 
 /* LEFT COLUMN - Text Content */
@@ -1594,8 +1594,8 @@
   align-items: flex-start;
   gap: 16px;
   overflow: visible;
-  padding-top: 10px;
-  margin-top: -40px;
+  padding-top: 0;
+  margin-top: -60px;
 }
 
 /* Hero Element Entrance Animation */
@@ -6230,7 +6230,7 @@
   display: flex;
   flex-direction: column;
   height: auto;
-  min-height: 480px;
+  min-height: auto;
   background: hsl(var(--background));
   border: 0.5px solid hsl(var(--tm-ink) / 0.07);
   border-radius: 24px;
@@ -6369,12 +6369,12 @@
 }
 
 .tru-floating-form-content {
-  padding: 32px 28px 20px;
+  padding: 24px 24px 16px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  min-height: 320px;
+  min-height: auto;
   flex: 1;
   gap: 16px;
   border-top: 1px solid hsl(var(--tm-ink) / 0.04);

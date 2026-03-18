@@ -1,31 +1,54 @@
+# Growth Engine Architecture
 
+## Lead Flow (Canonical)
 
-## Issues Identified
+```text
+Traffic Source → Landing Page / Call Tracking → Attribution Capture
+  → Webhook / Router → Convoso (Instant Call) → CRM Sync
+  → Backup Follow-Up Logic
+```
 
-1. **"Fill out the form" CTA prompt** — user wants it deleted
-2. **Hero too tall** — `min-height: calc(100vh - 280px)` creates massive dead space; padding is `32px 64px 80px` (80px bottom)
-3. **Input fields don't match** — New contact inputs use class `tru-qb-text-input` which has NO CSS definition. The location autocomplete inputs use `tru-qb-input` which has proper styling (44px height, rounded-16px, centered text, borders). The new fields render as unstyled browser defaults.
-4. **Form header deleted but min-height remains** — `.tru-floating-form-card` has `min-height: 480px` and `.tru-floating-form-content` has `min-height: 320px`, creating dead whitespace where the old header + content used to fill that space.
-5. **No form validation** — Name, phone, email have no validation before "Talk to Support" submission.
+### Key Principles
 
-## Plan
+- **Convoso** is the primary instant-call engine. Leads route here first for immediate dial attempts.
+- **CRM** (GHL, Granot, or custom) is a sync target / system of record, not the primary destination.
+- Each workflow should designate **one primary CRM**; others are optional secondary sync targets.
+- GHL does not replace Convoso. It provides backup sequences and reporting.
+- "Follow-up automation" means support logic around the instant-call flow, not passive CRM drip sequences.
 
-### File 1: `src/pages/Index.tsx` (~lines 1331-1475)
+### Lead Statuses (Convoso feedback loop)
 
-- **Delete** the `<p className="tru-hero-cta-prompt">` block (lines 1343-1345)
-- **Replace** contact input classes from `tru-qb-text-input` to `tru-qb-input` so they match the location fields' styling
-- **Add phone formatting** — import `formatPhoneNumber`, `isValidPhoneNumber` from `@/lib/phoneFormat` and apply to phone input's onChange
-- **Add validation** on "Talk to Support" click:
-  - Name must be non-empty
-  - Email must contain `@` and `.`
-  - Phone must be valid (10 digits via `isValidPhoneNumber`)
-  - Show inline error state (`has-error` class) on invalid fields and a text error message
-- **Add validation state** — use existing `formError` state or add a local validation error string
+- New Lead
+- In Queue
+- Attempted
+- Connected
+- Not Reached
+- Escalated
+- Duplicate
+- Suppressed
 
-### File 2: `src/index.css`
+### Backup Automation Recipes
 
-- **Hero grid**: Reduce `min-height` from `calc(100vh - 280px)` to `auto`, reduce bottom padding from `80px` to `32px`
-- **Left column**: Reduce `margin-top` from `-40px` to `-60px` to push content higher
-- **Form card**: Reduce `min-height` from `480px` to `auto` on the hero variant (`.tru-hero-form-panel .tru-floating-form-card`)
-- **Form content**: Reduce `min-height` from `320px` to `auto`, tighten padding from `32px 28px 20px` to `24px 24px 16px` for the hero form
+1. New form lead → capture attribution → webhook to Convoso → instant call attempt → sync to CRM
+2. Lead not reached after 60s → trigger SMS with quote link
+3. No contact after 5 minutes → escalate to supervisor dashboard alert
+4. Missed inbound call from paid source → create Convoso callback + alert
+5. After-hours form submission → queue for next calling block + send auto-text
+6. Duplicate lead detected → suppress in Convoso, tag in CRM
+7. Source/campaign changes on re-submission → preserve original attribution in CRM
+8. Lead not worked within 2 minutes → flash alert on Growth Dashboard
 
+### After-Hours Logic (First-Class)
+
+- Business hours rules per location/team
+- Queue timing and next-call-block scheduling
+- Auto-text behavior for after-hours submissions
+- Morning queue priority ordering
+
+## Upgrade Plan (Pending)
+
+### Pass 1: Dashboard + Landing Pages + Leads + SEO Hub
+### Pass 2: Ad Copy + Tracking + Automation + Reviews
+### Pass 3: Competitors + Settings + Campaign Builder Enhancement + Shell Polish
+
+See previous conversation for full details on each pass.
