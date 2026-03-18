@@ -1790,44 +1790,35 @@ export default function Index() {
 
           <FeatureTrustStrip />
 
-          {/* DUPLICATE SCAN SECTION - Below ELD Tracking */}
+          {/* MEET TRUDY CHATBOT SECTION */}
           <section className="tru-ai-steps-section">
             <div className="tru-ai-steps-inner">
-              <div className="tru-ai-header-row">
+              <div className="flex flex-col lg:flex-row items-center justify-center gap-10 lg:gap-16 w-full">
                 {/* LEFT: Description content */}
-                <div className="tru-ai-content-left" style={{ justifyContent: 'center' }}>
+                <div className="flex flex-col items-start gap-5 max-w-md">
                   <div className="tru-ai-headline-block">
+                    <span className="inline-block text-xs font-semibold tracking-widest uppercase text-primary bg-primary/10 px-3 py-1 rounded-full mb-3">AI-Powered Support</span>
                     <h2 className="tru-ai-main-headline">
-                      Scan. Catalog.<br />
-                      <span className="tru-ai-headline-accent">Estimate.</span>
+                      Meet Trudy.<br />
+                      <span className="tru-ai-headline-accent">Your AI Assistant.</span>
                     </h2>
                     <p className="tru-ai-subheadline">
-                      Point your camera at any room. Our AI identifies every item and calculates your move in seconds—not hours.
+                      Get instant moving quotes, track shipments, schedule pickups, and more—all through a simple conversation with Trudy.
                     </p>
                   </div>
                   
-                  <button 
-                    onClick={() => navigate("/site/scan-room")}
-                    className="tru-ai-cta-btn"
-                  >
-                    <Home className="w-4 h-4" />
-                    Scan Your Home
-                    <ArrowRight className="w-4 h-4" />
-                  </button>
+                  <div className="flex flex-wrap gap-2">
+                    {["Instant Quotes", "Shipment Tracking", "24/7 Available", "Smart Scheduling"].map((pill) => (
+                      <span key={pill} className="text-[11px] font-medium text-muted-foreground bg-muted/60 border border-border/60 px-3 py-1.5 rounded-full">
+                        {pill}
+                      </span>
+                    ))}
+                  </div>
                 </div>
                 
-                {/* CENTER: Scanner Preview */}
-                <div className="tru-ai-scanner-center">
-                  <ScannerPreview 
-                    isRunning={false} 
-                    visibleCount={0}
-                    onStartDemo={() => {}} 
-                  />
-                </div>
-                
-                {/* RIGHT: Detection List */}
-                <div className="tru-ai-detection-right">
-                  <DetectionList visibleCount={0} />
+                {/* RIGHT: Trudy Chat */}
+                <div className="w-full max-w-lg">
+                  <TrudyChatBox />
                 </div>
               </div>
             </div>
