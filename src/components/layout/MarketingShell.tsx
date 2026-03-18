@@ -1,8 +1,8 @@
 import { useState, useEffect, type ReactNode } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import {
   Home, Sun, Moon, Bell, Sparkles, LineChart, LayoutDashboard,
-  RotateCcw, Gauge, Menu, X,
+  Gauge, Menu, X,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useTheme } from "next-themes";
@@ -26,7 +26,6 @@ interface MarketingShellProps {
 export default function MarketingShell({ children, breadcrumb = "" }: MarketingShellProps) {
   const { theme, setTheme } = useTheme();
   const location = useLocation();
-  const navigate = useNavigate();
   const isMobile = useIsMobile();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -35,15 +34,9 @@ export default function MarketingShell({ children, breadcrumb = "" }: MarketingS
     window.scrollTo(0, 0);
   }, []);
 
-  // Close sidebar on route change
   useEffect(() => {
     setSidebarOpen(false);
   }, [location.pathname]);
-
-  const handleResetPreference = () => {
-    localStorage.removeItem("truemove_remembered_role");
-    navigate("/");
-  };
 
   const sidebarContent = (
     <>
@@ -89,22 +82,6 @@ export default function MarketingShell({ children, breadcrumb = "" }: MarketingS
         })}
       </nav>
 
-      <div className="px-2 pb-4 space-y-0.5">
-        <button
-          onClick={handleResetPreference}
-          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-        >
-          <RotateCcw className="w-4 h-4" />
-          <span>Reset Preference</span>
-        </button>
-        <Link
-          to="/"
-          className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-        >
-          <Home className="w-4 h-4" />
-          <span>Back to Roles</span>
-        </Link>
-      </div>
     </>
   );
 

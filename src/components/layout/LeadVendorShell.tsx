@@ -1,8 +1,8 @@
 import { useEffect, useState, useCallback, type ReactNode } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import {
   Home, Sun, Moon, Bell, LayoutDashboard, Building2,
-  RotateCcw, Menu, X, BarChart3,
+  Menu, X, BarChart3,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
@@ -25,7 +25,6 @@ interface LeadVendorShellProps {
 export default function LeadVendorShell({ children, breadcrumb = "" }: LeadVendorShellProps) {
   const { theme, setTheme } = useTheme();
   const location = useLocation();
-  const navigate = useNavigate();
   const isMobile = useIsMobile();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -35,11 +34,6 @@ export default function LeadVendorShell({ children, breadcrumb = "" }: LeadVendo
   }, []);
 
   useEffect(() => { setSidebarOpen(false); }, [location.pathname]);
-
-  const handleResetPreference = () => {
-    localStorage.removeItem("truemove_remembered_role");
-    navigate("/");
-  };
 
   const sidebarContent = (
     <>
@@ -73,22 +67,6 @@ export default function LeadVendorShell({ children, breadcrumb = "" }: LeadVendo
         })}
       </nav>
 
-      <div className="px-2 pb-4 space-y-0.5">
-        <button
-          onClick={handleResetPreference}
-          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-        >
-          <RotateCcw className="w-4 h-4" />
-          <span>Reset Preference</span>
-        </button>
-        <Link
-          to="/"
-          className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-        >
-          <Home className="w-4 h-4" />
-          <span>Back to Roles</span>
-        </Link>
-      </div>
     </>
   );
 
