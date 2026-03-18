@@ -4,7 +4,6 @@ import path from "path";
 import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
-// prettier-ignore
 export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
