@@ -44,7 +44,7 @@ const MOCK_LEADS = [
   { id: 7, name: "Jennifer Martinez", source: "Google", campaign: "Interstate CA", keyword: "moving from SF", page: "Call Page", type: "Call", status: "Connected", quality: 95, speed: "5s", sale: "Booked" },
   { id: 8, name: "David Brown", source: "Meta", campaign: "FL Interstate", keyword: "interstate quote", page: "Instant Form", type: "Form", status: "Duplicate", quality: 0, speed: "—", sale: "Suppressed" },
   { id: 9, name: "Amanda Lee", source: "Google", campaign: "Interstate TX", keyword: "TX to CA movers", page: "Quote Funnel", type: "Form", status: "Connected", quality: 82, speed: "11s", sale: "Follow-up" },
-  { id: 10, name: "Chris Patel", source: "CallRail", campaign: "Organic", keyword: null, page: "Homepage", type: "Call", status: "Connected", quality: 70, speed: "Direct", sale: "Booked" },
+  { id: 10, name: "Chris Patel", source: "Inbound", campaign: "Organic", keyword: null, page: "Homepage", type: "Call", status: "Connected", quality: 70, speed: "Direct", sale: "Booked" },
 ];
 
 const getStatusBadge = (status: string) => {
