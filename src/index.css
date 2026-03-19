@@ -1540,6 +1540,7 @@
   width: 100%;
   min-height: 64rem;
   overflow-x: hidden;  /* Prevent horizontal scroll */
+  margin-top: -80px;
 }
 
 /* Carousel cards hover within container bounds */
