@@ -509,13 +509,13 @@ function ShipmentTrackerSection({ navigate }: {navigate: (path: string) => void;
         <div className="flex flex-col lg:flex-row items-end justify-center gap-10 lg:gap-16 w-full">
           {/* Lifestyle image - left */}
           <div className="hidden lg:flex items-end flex-shrink-0">
-            <div className="rounded-xl border-2 border-black overflow-hidden" style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.5), 0 8px 40px rgba(0,0,0,0.3)' }}>
+            <div className="rounded-xl overflow-hidden">
               <img src={trackingLifestyleImg} alt="Customer tracking their move in real-time" className="h-auto block" style={{ height: 'calc(600px * 0.567)', width: 'auto' }} />
             </div>
           </div>
 
           {/* Headline + CTA - center */}
-          <div className="flex flex-col items-center text-center gap-4 bg-card p-8 border-0 shadow-none rounded-none border-primary-foreground" style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.5), 0 8px 40px rgba(0,0,0,0.3), inset 0 2px 8px rgba(0,0,0,0.15)' }}>
+          <div className="flex flex-col items-center text-center gap-4 bg-card p-8 border-0 shadow-none rounded-none">
             <div className="tru-ai-headline-block">
               <h2 className="tru-ai-main-headline">
                 Real-Time<br />
@@ -1617,7 +1617,7 @@ export default function Index() {
             <div className="max-w-6xl mx-auto">
               <div className="flex flex-col md:flex-row items-stretch">
                 {/* Col 1: Headline — separated left */}
-                <div className="shrink-0 self-center flex flex-col items-center text-center bg-card p-6 mr-10 rounded-none shadow-none border-0 border-primary-foreground" style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.5), 0 8px 40px rgba(0,0,0,0.3), inset 0 2px 8px rgba(0,0,0,0.15)', marginLeft: '-100px', maxWidth: '240px' }}>
+                <div className="shrink-0 self-center flex flex-col items-center text-center bg-card p-6 mr-10 rounded-none shadow-none border-0" style={{ marginLeft: '-100px', maxWidth: '240px' }}>
                   <h2 className="text-3xl font-black tracking-tight text-foreground mb-3">Contact Us.</h2>
                   <p className="text-sm text-muted-foreground leading-relaxed mb-5">Our team is standing by. Voice, video, text, or email.</p>
                   <a href="tel:+16097277647" className="inline-flex items-center gap-2 bg-foreground text-background px-6 py-2.5 rounded-full text-sm font-semibold hover:opacity-90 transition-opacity">
@@ -1631,7 +1631,7 @@ export default function Index() {
                 <div className="flex flex-col md:flex-row gap-6 flex-1 items-stretch">
 
                 {/* Col 2: Send a Message — wide */}
-                <div className="flex-1 min-w-0 max-w-lg rounded-2xl border-2 border-black bg-card p-6 flex-col transition-all duration-200 flex items-center justify-center px-[24px]" style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.5), 0 8px 40px rgba(0,0,0,0.3), inset 0 2px 8px rgba(0,0,0,0.15)' }}>
+                <div className="flex-1 min-w-0 max-w-lg rounded-2xl bg-card p-6 flex-col transition-all duration-200 flex items-center justify-center px-[24px]">
                   <div className="flex flex-col items-center text-center mb-5">
                     <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
                       <MessageSquare className="h-5 w-5 text-primary" />
@@ -1656,7 +1656,7 @@ export default function Index() {
 
                 {/* Col 3: Agent photo */}
                 <div className="hidden lg:flex md:w-64 shrink-0 self-center">
-                  <div className="rounded-2xl border-2 border-black overflow-hidden w-full" style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.5), 0 8px 40px rgba(0,0,0,0.3)' }}>
+                  <div className="rounded-2xl overflow-hidden w-full">
                     <img src={contactAgentImg} alt="TruMove support agent" className="block w-full h-auto" />
                   </div>
                 </div>
@@ -1665,7 +1665,7 @@ export default function Index() {
                 <div className="gap-3 md:w-40 shrink-0 self-center items-end justify-center flex flex-col">
                   <a
                       href="tel:+16097277647"
-                      className="group flex flex-col items-center text-center border-black bg-card p-3 hover:-translate-y-1 transition-all duration-200 flex-1 border-0 shadow-none rounded-none" style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.5), 0 8px 40px rgba(0,0,0,0.3), inset 0 2px 8px rgba(0,0,0,0.15)' }}>
+                      className="group flex flex-col items-center text-center bg-card p-3 hover:-translate-y-1 transition-all duration-200 flex-1 border-0 shadow-none rounded-none">
                     <h3 className="text-sm font-bold text-foreground mb-1">Call Us</h3>
                     <span className="inline-flex items-center gap-1 text-xs font-medium text-primary group-hover:gap-1.5 transition-all">
                       Call now <ArrowRight className="h-3 w-3" />
@@ -1674,7 +1674,7 @@ export default function Index() {
 
                   <a
                       href="sms:+16097277647"
-                      className="group flex flex-col items-center text-center border-black bg-card p-3 hover:-translate-y-1 transition-all duration-200 flex-1 rounded-none shadow-none border-0" style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.5), 0 8px 40px rgba(0,0,0,0.3), inset 0 2px 8px rgba(0,0,0,0.15)' }}>
+                      className="group flex flex-col items-center text-center bg-card p-3 hover:-translate-y-1 transition-all duration-200 flex-1 rounded-none shadow-none border-0">
                     <h3 className="text-sm font-bold text-foreground mb-1">Text Support</h3>
                     <span className="inline-flex items-center gap-1 text-xs font-medium text-primary group-hover:gap-1.5 transition-all">
                       Send a text <ArrowRight className="h-3 w-3" />
@@ -1683,7 +1683,7 @@ export default function Index() {
 
                   <button
                       onClick={() => window.dispatchEvent(new CustomEvent('trudy-start'))}
-                      className="group flex-col text-center border-black bg-card p-3 hover:-translate-y-1 transition-all duration-200 flex-1 border-0 rounded-none shadow-none flex items-end justify-start" style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.5), 0 8px 40px rgba(0,0,0,0.3), inset 0 2px 8px rgba(0,0,0,0.15)' }}>
+                      className="group flex-col text-center bg-card p-3 hover:-translate-y-1 transition-all duration-200 flex-1 border-0 rounded-none shadow-none flex items-end justify-start">
                     <h3 className="text-sm font-bold text-foreground mb-1">Talk to Trudy</h3>
                     <span className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-1.5 rounded-full text-xs font-bold group-hover:bg-primary/90 transition-all shadow-md">
                       Start Talking
@@ -1692,7 +1692,7 @@ export default function Index() {
 
                   <button
                       onClick={() => navigate("/site/book")}
-                      className="group flex-col text-center border-black bg-card p-3 hover:-translate-y-1 transition-all duration-200 flex-1 border-0 rounded-none shadow-none flex items-end justify-center" style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.5), 0 8px 40px rgba(0,0,0,0.3), inset 0 2px 8px rgba(0,0,0,0.15)' }}>
+                      className="group flex-col text-center bg-card p-3 hover:-translate-y-1 transition-all duration-200 flex-1 border-0 rounded-none shadow-none flex items-end justify-center">
                     <h3 className="text-sm font-bold text-foreground mb-1">Video Consult</h3>
                     <span className="inline-flex items-center gap-1 text-xs font-medium text-primary group-hover:gap-1.5 transition-all">
                       Schedule now <ArrowRight className="h-3 w-3" />
