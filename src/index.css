@@ -13515,8 +13515,8 @@
 .header-nav {
   display: flex;
   align-items: center;
-  gap: 32px;
-  margin: 0 auto;
+  gap: 24px;
+  margin-left: auto;
 }
 
 /* Nav Item Wrapper (for mega-menu positioning) */
