@@ -285,14 +285,8 @@ export default function CustomerService() {
   }, [formData]);
 
   return (
-    <SiteShell hideTrustStrip stickySubHeader={
-      <PageHeaderStrip
-        title="Meet Trudy"
-        trustItems={TRUDY_TRUST_ITEMS}
-        rightLabel="Session ID"
-        rightValue={`TM-${new Date().getFullYear()}-51423342`}
-      />
-    }>
+    <SiteShell hideTrustStrip>
+      <CommandCenterNav title="Customer Service" />
       <main className="min-h-screen bg-background">
         {/* ─── HERO ─── */}
         <section className="relative pt-8 pb-6 px-6 md:px-10 lg:px-16 overflow-hidden">

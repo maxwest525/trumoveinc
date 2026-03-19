@@ -604,14 +604,8 @@ export default function LiveTracking() {
   ];
 
   return (
-    <SiteShell hideTrustStrip stickySubHeader={
-      <PageHeaderStrip
-        title="Shipment Command Center"
-        trustItems={trackingTrustItems}
-        rightLabel="Shipment ID"
-        rightValue={bookingInput ? `TM-${bookingInput}` : 'TM-2026-78331681'}
-      />
-    }>
+    <SiteShell hideTrustStrip>
+      <CommandCenterNav title="Shipment Tracking" />
       <div className="live-tracking-page">
       
       {/* Hero Section - Headline & Subheadline */}

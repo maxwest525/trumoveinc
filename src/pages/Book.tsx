@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import SiteShell from "@/components/layout/SiteShell";
-import PageHeaderStrip from "@/components/layout/PageHeaderStrip";
+import CommandCenterNav from "@/components/layout/CommandCenterNav";
 import Footer from "@/components/layout/Footer";
 import { DailyVideoRoom } from "@/components/video-consult/DailyVideoRoom";
 import { 
