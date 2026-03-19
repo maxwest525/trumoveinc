@@ -1690,7 +1690,7 @@ export default function Index() {
               <div className="flex flex-col md:flex-row gap-5 items-stretch">
 
                 {/* Single card with green gradient glow */}
-                <div className="flex-1 min-w-0 rounded-2xl bg-card p-5 flex flex-col md:flex-row gap-5 transition-all duration-200 ring-1 ring-primary/20 shadow-[0_0_24px_-4px_hsl(142_71%_45%/0.12)]">
+                <div className="flex-1 min-w-0 rounded-2xl bg-card p-5 flex flex-col md:flex-row gap-5 transition-all duration-200 ring-1 ring-border">
 
                   {/* Send a Message form */}
                   <div className="flex-1 flex flex-col">
