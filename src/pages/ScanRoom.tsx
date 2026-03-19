@@ -391,7 +391,7 @@ export default function ScanRoom() {
   return (
     <SiteShell hideTrustStrip>
       <div className="tru-scan-page">
-        <CommandCenterNav title="AI Move Estimator" />
+        
 
         {/* Centered Header Section */}
         <section className="tru-scan-header-section">

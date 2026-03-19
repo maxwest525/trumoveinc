@@ -605,7 +605,7 @@ export default function LiveTracking() {
 
   return (
     <SiteShell hideTrustStrip>
-      <CommandCenterNav title="Shipment Tracking" />
+      
       <div className="live-tracking-page">
       
       {/* Hero Section - Headline & Subheadline */}

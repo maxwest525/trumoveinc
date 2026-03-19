@@ -286,7 +286,7 @@ export default function CustomerService() {
 
   return (
     <SiteShell hideTrustStrip>
-      <CommandCenterNav title="Customer Service" />
+      
       <main className="min-h-screen bg-background">
         {/* ─── HERO ─── */}
         <section className="relative pt-8 pb-6 px-6 md:px-10 lg:px-16 overflow-hidden">

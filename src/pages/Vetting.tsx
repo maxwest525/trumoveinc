@@ -48,7 +48,7 @@ export default function Vetting() {
   return (
     <SiteShell hideTrustStrip>
       <div className="tru-vetting-page">
-        <CommandCenterNav title="Carrier Vetting" />
+        
 
         {/* Hero Section */}
         <section className="tru-vetting-hero">
