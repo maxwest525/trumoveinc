@@ -1692,7 +1692,7 @@ export default function Index() {
 
                   <button
                       onClick={() => navigate("/site/book")}
-                      className="group flex-col text-center border-black bg-card p-3 hover:-translate-y-1 transition-all duration-200 flex-1 border-0 rounded-none shadow-none flex items-end justify-center" style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.5), 0 8px 40px rgba(0,0,0,0.3), inset 0 2px 8px rgba(0,0,0,0.15)' }}>
+                      className="group flex-col text-center bg-card p-3 hover:-translate-y-1 transition-all duration-200 flex-1 border-0 rounded-none shadow-none flex items-end justify-center">
                     <h3 className="text-sm font-bold text-foreground mb-1">Video Consult</h3>
                     <span className="inline-flex items-center gap-1 text-xs font-medium text-primary group-hover:gap-1.5 transition-all">
                       Schedule now <ArrowRight className="h-3 w-3" />
