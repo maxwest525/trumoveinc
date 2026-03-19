@@ -71,6 +71,7 @@ import AdminPulseCallReview from "./pages/AdminPulseCallReview";
 import ManagerTeamChat from "./pages/ManagerTeamChat";
 import AdminTeamChat from "./pages/AdminTeamChat";
 import Leaderboard from "./pages/Leaderboard";
+import DispatchDashboard from "./pages/DispatchDashboard";
 
 const queryClient = new QueryClient();
 
