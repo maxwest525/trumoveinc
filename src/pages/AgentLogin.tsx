@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import SiteShell from "@/components/layout/SiteShell";
 import PortalAuthForm from "@/components/auth/PortalAuthForm";
-import { LogOut, Bell, Headset, Users, Shield, Sparkles } from "lucide-react";
+import { LogOut, Bell, Headset, Users, Shield, Sparkles, Truck } from "lucide-react";
 import logoImg from "@/assets/logo.png";
 import PortalCard from "@/components/portal/PortalCard";
 import { useAgentProfile } from "@/hooks/useAgentProfile";
@@ -55,6 +55,14 @@ const PORTALS = [
     href: "/admin/dashboard",
     icon: Shield,
     accentHsl: "38 92% 50%",
+  },
+  {
+    key: "dispatch",
+    label: "Dispatch",
+    description: "Fleet tracking, driver assignments, route management & scheduling",
+    href: "/dispatch/dashboard",
+    icon: Truck,
+    accentHsl: "262 83% 58%",
   },
 ];
 
