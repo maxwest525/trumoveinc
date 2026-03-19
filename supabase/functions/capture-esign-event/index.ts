@@ -17,6 +17,7 @@ interface AuditEventRequest {
   documentHash?: string;
   consentGiven?: boolean;
   consentText?: string;
+  leadId?: string;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -64,6 +65,7 @@ const handler = async (req: Request): Promise<Response> => {
       consent_given: body.consentGiven || false,
       consent_text: body.consentText || null,
       agent_id: agentId,
+      lead_id: body.leadId || null,
     });
 
     if (error) {
