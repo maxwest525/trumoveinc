@@ -13,7 +13,7 @@ const NAV_ITEMS: NavItem[] = [
   { href: "/site", label: "Home", icon: Home },
   { href: "/site/online-estimate", label: "Move Estimator", icon: Calculator },
   { href: "/site/track", label: "Shipment Tracking", icon: MapPin },
-  { href: "/site/vetting", label: "Carrier Vetting", icon: Shield },
+  { href: "/site/vetting", label: "FMCSA Carrier Vetting", icon: Shield },
 ];
 
 export default function Header() {
