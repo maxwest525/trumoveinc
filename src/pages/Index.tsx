@@ -38,6 +38,12 @@ import heroFamilyMove from "@/assets/hero-family-move.jpg";
 import videoConsultPreview from "@/assets/video-consult-preview.jpg";
 import trudyVoicePreview from "@/assets/trudy-voice-preview.jpg";
 import contactAgentImg from "@/assets/contact-agent.png";
+import testimonialSarah from "@/assets/testimonial-sarah.jpg";
+import testimonialJames from "@/assets/testimonial-james.jpg";
+import testimonialEmilyDavid from "@/assets/testimonial-emily-david.jpg";
+import testimonialMarcus from "@/assets/testimonial-marcus.jpg";
+import testimonialLisa from "@/assets/testimonial-lisa.jpg";
+import testimonialCarlosAna from "@/assets/testimonial-carlos-ana.jpg";
 
 import { Mic } from "lucide-react";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
