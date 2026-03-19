@@ -17372,12 +17372,12 @@
 }
 
 .tru-qb-input:hover {
-  border-color: hsl(var(--primary) / 0.4);
+  border-color: hsl(35 95% 55% / 0.5);
 }
 
 .tru-qb-input:focus {
-  border-color: hsl(var(--tm-ink) / 0.35);
-  box-shadow: 0 0 0 1px hsl(var(--tm-ink) / 0.08);
+  border-color: hsl(35 95% 55%);
+  box-shadow: 0 0 0 3px hsl(35 95% 55% / 0.15);
 }
 
 /* Location Autocomplete Styles */
