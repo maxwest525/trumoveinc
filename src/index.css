@@ -3053,9 +3053,11 @@
   .tru-ai-main-headline {
     font-size: 2rem;
   }
-  .tru-ai-header-previews .tru-ai-live-scanner,
-  .tru-ai-header-previews .tru-ai-live-inventory {
+  .tru-ai-header-previews .tru-ai-live-scanner {
     width: 21.25rem; /* 340px in rem */
+  }
+  .tru-ai-header-previews .tru-ai-live-inventory {
+    width: 10.625rem; /* ~170px — half of 340px */
   }
 }
 
