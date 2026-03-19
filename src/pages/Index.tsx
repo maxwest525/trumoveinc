@@ -1656,7 +1656,7 @@ export default function Index() {
 
                 {/* Col 3: Agent photo */}
                 <div className="hidden lg:flex md:w-64 shrink-0 self-center">
-                  <div className="rounded-2xl border-2 border-black overflow-hidden w-full" style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.5), 0 8px 40px rgba(0,0,0,0.3)' }}>
+                  <div className="rounded-2xl overflow-hidden w-full">
                     <img src={contactAgentImg} alt="TruMove support agent" className="block w-full h-auto" />
                   </div>
                 </div>
