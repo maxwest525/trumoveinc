@@ -17895,7 +17895,7 @@
 }
 
 .tru-qb-method-arrow {
-  color: hsl(var(--muted-foreground));
+  color: hsl(142 71% 45%);
   opacity: 0;
   transform: translateX(-8px);
   transition: all 0.2s ease;
@@ -17905,7 +17905,7 @@
 .tru-qb-method-card:hover .tru-qb-method-arrow {
   opacity: 1;
   transform: translateX(0);
-  color: hsl(var(--primary));
+  color: hsl(142 71% 45%);
 }
 
 /* Dark mode method cards */
