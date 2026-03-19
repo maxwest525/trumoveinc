@@ -1686,9 +1686,9 @@ export default function Index() {
                 <div className="flex flex-col md:flex-row gap-6 flex-1 items-stretch">
 
                 {/* Col 2: Agent photo */}
-                <div className="hidden lg:flex items-stretch md:w-48 shrink-0">
+                <div className="hidden lg:flex items-stretch md:w-64 shrink-0">
                   <div className="rounded-2xl border-2 border-black overflow-hidden w-full" style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.5), 0 8px 40px rgba(0,0,0,0.3)' }}>
-                    <img src={contactAgentImg} alt="TruMove support agent" className="w-full h-full object-cover" />
+                    <img src={contactAgentImg} alt="TruMove support agent" className="w-full h-full object-contain" />
                   </div>
                 </div>
 
@@ -1716,88 +1716,48 @@ export default function Index() {
                   </p>
                 </div>
 
-                {/* Col 4: Call Us + Text Support stacked */}
-                <div className="flex flex-col gap-4 md:w-44 shrink-0">
+                {/* Col 4: All 4 contact options stacked */}
+                <div className="flex flex-col gap-3 md:w-44 shrink-0">
                   <a
-                      href="tel:+16097277647"
-                      className="group relative flex flex-col items-center text-center rounded-2xl border-2 border-black bg-card p-6 hover:-translate-y-1 transition-all duration-200 flex-1" style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.5), 0 8px 40px rgba(0,0,0,0.3), inset 0 2px 8px rgba(0,0,0,0.15)' }}>
-                      
-                    <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center mb-3 group-hover:bg-primary/20 transition-colors">
-                      <Phone className="h-4 w-4 text-primary" />
-                    </div>
-                    <h3 className="text-sm font-bold text-foreground mb-1">Call Us</h3>
-                    <p className="text-xs text-muted-foreground leading-relaxed mb-0.5">(609) 727-7647</p>
-                    <p className="text-[10px] text-muted-foreground mb-3">Mon – Sat, 8 AM – 8 PM EST</p>
+                    href="tel:+16097277647"
+                    className="group flex flex-col items-center text-center rounded-2xl border-2 border-black bg-card p-4 hover:-translate-y-1 transition-all duration-200 flex-1" style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.5), 0 8px 40px rgba(0,0,0,0.3), inset 0 2px 8px rgba(0,0,0,0.15)' }}>
+                    <h3 className="text-sm font-bold text-foreground mb-0.5">Call Us</h3>
+                    <p className="text-xs text-muted-foreground mb-0.5">(609) 727-7647</p>
+                    <p className="text-[10px] text-muted-foreground mb-1">Mon – Sat, 8 AM – 8 PM EST</p>
                     <span className="mt-auto inline-flex items-center gap-1 text-xs font-medium text-primary group-hover:gap-1.5 transition-all">
                       Call now <ArrowRight className="h-3 w-3" />
                     </span>
                   </a>
 
                   <a
-                      href="sms:+16097277647"
-                      className="group relative flex flex-col items-center text-center rounded-2xl border-2 border-black bg-card p-6 hover:-translate-y-1 transition-all duration-200 flex-1" style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.5), 0 8px 40px rgba(0,0,0,0.3), inset 0 2px 8px rgba(0,0,0,0.15)' }}>
-                      
-                    <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center mb-3 group-hover:bg-primary/20 transition-colors">
-                      <MessageSquare className="h-4 w-4 text-primary" />
-                    </div>
-                    <h3 className="text-sm font-bold text-foreground mb-1">Text Support</h3>
-                    <p className="text-[11px] text-muted-foreground leading-relaxed mb-3">Text us anytime — we typically reply within minutes.</p>
+                    href="sms:+16097277647"
+                    className="group flex flex-col items-center text-center rounded-2xl border-2 border-black bg-card p-4 hover:-translate-y-1 transition-all duration-200 flex-1" style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.5), 0 8px 40px rgba(0,0,0,0.3), inset 0 2px 8px rgba(0,0,0,0.15)' }}>
+                    <h3 className="text-sm font-bold text-foreground mb-0.5">Text Support</h3>
+                    <p className="text-[11px] text-muted-foreground leading-relaxed mb-1">Text us anytime — we typically reply within minutes.</p>
                     <span className="mt-auto inline-flex items-center gap-1 text-xs font-medium text-primary group-hover:gap-1.5 transition-all">
                       Send a text <ArrowRight className="h-3 w-3" />
                     </span>
                   </a>
-                </div>
 
-                {/* Col 5: Talk to Trudy + Book Video Consult stacked */}
-                <div className="flex flex-col gap-4 md:w-48 shrink-0">
-                  <HoverCard openDelay={200} closeDelay={100}>
-                    <HoverCardTrigger asChild>
-                      <button
-                          onClick={() => window.dispatchEvent(new CustomEvent('trudy-start'))}
-                          className="group relative flex flex-col items-center text-center rounded-2xl border-2 border-black bg-card p-6 hover:-translate-y-1 transition-all duration-200 flex-1" style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.5), 0 8px 40px rgba(0,0,0,0.3), inset 0 2px 8px rgba(0,0,0,0.15)' }}>
-                          
-                        <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center mb-3 group-hover:bg-primary/20 transition-colors">
-                          <Mic className="h-4 w-4 text-primary" />
-                        </div>
-                        <h3 className="text-sm font-bold text-foreground mb-1">Talk to Trudy</h3>
-                        <p className="text-[11px] text-muted-foreground leading-relaxed mb-3">AI voice assistant — instant quotes, tracking & scheduling.</p>
-                        <span className="mt-auto inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-full text-xs font-bold group-hover:bg-primary/90 transition-all shadow-md">
-                          <Mic className="h-3.5 w-3.5" />
-                          Start Talking
-                        </span>
-                      </button>
-                    </HoverCardTrigger>
-                    <HoverCardContent side="right" className="w-72 p-0 overflow-hidden rounded-xl border-2 border-black" style={{ boxShadow: '0 8px 30px rgba(0,0,0,0.4)' }}>
-                      <img src={trudyVoicePreview} alt="Trudy AI Voice Assistant" className="w-full h-36 object-cover" />
-                      <div className="p-3">
-                        <p className="text-xs font-semibold text-foreground mb-1">Trudy AI Voice Module</p>
-                        <p className="text-[10px] text-muted-foreground leading-relaxed">Click to activate Trudy's live voice assistant. Get instant moving quotes, track shipments, and schedule pickups — all hands-free.</p>
-                      </div>
-                    </HoverCardContent>
-                  </HoverCard>
+                  <button
+                    onClick={() => window.dispatchEvent(new CustomEvent('trudy-start'))}
+                    className="group flex flex-col items-center text-center rounded-2xl border-2 border-black bg-card p-4 hover:-translate-y-1 transition-all duration-200 flex-1" style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.5), 0 8px 40px rgba(0,0,0,0.3), inset 0 2px 8px rgba(0,0,0,0.15)' }}>
+                    <h3 className="text-sm font-bold text-foreground mb-0.5">Talk to Trudy</h3>
+                    <p className="text-[11px] text-muted-foreground leading-relaxed mb-1">AI voice assistant — instant quotes & tracking.</p>
+                    <span className="mt-auto inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-full text-xs font-bold group-hover:bg-primary/90 transition-all shadow-md">
+                      Start Talking
+                    </span>
+                  </button>
 
-                  <HoverCard openDelay={200} closeDelay={100}>
-                    <HoverCardTrigger asChild>
-                      <button
-                          onClick={() => navigate("/site/book")}
-                          className="group relative flex flex-col items-center text-center rounded-2xl border-2 border-black bg-card p-6 hover:-translate-y-1 transition-all duration-200 flex-1" style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.5), 0 8px 40px rgba(0,0,0,0.3), inset 0 2px 8px rgba(0,0,0,0.15)' }}>
-                          
-                        <img src={videoConsultPreview} alt="Video consultation preview" className="w-full h-20 object-cover rounded-lg mb-3 border border-border/60" />
-                        <h3 className="text-sm font-bold text-foreground mb-1">Book Video Consult</h3>
-                        <p className="text-[11px] text-muted-foreground leading-relaxed mb-3">Face-to-face with a moving specialist via live video.</p>
-                        <span className="mt-auto inline-flex items-center gap-1 text-xs font-medium text-primary group-hover:gap-1.5 transition-all">
-                          Schedule now <ArrowRight className="h-3 w-3" />
-                        </span>
-                      </button>
-                    </HoverCardTrigger>
-                    <HoverCardContent side="right" className="w-72 p-0 overflow-hidden rounded-xl border-2 border-black" style={{ boxShadow: '0 8px 30px rgba(0,0,0,0.4)' }}>
-                      <img src={videoConsultPreview} alt="Video consultation interface" className="w-full h-40 object-cover" />
-                      <div className="p-3">
-                        <p className="text-xs font-semibold text-foreground mb-1">Live Video Consultation</p>
-                        <p className="text-[10px] text-muted-foreground leading-relaxed">Book a face-to-face session with a certified moving specialist. Walk through your home on camera for the most accurate estimate.</p>
-                      </div>
-                    </HoverCardContent>
-                  </HoverCard>
+                  <button
+                    onClick={() => navigate("/site/book")}
+                    className="group flex flex-col items-center text-center rounded-2xl border-2 border-black bg-card p-4 hover:-translate-y-1 transition-all duration-200 flex-1" style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.5), 0 8px 40px rgba(0,0,0,0.3), inset 0 2px 8px rgba(0,0,0,0.15)' }}>
+                    <h3 className="text-sm font-bold text-foreground mb-0.5">Book Video Consult</h3>
+                    <p className="text-[11px] text-muted-foreground leading-relaxed mb-1">Face-to-face with a moving specialist via live video.</p>
+                    <span className="mt-auto inline-flex items-center gap-1 text-xs font-medium text-primary group-hover:gap-1.5 transition-all">
+                      Schedule now <ArrowRight className="h-3 w-3" />
+                    </span>
+                  </button>
                 </div>
                 </div>
               </div>
