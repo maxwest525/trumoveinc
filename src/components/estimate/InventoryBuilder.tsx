@@ -536,7 +536,7 @@ export default function InventoryBuilder({
           <button
             type="button"
             onClick={() => navigate("/site/scan-room")}
-            className="relative flex items-center gap-4 p-4 rounded-xl border border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10 hover:from-primary/10 hover:to-primary/15 transition-all text-left cursor-pointer shadow-sm hover:shadow-lg group overflow-hidden w-full"
+            className="relative flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-primary/5 to-primary/10 hover:from-primary/10 hover:to-primary/15 transition-all text-left cursor-pointer group overflow-hidden w-full"
           >
             {/* Preview thumbnail */}
             <div className="relative w-20 h-16 rounded-lg overflow-hidden border border-primary/20 flex-shrink-0">
