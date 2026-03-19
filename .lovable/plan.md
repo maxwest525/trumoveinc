@@ -1,35 +1,50 @@
 
+Goal: keep the hero as-is, but make the top navbar truly stable so zooming does not create a half-desktop / half-mobile header.
 
-## Problem Analysis
+Plan
 
-The zoom/scaling issues stem from three root causes:
+1. Audit and unify the header breakpoints
+- Remove the mixed breakpoint logic causing different pieces to switch at different widths:
+  - desktop nav currently hides at `max-width: 1000px`
+  - “Contact Us” currently hides at Tailwind `md` (`768px`)
+- Replace this with one shared breakpoint so the entire header changes modes together.
 
-1. **Viewport-relative sizing**: `.tru-hero-wrapper` uses `min-height: calc(100vh - 130px)` — when browser zoom changes, `100vh` stays the same in CSS pixels but the actual viewport shrinks, causing content to overflow and get cut off (the "Let's Get Moving" form being clipped).
+2. Rebuild the header layout to use fixed tracks instead of flexible drift
+- Change the header shell from a loose flex layout to a more stable 3-zone layout:
+  - left: logo
+  - center: nav
+  - right: contact actions / mobile toggle
+- This prevents the logo and nav from shifting position as zoom changes available width.
 
-2. **Parallax transforms**: The right column (form) has `transform: translateY(${formParallax.y}px)` applied via the `useParallax` hook. This shifts the form based on scroll position, which interacts badly with zoom levels since the calculations use raw pixel values.
+3. Stop partial collapse behavior on desktop zoom
+- Keep the desktop header active through normal desktop zoom ranges.
+- Only switch to the mobile menu at a much smaller true layout width.
+- If needed, slightly tighten desktop spacing first before collapsing:
+  - smaller nav gaps
+  - slightly smaller horizontal padding
+  - narrower contact group
 
-3. **`vw`-based font sizing**: The headline uses `clamp(40px, 6vw, 72px)` and bullets use `clamp(13px, 1.15vw, 16px)` — these shift with zoom since `vw` units change relative to the zoomed viewport.
+4. Remove nested spacing that amplifies header movement
+- Clean up overlapping outer/inner horizontal padding between `SiteShell` and `Header`.
+- Make the floating header width, centering, and padding consistent so it does not appear to “slide” or crop differently at 80%, 100%, and 125%.
 
-## Plan
+5. Preserve the hero sizing that now fits
+- Do not shrink the hero again.
+- Only adjust the top section spacing if the stabilized header needs a small buffer above the hero.
 
-### 1. Remove viewport-height dependency on hero wrapper
-- Change `.tru-hero-wrapper` from `min-height: calc(100vh - 130px)` to `min-height: auto` or a fixed `min-height` in `px`/`rem`
-- This prevents the form from being cut off at any zoom level
+Technical details
+- Files to update:
+  - `src/components/layout/Header.tsx`
+  - `src/components/layout/SiteShell.tsx`
+  - `src/index.css`
+- Main root cause found:
+  - the header uses inconsistent responsive rules (`1000px` in CSS vs `md`/`768px` in JSX), so zoom changes trigger different parts independently.
+- Recommended implementation direction:
+  - one breakpoint for all header mode changes
+  - CSS grid for header structure
+  - reduced dependency on `flex-1`, `margin-left: auto`, and mixed Tailwind/CSS visibility rules
 
-### 2. Remove parallax on the form column
-- Remove the `useParallax` hook usage for the form (`parallaxFormRef`, `formParallax`)
-- Remove the inline `transform: translateY(...)` style from the right column div
-- Keep the headline parallax if desired, or remove both for full stability
-
-### 3. Replace `vw`-based sizing with fixed responsive values
-- Change `font-size: clamp(40px, 6vw, 72px)` on `.tru-hero-headline` to a fixed size like `60px` with media query breakpoints
-- Change `font-size: clamp(13px, 1.15vw, 16px)` on `.tru-hero-bullets li` to a fixed `15px`
-- Replace any other `vw`-based sizing in the hero/header area
-
-### 4. Ensure header uses fixed dimensions
-- Verify `.header-main.header-floating` margins and padding use `px`/`rem` not viewport units (they already appear to be pixel-based, but will audit the mobile overrides)
-
-### Files to modify
-- `src/index.css` — hero wrapper min-height, font sizes
-- `src/pages/Index.tsx` — remove parallax transform on form column
-
+Expected result
+- At 80%, 100%, and 125%, the top bar should remain visually consistent instead of partially collapsing.
+- The hero stays fully visible.
+- The header only switches to mobile when the viewport is genuinely narrow, not just because browser zoom crossed a mismatched breakpoint.
