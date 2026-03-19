@@ -34,6 +34,8 @@ import previewPropertyLookup from "@/assets/preview-property-lookup.jpg";
 import sampleRoomLiving from "@/assets/sample-room-living.jpg";
 import scanRoomPreview from "@/assets/scan-room-preview.jpg";
 import heroFamilyMove from "@/assets/hero-family-move.jpg";
+import videoConsultPreview from "@/assets/video-consult-preview.jpg";
+import trudyVoicePreview from "@/assets/trudy-voice-preview.jpg";
 
 import { Mic } from "lucide-react";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
@@ -1688,34 +1690,55 @@ export default function Index() {
                 {/* Right group: remaining cards */}
                 <div className="flex flex-col md:flex-row gap-6 flex-1 items-stretch">
                 {/* Col 2: Talk to Trudy + Book Video Consult stacked */}
-                <div className="flex flex-col gap-4 md:w-44 shrink-0">
-                  <button
-                    onClick={() => window.dispatchEvent(new CustomEvent('trudy-start'))}
-                    className="group relative flex flex-col items-center text-center rounded-2xl border-2 border-black bg-card p-6 hover:-translate-y-1 transition-all duration-200 flex-1" style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.5), 0 8px 40px rgba(0,0,0,0.3), inset 0 2px 8px rgba(0,0,0,0.15)' }}
-                  >
-                    <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center mb-3 group-hover:bg-primary/20 transition-colors">
-                      <Mic className="h-4 w-4 text-primary" />
-                    </div>
-                    <h3 className="text-sm font-bold text-foreground mb-1">Talk to Trudy</h3>
-                    <p className="text-[11px] text-muted-foreground leading-relaxed mb-3">AI voice assistant — instant quotes, tracking & scheduling.</p>
-                    <span className="mt-auto inline-flex items-center gap-1 text-xs font-medium text-primary group-hover:gap-1.5 transition-all">
-                      Start talking <ArrowRight className="h-3 w-3" />
-                    </span>
-                  </button>
+                <div className="flex flex-col gap-4 md:w-48 shrink-0">
+                  <HoverCard openDelay={200} closeDelay={100}>
+                    <HoverCardTrigger asChild>
+                      <button
+                        onClick={() => window.dispatchEvent(new CustomEvent('trudy-start'))}
+                        className="group relative flex flex-col items-center text-center rounded-2xl border-2 border-black bg-card p-6 hover:-translate-y-1 transition-all duration-200 flex-1" style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.5), 0 8px 40px rgba(0,0,0,0.3), inset 0 2px 8px rgba(0,0,0,0.15)' }}
+                      >
+                        <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center mb-3 group-hover:bg-primary/20 transition-colors">
+                          <Mic className="h-4 w-4 text-primary" />
+                        </div>
+                        <h3 className="text-sm font-bold text-foreground mb-1">Talk to Trudy</h3>
+                        <p className="text-[11px] text-muted-foreground leading-relaxed mb-3">AI voice assistant — instant quotes, tracking & scheduling.</p>
+                        <span className="mt-auto inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-full text-xs font-bold group-hover:bg-primary/90 transition-all shadow-md">
+                          <Mic className="h-3.5 w-3.5" />
+                          Start Talking
+                        </span>
+                      </button>
+                    </HoverCardTrigger>
+                    <HoverCardContent side="right" className="w-72 p-0 overflow-hidden rounded-xl border-2 border-black" style={{ boxShadow: '0 8px 30px rgba(0,0,0,0.4)' }}>
+                      <img src={trudyVoicePreview} alt="Trudy AI Voice Assistant" className="w-full h-36 object-cover" />
+                      <div className="p-3">
+                        <p className="text-xs font-semibold text-foreground mb-1">Trudy AI Voice Module</p>
+                        <p className="text-[10px] text-muted-foreground leading-relaxed">Click to activate Trudy's live voice assistant. Get instant moving quotes, track shipments, and schedule pickups — all hands-free.</p>
+                      </div>
+                    </HoverCardContent>
+                  </HoverCard>
 
-                  <button
-                    onClick={() => navigate("/book")}
-                    className="group relative flex flex-col items-center text-center rounded-2xl border-2 border-black bg-card p-6 hover:-translate-y-1 transition-all duration-200 flex-1" style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.5), 0 8px 40px rgba(0,0,0,0.3), inset 0 2px 8px rgba(0,0,0,0.15)' }}
-                  >
-                    <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center mb-3 group-hover:bg-primary/20 transition-colors">
-                      <Video className="h-4 w-4 text-primary" />
-                    </div>
-                    <h3 className="text-sm font-bold text-foreground mb-1">Book Video Consult</h3>
-                    <p className="text-[11px] text-muted-foreground leading-relaxed mb-3">Face-to-face with a moving specialist via live video.</p>
-                    <span className="mt-auto inline-flex items-center gap-1 text-xs font-medium text-primary group-hover:gap-1.5 transition-all">
-                      Schedule now <ArrowRight className="h-3 w-3" />
-                    </span>
-                  </button>
+                  <HoverCard openDelay={200} closeDelay={100}>
+                    <HoverCardTrigger asChild>
+                      <button
+                        onClick={() => navigate("/site/book")}
+                        className="group relative flex flex-col items-center text-center rounded-2xl border-2 border-black bg-card p-6 hover:-translate-y-1 transition-all duration-200 flex-1" style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.5), 0 8px 40px rgba(0,0,0,0.3), inset 0 2px 8px rgba(0,0,0,0.15)' }}
+                      >
+                        <img src={videoConsultPreview} alt="Video consultation preview" className="w-full h-20 object-cover rounded-lg mb-3 border border-border/60" />
+                        <h3 className="text-sm font-bold text-foreground mb-1">Book Video Consult</h3>
+                        <p className="text-[11px] text-muted-foreground leading-relaxed mb-3">Face-to-face with a moving specialist via live video.</p>
+                        <span className="mt-auto inline-flex items-center gap-1 text-xs font-medium text-primary group-hover:gap-1.5 transition-all">
+                          Schedule now <ArrowRight className="h-3 w-3" />
+                        </span>
+                      </button>
+                    </HoverCardTrigger>
+                    <HoverCardContent side="right" className="w-72 p-0 overflow-hidden rounded-xl border-2 border-black" style={{ boxShadow: '0 8px 30px rgba(0,0,0,0.4)' }}>
+                      <img src={videoConsultPreview} alt="Video consultation interface" className="w-full h-40 object-cover" />
+                      <div className="p-3">
+                        <p className="text-xs font-semibold text-foreground mb-1">Live Video Consultation</p>
+                        <p className="text-[10px] text-muted-foreground leading-relaxed">Book a face-to-face session with a certified moving specialist. Walk through your home on camera for the most accurate estimate.</p>
+                      </div>
+                    </HoverCardContent>
+                  </HoverCard>
                 </div>
 
                 {/* Col 3: Send a Message — wide center */}
