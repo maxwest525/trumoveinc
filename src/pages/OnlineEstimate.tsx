@@ -37,7 +37,7 @@ function mapHomeSize(size: string): string {
     '2 Bedroom': '2br',
     '3 Bedroom': '3br',
     '4+ Bedroom': '4br+',
-    'Office': '2br',
+    'Office': '2br'
   };
   return sizeMap[size] || '';
 }
@@ -54,7 +54,7 @@ export default function OnlineEstimate() {
   const [isEstimating, setIsEstimating] = useState(false);
   const inventoryRef = useRef<HTMLDivElement>(null);
   const tableRef = useRef<HTMLDivElement>(null);
-  
+
   const totalCubicFeet = useMemo(() => calculateTotalCubicFeet(items), [items]);
   const totalWeight = useMemo(() => calculateTotalWeight(items), [items]);
 
@@ -72,7 +72,7 @@ export default function OnlineEstimate() {
     if (storedLead && !extendedDetails) {
       try {
         const lead = JSON.parse(storedLead);
-        
+
         // Pre-populate extendedDetails with ALL homepage data including contact info
         setExtendedDetails({
           name: lead.name || '',
@@ -94,7 +94,7 @@ export default function OnlineEstimate() {
           isMultiStop: false,
           pickupLocations: [],
           dropoffLocations: [],
-          optimizedRoute: null,
+          optimizedRoute: null
         });
       } catch (e) {
         console.error("Failed to parse stored lead data:", e);
@@ -108,8 +108,8 @@ export default function OnlineEstimate() {
     if (scannedData) {
       try {
         const scannedItems = JSON.parse(scannedData) as Array<{
-          id: string; name: string; room: string; quantity: number;
-          weightEach: number; cubicFeet: number; specialHandling: boolean; imageUrl?: string;
+          id: string;name: string;room: string;quantity: number;
+          weightEach: number;cubicFeet: number;specialHandling: boolean;imageUrl?: string;
         }>;
         if (scannedItems.length > 0) {
           setItems(scannedItems);
@@ -117,7 +117,7 @@ export default function OnlineEstimate() {
           localStorage.removeItem('tm_scanned_inventory'); // Consume so it doesn't re-import
           toast({
             title: "Scanned inventory loaded",
-            description: `${scannedItems.length} items imported from AI Scan.`,
+            description: `${scannedItems.length} items imported from AI Scan.`
           });
         }
       } catch (e) {
@@ -125,7 +125,7 @@ export default function OnlineEstimate() {
       }
     }
   }, []);
-  
+
   // Derived move details for pricing
   const moveDetails = useMemo<MoveDetails>(() => {
     if (!extendedDetails) {
@@ -135,72 +135,72 @@ export default function OnlineEstimate() {
         distance: 0,
         moveType: 'auto' as const,
         moveDate: '',
-        homeSize: '' as MoveDetails['homeSize'],
+        homeSize: '' as MoveDetails['homeSize']
       };
     }
-    
+
     // Extract ZIP codes for distance calculation
     const fromZip = extendedDetails.fromLocation.match(/\d{5}/)?.[0] || '';
     const toZip = extendedDetails.toLocation.match(/\d{5}/)?.[0] || '';
     const distance = calculateDistance(fromZip, toZip);
     const moveType = determineMoveType(distance);
-    
+
     return {
       fromLocation: extendedDetails.fromLocation,
       toLocation: extendedDetails.toLocation,
       distance,
       moveType,
       moveDate: extendedDetails.moveDate ? format(extendedDetails.moveDate, 'yyyy-MM-dd') : '',
-      homeSize: extendedDetails.homeSize as MoveDetails['homeSize'],
+      homeSize: extendedDetails.homeSize as MoveDetails['homeSize']
     };
   }, [extendedDetails]);
 
   const handleAddItem = useCallback((item: Omit<InventoryItem, 'id'>) => {
-    setItems(prev => {
+    setItems((prev) => {
       // Check if identical item exists (same name, room, weight, cubicFeet)
-      const existingIndex = prev.findIndex(existing => 
-        existing.name === item.name && 
-        existing.room === item.room && 
-        existing.weightEach === item.weightEach &&
-        existing.cubicFeet === item.cubicFeet
+      const existingIndex = prev.findIndex((existing) =>
+      existing.name === item.name &&
+      existing.room === item.room &&
+      existing.weightEach === item.weightEach &&
+      existing.cubicFeet === item.cubicFeet
       );
-      
+
       if (existingIndex !== -1) {
         // Increment quantity of existing item
-        return prev.map((existing, index) => 
-          index === existingIndex 
-            ? { ...existing, quantity: existing.quantity + (item.quantity || 1) }
-            : existing
+        return prev.map((existing, index) =>
+        index === existingIndex ?
+        { ...existing, quantity: existing.quantity + (item.quantity || 1) } :
+        existing
         );
       }
-      
+
       // Add as new item
       const newItem: InventoryItem = {
         ...item,
-        id: crypto.randomUUID(),
+        id: crypto.randomUUID()
       };
       return [...prev, newItem];
     });
   }, []);
 
   const handleUpdateItem = useCallback((id: string, updates: Partial<InventoryItem>) => {
-    setItems(prev => prev.map(item => 
-      item.id === id ? { ...item, ...updates } : item
+    setItems((prev) => prev.map((item) =>
+    item.id === id ? { ...item, ...updates } : item
     ));
   }, []);
 
   const handleUpdateQuantity = useCallback((id: string, quantity: number) => {
     if (quantity <= 0) {
-      setItems(prev => prev.filter(item => item.id !== id));
+      setItems((prev) => prev.filter((item) => item.id !== id));
     } else {
-      setItems(prev => prev.map(item => 
-        item.id === id ? { ...item, quantity } : item
+      setItems((prev) => prev.map((item) =>
+      item.id === id ? { ...item, quantity } : item
       ));
     }
   }, []);
 
   const handleRemoveItem = useCallback((id: string) => {
-    setItems(prev => prev.filter(item => item.id !== id));
+    setItems((prev) => prev.filter((item) => item.id !== id));
   }, []);
 
   const handleClearAll = useCallback(() => {
@@ -215,29 +215,29 @@ export default function OnlineEstimate() {
   const handleAIEstimate = useCallback(async () => {
     const homeSize = extendedDetails?.homeSize || '1br';
     setIsEstimating(true);
-    
+
     try {
       const { data, error } = await supabase.functions.invoke('estimate-inventory', {
         body: { homeSize }
       });
-      
+
       if (error) {
         console.error('AI Estimate error:', error);
         toast({
           title: "Estimation failed",
           description: "Unable to generate inventory suggestions. Please try again.",
-          variant: "destructive",
+          variant: "destructive"
         });
         return;
       }
-      
+
       if (data?.suggestions && Array.isArray(data.suggestions)) {
         // Add each suggested item to inventory
         for (const suggestion of data.suggestions) {
           // Find the item in ROOM_SUGGESTIONS
           const roomItems = ROOM_SUGGESTIONS[suggestion.room];
           if (roomItems) {
-            const itemDef = roomItems.find(i => i.name === suggestion.name);
+            const itemDef = roomItems.find((i) => i.name === suggestion.name);
             if (itemDef) {
               // Add the item with the suggested quantity
               const newItem: Omit<InventoryItem, 'id'> = {
@@ -247,16 +247,16 @@ export default function OnlineEstimate() {
                 weightEach: itemDef.defaultWeight,
                 cubicFeet: itemDef.cubicFeet || Math.ceil(itemDef.defaultWeight / 7),
                 specialHandling: false,
-                imageUrl: itemDef.imageUrl,
+                imageUrl: itemDef.imageUrl
               };
               handleAddItem(newItem);
             }
           }
         }
-        
+
         toast({
           title: "Inventory populated!",
-          description: `Added ${data.suggestions.length} items based on your ${homeSize} home.`,
+          description: `Added ${data.suggestions.length} items based on your ${homeSize} home.`
         });
       }
     } catch (err) {
@@ -264,7 +264,7 @@ export default function OnlineEstimate() {
       toast({
         title: "Estimation failed",
         description: "Unable to generate inventory suggestions. Please try again.",
-        variant: "destructive",
+        variant: "destructive"
       });
     } finally {
       setIsEstimating(false);
@@ -283,15 +283,15 @@ export default function OnlineEstimate() {
 
   const handleSubmit = () => {
     if (!extendedDetails) return;
-    
+
     const totalWeight = calculateTotalWeight(items);
-    const effectiveMoveType = moveDetails.moveType === 'auto' 
-      ? (moveDetails.distance >= 150 ? 'long-distance' : 'local')
-      : moveDetails.moveType;
+    const effectiveMoveType = moveDetails.moveType === 'auto' ?
+    moveDetails.distance >= 150 ? 'long-distance' : 'local' :
+    moveDetails.moveType;
     const estimate = calculateEstimate(totalWeight, moveDetails.distance, effectiveMoveType);
-    
-    const inventoryList = items.map(item => 
-      `• ${item.name} (${item.room}) - Qty: ${item.quantity}, Weight: ${item.quantity * item.weightEach} lbs`
+
+    const inventoryList = items.map((item) =>
+    `• ${item.name} (${item.room}) - Qty: ${item.quantity}, Weight: ${item.quantity * item.weightEach} lbs`
     ).join('\n');
 
     const subject = encodeURIComponent(`TruMove Quote Request - ${extendedDetails.name}`);
@@ -336,16 +336,16 @@ Generated by TruMove Online Estimate Tool
         <div className="w-full max-w-[1440px] mx-auto">
 
           <div className="flex flex-col items-center justify-center text-center mb-10 max-w-xl mx-auto">
-            <h1 className="text-2xl md:text-3xl font-black tracking-tight text-foreground mb-2">
-              Inventory <span className="tru-qb-title-accent">Builder</span>
-            </h1>
+            
+
+            
             <p className="text-sm text-muted-foreground">What are we looking to move?</p>
           </div>
 
           {/* Conditional Layout: 3-column when locked, 2-column when unlocked */}
-          {!wizardComplete ? (
-            // LOCKED STATE: Three-Column Layout - Form (left) | Inventory (expanded center) | Summary (right)
-            <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr_240px] gap-4 items-start">
+          {!wizardComplete ?
+          // LOCKED STATE: Three-Column Layout - Form (left) | Inventory (expanded center) | Summary (right)
+          <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr_240px] gap-4 items-start">
             {/* Left Column - Wizard */}
             <div className="space-y-4">
               <div className="tru-floating-form-card tru-floating-form-compact tru-estimate-card-frame">
@@ -366,8 +366,8 @@ Generated by TruMove Online Estimate Tool
                 </div>
                 
                 <div className="p-5">
-                  <InventoryBuilder 
-                    onAddItem={handleAddItem} 
+                  <InventoryBuilder
+                    onAddItem={handleAddItem}
                     inventoryItems={items}
                     onUpdateQuantity={handleUpdateQuantity}
                     onClearAll={handleClearAll}
@@ -378,10 +378,10 @@ Generated by TruMove Online Estimate Tool
                     isEstimating={isEstimating}
                     homeSize={extendedDetails?.homeSize}
                     hasVehicleTransport={extendedDetails?.hasVehicleTransport ?? false}
-                    onVehicleTransportChange={(val) => setExtendedDetails(prev => prev ? { ...prev, hasVehicleTransport: val } : prev)}
+                    onVehicleTransportChange={(val) => setExtendedDetails((prev) => prev ? { ...prev, hasVehicleTransport: val } : prev)}
                     needsPackingService={extendedDetails?.needsPackingService ?? false}
-                    onPackingServiceChange={(val) => setExtendedDetails(prev => prev ? { ...prev, needsPackingService: val } : prev)}
-                  />
+                    onPackingServiceChange={(val) => setExtendedDetails((prev) => prev ? { ...prev, needsPackingService: val } : prev)} />
+                  
                 </div>
               </div>
             </div>
@@ -390,8 +390,8 @@ Generated by TruMove Online Estimate Tool
             <div className="hidden lg:block lg:sticky lg:top-6">
               <QuoteSnapshotVertical items={items} moveDetails={moveDetails} extendedDetails={extendedDetails} onEdit={() => {}} />
             </div>
-          </div>
-        ) : (
+          </div> : (
+
           /* UNLOCKED STATE: Two-Column Layout - Inventory Builder | Sidebar */
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-6 items-start">
             {/* Left Column - Expanded Inventory Builder + Inventory List with thumbnails */}
@@ -410,8 +410,8 @@ Generated by TruMove Online Estimate Tool
                 </div>
                 
                 <div className="p-5">
-                  <InventoryBuilder 
-                    onAddItem={handleAddItem} 
+                  <InventoryBuilder
+                    onAddItem={handleAddItem}
                     inventoryItems={items}
                     onUpdateQuantity={handleUpdateQuantity}
                     onClearAll={handleClearAll}
@@ -422,25 +422,25 @@ Generated by TruMove Online Estimate Tool
                     isEstimating={isEstimating}
                     homeSize={extendedDetails?.homeSize}
                     hasVehicleTransport={extendedDetails?.hasVehicleTransport ?? false}
-                    onVehicleTransportChange={(val) => setExtendedDetails(prev => prev ? { ...prev, hasVehicleTransport: val } : prev)}
+                    onVehicleTransportChange={(val) => setExtendedDetails((prev) => prev ? { ...prev, hasVehicleTransport: val } : prev)}
                     needsPackingService={extendedDetails?.needsPackingService ?? false}
-                    onPackingServiceChange={(val) => setExtendedDetails(prev => prev ? { ...prev, needsPackingService: val } : prev)}
-                  />
+                    onPackingServiceChange={(val) => setExtendedDetails((prev) => prev ? { ...prev, needsPackingService: val } : prev)} />
+                  
                 </div>
               </div>
 
               {/* Unified Inventory Table with thumbnails */}
-              {items.length > 0 && (
-                <div ref={tableRef} className="tru-estimate-card-frame rounded-2xl overflow-hidden">
-                  <InventoryTable 
-                    items={items}
-                    onUpdateItem={handleUpdateItem}
-                    onRemoveItem={handleRemoveItem}
-                    onClear={handleClearAll}
-                    onReorder={handleReorder}
-                  />
+              {items.length > 0 &&
+              <div ref={tableRef} className="tru-estimate-card-frame rounded-2xl overflow-hidden">
+                  <InventoryTable
+                  items={items}
+                  onUpdateItem={handleUpdateItem}
+                  onRemoveItem={handleRemoveItem}
+                  onClear={handleClearAll}
+                  onReorder={handleReorder} />
+                
                 </div>
-              )}
+              }
             </div>
 
             {/* Right Column - Move Summary (details) + Weather + Inventory Summary (room counts) + Finalize */}
@@ -450,8 +450,8 @@ Generated by TruMove Online Estimate Tool
 
 
               {/* Finalize Section */}
-              {items.length > 0 && (
-                <section className="rounded-xl border border-border/60 bg-card overflow-hidden shadow-sm tru-estimate-card-frame">
+              {items.length > 0 &&
+              <section className="rounded-xl border border-border/60 bg-card overflow-hidden shadow-sm tru-estimate-card-frame">
                   {/* Header - Enlarged and Centered */}
                   <div className="tru-summary-header-large border-b border-border/40">
                     <div className="text-center flex-1">
@@ -462,63 +462,63 @@ Generated by TruMove Online Estimate Tool
                   </div>
                   <div className="p-4 space-y-3">
                     <button
-                      type="button"
-                      onClick={handleSubmit}
-                      className="tru-qb-continue w-full"
-                    >
+                    type="button"
+                    onClick={handleSubmit}
+                    className="tru-qb-continue w-full">
+                    
                       Send My Estimate Request →
                     </button>
                     
                     {/* View Route Button */}
-                    {extendedDetails?.fromLocation && extendedDetails?.toLocation && (
-                      <button
-                        type="button"
-                        className="w-full py-2.5 text-sm text-muted-foreground hover:text-primary border border-dashed border-border/50 hover:border-primary/50 rounded-lg transition-colors flex items-center justify-center gap-2"
-                        onClick={() => {
-                          localStorage.setItem('trumove_pending_route', JSON.stringify({
-                            originAddress: extendedDetails.fromLocation,
-                            destAddress: extendedDetails.toLocation,
-                          }));
-                          navigate('/site/track');
-                        }}
-                      >
+                    {extendedDetails?.fromLocation && extendedDetails?.toLocation &&
+                  <button
+                    type="button"
+                    className="w-full py-2.5 text-sm text-muted-foreground hover:text-primary border border-dashed border-border/50 hover:border-primary/50 rounded-lg transition-colors flex items-center justify-center gap-2"
+                    onClick={() => {
+                      localStorage.setItem('trumove_pending_route', JSON.stringify({
+                        originAddress: extendedDetails.fromLocation,
+                        destAddress: extendedDetails.toLocation
+                      }));
+                      navigate('/site/track');
+                    }}>
+                    
                         <Truck className="w-4 h-4" />
                         <span>View Route on Map</span>
                       </button>
-                    )}
+                  }
                   </div>
                 </section>
-              )}
+              }
             </div>
-          </div>
-        )}
+          </div>)
+          }
         </div>
       </div>
 
       {/* Floating Inventory Helper - shows when items exist and wizard complete */}
-      {wizardComplete && (
-        <FloatingInventoryHelper 
-          items={items} 
-          onScrollToBottom={scrollToTable}
-        />
-      )}
+      {wizardComplete &&
+      <FloatingInventoryHelper
+        items={items}
+        onScrollToBottom={scrollToTable} />
+
+      }
 
       {/* Intro Modal */}
       <InventoryIntroModal
         isOpen={showIntroModal}
         onClose={handleCloseModal}
         distance={moveDetails.distance}
-        moveType={moveDetails.moveType}
-      />
+        moveType={moveDetails.moveType} />
+      
 
 
       {/* Chat Modal */}
-      <ChatModal 
-        isOpen={chatOpen} 
+      <ChatModal
+        isOpen={chatOpen}
         onClose={() => setChatOpen(false)}
         initialFromLocation={extendedDetails?.fromLocation || ''}
-        initialToLocation={extendedDetails?.toLocation || ''}
-      />
-    </SiteShell>
-  );
+        initialToLocation={extendedDetails?.toLocation || ''} />
+      
+    </SiteShell>);
+
 }
