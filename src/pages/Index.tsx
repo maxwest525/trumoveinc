@@ -1711,10 +1711,10 @@ export default function Index() {
                   <div className="hidden md:block w-px bg-border" />
 
                   {/* Contact options */}
-                  <div className="flex flex-col gap-2.5 md:w-48 shrink-0 justify-center">
+                  <div className="flex flex-col gap-3 md:w-48 shrink-0 justify-between py-2">
                     <a
                         href="tel:+16097277647"
-                        className="flex items-center justify-center gap-2 bg-foreground text-background px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-foreground/90 transition-colors">
+                        className="flex items-center justify-center gap-2 border border-foreground bg-background text-foreground px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-muted transition-colors">
                       <Phone className="w-4 h-4 text-primary" />
                       Call Us
                       <ArrowRight className="w-4 h-4 text-primary" />
@@ -1722,7 +1722,7 @@ export default function Index() {
 
                     <a
                         href="sms:+16097277647"
-                        className="flex items-center justify-center gap-2 bg-foreground text-background px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-foreground/90 transition-colors">
+                        className="flex items-center justify-center gap-2 border border-foreground bg-background text-foreground px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-muted transition-colors">
                       <MessageSquare className="w-4 h-4 text-primary" />
                       Text Support
                       <ArrowRight className="w-4 h-4 text-primary" />
@@ -1730,7 +1730,7 @@ export default function Index() {
 
                     <button
                         onClick={() => window.dispatchEvent(new CustomEvent('trudy-start'))}
-                        className="flex items-center justify-center gap-2 bg-foreground text-background px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-foreground/90 transition-colors">
+                        className="flex items-center justify-center gap-2 border border-foreground bg-background text-foreground px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-muted transition-colors">
                       <Mic className="w-4 h-4 text-primary" />
                       Talk to Trudy
                       <ArrowRight className="w-4 h-4 text-primary" />
@@ -1738,7 +1738,7 @@ export default function Index() {
 
                     <button
                         onClick={() => navigate("/site/book")}
-                        className="flex items-center justify-center gap-2 bg-foreground text-background px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-foreground/90 transition-colors">
+                        className="flex items-center justify-center gap-2 border border-foreground bg-background text-foreground px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-muted transition-colors">
                       <Video className="w-4 h-4 text-primary" />
                       Video Consult
                       <ArrowRight className="w-4 h-4 text-primary" />
