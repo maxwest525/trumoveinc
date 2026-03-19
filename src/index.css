@@ -17831,12 +17831,12 @@
   width: 44px;
   height: 44px;
   border-radius: 12px;
-  background: hsl(var(--muted));
+  background: hsl(142 71% 45% / 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  color: hsl(var(--muted-foreground));
+  color: hsl(142 71% 45%);
   transition: all 0.2s ease;
 }
 
