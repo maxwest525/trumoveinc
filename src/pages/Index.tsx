@@ -1619,7 +1619,7 @@ export default function Index() {
                     className="tru-ai-cta-btn animate-fade-scale-in opacity-0"
                     style={{ animationDelay: '350ms' }}>
                     
-                    <Home className="w-4 h-4 text-[#12ed12]" />
+                    <Home className="w-4 h-4 text-[#13ec13]" />
                     Scan Your Home
                     <ArrowRight className="w-4 h-4 text-[#49fe01]" />
                   </button>
