@@ -17739,10 +17739,8 @@
 }
 
 .tru-qb-option-card:hover {
-  border-color: hsl(var(--primary));
   background: hsl(var(--tm-ink) / 0.04);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px hsl(var(--tm-ink) / 0.1);
 }
 
 .tru-qb-option-card svg {
