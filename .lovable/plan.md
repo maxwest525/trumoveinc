@@ -1,35 +1,40 @@
 
+Fix both regressions with targeted CSS/layout changes:
 
-## Fix Header Issues: Black Bar, White Space, and Logo at Zoom
+1. Restore the real logo colors
+- In `src/index.css`, remove the global dark-mode rule that inverts every header logo:
+  ` .dark header img[alt="TruMove"], .dark .header-logo img { filter: brightness(0) invert(1); }`
+- Keep the underglow, but apply it without any color inversion so the uploaded logo stays full-color at all zoom levels.
+- If needed, scope any invert rule only to specific legacy monochrome logos, not the main navbar logo.
 
-Three problems identified:
+2. Remove the remaining white gap behind the navbar
+- The gap is still happening because the sticky header wrapper in `SiteShell.tsx` still takes up layout height, while the homepage hero is only partially pulled upward.
+- Keep the transparent wrapper, but make the homepage compensate exactly for the sticky header height instead of using the current partial overlap.
+- In `src/index.css`, replace the current homepage hero offset with a cleaner header-aware setup:
+  - increase/adjust `.tru-hero-wrapper` top pull on desktop
+  - match `.tru-hero.tru-hero-split` top padding to the real navbar height
+  - add matching tablet/mobile values, since the current responsive rules reset the hero padding and can reintroduce visible space on smaller breakpoints
 
-### Problem 1: Black bar behind header
-The `SiteShell.tsx` wraps the header in `<div className="dark pt-2 px-4 md:px-6 pb-[25px] relative z-10">`. The `dark` class forces a dark theme context, and the `bg-background` on the outer sticky div creates a visible dark band. The padding (`pt-2`, `pb-[25px]`) adds extra space around the navbar.
+3. Prevent the navbar shell from creating visible bands
+- In `src/components/layout/SiteShell.tsx`, remove any remaining extra vertical padding around the header container that creates dead space above the hero.
+- Keep the shell transparent so the hero image shows through cleanly.
 
-**Fix**: Make the sticky header wrapper transparent so the hero shows through behind it. Remove the `dark` class wrapper's implicit background by adding `bg-transparent` and remove excess padding.
+4. Keep the logo glow, but make it crisp
+- In `src/index.css`, keep `.header-logo-glow` subtle and separate from color transforms:
+  - modest white drop-shadows only
+  - no brightness/invert filters
+  - no giant blur stack that breaks at zoom
 
-### Problem 2: White/dead space above hero
-The `-80px` margin isn't enough to fully compensate for the header area height. The sticky wrapper with padding creates ~100px+ of occupied space.
+Files to update
+- `src/index.css`
+  - remove navbar logo invert rule
+  - refine `.header-logo-glow`
+  - recalibrate `.tru-hero-wrapper` and `.tru-hero.tru-hero-split`
+  - add responsive hero offset fixes
+- `src/components/layout/SiteShell.tsx`
+  - trim wrapper padding so it no longer creates visible dead space
 
-**Fix**: Increase the negative margin on `.tru-hero-wrapper` and also remove the gradient fade div below the header (line 34 in SiteShell). Make the outer sticky div background transparent.
-
-### Problem 3: Logo breaks at zoom
-The logo has 6 layers of heavy `drop-shadow` filters with huge radii (up to 320px). At different zoom levels, this creates rendering artifacts and excessive bleed. The filter is applied inline in Header.tsx.
-
-**Fix**: Reduce the drop-shadow stack to 2-3 modest layers (max ~30px radius) so it remains crisp at all zoom levels. Move from inline style to CSS class for consistency.
-
-### Files Modified
-
-**`src/components/layout/SiteShell.tsx`**
-- Make the sticky header wrapper background transparent (`bg-transparent`)
-- Remove or reduce the padding on the dark wrapper div
-- Remove the gradient fade div below the header
-
-**`src/components/layout/Header.tsx`**
-- Replace the 6-layer mega drop-shadow with a cleaner 2-layer white glow
-
-**`src/index.css`**
-- Adjust `.tru-hero-wrapper` negative margin if needed after SiteShell changes
-- Add a `.header-logo-glow` class with a sensible white underglow
-
+Expected result
+- The navbar logo keeps its original colors instead of turning white.
+- The homepage hero background sits directly behind the navbar with no white band.
+- The header still floats cleanly, and the glow remains visible without zoom artifacts.
