@@ -22,7 +22,7 @@ export function usePortalContext(): PortalContext {
 
     // Check localStorage for last active context
     const saved = localStorage.getItem("truemove_portal_context");
-    if (saved === "manager" || saved === "admin" || saved === "agent") return saved;
+    if (saved === "manager" || saved === "admin" || saved === "agent" || saved === "dispatch") return saved;
 
     // Fallback to highest role
     if (highestRole === "owner" || highestRole === "admin") return "admin";
