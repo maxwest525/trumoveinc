@@ -68,36 +68,29 @@ export default function Header() {
           </nav>
 
           {/* Contact Us - right */}
-          <div className="hidden md:flex items-center gap-2 shrink-0">
-            <span className="text-white/70 text-xs font-semibold uppercase tracking-wider mr-1">Contact</span>
-            {CONTACT_ACTIONS.map((action) => {
-              const Icon = action.icon;
-              const isExternal = action.href.startsWith("tel:") || action.href.startsWith("mailto:") || action.href.startsWith("sms:");
-              
-              if (isExternal) {
-                return (
-                  <a
-                    key={action.label}
-                    href={action.href}
-                    title={action.label}
-                    className="flex items-center justify-center w-8 h-8 rounded-full bg-white/10 hover:bg-[hsl(142,71%,45%)]/20 hover:text-[hsl(142,71%,45%)] text-white/80 transition-all duration-200"
-                  >
-                    <Icon className="w-4 h-4" />
-                  </a>
-                );
-              }
+          <div className="hidden md:flex items-center gap-1.5 shrink-0 ml-4">
+            <span className="text-white/60 text-[13px] font-semibold tracking-wide mr-2">Contact Us</span>
+            <div className="flex items-center gap-1 bg-white/[0.06] rounded-full px-1.5 py-1 border border-white/[0.08]">
+              {CONTACT_ACTIONS.map((action) => {
+                const Icon = action.icon;
+                const isExternal = action.href.startsWith("tel:") || action.href.startsWith("mailto:") || action.href.startsWith("sms:");
+                const cls = "flex items-center justify-center w-7 h-7 rounded-full hover:bg-[hsl(142,71%,45%)]/15 text-white/60 hover:text-[hsl(142,71%,45%)] transition-all duration-200";
+                
+                if (isExternal) {
+                  return (
+                    <a key={action.label} href={action.href} title={action.label} className={cls}>
+                      <Icon className="w-3.5 h-3.5" />
+                    </a>
+                  );
+                }
 
-              return (
-                <Link
-                  key={action.label}
-                  to={action.href}
-                  title={action.label}
-                  className="flex items-center justify-center w-8 h-8 rounded-full bg-white/10 hover:bg-[hsl(142,71%,45%)]/20 hover:text-[hsl(142,71%,45%)] text-white/80 transition-all duration-200"
-                >
-                  <Icon className="w-4 h-4" />
-                </Link>
-              );
-            })}
+                return (
+                  <Link key={action.label} to={action.href} title={action.label} className={cls}>
+                    <Icon className="w-3.5 h-3.5" />
+                  </Link>
+                );
+              })}
+            </div>
           </div>
 
           {/* Mobile Menu Toggle */}
