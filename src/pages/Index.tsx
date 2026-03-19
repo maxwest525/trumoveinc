@@ -728,7 +728,8 @@ export default function Index() {
   }, [scanDemoRunning]);
 
   // Form state
-  const [contactName, setContactName] = useState("");
+  const [contactFirstName, setContactFirstName] = useState("");
+  const [contactLastName, setContactLastName] = useState("");
   const [contactPhone, setContactPhone] = useState("");
   const [contactEmail, setContactEmail] = useState("");
   const [fromZip, setFromZip] = useState("");
