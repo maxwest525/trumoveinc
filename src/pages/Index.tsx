@@ -1246,128 +1246,103 @@ export default function Index() {
 
                     {/* Step 1: Contact + Route */}
                     {step === 1 &&
-                      <div className="tru-qb-step-content" key="step-1">
+                        <div className="tru-qb-step-content" key="step-1">
                         
-                        {/* Name + Phone Row */}
-                        <div className="tru-qb-location-row">
-                          <div className="tru-qb-location-col">
-                            <div className="tru-qb-input-wrap tru-qb-input-enhanced">
-                              <input
-                                type="text"
-                                value={contactName}
-                                onChange={(e) => {
-                                  setContactName(e.target.value);
-                                  if (e.target.value.length > 0 && !isEngaged) setIsEngaged(true);
-                                }}
-                                placeholder="First and Last Name"
-                                className="tru-qb-input"
-                                autoFocus />
-                              
-                            </div>
-                          </div>
-                          <div className="tru-qb-location-col">
-                            <div className="tru-qb-input-wrap tru-qb-input-enhanced">
-                              <input
-                                type="tel"
-                                value={contactPhone}
-                                onChange={(e) => setContactPhone(formatPhoneNumber(e.target.value))}
-                                placeholder="Phone"
-                                className="tru-qb-input" />
-                              
-                            </div>
-                          </div>
-                        </div>
+                         {/* First Name + Last Name Row */}
+                         <div className="tru-qb-location-row">
+                           <div className="tru-qb-location-col">
+                             <div className="tru-qb-input-wrap tru-qb-input-enhanced">
+                               <input
+                                 type="text"
+                                 value={contactFirstName}
+                                 onChange={(e) => {
+                                   setContactFirstName(e.target.value);
+                                   if (e.target.value.length > 0 && !isEngaged) setIsEngaged(true);
+                                 }}
+                                 placeholder="First Name"
+                                 className="tru-qb-input"
+                                 autoFocus />
+                             </div>
+                           </div>
+                           <div className="tru-qb-location-col">
+                             <div className="tru-qb-input-wrap tru-qb-input-enhanced">
+                               <input
+                                 type="text"
+                                 value={contactLastName}
+                                 onChange={(e) => setContactLastName(e.target.value)}
+                                 placeholder="Last Name"
+                                 className="tru-qb-input" />
+                             </div>
+                           </div>
+                         </div>
 
-                        {/* Email Row */}
-                        <div className="tru-qb-input-wrap tru-qb-input-enhanced" style={{ marginTop: '12px' }}>
-                          <input
-                            type="email"
-                            value={contactEmail}
-                            onChange={(e) => setContactEmail(e.target.value)}
-                            placeholder="Email"
-                            className="tru-qb-input" />
-                          
-                        </div>
-                        
-                        {/* FROM + TO Row */}
-                        <div className="tru-qb-location-row" style={{ marginTop: '12px' }}>
-                          <div className="tru-qb-location-col">
-                            <p className="tru-qb-section-label"><MapPin className="w-3 h-3" /> From</p>
-                            <div className="tru-qb-input-wrap tru-qb-zip-wrap tru-qb-input-enhanced">
-                              <LocationAutocomplete
-                                value={fromZip}
-                                onValueChange={(val) => {
-                                  setFromZip(val);
-                                  if (val.length > 0 && !isEngaged) setIsEngaged(true);
-                                }}
-                                onLocationSelect={async (city, zip, fullAddress) => {
-                                  setFromZip(zip);
-                                  setFromCity(city);
-                                  setFromLocationDisplay(fullAddress || `${city} ${zip}`);
-                                  const state = city.split(',')[1]?.trim() || '';
-                                  triggerCarrierSearch(state);
-                                  const coords = await geocodeLocation(`${city} ${zip}`);
-                                  if (coords) setFromCoords(coords);
-                                }}
-                                placeholder="City or ZIP" />
-                              
-                            </div>
-                          </div>
+                         {/* Phone + Email Row */}
+                         <div className="tru-qb-location-row" style={{ marginTop: '12px' }}>
+                           <div className="tru-qb-location-col">
+                             <div className="tru-qb-input-wrap tru-qb-input-enhanced">
+                               <input
+                                 type="tel"
+                                 value={contactPhone}
+                                 onChange={(e) => setContactPhone(formatPhoneNumber(e.target.value))}
+                                 placeholder="Phone"
+                                 className="tru-qb-input" />
+                             </div>
+                           </div>
+                           <div className="tru-qb-location-col">
+                             <div className="tru-qb-input-wrap tru-qb-input-enhanced">
+                               <input
+                                 type="email"
+                                 value={contactEmail}
+                                 onChange={(e) => setContactEmail(e.target.value)}
+                                 placeholder="Email"
+                                 className="tru-qb-input" />
+                             </div>
+                           </div>
+                         </div>
 
-                          <div className="tru-qb-route-connector">
-                            <ArrowRight className="w-4 h-4" />
-                          </div>
+                         {/* Move Date Row */}
+                         <div style={{ marginTop: '12px' }}>
+                           <div className="tru-qb-input-wrap tru-qb-input-enhanced">
+                             <input
+                               type="date"
+                               value={moveDate ? moveDate.toISOString().split('T')[0] : ''}
+                               onChange={(e) => {
+                                 const val = e.target.value;
+                                 setMoveDate(val ? new Date(val + 'T00:00:00') : null);
+                               }}
+                               placeholder="Move Date"
+                               className="tru-qb-input"
+                               style={{ colorScheme: 'dark' }} />
+                           </div>
+                         </div>
 
-                          <div className="tru-qb-location-col">
-                            <p className="tru-qb-section-label"><MapPin className="w-3 h-3" /> To</p>
-                            <div className="tru-qb-input-wrap tru-qb-zip-wrap tru-qb-input-enhanced">
-                              <LocationAutocomplete
-                                value={toZip}
-                                onValueChange={(val) => {
-                                  setToZip(val);
-                                  if (val.length > 0 && !isEngaged) setIsEngaged(true);
-                                }}
-                                onLocationSelect={async (city, zip, fullAddress) => {
-                                  setToZip(zip);
-                                  setToCity(city);
-                                  setToLocationDisplay(fullAddress || `${city} ${zip}`);
-                                  if (fromCity) {
-                                    const state = city.split(',')[1]?.trim() || '';
-                                    triggerCarrierSearch(state);
-                                  }
-                                  const coords = await geocodeLocation(`${city} ${zip}`);
-                                  if (coords) setToCoords(coords);
-                                }}
-                                placeholder="City or ZIP" />
-                              
-                            </div>
-                          </div>
-                        </div>
-
-                        {formError &&
-                        <p style={{ color: 'hsl(0 70% 55%)', fontSize: '13px', textAlign: 'center', margin: '4px 0 0' }}>{formError}</p>
-                        }
-                        <button
-                          type="button"
-                          className="tru-qb-continue tru-engine-btn"
-                          onClick={() => {
-                            const name = contactName.trim();
-                            const email = contactEmail.trim();
-                            const phone = contactPhone.trim();
-                            if (!name) {setFormError('Please enter your name.');return;}
-                            if (!email || !email.includes('@') || !email.includes('.')) {setFormError('Please enter a valid email.');return;}
-                            if (!isValidPhoneNumber(phone)) {setFormError('Please enter a valid 10-digit phone number.');return;}
-                            setFormError('');
-                            goNext();
-                          }}
-                          style={{ marginTop: '16px' }}>
-                          
-                          <span>Talk to Support</span>
-                          <ArrowRight className="w-5 h-5 tru-btn-arrow" />
-                        </button>
-                        
-                        <p className="tru-qb-microcopy">A moving specialist will call you shortly.</p>
-                      </div>
+                         {formError &&
+                         <p style={{ color: 'hsl(0 70% 55%)', fontSize: '13px', textAlign: 'center', margin: '4px 0 0' }}>{formError}</p>
+                         }
+                         <button
+                           type="button"
+                           className="tru-qb-continue tru-engine-btn"
+                           onClick={() => {
+                             const first = contactFirstName.trim();
+                             const last = contactLastName.trim();
+                             const email = contactEmail.trim();
+                             const phone = contactPhone.trim();
+                             if (!first) {setFormError('Please enter your first name.');return;}
+                             if (!last) {setFormError('Please enter your last name.');return;}
+                             if (!isValidPhoneNumber(phone)) {setFormError('Please enter a valid 10-digit phone number.');return;}
+                             if (!email || !email.includes('@') || !email.includes('.')) {setFormError('Please enter a valid email.');return;}
+                             if (!moveDate) {setFormError('Please select a move date.');return;}
+                             setFormError('');
+                             goNext();
+                           }}
+                           style={{ marginTop: '16px' }}>
+                           
+                           <span>Talk to Support</span>
+                           <ArrowRight className="w-5 h-5 tru-btn-arrow" />
+                         </button>
+                         
+                         <p className="tru-qb-microcopy">A moving specialist will call you shortly.</p>
+                       </div>
                       }
 
 
