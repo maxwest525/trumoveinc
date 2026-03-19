@@ -1674,7 +1674,7 @@ export default function Index() {
 
                   <a
                       href="sms:+16097277647"
-                      className="group flex flex-col items-center text-center border-black bg-card p-3 hover:-translate-y-1 transition-all duration-200 flex-1 rounded-none shadow-none border-0" style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.5), 0 8px 40px rgba(0,0,0,0.3), inset 0 2px 8px rgba(0,0,0,0.15)' }}>
+                      className="group flex flex-col items-center text-center bg-card p-3 hover:-translate-y-1 transition-all duration-200 flex-1 rounded-none shadow-none border-0">
                     <h3 className="text-sm font-bold text-foreground mb-1">Text Support</h3>
                     <span className="inline-flex items-center gap-1 text-xs font-medium text-primary group-hover:gap-1.5 transition-all">
                       Send a text <ArrowRight className="h-3 w-3" />
