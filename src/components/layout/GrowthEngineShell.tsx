@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   Home, Sun, Moon, Bell, Menu, X,
   LayoutDashboard, Rocket, FileText, Plug,
-  Zap, RotateCcw, TrendingUp, Globe,
+  Zap, RotateCcw, TrendingUp, Globe, Eye,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useTheme } from "next-themes";
@@ -19,6 +19,7 @@ const NAV = [
   { label: "Integrations", icon: Plug, href: "/marketing/integrations" },
   { label: "Routing", icon: Zap, href: "/marketing/routing" },
   { label: "Customer Sites", icon: Globe, href: "/customer-facing-sites" },
+  { label: "Live Website", icon: Eye, href: "/site" },
 ];
 
 interface GrowthEngineShellProps {
