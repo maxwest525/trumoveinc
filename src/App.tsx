@@ -155,6 +155,7 @@ const App = () => (
             <Route path="/admin/pulse/call/:callId" element={<AdminPulseCallReview />} />
             <Route path="/manager/team-chat" element={<ManagerTeamChat />} />
             <Route path="/admin/team-chat" element={<AdminTeamChat />} />
+            <Route path="/dispatch/dashboard" element={<DispatchDashboard />} />
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
