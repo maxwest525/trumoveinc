@@ -102,26 +102,13 @@ export default function Header() {
                 );
               })}
               <div className="border-t border-white/10 pt-3 mt-2">
-                <span className="text-white/50 text-xs font-semibold uppercase tracking-wider px-3 mb-2 block">Contact Us</span>
-                <div className="flex gap-3 px-3 pt-1">
-                  {CONTACT_ACTIONS.map((action) => {
-                    const Icon = action.icon;
-                    const isExternal = action.href.startsWith("tel:") || action.href.startsWith("mailto:") || action.href.startsWith("sms:");
-                    const Component = isExternal ? "a" : Link;
-                    const props = isExternal ? { href: action.href } : { to: action.href, onClick: () => setMobileMenuOpen(false) };
-                    return (
-                      <Component
-                        key={action.label}
-                        {...(props as any)}
-                        title={action.label}
-                        className="flex flex-col items-center gap-1 text-white/70 hover:text-[hsl(142,71%,45%)] transition-colors"
-                      >
-                        <Icon className="w-5 h-5" />
-                        <span className="text-[10px]">{action.label}</span>
-                      </Component>
-                    );
-                  })}
-                </div>
+                <Link
+                  to="/site/contact"
+                  className="header-mobile-link"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Contact Us
+                </Link>
               </div>
             </nav>
           </div>
