@@ -6511,8 +6511,8 @@
   align-items: center;
   justify-content: center;
   padding: 14px 20px;
-  background: hsl(220 15% 93%);
-  border-bottom: 1px solid hsl(var(--tm-ink) / 0.06);
+  background: hsl(var(--tm-ink));
+  border-bottom: 2px solid hsl(35 95% 55%);
   position: relative;
 }
 
