@@ -85,7 +85,7 @@ export default function Header() {
 
                 return (
                   <Link key={action.label} to={action.href} title={action.label} className="header-contact-icon">
-                    <Icon className="w-3.5 h-3.5" />
+                    <Icon className="w-5 h-5" />
                   </Link>
                 );
               })}
