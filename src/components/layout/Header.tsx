@@ -69,7 +69,12 @@ export default function Header() {
 
           {/* Contact Us - right */}
           <div className="header-contact-group">
-            <Link to="/site/contact" className="header-contact-label">Contact Us</Link>
+            <Link
+              to="/site/contact"
+              className={`header-nav-link text-[15px] ${location.pathname === "/site/contact" ? "is-active" : ""}`}
+            >
+              Contact Us
+            </Link>
           </div>
 
           {/* Mobile Menu Toggle */}
