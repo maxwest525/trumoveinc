@@ -1,50 +1,22 @@
 
-Goal: keep the hero as-is, but make the top navbar truly stable so zooming does not create a half-desktop / half-mobile header.
 
-Plan
+## Edit the Real-Time Load Tracking Photo
 
-1. Audit and unify the header breakpoints
-- Remove the mixed breakpoint logic causing different pieces to switch at different widths:
-  - desktop nav currently hides at `max-width: 1000px`
-  - “Contact Us” currently hides at Tailwind `md` (`768px`)
-- Replace this with one shared breakpoint so the entire header changes modes together.
+**Goal**: Crop the uploaded image to show only the right portion — the man with the phone, the TruMove truck, and the "Live Route Tracking" map overlay. Remove the apartment/house and everything to the left of the man.
 
-2. Rebuild the header layout to use fixed tracks instead of flexible drift
-- Change the header shell from a loose flex layout to a more stable 3-zone layout:
-  - left: logo
-  - center: nav
-  - right: contact actions / mobile toggle
-- This prevents the logo and nav from shifting position as zoom changes available width.
+### Steps
 
-3. Stop partial collapse behavior on desktop zoom
-- Keep the desktop header active through normal desktop zoom ranges.
-- Only switch to the mobile menu at a much smaller true layout width.
-- If needed, slightly tighten desktop spacing first before collapsing:
-  - smaller nav gaps
-  - slightly smaller horizontal padding
-  - narrower contact group
+1. **Crop the image** using a Python script via `lov-exec`:
+   - Open the uploaded image (`user-uploads://image-140.png`)
+   - Crop from roughly the man's left edge to the right edge of the image, removing the house and left-side background
+   - Save the cropped result to `/mnt/documents/tracking-lifestyle-cropped.png`
 
-4. Remove nested spacing that amplifies header movement
-- Clean up overlapping outer/inner horizontal padding between `SiteShell` and `Header`.
-- Make the floating header width, centering, and padding consistent so it does not appear to “slide” or crop differently at 80%, 100%, and 125%.
+2. **QA the result** by viewing the cropped image to confirm the framing looks correct — man centered, map overlay visible, no important elements cut off.
 
-5. Preserve the hero sizing that now fits
-- Do not shrink the hero again.
-- Only adjust the top section spacing if the stabilized header needs a small buffer above the hero.
+3. **Deliver** the cropped image for the user to review, then copy it into the project if approved.
 
-Technical details
-- Files to update:
-  - `src/components/layout/Header.tsx`
-  - `src/components/layout/SiteShell.tsx`
-  - `src/index.css`
-- Main root cause found:
-  - the header uses inconsistent responsive rules (`1000px` in CSS vs `md`/`768px` in JSX), so zoom changes trigger different parts independently.
-- Recommended implementation direction:
-  - one breakpoint for all header mode changes
-  - CSS grid for header structure
-  - reduced dependency on `flex-1`, `margin-left: auto`, and mixed Tailwind/CSS visibility rules
+### Technical details
+- Uses Pillow (`PIL`) to open and crop the image
+- Will inspect the image dimensions first, then estimate the crop x-coordinate (approximately 35-40% from the left based on the composition)
+- Output saved to `/mnt/documents/`
 
-Expected result
-- At 80%, 100%, and 125%, the top bar should remain visually consistent instead of partially collapsing.
-- The hero stays fully visible.
-- The header only switches to mobile when the viewport is genuinely narrow, not just because browser zoom crossed a mismatched breakpoint.
