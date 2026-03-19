@@ -1613,44 +1613,53 @@ export default function Index() {
           <FeatureTrustStrip />
 
           {/* GET IN TOUCH */}
-          <section className="py-20 px-4">
+          <section className="tru-ai-steps-section">
             <div className="max-w-6xl mx-auto">
-              {/* Headline */}
-              <div className="flex flex-col items-center text-center mb-10">
-                <h2 className="text-5xl font-black tracking-tight text-foreground mb-4">Contact Us.</h2>
-                <p className="text-lg text-muted-foreground leading-relaxed mb-6 max-w-md">Our team is standing by. Voice, video, text, or email.</p>
-                <a href="tel:+16097277647" className="inline-flex items-center gap-2 bg-foreground text-background px-8 py-3 rounded-full text-base font-semibold hover:opacity-90 transition-opacity">
-                  <Phone className="w-5 h-5 text-[hsl(142,71%,45%)]" />
+              {/* Online indicator + Headline */}
+              <div className="flex flex-col items-center text-center mb-6">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="relative flex h-2.5 w-2.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary"></span>
+                  </span>
+                  <span className="text-xs font-medium text-primary tracking-wide uppercase">We're Online</span>
+                </div>
+                <h2 className="tru-ai-main-headline text-5xl md:text-6xl">
+                  Contact <span className="tru-ai-headline-accent">Us.</span>
+                </h2>
+                <p className="tru-ai-subheadline text-lg mt-3">Our team is standing by. Voice, video, text, or email.</p>
+                <a href="tel:+16097277647" className="tru-ai-cta-btn mt-5">
+                  <Phone className="w-5 h-5 text-primary" />
                   Call Now
-                  <ArrowRight className="w-5 h-5 text-[hsl(142,71%,45%)]" />
+                  <ArrowRight className="w-5 h-5 text-primary" />
                 </a>
               </div>
 
-              <div className="flex flex-col md:flex-row gap-6 items-stretch">
+              <div className="flex flex-col md:flex-row gap-5 items-stretch">
 
-                {/* Single card: Form + Divider + Buttons */}
-                <div className="flex-1 min-w-0 rounded-2xl bg-card p-6 flex flex-col md:flex-row gap-6 transition-all duration-200">
+                {/* Single card with green gradient glow */}
+                <div className="flex-1 min-w-0 rounded-2xl bg-card p-5 flex flex-col md:flex-row gap-5 transition-all duration-200 ring-1 ring-primary/20 shadow-[0_0_24px_-4px_hsl(142_71%_45%/0.12)]">
 
                   {/* Send a Message form */}
                   <div className="flex-1 flex flex-col">
-                    <div className="flex flex-col items-center text-center mb-5">
-                      <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                        <MessageSquare className="h-5 w-5 text-primary" />
+                    <div className="flex flex-col items-center text-center mb-4">
+                      <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center mb-3">
+                        <MessageSquare className="h-4 w-4 text-primary" />
                       </div>
-                      <h3 className="text-base font-semibold text-foreground mb-1">Send a Message</h3>
+                      <h3 className="text-base font-semibold text-foreground mb-0.5">Send a Message</h3>
                       <p className="text-xs text-muted-foreground">We'll get back to you within a few hours.</p>
                     </div>
-                    <form className="flex-1 flex flex-col space-y-3" onSubmit={(e) => e.preventDefault()}>
-                      <div className="grid grid-cols-2 gap-3">
-                        <input type="text" required placeholder="Your name" className="w-full rounded-lg border border-border bg-background px-3 py-2.5 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary text-sm" />
-                        <input type="email" required className="w-full rounded-lg border border-border bg-background px-3 py-2.5 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary text-sm" placeholder="Email" />
+                    <form className="flex-1 flex flex-col space-y-2.5" onSubmit={(e) => e.preventDefault()}>
+                      <div className="grid grid-cols-2 gap-2.5">
+                        <input type="text" required placeholder="Your name" className="w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary text-sm" />
+                        <input type="email" required className="w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary text-sm" placeholder="Email" />
                       </div>
-                      <textarea required placeholder="How can we help?" className="w-full flex-1 min-h-[120px] rounded-lg border border-border bg-background px-3 py-2.5 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary resize-none text-sm" />
-                      <button type="submit" className="w-full bg-foreground text-background py-3 rounded-lg text-sm font-semibold hover:bg-foreground/90 transition-colors">
+                      <textarea required placeholder="How can we help?" className="w-full flex-1 min-h-[100px] rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary resize-none text-sm" />
+                      <button type="submit" className="w-full bg-foreground text-background py-2.5 rounded-lg text-sm font-semibold hover:bg-foreground/90 transition-colors">
                         Send Message
                       </button>
                     </form>
-                    <p className="text-center text-[11px] text-muted-foreground mt-3">
+                    <p className="text-center text-[11px] text-muted-foreground mt-2">
                       or email <a href="mailto:support@trumove.com" className="text-primary underline underline-offset-2 hover:text-primary/80">support@trumove.com</a>
                     </p>
                   </div>
@@ -1659,11 +1668,11 @@ export default function Index() {
                   <div className="hidden md:block w-px bg-border" />
 
                   {/* Contact options */}
-                  <div className="flex flex-col gap-2 md:w-40 shrink-0 justify-center">
+                  <div className="flex flex-col gap-1.5 md:w-40 shrink-0 justify-center">
                     <a
                         href="tel:+16097277647"
-                        className="group flex flex-col items-center text-center p-3 hover:-translate-y-1 transition-all duration-200">
-                      <h3 className="text-sm font-bold text-foreground mb-1">Call Us</h3>
+                        className="group flex flex-col items-center text-center p-2.5 hover:-translate-y-1 transition-all duration-200">
+                      <h3 className="text-sm font-bold text-foreground mb-0.5">Call Us</h3>
                       <span className="inline-flex items-center gap-1 text-xs font-medium text-primary group-hover:gap-1.5 transition-all">
                         Call now <ArrowRight className="h-3 w-3" />
                       </span>
@@ -1671,8 +1680,8 @@ export default function Index() {
 
                     <a
                         href="sms:+16097277647"
-                        className="group flex flex-col items-center text-center p-3 hover:-translate-y-1 transition-all duration-200">
-                      <h3 className="text-sm font-bold text-foreground mb-1">Text Support</h3>
+                        className="group flex flex-col items-center text-center p-2.5 hover:-translate-y-1 transition-all duration-200">
+                      <h3 className="text-sm font-bold text-foreground mb-0.5">Text Support</h3>
                       <span className="inline-flex items-center gap-1 text-xs font-medium text-primary group-hover:gap-1.5 transition-all">
                         Send a text <ArrowRight className="h-3 w-3" />
                       </span>
@@ -1680,8 +1689,8 @@ export default function Index() {
 
                     <button
                         onClick={() => window.dispatchEvent(new CustomEvent('trudy-start'))}
-                        className="group flex flex-col items-center text-center p-3 hover:-translate-y-1 transition-all duration-200">
-                      <h3 className="text-sm font-bold text-foreground mb-1">Talk to Trudy</h3>
+                        className="group flex flex-col items-center text-center p-2.5 hover:-translate-y-1 transition-all duration-200">
+                      <h3 className="text-sm font-bold text-foreground mb-0.5">Talk to Trudy</h3>
                       <span className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-1.5 rounded-full text-xs font-bold group-hover:bg-primary/90 transition-all shadow-md">
                         Start Talking
                       </span>
@@ -1689,8 +1698,8 @@ export default function Index() {
 
                     <button
                         onClick={() => navigate("/site/book")}
-                        className="group flex flex-col items-center text-center p-3 hover:-translate-y-1 transition-all duration-200">
-                      <h3 className="text-sm font-bold text-foreground mb-1">Video Consult</h3>
+                        className="group flex flex-col items-center text-center p-2.5 hover:-translate-y-1 transition-all duration-200">
+                      <h3 className="text-sm font-bold text-foreground mb-0.5">Video Consult</h3>
                       <span className="inline-flex items-center gap-1 text-xs font-medium text-primary group-hover:gap-1.5 transition-all">
                         Schedule now <ArrowRight className="h-3 w-3" />
                       </span>
@@ -1699,7 +1708,7 @@ export default function Index() {
                 </div>
 
                 {/* Agent photo */}
-                <div className="hidden lg:flex md:w-64 shrink-0 self-center">
+                <div className="hidden lg:flex md:w-64 shrink-0 self-center animate-fade-in">
                   <div className="rounded-2xl overflow-hidden w-full">
                     <img src={contactAgentImg} alt="TruMove support agent" className="block w-full h-auto" />
                   </div>
