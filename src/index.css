@@ -6709,7 +6709,7 @@
   letter-spacing: 0.02em;
   margin-top: 40px;
   border: 1px solid hsl(var(--tm-ink) / 0.08);
-  border-bottom: 2px solid hsl(35 95% 55%);
+  border-bottom: 2px solid hsl(var(--primary));
   box-shadow: 
     0 0 4px hsl(var(--tm-ink) / 0.03),
     0 4px 16px hsl(var(--tm-ink) / 0.25);
