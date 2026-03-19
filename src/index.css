@@ -1538,7 +1538,7 @@
 .tru-hero-wrapper {
   position: relative;
   width: 100%;
-  min-height: 52rem;
+  min-height: 64rem;
   overflow-x: hidden;  /* Prevent horizontal scroll */
 }
 
@@ -1592,10 +1592,10 @@
   grid-template-columns: minmax(0, 1fr) minmax(24rem, 30rem);
   gap: 48px;
   align-items: start;
-  padding: 72px 64px 112px;
+  padding: 96px 64px 140px;
   max-width: 1480px;
   margin: 0 auto;
-  min-height: 52rem;
+  min-height: 64rem;
 }
 
 /* LEFT COLUMN - Text Content */
