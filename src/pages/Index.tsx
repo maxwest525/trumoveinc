@@ -517,11 +517,11 @@ function ShipmentTrackerSection({ navigate }: {navigate: (path: string) => void;
           {/* Headline + CTA - center */}
           <div className="flex flex-col items-center text-center gap-4 bg-card p-8 border-0 shadow-none rounded-none">
             <div className="tru-ai-headline-block">
-              <h2 className="tru-ai-main-headline">
+              <h2 className="tru-ai-main-headline text-5xl md:text-6xl">
                 Real-Time<br />
                 <span className="tru-ai-headline-accent">Shipment Tracking.</span>
               </h2>
-              <p className="tru-ai-subheadline">
+              <p className="tru-ai-subheadline text-lg">
                 Stay up to date and track your belongings across the country with real-time GPS tracking of your goods.
               </p>
             </div>
