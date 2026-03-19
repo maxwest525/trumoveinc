@@ -1,24 +1,35 @@
 
 
-## Fix White Gap Above Hero Behind Navbar
+## Fix Header Issues: Black Bar, White Space, and Logo at Zoom
 
-**Problem**: The SiteShell wraps the header in a sticky `div` with `bg-background` (white in light mode). The hero content starts below this, creating a visible white band behind the transparent-ish navbar.
+Three problems identified:
 
-**Solution**: Pull the hero wrapper up behind the navbar using a negative top margin, so the hero background image extends under the header area.
+### Problem 1: Black bar behind header
+The `SiteShell.tsx` wraps the header in `<div className="dark pt-2 px-4 md:px-6 pb-[25px] relative z-10">`. The `dark` class forces a dark theme context, and the `bg-background` on the outer sticky div creates a visible dark band. The padding (`pt-2`, `pb-[25px]`) adds extra space around the navbar.
 
-### Changes
+**Fix**: Make the sticky header wrapper transparent so the hero shows through behind it. Remove the `dark` class wrapper's implicit background by adding `bg-transparent` and remove excess padding.
 
-**1. `src/index.css`** — Add negative top margin to `.tru-hero-wrapper`
-- Add `margin-top: -80px` to pull the hero up behind the sticky header
-- Add corresponding extra `padding-top` to `.tru-hero.tru-hero-split` (increase from `96px` to ~`176px`) so the actual content doesn't get hidden behind the nav
+### Problem 2: White/dead space above hero
+The `-80px` margin isn't enough to fully compensate for the header area height. The sticky wrapper with padding creates ~100px+ of occupied space.
 
-**2. `src/components/layout/SiteShell.tsx`** — Make the header background transparent on the homepage
-- The header wrapper `div` has a `dark` class forcing a dark background with padding. The `pt-2` and `pb-[25px]` create the visible band. Either:
-  - Make the wrapper background transparent (so the hero shows through), OR
-  - Simply let the negative margin on the hero overlap it
+**Fix**: Increase the negative margin on `.tru-hero-wrapper` and also remove the gradient fade div below the header (line 34 in SiteShell). Make the outer sticky div background transparent.
 
-The cleanest approach: keep SiteShell as-is and just use the negative margin + padding compensation on the hero, since the header is already `sticky` and will float over the pulled-up hero.
+### Problem 3: Logo breaks at zoom
+The logo has 6 layers of heavy `drop-shadow` filters with huge radii (up to 320px). At different zoom levels, this creates rendering artifacts and excessive bleed. The filter is applied inline in Header.tsx.
+
+**Fix**: Reduce the drop-shadow stack to 2-3 modest layers (max ~30px radius) so it remains crisp at all zoom levels. Move from inline style to CSS class for consistency.
 
 ### Files Modified
-- `src/index.css` — negative margin on `.tru-hero-wrapper`, padding compensation on `.tru-hero.tru-hero-split`
+
+**`src/components/layout/SiteShell.tsx`**
+- Make the sticky header wrapper background transparent (`bg-transparent`)
+- Remove or reduce the padding on the dark wrapper div
+- Remove the gradient fade div below the header
+
+**`src/components/layout/Header.tsx`**
+- Replace the 6-layer mega drop-shadow with a cleaner 2-layer white glow
+
+**`src/index.css`**
+- Adjust `.tru-hero-wrapper` negative margin if needed after SiteShell changes
+- Add a `.header-logo-glow` class with a sensible white underglow
 
