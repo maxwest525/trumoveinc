@@ -1621,7 +1621,7 @@ export default function Index() {
                     
                     <Home className="w-4 h-4 text-[#12ed12]" />
                     Scan Your Home
-                    <ArrowRight className="w-4 h-4" />
+                    <ArrowRight className="w-4 h-4 text-[#49fe01]" />
                   </button>
                 </div>
                 
