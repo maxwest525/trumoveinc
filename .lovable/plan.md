@@ -1,67 +1,33 @@
 
 
-## Problem
+## Add Color Pop to the Hero Form (No Green)
 
-E-sign documents are **not persisted to the database** and have **no link to leads**. Specifically:
+The form is currently all grays, whites, and blacks — flat and lifeless. The fix is **contrast and warmth**, not green accents.
 
-1. `AgentESignTab` stores document records in React state only — lost on page refresh
-2. `esign_audit_trail` has no `lead_id` column, so audit events can't be traced back to a lead/customer
-3. `capture-esign-event` edge function doesn't accept or store `lead_id`
-4. When viewing a customer's E-Sign tab, there's no way to load previously sent documents
+### Approach: Dark Header + Warm Amber Accent
 
-## Solution
+**1. Form Header — Flip to Dark** (`src/index.css`)
+- Change `.tru-qb-form-header-pill` background from `hsl(220 15% 93%)` (light gray) to `hsl(var(--tm-ink))` (near-black)
+- Title and subtitle text become white
+- This creates immediate visual weight and contrast — the form "pops" off the page
 
-### 1. Create `esign_documents` table (migration)
+**2. Inputs — Warm amber focus states** (`src/index.css`)
+- On `:hover` and `:focus`, use a warm amber/orange border (`hsl(35 95% 55%)`) instead of the current ink/green
+- Subtle warm `box-shadow` on focus: `0 0 0 3px hsl(35 95% 55% / 0.15)`
+- Placeholders stay muted gray — the amber only appears on interaction
 
-New table to persist document lifecycle, linked to leads:
+**3. CTA Button — Amber highlight stripe** (`src/index.css`)
+- Add a thin amber bottom-border (2px) to the dark CTA button so it pops against the dark surface
+- On hover, the amber border thickens slightly or glows warm
 
-```sql
-CREATE TABLE public.esign_documents (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  lead_id uuid NOT NULL REFERENCES public.leads(id) ON DELETE CASCADE,
-  document_type text NOT NULL,
-  ref_number text NOT NULL,
-  status text NOT NULL DEFAULT 'sent',
-  delivery_method text NOT NULL DEFAULT 'email',
-  sent_at timestamptz DEFAULT now(),
-  opened_at timestamptz,
-  completed_at timestamptz,
-  sent_by uuid REFERENCES auth.users(id),
-  created_at timestamptz DEFAULT now(),
-  updated_at timestamptz DEFAULT now()
-);
+**4. Calendar Icon** (`src/pages/Index.tsx`)
+- Give the Calendar icon a warm amber color class (`text-amber-500`) instead of the current muted opacity
 
-ALTER TABLE public.esign_documents ENABLE ROW LEVEL SECURITY;
-```
+### Dark Mode
+- Dark header stays dark but uses a slightly lighter shade to differentiate from the page background
+- Amber accents remain consistent across both modes
 
-RLS policies mirroring lead access patterns (agents see own leads' documents, managers/owners see all).
-
-### 2. Add `lead_id` to `esign_audit_trail` (migration)
-
-```sql
-ALTER TABLE public.esign_audit_trail ADD COLUMN lead_id uuid REFERENCES public.leads(id);
-```
-
-### 3. Update `capture-esign-event` edge function
-
-Accept optional `leadId` in request body and store it in `esign_audit_trail.lead_id`.
-
-### 4. Update `AgentESignTab` component
-
-- On mount, query `esign_documents` filtered by `leadId` to load existing documents
-- On send, insert a new row into `esign_documents` with `lead_id`, `ref_number`, `status`, etc.
-- Pass `leadId` to the `capture-esign-event` calls and the `send-esign-document` flow
-- Remove reliance on local-only state for document records
-
-### 5. Update `ESignViewPage`
-
-- Accept `leadId` as a search param
-- Pass `leadId` through to `logAuditEvent` so audit trail entries are linked
-- On document completion, update the corresponding `esign_documents` row status to `completed`
-
-### Files changed
-- **New migration**: Create `esign_documents` table + add `lead_id` to `esign_audit_trail`
-- `supabase/functions/capture-esign-event/index.ts` — accept and store `leadId`
-- `src/components/agent/AgentESignTab.tsx` — persist/load documents from DB
-- `src/pages/ESignViewPage.tsx` — pass `leadId` through audit logging and update status on completion
+### Files Modified
+- `src/index.css` — header background flip, input hover/focus, button accent
+- `src/pages/Index.tsx` — calendar icon color
 
