@@ -34,27 +34,11 @@ export default function Header() {
       <header className={`header-main header-floating ${isScrolled ? "is-scrolled" : ""}`}>
         <div className="header-inner">
           {/* Logo - left */}
-          <Link to="/site" className="header-logo shrink-0 relative" aria-label="TruMove Home">
-            {/* Truck + TRU portion — green underglow */}
+          <Link to="/site" className="header-logo shrink-0" aria-label="TruMove Home">
             <img 
               src={logo} 
               alt="TruMove" 
-              className="relative z-10"
-              style={{ 
-                clipPath: 'inset(0 42% 0 0)',
-                filter: 'drop-shadow(2px 2px 0 rgba(0,0,0,0.9)) drop-shadow(-1px -1px 0 rgba(0,0,0,0.9)) drop-shadow(1px -1px 0 rgba(0,0,0,0.9)) drop-shadow(-1px 1px 0 rgba(0,0,0,0.9)) drop-shadow(3px 4px 6px rgba(0,0,0,0.7)) drop-shadow(0 0 8px rgba(34,197,94,0.9)) drop-shadow(0 0 20px rgba(34,197,94,0.7)) drop-shadow(0 0 40px rgba(34,197,94,0.4))'
-              }}
-            />
-            {/* MOVE portion — white underglow */}
-            <img 
-              src={logo} 
-              alt="" 
-              aria-hidden="true"
-              className="absolute inset-0 z-10"
-              style={{ 
-                clipPath: 'inset(0 0 0 58%)',
-                filter: 'drop-shadow(2px 2px 0 rgba(0,0,0,0.9)) drop-shadow(-1px -1px 0 rgba(0,0,0,0.9)) drop-shadow(1px -1px 0 rgba(0,0,0,0.9)) drop-shadow(-1px 1px 0 rgba(0,0,0,0.9)) drop-shadow(3px 4px 6px rgba(0,0,0,0.7)) drop-shadow(0 0 8px rgba(255,255,255,0.9)) drop-shadow(0 0 20px rgba(255,255,255,0.7)) drop-shadow(0 0 40px rgba(255,255,255,0.4))'
-              }}
+              style={{ filter: 'drop-shadow(0 0 20px rgba(255,255,255,1)) drop-shadow(0 0 50px rgba(255,255,255,1)) drop-shadow(0 0 100px rgba(255,255,255,1)) drop-shadow(0 0 160px rgba(255,255,255,1)) drop-shadow(0 0 240px rgba(255,255,255,0.9)) drop-shadow(0 0 320px rgba(255,255,255,0.7))' }}
             />
           </Link>
 

@@ -1,31 +1,54 @@
+# Growth Engine Architecture
 
+## Lead Flow (Canonical)
 
-## Separate Logo Parts for Different Glow Effects
+```text
+Traffic Source → Landing Page / Call Tracking → Attribution Capture
+  → Webhook / Router → Convoso (Instant Call) → CRM Sync
+  → Backup Follow-Up Logic
+```
 
-### The Problem
+### Key Principles
 
-The logo is a **single PNG image** (`src/assets/logo.png`). CSS `filter: drop-shadow()` applies uniformly to the entire image — we cannot give the truck and "TRU" a green underglow while giving "MOVE" a white underglow on a single `<img>` element.
+- **Convoso** is the primary instant-call engine. Leads route here first for immediate dial attempts.
+- **CRM** (GHL, Granot, or custom) is a sync target / system of record, not the primary destination.
+- Each workflow should designate **one primary CRM**; others are optional secondary sync targets.
+- GHL does not replace Convoso. It provides backup sequences and reporting.
+- "Follow-up automation" means support logic around the instant-call flow, not passive CRM drip sequences.
 
-### Solution
+### Lead Statuses (Convoso feedback loop)
 
-Split the logo into **two or three separate PNG images** (with transparent backgrounds), then layer them in the header:
+- New Lead
+- In Queue
+- Attempted
+- Connected
+- Not Reached
+- Escalated
+- Duplicate
+- Suppressed
 
-1. **Truck + "TRU"** — gets green underglow (`rgba(34,197,94,...)`)
-2. **"MOVE"** — gets white underglow (`rgba(255,255,255,...)`)
+### Backup Automation Recipes
 
-Both get the black outline simulation (tight dark shadows) and a **bottom-right drop shadow** (e.g., `drop-shadow(3px 4px 6px rgba(0,0,0,0.7))` instead of the current centered `0 4px 6px`).
+1. New form lead → capture attribution → webhook to Convoso → instant call attempt → sync to CRM
+2. Lead not reached after 60s → trigger SMS with quote link
+3. No contact after 5 minutes → escalate to supervisor dashboard alert
+4. Missed inbound call from paid source → create Convoso callback + alert
+5. After-hours form submission → queue for next calling block + send auto-text
+6. Duplicate lead detected → suppress in Convoso, tag in CRM
+7. Source/campaign changes on re-submission → preserve original attribution in CRM
+8. Lead not worked within 2 minutes → flash alert on Growth Dashboard
 
-### Steps
+### After-Hours Logic (First-Class)
 
-1. **User provides two separate logo PNGs** — one for the truck+"TRU" portion, one for "MOVE". (I cannot split a PNG programmatically.)
-2. **Update `Header.tsx`** — replace the single `<img>` with a container holding two `<img>` elements side by side, each with their own filter styles:
-   - Truck+TRU: black outline + bottom-right shadow + green glow
-   - MOVE: black outline + bottom-right shadow + white glow
-3. Position them so they align seamlessly as one logo.
+- Business hours rules per location/team
+- Queue timing and next-call-block scheduling
+- Auto-text behavior for after-hours submissions
+- Morning queue priority ordering
 
-### Immediate Fix (without splitting)
+## Upgrade Plan (Pending)
 
-If splitting isn't feasible, I can at least fix the **shadow direction to bottom-right** now by changing the dark shadow offset from `0 4px 6px` to `3px 4px 6px`. But the dual-color glow requires separate image assets.
+### Pass 1: Dashboard + Landing Pages + Leads + SEO Hub
+### Pass 2: Ad Copy + Tracking + Automation + Reviews
+### Pass 3: Competitors + Settings + Campaign Builder Enhancement + Shell Polish
 
-**Do you have (or can you provide) the logo split into two parts?** Or would you prefer I apply the bottom-right shadow fix now with a single green glow as a start?
-
+See previous conversation for full details on each pass.
