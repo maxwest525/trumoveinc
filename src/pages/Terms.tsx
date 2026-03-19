@@ -6,6 +6,7 @@ export default function Terms() {
   useEffect(() => { window.scrollTo(0, 0); }, []);
   return (
     <SiteShell>
+      <CommandCenterNav title="Terms" />
       <div className="max-w-[900px] mx-auto px-6 py-12">
         <h1 className="text-4xl font-black tracking-tight text-foreground mb-2">
           Terms & Conditions
