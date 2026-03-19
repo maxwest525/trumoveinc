@@ -17,6 +17,7 @@ interface AuditEventRequest {
   documentHash?: string;
   consentGiven?: boolean;
   consentText?: string;
+  leadId?: string;
 }
 
 const handler = async (req: Request): Promise<Response> => {
