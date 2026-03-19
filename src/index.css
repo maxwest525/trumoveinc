@@ -32359,13 +32359,9 @@ html.dark .tru-summary-header-large,
 /* Header logo dark mode visibility - ensure "MOVE" text is visible */
 .dark header img[alt="TruMove"],
 .dark header .tru-logo-image,
-.dark .tru-header-logo {
-  filter: brightness(0) invert(1);
-}
-
-/* Site header logo: white underglow instead of full invert */
+.dark .tru-header-logo,
 .dark .header-logo img {
-  filter: brightness(0) invert(1) drop-shadow(0 0 3px rgba(255,255,255,0.6)) drop-shadow(0 0 8px rgba(255,255,255,0.3));
+  filter: brightness(0) invert(1);
 }
 
 /* Note: The tracking-header has its own logo with brightness(0) invert(1) applied inline.
