@@ -38,6 +38,12 @@ import heroFamilyMove from "@/assets/hero-family-move.jpg";
 import videoConsultPreview from "@/assets/video-consult-preview.jpg";
 import trudyVoicePreview from "@/assets/trudy-voice-preview.jpg";
 import contactAgentImg from "@/assets/contact-agent.png";
+import testimonialSarah from "@/assets/testimonial-sarah.jpg";
+import testimonialJames from "@/assets/testimonial-james.jpg";
+import testimonialEmilyDavid from "@/assets/testimonial-emily-david.jpg";
+import testimonialMarcus from "@/assets/testimonial-marcus.jpg";
+import testimonialLisa from "@/assets/testimonial-lisa.jpg";
+import testimonialCarlosAna from "@/assets/testimonial-carlos-ana.jpg";
 
 import { Mic } from "lucide-react";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
@@ -1629,12 +1635,12 @@ export default function Index() {
                 <div className="flex animate-marquee gap-5 w-max hover:[animation-play-state:paused]">
                   {[...Array(2)].map((_, dupeIdx) =>
                     [
-                      { name: "Sarah M.", location: "New York → Miami", rating: 5, text: "TruMove made our cross-country move seamless. Real-time tracking gave us total peace of mind the entire way." },
-                      { name: "James R.", location: "Chicago → Denver", rating: 5, text: "The AI inventory scanner saved us hours of manual cataloging. Our estimate was spot-on — no surprise charges." },
-                      { name: "Emily & David K.", location: "Los Angeles → Seattle", rating: 5, text: "Best moving experience we've ever had. The team was professional, on time, and the video consult made planning easy." },
-                      { name: "Marcus T.", location: "Houston → Atlanta", rating: 5, text: "From the first call to delivery day, everything was handled with care. Trudy even helped us prep our inventory list." },
-                      { name: "Lisa W.", location: "Boston → San Francisco", rating: 5, text: "We tracked our shipment in real time across the country. The transparency was unlike any other mover we've used." },
-                      { name: "Carlos & Ana P.", location: "Phoenix → Dallas", rating: 5, text: "Incredible value. The video consultation caught things we would have missed. Highly recommend TruMove to anyone." },
+                      { name: "Sarah M.", location: "New York → Miami", rating: 5, photo: testimonialSarah, text: "TruMove made our cross-country move seamless. Real-time tracking gave us total peace of mind the entire way." },
+                      { name: "James R.", location: "Chicago → Denver", rating: 5, photo: testimonialJames, text: "The AI inventory scanner saved us hours of manual cataloging. Our estimate was spot-on — no surprise charges." },
+                      { name: "Emily & David K.", location: "Los Angeles → Seattle", rating: 5, photo: testimonialEmilyDavid, text: "Best moving experience we've ever had. The team was professional, on time, and the video consult made planning easy." },
+                      { name: "Marcus T.", location: "Houston → Atlanta", rating: 5, photo: testimonialMarcus, text: "From the first call to delivery day, everything was handled with care. Trudy even helped us prep our inventory list." },
+                      { name: "Lisa W.", location: "Boston → San Francisco", rating: 5, photo: testimonialLisa, text: "We tracked our shipment in real time across the country. The transparency was unlike any other mover we've used." },
+                      { name: "Carlos & Ana P.", location: "Phoenix → Dallas", rating: 5, photo: testimonialCarlosAna, text: "Incredible value. The video consultation caught things we would have missed. Highly recommend TruMove to anyone." },
                     ].map((review, i) => (
                       <div
                         key={`${dupeIdx}-${i}`}
@@ -1648,9 +1654,12 @@ export default function Index() {
                           ))}
                         </div>
                         <p className="text-sm text-foreground leading-relaxed flex-1">"{review.text}"</p>
-                        <div className="pt-2 border-t border-border">
-                          <p className="text-sm font-semibold text-foreground">{review.name}</p>
-                          <p className="text-xs text-muted-foreground">{review.location}</p>
+                        <div className="pt-2 border-t border-border flex items-center gap-3">
+                          <img src={review.photo} alt={review.name} className="w-10 h-10 rounded-full object-cover ring-1 ring-border" />
+                          <div>
+                            <p className="text-sm font-semibold text-foreground">{review.name}</p>
+                            <p className="text-xs text-muted-foreground">{review.location}</p>
+                          </div>
                         </div>
                       </div>
                     ))
