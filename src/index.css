@@ -1972,7 +1972,7 @@
 
 /* Legacy support for existing headline styles */
 .tru-hero-headline-main {
-  font-size: clamp(40px, 6vw, 72px);
+  font-size: 60px;
   font-weight: 900;
   letter-spacing: -0.03em;
   line-height: 1.05;
