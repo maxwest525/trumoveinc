@@ -37,6 +37,7 @@ import scanRoomPreview from "@/assets/scan-room-preview.jpg";
 import heroFamilyMove from "@/assets/hero-family-move.jpg";
 import videoConsultPreview from "@/assets/video-consult-preview.jpg";
 import trudyVoicePreview from "@/assets/trudy-voice-preview.jpg";
+import contactAgentImg from "@/assets/contact-agent.png";
 
 import { Mic } from "lucide-react";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
