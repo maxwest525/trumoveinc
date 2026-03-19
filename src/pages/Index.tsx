@@ -1684,7 +1684,7 @@ export default function Index() {
                   <form className="flex-1 flex flex-col space-y-3" onSubmit={(e) => e.preventDefault()}>
                     <div className="grid grid-cols-2 gap-3">
                       <input type="text" required placeholder="Your name" className="w-full rounded-lg border border-border bg-background px-3 py-2.5 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary text-sm" />
-                      <input type="email" required placeholder="Email address" className="w-full rounded-lg border border-border bg-background px-3 py-2.5 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary text-sm" />
+                      <input type="email" required className="w-full rounded-lg border border-border bg-background px-3 py-2.5 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary text-sm" placeholder="Email " />
                     </div>
                     <textarea required placeholder="How can we help?" className="w-full flex-1 min-h-[120px] rounded-lg border border-border bg-background px-3 py-2.5 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary resize-none text-sm" />
                     <button type="submit" className="w-full bg-foreground text-background py-3 rounded-lg text-sm font-semibold hover:bg-foreground/90 transition-colors">
