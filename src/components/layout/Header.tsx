@@ -117,12 +117,6 @@ export default function Header() {
                 );
               })}
             </nav>
-            <div className="header-mobile-actions">
-              {/* Theme Toggle (Mobile) */}
-              <div className="flex justify-center pt-4 border-t border-border/40 mt-4">
-                <ThemeToggle />
-              </div>
-            </div>
           </div>
         )}
       </header>
