@@ -519,7 +519,7 @@ function ShipmentTrackerSection({ navigate }: {navigate: (path: string) => void;
             <div className="tru-ai-headline-block">
               <h2 className="tru-ai-main-headline">
                 Real-Time<br />
-                <span className="tru-ai-headline-accent">Load Tracking.</span>
+                <span className="tru-ai-headline-accent">Shipment Tracking.</span>
               </h2>
               <p className="tru-ai-subheadline">
                 Stay up to date and track your belongings across the country with real-time GPS tracking of your goods.
