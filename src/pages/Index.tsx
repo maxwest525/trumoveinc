@@ -1231,7 +1231,7 @@ export default function Index() {
                 
               <div className="tru-hero-form-panel" ref={quoteBuilderRef}>
                 {/* TOP ROW: Form Card */}
-                <div className="tru-floating-form-card">
+                <div className="tru-floating-form-card rounded-3xl shadow-2xl">
                   {/* Form Header */}
                   <div className="tru-qb-form-header tru-qb-form-header-pill">
                     
@@ -1242,36 +1242,36 @@ export default function Index() {
                   </div>
                   
                   {/* Form Content */}
-                  <div className="tru-floating-form-content">
+                  <div className="tru-floating-form-content shadow-lg">
 
                     {/* Step 1: Contact + Route */}
                     {step === 1 &&
-                        <div className="tru-qb-step-content" key="step-1">
+                      <div className="tru-qb-step-content" key="step-1">
                         
                          {/* First Name + Last Name Row */}
                          <div className="tru-qb-location-row">
                            <div className="tru-qb-location-col">
                              <div className="tru-qb-input-wrap tru-qb-input-enhanced">
                                <input
-                                 type="text"
-                                 value={contactFirstName}
-                                 onChange={(e) => {
-                                   setContactFirstName(e.target.value);
-                                   if (e.target.value.length > 0 && !isEngaged) setIsEngaged(true);
-                                 }}
-                                 placeholder="First Name"
-                                 className="tru-qb-input"
-                                 autoFocus />
+                                type="text"
+                                value={contactFirstName}
+                                onChange={(e) => {
+                                  setContactFirstName(e.target.value);
+                                  if (e.target.value.length > 0 && !isEngaged) setIsEngaged(true);
+                                }}
+                                placeholder="First Name"
+                                className="tru-qb-input"
+                                autoFocus />
                              </div>
                            </div>
                            <div className="tru-qb-location-col">
                              <div className="tru-qb-input-wrap tru-qb-input-enhanced">
                                <input
-                                 type="text"
-                                 value={contactLastName}
-                                 onChange={(e) => setContactLastName(e.target.value)}
-                                 placeholder="Last Name"
-                                 className="tru-qb-input" />
+                                type="text"
+                                value={contactLastName}
+                                onChange={(e) => setContactLastName(e.target.value)}
+                                placeholder="Last Name"
+                                className="tru-qb-input" />
                              </div>
                            </div>
                          </div>
@@ -1281,21 +1281,21 @@ export default function Index() {
                            <div className="tru-qb-location-col">
                              <div className="tru-qb-input-wrap tru-qb-input-enhanced">
                                <input
-                                 type="tel"
-                                 value={contactPhone}
-                                 onChange={(e) => setContactPhone(formatPhoneNumber(e.target.value))}
-                                 placeholder="Phone"
-                                 className="tru-qb-input" />
+                                type="tel"
+                                value={contactPhone}
+                                onChange={(e) => setContactPhone(formatPhoneNumber(e.target.value))}
+                                placeholder="Phone"
+                                className="tru-qb-input" />
                              </div>
                            </div>
                            <div className="tru-qb-location-col">
                              <div className="tru-qb-input-wrap tru-qb-input-enhanced">
                                <input
-                                 type="email"
-                                 value={contactEmail}
-                                 onChange={(e) => setContactEmail(e.target.value)}
-                                 placeholder="Email"
-                                 className="tru-qb-input" />
+                                type="email"
+                                value={contactEmail}
+                                onChange={(e) => setContactEmail(e.target.value)}
+                                placeholder="Email"
+                                className="tru-qb-input" />
                              </div>
                            </div>
                          </div>
@@ -1304,10 +1304,10 @@ export default function Index() {
                            <Popover>
                              <PopoverTrigger asChild>
                                <button
-                                 type="button"
-                                 className="tru-qb-input"
-                                 style={{ width: '100%', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
-                               >
+                                type="button"
+                                className="tru-qb-input"
+                                style={{ width: '100%', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                
                                  <Calendar className="w-4 h-4 shrink-0 opacity-60" />
                                  <span style={{ opacity: moveDate ? 1 : 0.5 }}>
                                    {moveDate ? format(moveDate, 'MMM d, yyyy') : 'Move Date'}
@@ -1316,37 +1316,37 @@ export default function Index() {
                              </PopoverTrigger>
                              <PopoverContent className="w-auto p-0" align="center" side="top">
                                <CalendarComponent
-                                 mode="single"
-                                 selected={moveDate ?? undefined}
-                                 onSelect={(date) => setMoveDate(date ?? null)}
-                                 disabled={(date) => date < new Date()}
-                                 initialFocus
-                                 className="p-3 pointer-events-auto"
-                               />
+                                mode="single"
+                                selected={moveDate ?? undefined}
+                                onSelect={(date) => setMoveDate(date ?? null)}
+                                disabled={(date) => date < new Date()}
+                                initialFocus
+                                className="p-3 pointer-events-auto" />
+                              
                              </PopoverContent>
                            </Popover>
                          </div>
 
                          {formError &&
-                         <p style={{ color: 'hsl(0 70% 55%)', fontSize: '13px', textAlign: 'center', margin: '4px 0 0' }}>{formError}</p>
-                         }
+                        <p style={{ color: 'hsl(0 70% 55%)', fontSize: '13px', textAlign: 'center', margin: '4px 0 0' }}>{formError}</p>
+                        }
                          <button
-                           type="button"
-                           className="tru-qb-continue tru-engine-btn"
-                           onClick={() => {
-                             const first = contactFirstName.trim();
-                             const last = contactLastName.trim();
-                             const email = contactEmail.trim();
-                             const phone = contactPhone.trim();
-                             if (!first) {setFormError('Please enter your first name.');return;}
-                             if (!last) {setFormError('Please enter your last name.');return;}
-                             if (!isValidPhoneNumber(phone)) {setFormError('Please enter a valid 10-digit phone number.');return;}
-                             if (!email || !email.includes('@') || !email.includes('.')) {setFormError('Please enter a valid email.');return;}
-                             if (!moveDate) {setFormError('Please select a move date.');return;}
-                             setFormError('');
-                             goNext();
-                           }}
-                           style={{ marginTop: '16px' }}>
+                          type="button"
+                          className="tru-qb-continue tru-engine-btn"
+                          onClick={() => {
+                            const first = contactFirstName.trim();
+                            const last = contactLastName.trim();
+                            const email = contactEmail.trim();
+                            const phone = contactPhone.trim();
+                            if (!first) {setFormError('Please enter your first name.');return;}
+                            if (!last) {setFormError('Please enter your last name.');return;}
+                            if (!isValidPhoneNumber(phone)) {setFormError('Please enter a valid 10-digit phone number.');return;}
+                            if (!email || !email.includes('@') || !email.includes('.')) {setFormError('Please enter a valid email.');return;}
+                            if (!moveDate) {setFormError('Please select a move date.');return;}
+                            setFormError('');
+                            goNext();
+                          }}
+                          style={{ marginTop: '16px' }}>
                            
                            <span>Talk to Support</span>
                            <ArrowRight className="w-5 h-5 tru-btn-arrow" />
@@ -1706,8 +1706,8 @@ export default function Index() {
                 {/* Col 4: All 4 contact options stacked */}
                 <div className="flex flex-col gap-3 md:w-40 shrink-0 self-center">
                   <a
-                    href="tel:+16097277647"
-                    className="group flex flex-col items-center text-center rounded-2xl border-2 border-black bg-card p-3 hover:-translate-y-1 transition-all duration-200 flex-1" style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.5), 0 8px 40px rgba(0,0,0,0.3), inset 0 2px 8px rgba(0,0,0,0.15)' }}>
+                      href="tel:+16097277647"
+                      className="group flex flex-col items-center text-center rounded-2xl border-2 border-black bg-card p-3 hover:-translate-y-1 transition-all duration-200 flex-1" style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.5), 0 8px 40px rgba(0,0,0,0.3), inset 0 2px 8px rgba(0,0,0,0.15)' }}>
                     <h3 className="text-sm font-bold text-foreground mb-1">Call Us</h3>
                     <span className="inline-flex items-center gap-1 text-xs font-medium text-primary group-hover:gap-1.5 transition-all">
                       Call now <ArrowRight className="h-3 w-3" />
@@ -1715,8 +1715,8 @@ export default function Index() {
                   </a>
 
                   <a
-                    href="sms:+16097277647"
-                    className="group flex flex-col items-center text-center rounded-2xl border-2 border-black bg-card p-3 hover:-translate-y-1 transition-all duration-200 flex-1" style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.5), 0 8px 40px rgba(0,0,0,0.3), inset 0 2px 8px rgba(0,0,0,0.15)' }}>
+                      href="sms:+16097277647"
+                      className="group flex flex-col items-center text-center rounded-2xl border-2 border-black bg-card p-3 hover:-translate-y-1 transition-all duration-200 flex-1" style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.5), 0 8px 40px rgba(0,0,0,0.3), inset 0 2px 8px rgba(0,0,0,0.15)' }}>
                     <h3 className="text-sm font-bold text-foreground mb-1">Text Support</h3>
                     <span className="inline-flex items-center gap-1 text-xs font-medium text-primary group-hover:gap-1.5 transition-all">
                       Send a text <ArrowRight className="h-3 w-3" />
@@ -1724,8 +1724,8 @@ export default function Index() {
                   </a>
 
                   <button
-                    onClick={() => window.dispatchEvent(new CustomEvent('trudy-start'))}
-                    className="group flex flex-col items-center text-center rounded-2xl border-2 border-black bg-card p-3 hover:-translate-y-1 transition-all duration-200 flex-1" style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.5), 0 8px 40px rgba(0,0,0,0.3), inset 0 2px 8px rgba(0,0,0,0.15)' }}>
+                      onClick={() => window.dispatchEvent(new CustomEvent('trudy-start'))}
+                      className="group flex flex-col items-center text-center rounded-2xl border-2 border-black bg-card p-3 hover:-translate-y-1 transition-all duration-200 flex-1" style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.5), 0 8px 40px rgba(0,0,0,0.3), inset 0 2px 8px rgba(0,0,0,0.15)' }}>
                     <h3 className="text-sm font-bold text-foreground mb-1">Talk to Trudy</h3>
                     <span className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-1.5 rounded-full text-xs font-bold group-hover:bg-primary/90 transition-all shadow-md">
                       Start Talking
@@ -1733,8 +1733,8 @@ export default function Index() {
                   </button>
 
                   <button
-                    onClick={() => navigate("/site/book")}
-                    className="group flex flex-col items-center text-center rounded-2xl border-2 border-black bg-card p-3 hover:-translate-y-1 transition-all duration-200 flex-1" style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.5), 0 8px 40px rgba(0,0,0,0.3), inset 0 2px 8px rgba(0,0,0,0.15)' }}>
+                      onClick={() => navigate("/site/book")}
+                      className="group flex flex-col items-center text-center rounded-2xl border-2 border-black bg-card p-3 hover:-translate-y-1 transition-all duration-200 flex-1" style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.5), 0 8px 40px rgba(0,0,0,0.3), inset 0 2px 8px rgba(0,0,0,0.15)' }}>
                     <h3 className="text-sm font-bold text-foreground mb-1">Video Consult</h3>
                     <span className="inline-flex items-center gap-1 text-xs font-medium text-primary group-hover:gap-1.5 transition-all">
                       Schedule now <ArrowRight className="h-3 w-3" />
