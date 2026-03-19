@@ -18,7 +18,7 @@ export function usePortalContext(): PortalContext {
     // Check query param
     const params = new URLSearchParams(location.search);
     const ctx = params.get("ctx");
-    if (ctx === "manager" || ctx === "admin" || ctx === "agent") return ctx;
+    if (ctx === "manager" || ctx === "admin" || ctx === "agent" || ctx === "dispatch") return ctx;
 
     // Check localStorage for last active context
     const saved = localStorage.getItem("truemove_portal_context");
