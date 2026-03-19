@@ -6509,7 +6509,7 @@
   justify-content: center;
   padding: 14px 20px;
   background: hsl(var(--tm-ink));
-  border-bottom: 2px solid hsl(35 95% 55%);
+  border-bottom: 2px solid hsl(var(--primary));
   position: relative;
 }
 
