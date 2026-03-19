@@ -61,10 +61,6 @@ export default function Header() {
             })}
           </nav>
 
-          {/* Contact Us - right */}
-          <div className="header-contact-group">
-            <Link to="/site/contact" className="header-contact-label">Contact Us</Link>
-          </div>
 
           {/* Mobile Menu Toggle */}
           <button 
