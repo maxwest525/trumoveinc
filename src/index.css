@@ -13500,6 +13500,7 @@
   display: flex;
   align-items: center;
   position: relative;
+  box-sizing: border-box;
 }
 
 .header-logo {
