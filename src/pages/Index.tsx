@@ -1640,7 +1640,7 @@ export default function Index() {
                     ].map((review, i) => (
                       <div
                         key={`${dupeIdx}-${i}`}
-                        className="w-[340px] shrink-0 rounded-2xl bg-card p-5 flex flex-col gap-3 ring-1 ring-border"
+                        className="w-[380px] shrink-0 rounded-2xl bg-card p-6 flex flex-col gap-4 ring-1 ring-border min-h-[220px]"
                       >
                         <div className="flex gap-0.5">
                           {Array.from({ length: review.rating }).map((_, s) => (
