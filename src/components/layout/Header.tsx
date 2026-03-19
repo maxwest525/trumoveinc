@@ -49,7 +49,7 @@ export default function Header() {
           </Link>
 
           {/* Desktop Nav Links - centered */}
-          <nav className="header-nav flex-1 justify-center gap-2" aria-label="Primary">
+          <nav className="header-nav" aria-label="Primary">
             {NAV_ITEMS.map((item) => {
               const Icon = item.icon;
               const isActive = location.pathname === item.href;
@@ -68,24 +68,23 @@ export default function Header() {
           </nav>
 
           {/* Contact Us - right */}
-          <div className="hidden md:flex items-center gap-1.5 shrink-0 ml-4">
-            <span className="text-white/60 text-[13px] font-semibold tracking-wide mr-2">Contact Us</span>
-            <div className="flex items-center gap-1 bg-white/[0.06] rounded-full px-1.5 py-1 border border-white/[0.08]">
+          <div className="header-contact-group">
+            <span className="header-contact-label">Contact Us</span>
+            <div className="header-contact-icons">
               {CONTACT_ACTIONS.map((action) => {
                 const Icon = action.icon;
                 const isExternal = action.href.startsWith("tel:") || action.href.startsWith("mailto:") || action.href.startsWith("sms:");
-                const cls = "flex items-center justify-center w-7 h-7 rounded-full hover:bg-[hsl(142,71%,45%)]/15 text-white/60 hover:text-[hsl(142,71%,45%)] transition-all duration-200";
                 
                 if (isExternal) {
                   return (
-                    <a key={action.label} href={action.href} title={action.label} className={cls}>
+                    <a key={action.label} href={action.href} title={action.label} className="header-contact-icon">
                       <Icon className="w-3.5 h-3.5" />
                     </a>
                   );
                 }
 
                 return (
-                  <Link key={action.label} to={action.href} title={action.label} className={cls}>
+                  <Link key={action.label} to={action.href} title={action.label} className="header-contact-icon">
                     <Icon className="w-3.5 h-3.5" />
                   </Link>
                 );

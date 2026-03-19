@@ -13499,7 +13499,8 @@
   margin: 0 auto;
   padding: 0 24px;
   height: 72px;
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
   position: relative;
   box-sizing: border-box;
@@ -13508,7 +13509,6 @@
 .header-logo {
   flex-shrink: 0;
   position: relative;
-  margin-right: 24px;
 }
 
 .header-logo img {
@@ -13519,8 +13519,49 @@
 .header-nav {
   display: flex;
   align-items: center;
-  gap: 24px;
-  margin-left: auto;
+  justify-content: center;
+  gap: 16px;
+}
+
+.header-contact-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-self: end;
+}
+
+.header-contact-label {
+  color: hsl(0 0% 100% / 0.6);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.header-contact-icons {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: hsl(0 0% 100% / 0.06);
+  border-radius: 9999px;
+  padding: 4px 6px;
+  border: 1px solid hsl(0 0% 100% / 0.08);
+}
+
+.header-contact-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 9999px;
+  color: hsl(0 0% 100% / 0.6);
+  transition: all 200ms ease;
+}
+
+.header-contact-icon:hover {
+  background: hsl(142 71% 45% / 0.15);
+  color: hsl(142 71% 45%);
 }
 
 /* Nav Item Wrapper (for mega-menu positioning) */
@@ -14789,14 +14830,18 @@
   }
 }
 
-@media (max-width: 1000px) {
+@media (max-width: 700px) {
   .header-nav,
-  .header-actions {
-    display: none;
+  .header-contact-group {
+    display: none !important;
   }
   
   .header-mobile-toggle {
     display: flex;
+  }
+  
+  .header-inner {
+    grid-template-columns: auto 1fr auto;
   }
   
   .header-main.header-floating {
