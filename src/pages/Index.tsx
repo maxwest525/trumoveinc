@@ -351,7 +351,7 @@ function ScannerPreview({ isRunning, onStartDemo, visibleCount }: ScannerPreview
         className="tru-ai-scanner-start-btn"
         onClick={onStartDemo}>
         
-        <Sparkles className="w-3.5 h-3.5" />
+        <Sparkles className="w-3.5 h-3.5 text-[#49fc03]" />
         {isRunning ? "Running..." : "Start AI Analysis Demo"}
       </button>
     </div>);
