@@ -1588,13 +1588,13 @@
   position: relative;
   z-index: 2;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(24rem, 30rem);
   gap: 48px;
   align-items: center;
-  padding: 32px 64px 32px;
+  padding: 48px 64px 48px;
   max-width: 1480px;
   margin: 0 auto;
-  min-height: auto;
+  min-height: 42rem;
 }
 
 /* LEFT COLUMN - Text Content */
