@@ -1683,7 +1683,7 @@ export default function Index() {
 
                   <button
                       onClick={() => window.dispatchEvent(new CustomEvent('trudy-start'))}
-                      className="group flex-col text-center border-black bg-card p-3 hover:-translate-y-1 transition-all duration-200 flex-1 border-0 rounded-none shadow-none flex items-end justify-start" style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.5), 0 8px 40px rgba(0,0,0,0.3), inset 0 2px 8px rgba(0,0,0,0.15)' }}>
+                      className="group flex-col text-center bg-card p-3 hover:-translate-y-1 transition-all duration-200 flex-1 border-0 rounded-none shadow-none flex items-end justify-start">
                     <h3 className="text-sm font-bold text-foreground mb-1">Talk to Trudy</h3>
                     <span className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-1.5 rounded-full text-xs font-bold group-hover:bg-primary/90 transition-all shadow-md">
                       Start Talking
