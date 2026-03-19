@@ -1614,7 +1614,7 @@ export default function Index() {
 
           {/* TESTIMONIALS */}
           <section className="tru-ai-steps-section pt-[calc(theme(spacing.8)+5px)] pb-[calc(theme(spacing.8)+5px)]">
-            <div className="max-w-6xl mx-auto">
+            <div className="max-w-[90rem] mx-auto">
               <div className="flex flex-col items-center text-center mb-6">
                 <h2 className="tru-ai-main-headline text-5xl md:text-6xl">
                   What Our Customers <span className="tru-ai-headline-accent">Say.</span>
