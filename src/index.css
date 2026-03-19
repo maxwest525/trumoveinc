@@ -13567,7 +13567,7 @@
 }
 
 .dark .header-nav-link {
-  color: hsl(var(--foreground) / 0.7);
+  color: hsl(0 0% 100%);
 }
 
 /* Hover: white bg with grey outline + drop shadow */
