@@ -1349,7 +1349,7 @@ export default function Index() {
                           style={{ marginTop: '16px' }}>
                            
                            <span>Talk to Support</span>
-                           <ArrowRight className="w-5 h-5 tru-btn-arrow" />
+                           <ArrowRight className="w-5 h-5 tru-btn-arrow text-[#14ff14]" />
                          </button>
                          
                          <p className="tru-qb-microcopy">A moving specialist will call you shortly.</p>
