@@ -13550,7 +13550,7 @@
   font-size: 13px;
   font-weight: 500;
   letter-spacing: 0.01em;
-  color: hsl(var(--foreground) / 0.75);
+  color: hsl(0 0% 100%);
   text-decoration: none;
   border-radius: 10px;
   border: 1px solid transparent;
