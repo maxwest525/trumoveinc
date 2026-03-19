@@ -6161,7 +6161,7 @@
 /* Responsive: Stack on tablet and mobile */
 @media (max-width: 1024px) {
   .tru-hero-wrapper {
-    min-height: auto;
+    min-height: 0;
   }
   
   .tru-hero.tru-hero-split {
