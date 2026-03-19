@@ -18447,8 +18447,8 @@
    ============================================= */
 
 .tru-qb-input:focus {
-  border-color: hsl(var(--tm-ink) / 0.25);
-  box-shadow: 0 0 0 1px hsl(var(--tm-ink) / 0.06);
+  border-color: hsl(35 95% 55%);
+  box-shadow: 0 0 0 3px hsl(35 95% 55% / 0.15);
   transform: translateY(0);
   transition: all 0.2s ease;
 }
