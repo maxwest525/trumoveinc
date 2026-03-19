@@ -91,15 +91,6 @@ export default function Header() {
                   </Link>
                 );
               })}
-              <div className="border-t border-white/10 pt-3 mt-2">
-                <Link
-                  to="/site/contact"
-                  className="header-mobile-link"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Contact Us
-                </Link>
-              </div>
             </nav>
           </div>
         )}
