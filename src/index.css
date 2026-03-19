@@ -14830,14 +14830,18 @@
   }
 }
 
-@media (max-width: 1000px) {
+@media (max-width: 700px) {
   .header-nav,
-  .header-actions {
-    display: none;
+  .header-contact-group {
+    display: none !important;
   }
   
   .header-mobile-toggle {
     display: flex;
+  }
+  
+  .header-inner {
+    grid-template-columns: auto 1fr auto;
   }
   
   .header-main.header-floating {
