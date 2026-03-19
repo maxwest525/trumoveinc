@@ -1674,6 +1674,99 @@ export default function Index() {
 
           <FeatureTrustStrip />
 
+          {/* CARRIER VETTING PREVIEW */}
+          <section className="tru-ai-steps-section">
+            <div className="max-w-6xl mx-auto">
+              <div className="flex flex-col items-center text-center mb-6">
+                <h2 className="tru-ai-main-headline text-5xl md:text-6xl">
+                  Carrier <span className="tru-ai-headline-accent">Vetting.</span>
+                </h2>
+                <p className="tru-ai-subheadline text-lg mt-3">Real-time FMCSA safety data. Red flags surfaced instantly.</p>
+              </div>
+
+              {/* Mini demo card */}
+              <div className="max-w-2xl mx-auto rounded-2xl bg-card ring-1 ring-border p-6 space-y-5">
+                {/* Carrier header */}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-lg font-bold text-foreground">Summit Express LLC</h3>
+                    <p className="text-xs text-muted-foreground">MC-892451 · DOT 3847291 · Atlanta, GA</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="inline-flex items-center gap-1 bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-bold">
+                      <ShieldCheck className="w-3.5 h-3.5" /> Authorized
+                    </span>
+                  </div>
+                </div>
+
+                {/* Safety scores */}
+                <div className="grid grid-cols-3 gap-3">
+                  {[
+                    { label: "Vehicle OOS", value: "14.2%", avg: "22.3%", status: "pass" },
+                    { label: "Driver OOS", value: "3.1%", avg: "6.7%", status: "pass" },
+                    { label: "Hazmat OOS", value: "0.0%", avg: "4.4%", status: "pass" },
+                  ].map((metric) => (
+                    <div key={metric.label} className="rounded-xl bg-background border border-border p-3 text-center">
+                      <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide mb-1">{metric.label}</p>
+                      <p className={`text-xl font-black ${metric.status === "pass" ? "text-primary" : "text-destructive"}`}>{metric.value}</p>
+                      <p className="text-[10px] text-muted-foreground">Nat'l avg: {metric.avg}</p>
+                    </div>
+                  ))}
+                </div>
+
+                {/* CSA BASIC bars */}
+                <div className="space-y-2">
+                  <p className="text-xs font-semibold text-foreground">CSA BASIC Scores</p>
+                  {[
+                    { label: "Unsafe Driving", score: 28, threshold: 65 },
+                    { label: "HOS Compliance", score: 42, threshold: 65 },
+                    { label: "Vehicle Maintenance", score: 55, threshold: 80 },
+                    { label: "Controlled Substances", score: 0, threshold: 80 },
+                    { label: "Driver Fitness", score: 12, threshold: 80 },
+                  ].map((basic) => (
+                    <div key={basic.label} className="flex items-center gap-3">
+                      <span className="text-[11px] text-muted-foreground w-36 shrink-0 text-right">{basic.label}</span>
+                      <div className="flex-1 h-2.5 rounded-full bg-muted overflow-hidden">
+                        <div
+                          className={`h-full rounded-full transition-all ${basic.score > basic.threshold ? "bg-destructive" : "bg-primary"}`}
+                          style={{ width: `${Math.max(basic.score, 2)}%` }}
+                        />
+                      </div>
+                      <span className={`text-xs font-bold w-8 ${basic.score > basic.threshold ? "text-destructive" : "text-foreground"}`}>{basic.score}</span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Red flags */}
+                <div className="flex flex-wrap gap-2">
+                  <span className="inline-flex items-center gap-1 bg-primary/10 text-primary px-2.5 py-1 rounded-full text-[11px] font-medium">
+                    <CheckCircle className="w-3 h-3" /> BOC-3 on file
+                  </span>
+                  <span className="inline-flex items-center gap-1 bg-primary/10 text-primary px-2.5 py-1 rounded-full text-[11px] font-medium">
+                    <CheckCircle className="w-3 h-3" /> Insurance active
+                  </span>
+                  <span className="inline-flex items-center gap-1 bg-primary/10 text-primary px-2.5 py-1 rounded-full text-[11px] font-medium">
+                    <Shield className="w-3 h-3" /> $1M liability
+                  </span>
+                  <span className="inline-flex items-center gap-1 bg-primary/10 text-primary px-2.5 py-1 rounded-full text-[11px] font-medium">
+                    <CheckCircle className="w-3 h-3" /> No active OOS orders
+                  </span>
+                </div>
+
+                {/* CTA */}
+                <div className="flex justify-center pt-2">
+                  <button onClick={() => navigate("/site/online-estimate")} className="tru-ai-cta-btn">
+                    <Radar className="w-5 h-5 text-primary" />
+                    Try Carrier Vetting
+                    <ArrowRight className="w-5 h-5 text-primary" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <FeatureTrustStrip />
+
           {/* GET IN TOUCH */}
           <section className="tru-ai-steps-section">
             <div className="max-w-6xl mx-auto">
