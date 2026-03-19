@@ -1,22 +1,27 @@
 
 
-## Edit the Real-Time Load Tracking Photo
+## Contact Section Redesign
 
-**Goal**: Crop the uploaded image to show only the right portion — the man with the phone, the TruMove truck, and the "Live Route Tracking" map overlay. Remove the apartment/house and everything to the left of the man.
+**Current layout**: Contact Us headline (left) → Agent photo → Send a Message → Call/Text stack → Trudy/Video stack
 
-### Steps
+**New layout**: Contact Us headline (left) → Agent photo (full viewable height, no logo cutoff) → Send a Message (same size) → 4 stacked cards (Call Us, Text Support, Talk to Trudy, Book Video Consult)
 
-1. **Crop the image** using a Python script via `lov-exec`:
-   - Open the uploaded image (`user-uploads://image-140.png`)
-   - Crop from roughly the man's left edge to the right edge of the image, removing the house and left-side background
-   - Save the cropped result to `/mnt/documents/tracking-lifestyle-cropped.png`
+### Changes to `src/pages/Index.tsx` (lines 1686–1801)
 
-2. **QA the result** by viewing the cropped image to confirm the framing looks correct — man centered, map overlay visible, no important elements cut off.
+1. **Agent photo (Col 2)**: Change from `md:w-48` to a wider width (e.g. `md:w-64`) and ensure `object-contain` or proper `object-cover` + `object-top` so the logo in the image isn't cut off. Remove the fixed height constraint so it fills the viewable area naturally.
 
-3. **Deliver** the cropped image for the user to review, then copy it into the project if approved.
+2. **Send a Message (Col 3)**: Keep as `flex-1` with the same padding, form, and styling — no changes.
 
-### Technical details
-- Uses Pillow (`PIL`) to open and crop the image
-- Will inspect the image dimensions first, then estimate the crop x-coordinate (approximately 35-40% from the left based on the composition)
-- Output saved to `/mnt/documents/`
+3. **Replace Cols 4 & 5 with a single stacked column** (~`md:w-44`): Stack all 4 cards vertically:
+   - **Call Us** — keep text/link, remove the phone icon circle
+   - **Text Support** — keep text/link, remove the message icon circle
+   - **Talk to Trudy** — keep as a button dispatching `trudy-start`, remove the Mic icon circle, remove the HoverCard wrapper
+   - **Book Video Consult** — keep as a button navigating to `/site/book`, remove the preview image inside the card, remove the HoverCard wrapper
+
+4. **Remove unused imports**: `trudyVoicePreview` and `videoConsultPreview` hover card content blocks.
+
+### Summary
+- 4 columns total: Headline | Wide photo | Message form | 4 stacked mini-cards
+- Photo uses full width without cropping the logo
+- Small cards are simplified — no icons, no hover previews
 
