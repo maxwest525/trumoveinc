@@ -1538,7 +1538,7 @@
 .tru-hero-wrapper {
   position: relative;
   width: 100%;
-  min-height: 42rem;
+  min-height: 52rem;
   overflow-x: hidden;  /* Prevent horizontal scroll */
 }
 
@@ -1591,11 +1591,11 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(24rem, 30rem);
   gap: 48px;
-  align-items: center;
-  padding: 48px 64px 48px;
+  align-items: start;
+  padding: 72px 64px 112px;
   max-width: 1480px;
   margin: 0 auto;
-  min-height: 42rem;
+  min-height: 52rem;
 }
 
 /* LEFT COLUMN - Text Content */
@@ -1788,7 +1788,7 @@
   .tru-hero.tru-hero-split {
     grid-template-columns: 1fr;
     gap: 32px;
-    padding: 48px 24px 40px;
+    padding: 48px 24px 64px;
     min-height: auto;
   }
   
