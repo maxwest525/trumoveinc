@@ -6536,14 +6536,14 @@
 .tru-qb-form-header-pill .tru-qb-form-title {
   font-size: 16px;
   font-weight: 800;
-  color: hsl(var(--tm-ink));
+  color: hsl(0 0% 100%);
 }
 
 .tru-qb-form-header-pill .tru-qb-form-title.tru-qb-form-title-large {
   font-size: 30px;
   font-weight: 800;
   letter-spacing: 0;
-  color: hsl(var(--tm-ink));
+  color: hsl(0 0% 100%);
 }
 
 /* Inline logo in form title */
