@@ -28,22 +28,22 @@ function StageColumn({ stage, deals, onDealClick }: { stage: PipelineStage; deal
   return (
     <div
       ref={setNodeRef}
-      className={`flex flex-col min-w-[240px] max-w-[260px] rounded-lg border transition-colors h-full ${isOver ? "ring-2 ring-primary/40 bg-primary/5" : "bg-muted/20"}`}
+      className={`flex flex-col min-w-[200px] w-[200px] rounded-lg border transition-colors h-full shrink-0 ${isOver ? "ring-2 ring-primary/40 bg-primary/5" : "bg-muted/20"}`}
     >
-      <div className="flex items-center justify-between px-3 py-2">
-        <span className="text-xs font-semibold text-foreground">{stage.name}</span>
-        <span className="text-[10px] text-muted-foreground font-medium">{deals.length}</span>
+      <div className="flex items-center justify-between px-2.5 py-1.5 border-b border-border/50">
+        <span className="text-[11px] font-semibold text-foreground truncate">{stage.name}</span>
+        <Badge variant="secondary" className="text-[9px] h-4 px-1.5 min-w-0">{deals.length}</Badge>
       </div>
-      <ScrollArea className="flex-1 px-2 pb-2">
+      <ScrollArea className="flex-1 px-1.5 pb-1.5 pt-1.5">
         <SortableContext items={deals.map((d) => d.id)} strategy={verticalListSortingStrategy}>
-          <div className="space-y-1.5">
+          <div className="space-y-1">
             {deals.map((deal) => (
               <DealCard key={deal.id} deal={deal} onClick={onDealClick} />
             ))}
           </div>
         </SortableContext>
         {deals.length === 0 && (
-          <p className="text-[11px] text-muted-foreground text-center py-8">No deals</p>
+          <p className="text-[10px] text-muted-foreground text-center py-6">No deals</p>
         )}
       </ScrollArea>
     </div>
@@ -194,8 +194,8 @@ export function PipelineBoard({ onAddLead }: { onAddLead?: () => void }) {
         </div>
         <DragOverlay>
           {activeDeal ? (
-            <Card className="p-3 shadow-lg border-l-4 border-l-primary w-[260px]">
-              <p className="text-sm font-semibold">
+            <Card className="p-2 shadow-lg border-l-4 border-l-primary w-[200px]">
+              <p className="text-xs font-semibold">
                 {activeDeal.leads ? `${activeDeal.leads.first_name} ${activeDeal.leads.last_name}` : "Deal"}
               </p>
             </Card>

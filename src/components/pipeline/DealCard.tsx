@@ -38,27 +38,25 @@ export function DealCard({ deal, onClick }: DealCardProps) {
       style={style}
       {...attributes}
       {...listeners}
-      className={`p-2.5 cursor-grab active:cursor-grabbing border-l-[3px] ${getUrgencyColor(daysInStage)} hover:bg-accent/50 transition-colors`}
+      className={`p-2 cursor-grab active:cursor-grabbing border-l-[3px] ${getUrgencyColor(daysInStage)} hover:bg-accent/50 transition-colors`}
       onClick={(e) => {
         e.stopPropagation();
         onClick(deal);
       }}
     >
-      <div className="flex items-center justify-between gap-2">
-        <h4 className="font-medium text-sm text-foreground truncate">
-          {lead ? `${lead.first_name} ${lead.last_name}` : "No lead"}
-        </h4>
+      <h4 className="font-medium text-xs text-foreground truncate leading-tight">
+        {lead ? `${lead.first_name} ${lead.last_name}` : "No lead"}
+      </h4>
+      <div className="flex items-center justify-between mt-0.5">
         {deal.deal_value ? (
-          <span className="text-xs font-semibold text-foreground shrink-0">${deal.deal_value.toLocaleString()}</span>
-        ) : null}
+          <span className="text-[10px] font-semibold text-primary">${deal.deal_value.toLocaleString()}</span>
+        ) : (
+          <span className="text-[10px] text-muted-foreground">No value</span>
+        )}
+        {lead?.move_date && (
+          <span className="text-[10px] text-muted-foreground">{format(parseISO(lead.move_date), "MMM d")}</span>
+        )}
       </div>
-      {(lead?.move_date || lead?.origin_address) && (
-        <div className="flex items-center gap-2 mt-1 text-[11px] text-muted-foreground truncate">
-          {lead?.move_date && <span>{format(parseISO(lead.move_date), "MMM d")}</span>}
-          {lead?.move_date && lead?.origin_address && <span>·</span>}
-          {lead?.origin_address && <span className="truncate">{lead.origin_address}</span>}
-        </div>
-      )}
     </Card>
   );
 }
