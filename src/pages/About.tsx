@@ -138,7 +138,8 @@ export default function About() {
             Traditional moving brokers rely on phone calls, manual quotes, and whoever they have a relationship with that day. TruMove uses real data, AI models, and constant feedback from completed jobs to give you a smarter way to move.
           </p>
 
-          <div className="overflow-x-auto rounded-xl border border-border/60">
+          {/* Desktop: Table */}
+          <div className="hidden md:block overflow-x-auto rounded-xl border border-border/60">
             <table className="w-full text-sm">
               <thead>
                 <tr className="bg-muted/30 border-b border-border/40">
@@ -175,6 +176,33 @@ export default function About() {
                 ))}
               </tbody>
             </table>
+          </div>
+
+          {/* Mobile: Stacked Cards */}
+          <div className="md:hidden space-y-4">
+            {COMPARISON.map((row) => (
+              <div key={row.area} className="rounded-xl border border-border/60 bg-card overflow-hidden">
+                <div className="px-4 py-3 bg-muted/30 border-b border-border/40">
+                  <h3 className="font-semibold text-foreground text-sm">{row.area}</h3>
+                </div>
+                <div className="p-4 space-y-3">
+                  <div className="flex items-start gap-2">
+                    <X className="w-4 h-4 text-orange-500 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <span className="text-[10px] font-bold uppercase tracking-wide text-orange-500 block mb-0.5">Old Way</span>
+                      <p className="text-xs text-muted-foreground leading-relaxed">{row.old}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
+                    <div>
+                      <span className="text-[10px] font-bold uppercase tracking-wide text-primary block mb-0.5">TruMove</span>
+                      <p className="text-xs text-foreground leading-relaxed">{row.new}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </section>
 
