@@ -404,7 +404,6 @@ export default function ScanRoom() {
             </p>
           </div>
           <EstimatorNavToggle />
-          </div>
         </section>
 
         {/* Scan Intro Modal */}
