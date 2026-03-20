@@ -123,7 +123,7 @@ export default function AgentDashboardContent() {
   if (loading) {
     return (
       <div className="p-6 max-w-[1400px] mx-auto">
-        <p className="text-sm text-muted-foreground text-center py-12">Loading dashboard...</p>
+        <p className="text-sm text-muted-foreground text-center py-8">Loading dashboard...</p>
       </div>
     );
   }

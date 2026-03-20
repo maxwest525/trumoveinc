@@ -1,12 +1,13 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Home, Sun, Moon, Bell, MessagesSquare, Settings, LogOut, User, ChevronDown } from "lucide-react";
+import { Home, Sun, Moon, Bell, MessagesSquare, Settings, LogOut, User, ChevronDown, Menu, X } from "lucide-react";
 import { useTheme } from "next-themes";
 import AgentSidebar from "@/components/agent/AgentSidebar";
 import { FloatingDialer } from "@/components/agent/FloatingDialer";
 import MiniSoftphone from "@/components/dialer/MiniSoftphone";
 import { setPortalContext } from "@/hooks/usePortalContext";
 import { supabase } from "@/integrations/supabase/client";
+import { useIsMobile } from "@/hooks/use-mobile";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,6 +27,8 @@ export default function AgentShell({ children, breadcrumb = "" }: AgentShellProp
   const { theme, setTheme } = useTheme();
   const location = useLocation();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [dialerOpen, setDialerOpen] = useState(false);
   const [dialerPrefill, setDialerPrefill] = useState<string | undefined>();
   const [profile, setProfile] = useState<{ display_name: string; avatar_url: string | null; email: string }>({
@@ -38,7 +41,6 @@ export default function AgentShell({ children, breadcrumb = "" }: AgentShellProp
     setPortalContext("agent");
     window.scrollTo(0, 0);
 
-    // Fetch user profile
     (async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.user) return;
@@ -55,6 +57,8 @@ export default function AgentShell({ children, breadcrumb = "" }: AgentShellProp
     })();
   }, []);
 
+  useEffect(() => { setSidebarOpen(false); }, [location.pathname]);
+
   const initials = profile.display_name
     ? profile.display_name.split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2)
     : "U";
@@ -66,18 +70,39 @@ export default function AgentShell({ children, breadcrumb = "" }: AgentShellProp
 
   return (
     <div className="flex h-screen bg-background text-foreground overflow-hidden">
-      <AgentSidebar onDialerToggle={() => setDialerOpen(true)} />
-      <div className="flex-1 flex flex-col h-screen overflow-hidden">
-        <header className="h-12 border-b border-border bg-card flex items-center justify-between px-4 shrink-0">
-          <div className="flex items-center gap-3">
+      {/* Desktop sidebar */}
+      {!isMobile && <AgentSidebar onDialerToggle={() => setDialerOpen(true)} />}
+
+      {/* Mobile sidebar overlay */}
+      {isMobile && sidebarOpen && (
+        <>
+          <div className="fixed inset-0 bg-black/50 z-40" onClick={() => setSidebarOpen(false)} />
+          <div className="fixed inset-y-0 left-0 z-50 w-52 bg-card border-r border-border">
+            <div className="flex items-center justify-between px-4 py-3">
+              <span className="text-xs font-semibold text-muted-foreground">Menu</span>
+              <button onClick={() => setSidebarOpen(false)} className="p-1 rounded-lg hover:bg-muted">
+                <X className="w-4 h-4 text-muted-foreground" />
+              </button>
+            </div>
+            <AgentSidebar onDialerToggle={() => { setDialerOpen(true); setSidebarOpen(false); }} />
+          </div>
+        </>
+      )}
+
+      <div className="flex-1 flex flex-col h-screen overflow-hidden min-w-0">
+        <header className="h-12 border-b border-border bg-card flex items-center justify-between px-3 sm:px-4 shrink-0">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+            {isMobile && (
+              <button onClick={() => setSidebarOpen(true)} className="p-1.5 rounded-lg hover:bg-muted transition-colors">
+                <Menu className="w-4 h-4 text-muted-foreground" />
+              </button>
+            )}
             <Link to="/" className="p-1.5 rounded-lg hover:bg-muted transition-colors">
               <Home className="w-4 h-4 text-muted-foreground" />
             </Link>
-            <span className="text-sm text-muted-foreground">Agent Workspace{breadcrumb}</span>
+            <span className="text-sm text-muted-foreground truncate">Agent{breadcrumb}</span>
           </div>
           <div className="flex items-center gap-1.5">
-
-            {/* Team Chat */}
             <Link
               to="/agent/team-chat"
               className={`p-1.5 rounded-lg transition-colors relative ${
@@ -87,14 +112,10 @@ export default function AgentShell({ children, breadcrumb = "" }: AgentShellProp
               <MessagesSquare className="w-4 h-4" />
               <span className="absolute top-0.5 right-0.5 w-1.5 h-1.5 rounded-full bg-primary" />
             </Link>
-
-            {/* Notifications */}
             <button className="p-1.5 rounded-lg hover:bg-muted transition-colors relative">
               <Bell className="w-4 h-4 text-muted-foreground" />
               <span className="absolute top-0.5 right-0.5 w-1.5 h-1.5 rounded-full" style={{ background: "hsl(142 71% 45%)" }} />
             </button>
-
-            {/* User dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="flex items-center gap-1.5 ml-1 px-1.5 py-1 rounded-lg hover:bg-muted transition-colors">
@@ -142,7 +163,6 @@ export default function AgentShell({ children, breadcrumb = "" }: AgentShellProp
         </main>
       </div>
       <FloatingDialer open={dialerOpen} onOpenChange={setDialerOpen} prefillNumber={dialerPrefill} />
-      {/* <MiniSoftphone /> — hidden for now */}
     </div>
   );
 }
