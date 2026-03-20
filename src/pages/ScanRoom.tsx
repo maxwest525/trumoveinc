@@ -37,6 +37,7 @@ const useScrollToTop = () => {
 import { useNavigate, Link } from "react-router-dom";
 import SiteShell from "@/components/layout/SiteShell";
 import ScanIntroModal from "@/components/estimate/ScanIntroModal";
+import EstimatorNavToggle from "@/components/estimate/EstimatorNavToggle";
 
 import logoImg from "@/assets/logo.png";
 import { 
