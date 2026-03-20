@@ -1,40 +1,35 @@
 
 
-## Carrier Vetting Section Redesign
+## Plan: Add Estimate Mode Toggle (Manual vs. AI Scan)
 
-### Current state
-The section has a headline, 3 small selector tabs, and a result card. It works but feels like raw data, not a product preview.
+### What
+Add a prominent toggle at the top of the Online Estimate page that lets the user choose between two modes:
+1. **Manual Builder** — the current inventory builder flow
+2. **AI Room Scan** — navigates to the `/site/scan-room` page
 
-### What changes
+This replaces the buried "Scan Your Room" button inside the InventoryBuilder with a top-level, visually prominent mode selector.
 
-**File: `src/pages/Index.tsx` (lines 1678-1804)**
+### Changes
 
-Replace the current carrier selector + result card with a mini SAFER-style lookup UI inspired by the uploaded screenshot:
+**1. `src/pages/OnlineEstimate.tsx`**
+- Add a mode toggle strip above the main grid (below the page header area, around line 338)
+- Two-option toggle using styled buttons (not the radix ToggleGroup — simpler custom buttons matching the TruMove design)
+- Options: "Build Manually" (with Package icon) and "AI Room Scan" (with Scan icon)
+- Default selection: "Build Manually"
+- Clicking "AI Room Scan" navigates to `/site/scan-room`
+- Style: pill-shaped toggle group with the active option using the primary green accent, inactive option muted — similar to the existing TruMove design language
 
-1. **Fake SAFER search bar** at the top of the section:
-   - A decorative "window chrome" bar with three colored dots and "SAFER DATABASE QUERY" label
-   - Three filter toggle buttons: Name, DOT, MC (purely decorative, Name is "active")
-   - A search input pre-filled with the selected carrier's name (read-only/cosmetic)
-   - Small disclaimer text below: "All carriers are filtered and continuously monitored per official FMCSA Safety Measurement System (SMS) criteria..."
+**2. `src/components/estimate/InventoryBuilder.tsx`**
+- Remove or visually de-emphasize the existing "Scan Your Room" preview card (lines 534-562), since the toggle at the top now handles this. Keeping it as a smaller secondary link is optional.
 
-2. **Three carrier result cards below the search** — laid out as a vertical stack or horizontal cards (horizontal on desktop, stacked on mobile). Each card is a self-contained row showing:
-   - Carrier name + DOT/MC + Authorized/Not Authorized badge
-   - 3 inline metrics: Vehicle OOS, Driver OOS, Crashes — compact, one line
-   - Compliance chips row (Authority, OOS Orders, Safety Rating, Insurance)
-   - Verdict banner (Pass / Caution / Fail)
-   - Click any card to "select" it (highlight ring), no separate selector needed
-
-3. **Remove** the separate 3-tab selector grid at top — the cards themselves serve as the selectable items, reducing visual clutter.
-
-4. **Confirm fake companies** — yes, all three (Sunrise Moving & Storage LLC, Fast & Cheap Movers LLC, Regional Van Lines Inc) are fictitious mock data from `mockCarriers.ts`. No changes needed there.
-
-5. **CTA** stays at the bottom linking to carrier vetting page (fix current link from `/site/online-estimate` to `/site/vetting`).
-
-### Technical details
-
-- Same `MOCK_CARRIERS` import, same `carrierIdx` state
-- The SAFER chrome bar is purely decorative CSS (rounded-t-xl with flex dots)
-- Search input updates its placeholder text when a carrier card is clicked
-- Cards use a clean 2-row layout: header row + metrics row, making them scannable
-- All within `max-w-2xl mx-auto`
+### Visual Design
+```text
+┌─────────────────────────────────────────────┐
+│  [ 📦 Build Manually ]  [ 📷 AI Room Scan ] │
+│       ↑ active/green        muted/outline    │
+└─────────────────────────────────────────────┘
+```
+- Centered above the grid
+- Clear iconography and labels
+- Active state uses primary color fill, inactive uses outline/ghost style
 
