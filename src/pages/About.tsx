@@ -63,7 +63,7 @@ export default function About() {
   return (
     <SiteShell>
       
-      <div className="max-w-[1480px] mx-auto px-6 py-12">
+      <div className="max-w-[1480px] mx-auto px-4 sm:px-6 py-8 sm:py-12">
         {/* Hero */}
         <div className="text-center mb-16">
           <div className="text-[10px] font-black tracking-[0.24em] uppercase text-muted-foreground mb-3">
