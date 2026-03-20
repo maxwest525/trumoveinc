@@ -508,7 +508,7 @@ export default function InventoryBuilder({
               type="button"
               onClick={() => handleRoomChange(room.id)}
               className={cn(
-                "w-full flex items-center gap-2 px-3 py-2.5 rounded-lg text-left transition-all",
+                "flex items-center gap-2 px-3 py-2.5 rounded-lg text-left transition-all whitespace-nowrap md:whitespace-normal md:w-full flex-shrink-0",
                 isActive 
                   ? "border-2 border-primary bg-primary/5 text-foreground shadow-md" 
                   : "border-2 border-transparent hover:bg-muted/60 text-foreground/70 hover:text-foreground shadow-sm hover:shadow-md"

@@ -67,7 +67,7 @@ export function ContactHub({
 
       {/* Primary Action Buttons - Centered between header and booking input */}
       <div className="flex-1 flex items-center justify-center w-full">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full max-w-3xl">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4 w-full max-w-3xl">
         {/* Video Call */}
         <button
           onClick={onStartVideoCall}
