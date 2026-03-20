@@ -549,8 +549,8 @@ export default function CarrierVetting() {
           </div>
 
           {/* Search Results label + Trust strip below query box */}
-          <p className="text-sm font-bold uppercase tracking-widest text-muted-foreground text-center mt-8 mb-3">— Search Results —</p>
-          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 max-w-2xl mx-auto mt-0 mb-6">
+          <p className="text-lg font-bold uppercase tracking-widest text-muted-foreground text-center mt-8 mb-3">— Search Results —</p>
+          <div className="flex items-center justify-center gap-x-6 max-w-3xl mx-auto mt-0 mb-6 flex-nowrap">
             {[
               { icon: Radio, text: "Real-time FMCSA data", color: "text-emerald-500" },
               { icon: AlertTriangle, text: "Red flag alerts", color: "text-red-500" },
