@@ -69,7 +69,7 @@ export default function About() {
           <div className="text-[10px] font-black tracking-[0.24em] uppercase text-muted-foreground mb-3">
             Learn More
           </div>
-          <h1 className="text-4xl md:text-5xl font-black tracking-tight text-foreground mb-4">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-foreground mb-4">
             The first AI powered way to book your move.
           </h1>
           <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
