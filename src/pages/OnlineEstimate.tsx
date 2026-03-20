@@ -12,6 +12,7 @@ import { format } from "date-fns";
 import { Lock, Package, Truck, Calculator, Scan, Sparkles, Shield, BadgeCheck, Clock } from "lucide-react";
 import logoImg from "@/assets/logo.png";
 import ChatModal from "@/components/chat/ChatModal";
+import EstimatorNavToggle from "@/components/estimate/EstimatorNavToggle";
 import SiteShell from "@/components/layout/SiteShell";
 import InventoryBuilder from "@/components/estimate/InventoryBuilder";
 import InventoryTable from "@/components/estimate/InventoryTable";

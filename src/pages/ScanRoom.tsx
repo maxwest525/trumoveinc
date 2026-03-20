@@ -402,7 +402,8 @@ export default function ScanRoom() {
             <p className="tru-scan-main-subheadline">
               Simply scan your rooms and our AI will identify, measure, and catalog every item automatically.
             </p>
-            
+          </div>
+          <EstimatorNavToggle />
           </div>
         </section>
 
