@@ -4,7 +4,7 @@ import {
   Home, Sun, Moon, Bell, LayoutDashboard, Users, Link2, Package,
   Zap, ScrollText, Gauge, Sparkles, DollarSign,
   FileText, BookOpen, CreditCard, Settings2, MessageSquare, Trophy,
-  Menu, X,
+  Menu, X, Globe,
 } from "lucide-react";
 import logoImg from "@/assets/logo.png";
 import { toast } from "sonner";
