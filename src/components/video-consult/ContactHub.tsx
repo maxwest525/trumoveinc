@@ -55,8 +55,8 @@ export function ContactHub({
       </div>
 
       {/* Header */}
-      <div className="mt-8 text-center">
-        <h3 className="text-3xl font-black text-white mb-2">
+      <div className="mt-4 sm:mt-8 text-center">
+        <h3 className="text-2xl sm:text-3xl font-black text-white mb-2">
           Ready to Connect
         </h3>
         <p className="text-white/70 text-base max-w-lg mx-auto leading-relaxed">
