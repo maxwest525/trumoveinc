@@ -1677,7 +1677,7 @@ export default function Index() {
             </div>
           </section>
 
-          <FeatureTrustStrip />
+          <div className="py-8"><FeatureTrustStrip /></div>
 
           {/* CARRIER VETTING PREVIEW */}
           <section className="tru-ai-steps-section py-24">
