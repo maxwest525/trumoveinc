@@ -64,16 +64,17 @@ export default function Vetting() {
               <span className="tru-vetting-headline-accent">Carrier Safety Records</span>
             </h1>
 
-            <p className="tru-vetting-subheadline">
-              We don't just find movers—we verify every carrier against FMCSA records, 
-              analyze safety histories, and continuously monitor for your protection.
-            </p>
-
-            <div className="tru-vetting-trust-pills">
-              {TRUST_PILLS.map((pill) => (
-                <div key={pill.text} className="tru-vetting-pill">
-                  <pill.icon className="w-3.5 h-3.5" />
-                  {pill.text}
+            {/* How It Works Steps - inline below headline */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 mt-4 mb-6">
+              {PROCESS_STEPS.map((step, idx) => (
+                <div key={idx} className="flex items-start gap-2.5">
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <step.icon className="w-4 h-4 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="text-xs font-bold text-foreground leading-tight">{step.title}</h3>
+                    <p className="text-[10px] text-muted-foreground leading-snug mt-0.5 max-w-[180px]">{step.description}</p>
+                  </div>
                 </div>
               ))}
             </div>
@@ -87,6 +88,16 @@ export default function Vetting() {
                 Get Protected Quote
                 <ArrowRight className="w-4 h-4" />
               </Link>
+            </div>
+
+            {/* Trust pills below CTAs */}
+            <div className="tru-vetting-trust-pills">
+              {TRUST_PILLS.map((pill) => (
+                <div key={pill.text} className="tru-vetting-pill">
+                  <pill.icon className="w-3.5 h-3.5" />
+                  {pill.text}
+                </div>
+              ))}
             </div>
           </div>
 
@@ -134,30 +145,6 @@ export default function Vetting() {
               <div className="tru-vetting-stat-label">{stat.label}</div>
             </div>
           ))}
-        </section>
-
-        {/* Process Section */}
-        <section className="tru-vetting-process">
-          <div className="tru-vetting-process-header">
-            <h2 className="tru-vetting-section-title">
-              How We Protect Your Move
-            </h2>
-            <p className="tru-vetting-section-subtitle">
-              Our multi-layer verification process ensures you're matched with only the most reliable carriers.
-            </p>
-          </div>
-
-          <div className="tru-vetting-process-grid">
-            {PROCESS_STEPS.map((step, idx) => (
-              <div key={idx} className="tru-vetting-process-card">
-                <div className="tru-vetting-process-icon">
-                  <step.icon className="w-5 h-5" />
-                </div>
-                <h3 className="tru-vetting-process-title">{step.title}</h3>
-                <p className="tru-vetting-process-desc">{step.description}</p>
-              </div>
-            ))}
-          </div>
         </section>
 
         {/* Testimonial / Trust Section */}
