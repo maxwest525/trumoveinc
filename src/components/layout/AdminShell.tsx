@@ -22,7 +22,7 @@ const NAV_ITEMS = [
   { label: "Products & Pricing", icon: DollarSign, href: "/admin/pricing" },
   { label: "Developer", icon: Link2, href: "/admin/developer" },
   { label: "Pulse Settings", icon: Settings2, href: "/admin/pulse" },
-  { label: "Domains", icon: Link2, href: "/admin/domains" },
+  { label: "Domains", icon: Globe, href: "/admin/domains" },
 ];
 
 const ADVANCED_ITEMS = [
