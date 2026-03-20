@@ -1,10 +1,7 @@
 import { Link } from "react-router-dom";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { sitePrefix } from "@/lib/hostDetection";
 
 export default function Footer() {
-  const prefix = sitePrefix();
-
   return (
     <footer className="footer-main">
       <div className="footer-inner">
@@ -16,17 +13,20 @@ export default function Footer() {
         </div>
 
         <nav className="footer-nav">
-          <Link className="footer-link" to={`${prefix}/about`}>
+          <Link className="footer-link" to="/site/about">
             About
           </Link>
-          <Link className="footer-link" to={`${prefix}/faq`}>
+          <Link className="footer-link" to="/site/faq">
             FAQ
           </Link>
-          <Link className="footer-link" to={`${prefix}/privacy`}>
+          <Link className="footer-link" to="/site/privacy">
             Privacy
           </Link>
-          <Link className="footer-link" to={`${prefix}/terms`}>
+          <Link className="footer-link" to="/site/terms">
             Terms
+          </Link>
+          <Link className="footer-link footer-link-muted" to="/">
+            Portal
           </Link>
           <div className="ml-2">
             <ThemeToggle />
