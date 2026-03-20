@@ -3229,7 +3229,7 @@
 }
 
 .tru-ai-scanner-start-btn svg {
-  color: currentColor;
+  color: hsl(var(--primary));
 }
 
 /* AI Demo Info Callout */
