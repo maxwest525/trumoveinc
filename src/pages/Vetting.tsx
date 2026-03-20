@@ -60,8 +60,8 @@ export default function Vetting() {
             </div>
 
             <h1 className="tru-vetting-headline">
-              <span>Every Carrier.</span>
-              <span className="tru-vetting-headline-accent">Fully Verified.</span>
+              <span>FMCSA-Verified</span>
+              <span className="tru-vetting-headline-accent">Carrier Safety Records</span>
             </h1>
 
             <p className="tru-vetting-subheadline">
