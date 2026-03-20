@@ -3,7 +3,7 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 import { PhoneOff, Loader2, X, Mic, Copy, Download, Check, Video, Phone } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { useNavigate, useLocation } from 'react-router-dom';
-import trudyAvatar from '@/assets/trudy-avatar.png';
+import trudyAvatar from '@/assets/trudy-model.jpg';
 import VoiceWaveform from './VoiceWaveform';
 
 const TRUDY_AGENT_ID = 'agent_0501khwa2t2pfj0s3echetmjhx4n';
