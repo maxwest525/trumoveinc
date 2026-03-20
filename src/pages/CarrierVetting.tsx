@@ -566,52 +566,35 @@ export default function CarrierVetting() {
             </div>
           )}
 
-          {/* Section Header */}
-          <div className="mt-12 mb-10 text-center">
-            <div className="inline-flex items-center gap-3 mb-4">
-              <div className="w-8 h-px bg-border" />
-              <span className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
-                {carriers.length === 0 ? 'Search Results' : 'Comparison View'}
-              </span>
-              <div className="w-8 h-px bg-border" />
+          {/* Section Header - only show when carriers are loaded */}
+          {carriers.length > 0 && (
+            <div className="mt-12 mb-10 text-center">
+              <div className="inline-flex items-center gap-3 mb-4">
+                <div className="w-8 h-px bg-border" />
+                <span className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
+                  Comparison View
+                </span>
+                <div className="w-8 h-px bg-border" />
+              </div>
+              <h2 className="text-3xl font-bold text-foreground mb-4 tracking-tight">
+                {`Comparing ${carriers.length} Carrier${carriers.length > 1 ? 's' : ''}`}
+              </h2>
+              <div className="flex flex-wrap items-center justify-center gap-5 text-sm text-muted-foreground">
+                <span className="flex items-center gap-1.5">
+                  <Users className="w-4 h-4 text-slate-900 dark:text-foreground" />
+                  Side-by-side comparison
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <Radio className="w-4 h-4 text-slate-900 dark:text-foreground" />
+                  Live FMCSA data
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <AlertTriangle className="w-4 h-4 text-slate-900 dark:text-foreground" />
+                  Automated risk detection
+                </span>
+              </div>
             </div>
-            <h2 className="text-3xl font-bold text-foreground mb-4 tracking-tight">
-              {carriers.length === 0 ? 'Carrier FMCSA Results' : `Comparing ${carriers.length} Carrier${carriers.length > 1 ? 's' : ''}`}
-            </h2>
-            <div className="flex flex-wrap items-center justify-center gap-5 text-sm text-muted-foreground">
-              {carriers.length === 0 ? (
-                <>
-                  <span className="flex items-center gap-1.5">
-                    <Radio className="w-4 h-4 text-slate-900 dark:text-foreground" />
-                    Real-time data
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <AlertTriangle className="w-4 h-4 text-slate-900 dark:text-foreground" />
-                    Red flag alerts
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <Truck className="w-4 h-4 text-slate-900 dark:text-foreground" />
-                    Fleet intelligence
-                  </span>
-                </>
-              ) : (
-                <>
-                  <span className="flex items-center gap-1.5">
-                    <Users className="w-4 h-4 text-slate-900 dark:text-foreground" />
-                    Side-by-side comparison
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <Radio className="w-4 h-4 text-slate-900 dark:text-foreground" />
-                    Live FMCSA data
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <AlertTriangle className="w-4 h-4 text-slate-900 dark:text-foreground" />
-                    Automated risk detection
-                  </span>
-                </>
-              )}
-            </div>
-          </div>
+          )}
 
           {/* Empty State Placeholder - Only show when no carriers */}
           {carriers.length === 0 && (
