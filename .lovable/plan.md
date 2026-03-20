@@ -1,35 +1,64 @@
 
 
-## Plan: Add Estimate Mode Toggle (Manual vs. AI Scan)
+# Domain-Based Routing: Customer Site vs CRM
 
-### What
-Add a prominent toggle at the top of the Online Estimate page that lets the user choose between two modes:
-1. **Manual Builder** — the current inventory builder flow
-2. **AI Room Scan** — navigates to the `/site/scan-room` page
+## Current State
+- All routes live under one router. Customer-facing pages are at `/site/*`, CRM at `/` and `/agent/*`, `/admin/*`, etc.
+- `hostDetection.ts` already has `isCrmDomain()` and `isMainDomain()` helpers but they're unused.
+- Currently `trumoveinc.com` and `crm.trumoveinc.com` would show the same app.
 
-This replaces the buried "Scan Your Room" button inside the InventoryBuilder with a top-level, visually prominent mode selector.
+## Goal
+- **trumoveinc.com** (main domain) → customer-facing site at `/` (no `/site` prefix needed)
+- **crm.trumoveinc.com** → CRM portal hub with auth gate at `/`
+- **localhost / lovable.app** → show both (current behavior, or default to CRM)
 
-### Changes
+## Plan
 
-**1. `src/pages/OnlineEstimate.tsx`**
-- Add a mode toggle strip above the main grid (below the page header area, around line 338)
-- Two-option toggle using styled buttons (not the radix ToggleGroup — simpler custom buttons matching the TruMove design)
-- Options: "Build Manually" (with Package icon) and "AI Room Scan" (with Scan icon)
-- Default selection: "Build Manually"
-- Clicking "AI Room Scan" navigates to `/site/scan-room`
-- Style: pill-shaped toggle group with the active option using the primary green accent, inactive option muted — similar to the existing TruMove design language
+### 1. Update `hostDetection.ts`
+- Make `isCrmDomain()` return `true` for `crm.trumoveinc.com`, `localhost`, and `*.lovable.app`
+- Make `isMainDomain()` return `true` for `trumoveinc.com` (bare domain, no `crm.` prefix)
 
-**2. `src/components/estimate/InventoryBuilder.tsx`**
-- Remove or visually de-emphasize the existing "Scan Your Room" preview card (lines 534-562), since the toggle at the top now handles this. Keeping it as a smaller secondary link is optional.
+### 2. Create a `DomainRouter` wrapper component
+A small component that checks the hostname and renders different route sets:
 
-### Visual Design
 ```text
-┌─────────────────────────────────────────────┐
-│  [ 📦 Build Manually ]  [ 📷 AI Room Scan ] │
-│       ↑ active/green        muted/outline    │
-└─────────────────────────────────────────────┘
+if isMainDomain():
+  /              → Index (customer homepage)
+  /online-estimate → OnlineEstimate
+  /book          → Book
+  /about         → About
+  /faq           → FAQ
+  ... (all current /site/* routes, but without /site prefix)
+  /portal        → CustomerPortal
+  /portal/*      → CustomerPortalDashboard
+
+if isCrmDomain():
+  /              → AgentLogin (auth-gated)
+  /login         → AgentLogin
+  /agent/*       → CRM routes (auth-gated)
+  /manager/*     → CRM routes
+  /admin/*       → CRM routes
+  /dispatch/*    → CRM routes
+  /marketing/*   → CRM routes
 ```
-- Centered above the grid
-- Clear iconography and labels
-- Active state uses primary color fill, inactive uses outline/ghost style
+
+### 3. Keep `/site/*` routes as fallback aliases
+So existing bookmarks and internal links still work on either domain.
+
+### 4. Auth enforcement on CRM domain
+Already handled -- `AgentLogin` checks for a session and shows `PortalAuthForm` if none exists. CRM sub-routes (agent/dashboard, etc.) should also have auth guards. We'll add a simple `RequireAuth` wrapper that redirects to `/login` if no session.
+
+### 5. Update internal links
+- Customer-facing site links (Header, Footer, nav) should use relative paths (`/about` instead of `/site/about`) when on the main domain
+- CRM internal links remain unchanged
+
+### Technical Details
+
+**Files to modify:**
+- `src/lib/hostDetection.ts` -- activate domain detection logic
+- `src/App.tsx` -- replace flat route list with `DomainRouter` that conditionally renders routes based on hostname
+- `src/components/layout/Header.tsx` / `Footer.tsx` -- make link paths domain-aware (drop `/site` prefix on main domain)
+- Create `src/components/auth/RequireAuth.tsx` -- session check wrapper for CRM routes
+
+**Files unchanged:** All page components stay the same. No backend changes needed.
 
