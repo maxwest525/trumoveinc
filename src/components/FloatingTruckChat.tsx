@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { Sparkles, Hand, ChevronRight, ChevronLeft } from 'lucide-react';
 import ChatModal from './chat/ChatModal';
 import { useIsMobile } from '@/hooks/use-mobile';
-import trudyAvatar from '@/assets/trudy-avatar.png';
+import trudyAvatar from '@/assets/trudy-model.jpg';
 
 interface FloatingTruckChatProps {
   className?: string;
