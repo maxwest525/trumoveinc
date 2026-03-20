@@ -123,7 +123,7 @@ export default function AgentDashboardContent() {
   if (loading) {
     return (
       <div className="p-6 max-w-[1400px] mx-auto">
-        <p className="text-sm text-muted-foreground text-center py-12">Loading dashboard...</p>
+        <p className="text-sm text-muted-foreground text-center py-8">Loading dashboard...</p>
       </div>
     );
   }
@@ -138,20 +138,21 @@ export default function AgentDashboardContent() {
   ];
 
   return (
-    <div className="p-6 max-w-[1400px] mx-auto space-y-6">
+    <div className="p-3 sm:p-6 max-w-[1400px] mx-auto space-y-4 sm:space-y-6">
       
 
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-bold text-foreground">Dashboard</h1>
-          <p className="text-sm text-muted-foreground">Welcome back! Here's what needs your attention today.</p>
+      <div className="flex items-center justify-between gap-2">
+        <div className="min-w-0">
+          <h1 className="text-lg sm:text-xl font-bold text-foreground">Dashboard</h1>
+          <p className="text-xs sm:text-sm text-muted-foreground truncate">Welcome back! Here's what needs attention.</p>
         </div>
         <button
           onClick={() => setWorkspaceOpen(true)}
-          className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:border-primary/40 transition-all"
+          className="flex items-center gap-1.5 rounded-lg border border-border px-2.5 sm:px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:border-primary/40 transition-all shrink-0"
         >
           <Wrench className="h-3.5 w-3.5" />
-          My Tools
+          <span className="hidden sm:inline">My Tools</span>
+          <span className="sm:hidden">Tools</span>
         </button>
       </div>
 

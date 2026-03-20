@@ -32,13 +32,13 @@ export default function AgentSidebar({ onDialerToggle }: AgentSidebarProps) {
   const location = useLocation();
 
   return (
-    <aside className="w-52 shrink-0 border-r border-border bg-card flex flex-col min-h-screen">
+    <aside className="w-52 shrink-0 border-r border-border bg-card flex flex-col h-full">
       <div className="px-4 py-4 flex items-center gap-2">
         <img src={logoImg} alt="TruMove" className="h-6" />
         <span className="text-[10px] text-muted-foreground ml-1">CRM</span>
       </div>
 
-      <nav className="flex-1 px-2 py-2 space-y-0.5">
+      <nav className="flex-1 px-2 py-2 space-y-0.5 overflow-y-auto">
         {NAV_ITEMS.map((item) => {
           const Icon = item.icon;
           const active = location.pathname === item.href;

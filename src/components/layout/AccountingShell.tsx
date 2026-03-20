@@ -1,14 +1,15 @@
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   Home, Sun, Moon, Bell, LayoutDashboard, DollarSign, Receipt,
   CreditCard, FileText, Users, TrendingDown, BarChart3,
-  Gauge,
+  Gauge, Menu, X,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 import { setPortalContext } from "@/hooks/usePortalContext";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 import logoImg from "@/assets/logo.png";
 
@@ -34,61 +35,91 @@ interface AccountingShellProps {
 export default function AccountingShell({ children, breadcrumb = "" }: AccountingShellProps) {
   const { theme, setTheme } = useTheme();
   const location = useLocation();
+  const isMobile = useIsMobile();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     setPortalContext("admin");
     window.scrollTo(0, 0);
   }, []);
 
-  return (
-    <div className="flex min-h-screen bg-background text-foreground">
-      <aside className="w-52 shrink-0 border-r border-border bg-card flex flex-col min-h-screen">
-        <div className="px-4 py-4 flex items-center gap-2">
-          <img src={logoImg} alt="TruMove" className="h-6" />
-          <span className="text-[10px] text-muted-foreground ml-1">Accounting</span>
-        </div>
+  useEffect(() => { setSidebarOpen(false); }, [location.pathname]);
 
-        <nav className="flex-1 px-2 py-2 space-y-0.5">
-          {NAV_ITEMS.map((item) => {
-            const Icon = item.icon;
-            if (item.href) {
-              const active = location.pathname === item.href;
-              return (
-                <Link
-                  key={item.label}
-                  to={item.href}
-                  className={cn(
-                    "flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors",
-                    active ? "bg-foreground text-background" : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                  )}
-                >
-                  <Icon className="w-4 h-4" />
-                  <span>{item.label}</span>
-                </Link>
-              );
-            }
+  const sidebarContent = (
+    <>
+      <div className="px-4 py-4 flex items-center gap-2">
+        <img src={logoImg} alt="TruMove" className="h-6" />
+        <span className="text-[10px] text-muted-foreground ml-1">Accounting</span>
+        {isMobile && (
+          <button onClick={() => setSidebarOpen(false)} className="ml-auto p-1 rounded-lg hover:bg-muted">
+            <X className="w-4 h-4 text-muted-foreground" />
+          </button>
+        )}
+      </div>
+
+      <nav className="flex-1 px-2 py-2 space-y-0.5 overflow-y-auto">
+        {NAV_ITEMS.map((item) => {
+          const Icon = item.icon;
+          if ((item as any).href) {
+            const active = location.pathname === (item as any).href;
             return (
-              <button
+              <Link
                 key={item.label}
-                onClick={() => toast.info(`${item.label} coming soon`)}
-                className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                to={(item as any).href}
+                className={cn(
+                  "flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors",
+                  active ? "bg-foreground text-background" : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                )}
               >
                 <Icon className="w-4 h-4" />
                 <span>{item.label}</span>
-              </button>
+              </Link>
             );
-          })}
-        </nav>
+          }
+          return (
+            <button
+              key={item.label}
+              onClick={() => toast.info(`${item.label} coming soon`)}
+              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+            >
+              <Icon className="w-4 h-4" />
+              <span>{item.label}</span>
+            </button>
+          );
+        })}
+      </nav>
+    </>
+  );
 
-      </aside>
+  return (
+    <div className="flex min-h-screen bg-background text-foreground">
+      {!isMobile && (
+        <aside className="w-52 shrink-0 border-r border-border bg-card flex flex-col min-h-screen">
+          {sidebarContent}
+        </aside>
+      )}
 
-      <div className="flex-1 flex flex-col min-h-screen">
-        <header className="h-12 border-b border-border bg-card flex items-center justify-between px-4 shrink-0">
-          <div className="flex items-center gap-3">
+      {isMobile && sidebarOpen && (
+        <>
+          <div className="fixed inset-0 bg-black/50 z-40" onClick={() => setSidebarOpen(false)} />
+          <aside className="fixed inset-y-0 left-0 w-52 z-50 bg-card border-r border-border flex flex-col">
+            {sidebarContent}
+          </aside>
+        </>
+      )}
+
+      <div className="flex-1 flex flex-col min-h-screen min-w-0">
+        <header className="h-12 border-b border-border bg-card flex items-center justify-between px-3 sm:px-4 shrink-0">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+            {isMobile && (
+              <button onClick={() => setSidebarOpen(true)} className="p-1.5 rounded-lg hover:bg-muted transition-colors">
+                <Menu className="w-4 h-4 text-muted-foreground" />
+              </button>
+            )}
             <Link to="/" className="p-1.5 rounded-lg hover:bg-muted transition-colors">
               <Home className="w-4 h-4 text-muted-foreground" />
             </Link>
-            <span className="text-sm text-muted-foreground">Accounting{breadcrumb}</span>
+            <span className="text-sm text-muted-foreground truncate">Accounting{breadcrumb}</span>
           </div>
           <div className="flex items-center gap-2">
             <button className="p-1.5 rounded-lg hover:bg-muted transition-colors relative">
@@ -99,7 +130,7 @@ export default function AccountingShell({ children, breadcrumb = "" }: Accountin
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto p-6 max-w-[1400px] mx-auto w-full">
+        <main className="flex-1 overflow-y-auto p-3 sm:p-6 max-w-[1400px] mx-auto w-full">
           {children}
         </main>
       </div>
