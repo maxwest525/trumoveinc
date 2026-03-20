@@ -2,55 +2,39 @@
 
 ## Carrier Vetting Section Redesign
 
-Replace the current static stats dump with an interactive mini FMCSA lookup demo. Users pick from 3 sample carriers and see a tight, scannable result card.
-
-### Layout
-
-```text
-┌─────────────────────────────────────────────────┐
-│  Carrier Vetting.                               │
-│  Search any carrier. Red flags surfaced instant. │
-│                                                  │
-│  ┌──────────┐ ┌──────────┐ ┌──────────┐        │
-│  │ Sunrise  │ │ Fast &   │ │ Regional │        │
-│  │ Movers ✓ │ │ Cheap ✗  │ │ Van Lines│        │
-│  │ Safe     │ │ Flagged  │ │ Mixed    │        │
-│  └──────────┘ └──────────┘ └──────────┘        │
-│                                                  │
-│  ┌─ Selected Carrier Result Card ─────────────┐ │
-│  │ Name / DOT / MC / Status badge             │ │
-│  │                                             │ │
-│  │ 3-col: Vehicle OOS | Driver OOS | Crashes  │ │
-│  │                                             │ │
-│  │ Pass/Fail chips: Insurance, BOC-3, OOS     │ │
-│  │                                             │ │
-│  │ Overall verdict: PASS / CAUTION / FAIL     │ │
-│  └─────────────────────────────────────────────┘ │
-│                                                  │
-│  [ Try Carrier Vetting → ]                      │
-└─────────────────────────────────────────────────┘
-```
+### Current state
+The section has a headline, 3 small selector tabs, and a result card. It works but feels like raw data, not a product preview.
 
 ### What changes
 
-**File: `src/pages/Index.tsx` (lines 1677-1766)**
+**File: `src/pages/Index.tsx` (lines 1678-1804)**
 
-1. **Three clickable carrier selector cards** at the top — uses data from `mockCarriers.ts` (good, bad, mixed). Each card shows the carrier name, a short status label (e.g., "Safe", "Flagged", "Mixed"), and a color-coded left border (green/red/amber). Selected card gets a highlighted ring.
+Replace the current carrier selector + result card with a mini SAFER-style lookup UI inspired by the uploaded screenshot:
 
-2. **Result card below** — rendered based on which carrier is selected (default: the good one). Drastically simplified from current version:
-   - **Header row**: Legal name, DOT/MC numbers, authority status badge (green "Authorized" or red "Not Authorized")
-   - **3-column stat row**: Vehicle OOS rate vs national avg, Driver OOS rate vs national avg, Total crashes — each with a simple pass/fail color
-   - **Compliance chips row**: 3-4 badges for key checks (Insurance, BOC-3, OOS orders, Safety rating) — green check or red X per item
-   - **Overall verdict banner**: A single-line summary like "No red flags detected" (green) or "3 red flags found" (red) with appropriate icon
+1. **Fake SAFER search bar** at the top of the section:
+   - A decorative "window chrome" bar with three colored dots and "SAFER DATABASE QUERY" label
+   - Three filter toggle buttons: Name, DOT, MC (purely decorative, Name is "active")
+   - A search input pre-filled with the selected carrier's name (read-only/cosmetic)
+   - Small disclaimer text below: "All carriers are filtered and continuously monitored per official FMCSA Safety Measurement System (SMS) criteria..."
 
-3. **Remove** the CSA BASIC progress bars — too dense for a homepage preview. Keep it to the 6-8 most impactful data points only.
+2. **Three carrier result cards below the search** — laid out as a vertical stack or horizontal cards (horizontal on desktop, stacked on mobile). Each card is a self-contained row showing:
+   - Carrier name + DOT/MC + Authorized/Not Authorized badge
+   - 3 inline metrics: Vehicle OOS, Driver OOS, Crashes — compact, one line
+   - Compliance chips row (Authority, OOS Orders, Safety Rating, Insurance)
+   - Verdict banner (Pass / Caution / Fail)
+   - Click any card to "select" it (highlight ring), no separate selector needed
 
-4. **Add `useState`** to track selected carrier index, defaulting to 0 (good carrier).
+3. **Remove** the separate 3-tab selector grid at top — the cards themselves serve as the selectable items, reducing visual clutter.
+
+4. **Confirm fake companies** — yes, all three (Sunrise Moving & Storage LLC, Fast & Cheap Movers LLC, Regional Van Lines Inc) are fictitious mock data from `mockCarriers.ts`. No changes needed there.
+
+5. **CTA** stays at the bottom linking to carrier vetting page (fix current link from `/site/online-estimate` to `/site/vetting`).
 
 ### Technical details
 
-- Import `MOCK_CARRIERS` from `@/data/mockCarriers` — already has good/bad/mixed carrier data with OOS rates, crash counts, authority status, etc.
-- Derive pass/fail from existing data: `vehicleOosRate < vehicleOosRateNationalAvg`, `allowToOperate === 'Y'`, crash fatalities, etc.
-- Red flag count computed from: OOS status, inactive authority, conditional/unsatisfactory rating, high OOS rates, fatal crashes, low insurance.
-- Keep the "Try Carrier Vetting" CTA at the bottom.
+- Same `MOCK_CARRIERS` import, same `carrierIdx` state
+- The SAFER chrome bar is purely decorative CSS (rounded-t-xl with flex dots)
+- Search input updates its placeholder text when a carrier card is clicked
+- Cards use a clean 2-row layout: header row + metrics row, making them scannable
+- All within `max-w-2xl mx-auto`
 
