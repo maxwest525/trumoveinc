@@ -1599,10 +1599,10 @@
   grid-template-columns: minmax(0, 1fr) minmax(24rem, 30rem);
   gap: 48px;
   align-items: start;
-  padding: 176px 64px 140px;
+  padding: 176px 64px 180px;
   max-width: 1480px;
   margin: 0 auto;
-  min-height: 64rem;
+  min-height: 68rem;
 }
 
 /* LEFT COLUMN - Text Content */
