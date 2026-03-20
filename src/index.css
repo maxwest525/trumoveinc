@@ -1545,7 +1545,8 @@
 
 .header-logo-glow {
   filter: drop-shadow(0 0 10px rgba(255,255,255,0.8)) drop-shadow(0 0 24px rgba(255,255,255,0.4));
-  max-height: 44px;
+  height: 52px;
+  max-height: 52px;
   width: auto;
 }
 
@@ -13524,8 +13525,9 @@
 }
 
 .header-logo img {
-  height: 36px;
+  height: 52px;
   width: auto;
+  object-fit: contain;
 }
 
 .header-nav {
@@ -34320,7 +34322,7 @@ gmp-map-3d-element .gmnoprint {
   }
 
   .header-logo img {
-    height: 28px !important;
+    height: 40px !important;
   }
 
   .header-main.header-floating {
@@ -35324,8 +35326,8 @@ gmp-map-3d-element .gmnoprint {
 
   .header-logo img,
   .header-logo-glow {
-    height: 28px !important;
-    max-height: 28px !important;
+    height: 40px !important;
+    max-height: 40px !important;
   }
 
   .header-mobile-toggle {
