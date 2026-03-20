@@ -76,9 +76,6 @@ import DispatchDashboard from "./pages/DispatchDashboard";
 
 const queryClient = new QueryClient();
 
-/** True when served from the main customer-facing domain (trumoveinc.com) */
-const mainDomain = isMainDomain();
-
 const App = () => (
   <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
     <QueryClientProvider client={queryClient}>
