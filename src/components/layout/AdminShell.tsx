@@ -4,7 +4,7 @@ import {
   Home, Sun, Moon, Bell, LayoutDashboard, Users, Link2, Package,
   Zap, ScrollText, Gauge, Sparkles, DollarSign,
   FileText, BookOpen, CreditCard, Settings2, MessageSquare, Trophy,
-  Menu, X,
+  Menu, X, Globe,
 } from "lucide-react";
 import logoImg from "@/assets/logo.png";
 import { toast } from "sonner";
@@ -22,6 +22,7 @@ const NAV_ITEMS = [
   { label: "Products & Pricing", icon: DollarSign, href: "/admin/pricing" },
   { label: "Developer", icon: Link2, href: "/admin/developer" },
   { label: "Pulse Settings", icon: Settings2, href: "/admin/pulse" },
+  { label: "Domains", icon: Globe, href: "/admin/domains" },
 ];
 
 const ADVANCED_ITEMS = [
