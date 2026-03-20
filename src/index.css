@@ -13482,6 +13482,15 @@
   box-sizing: border-box;
 }
 
+/* White underglow only on homepage */
+.header-main.header-floating.header-home-glow {
+  box-shadow: 
+    0 4px 12px hsl(0 0% 0% / 0.3),
+    0 12px 32px hsl(0 0% 0% / 0.25),
+    0 0 24px 4px hsl(0 0% 100% / 0.15),
+    0 0 48px 8px hsl(0 0% 100% / 0.08);
+}
+
 .header-main.header-floating.is-scrolled {
   box-shadow: 
     0 6px 16px hsl(0 0% 0% / 0.4),
