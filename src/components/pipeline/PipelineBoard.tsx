@@ -194,8 +194,8 @@ export function PipelineBoard({ onAddLead }: { onAddLead?: () => void }) {
         </div>
         <DragOverlay>
           {activeDeal ? (
-            <Card className="p-3 shadow-lg border-l-4 border-l-primary w-[260px]">
-              <p className="text-sm font-semibold">
+            <Card className="p-2 shadow-lg border-l-4 border-l-primary w-[200px]">
+              <p className="text-xs font-semibold">
                 {activeDeal.leads ? `${activeDeal.leads.first_name} ${activeDeal.leads.last_name}` : "Deal"}
               </p>
             </Card>
