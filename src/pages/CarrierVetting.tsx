@@ -536,13 +536,6 @@ export default function CarrierVetting() {
               ))}
             </div>
 
-            <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1.5 text-xs text-muted-foreground">
-              <span className="inline-flex items-center gap-1.5"><Database className="w-3.5 h-3.5 text-primary" />Real-time FMCSA data</span>
-              <span className="inline-flex items-center gap-1.5"><AlertTriangle className="w-3.5 h-3.5 text-primary" />Red flag alerts</span>
-              <span className="inline-flex items-center gap-1.5"><Search className="w-3.5 h-3.5 text-primary" />DOT lookup</span>
-              <span className="inline-flex items-center gap-1.5"><Activity className="w-3.5 h-3.5 text-primary" />Fleet intelligence</span>
-              <span className="inline-flex items-center gap-1.5"><Shield className="w-3.5 h-3.5 text-primary" />Insurance verification</span>
-            </div>
           </div>
 
           {/* FMCSA Terminal - Always Visible */}
