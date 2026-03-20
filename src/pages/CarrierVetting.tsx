@@ -545,6 +545,22 @@ export default function CarrierVetting() {
             </div>
           </div>
 
+          {/* Trust strip below query box */}
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 max-w-2xl mx-auto mt-4 mb-6">
+            {[
+              { icon: Radio, text: "Real-time FMCSA data", color: "text-emerald-500" },
+              { icon: AlertTriangle, text: "Red flag alerts", color: "text-red-500" },
+              { icon: Database, text: "DOT lookup", color: "text-blue-500" },
+              { icon: Zap, text: "Fleet intelligence", color: "text-amber-500" },
+              { icon: Shield, text: "Insurance verification", color: "text-teal-500" },
+            ].map((item) => (
+              <div key={item.text} className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <item.icon className={cn("w-3.5 h-3.5", item.color)} />
+                <span>{item.text}</span>
+              </div>
+            ))}
+          </div>
+
           {/* API Error Alert */}
           {apiError && (
             <div className="mb-8 max-w-3xl mx-auto animate-fade-in">
