@@ -206,7 +206,7 @@ export function CarrierSearch({ onSelect, className, isLoading: externalLoading 
     <div ref={containerRef} className={cn('relative', className)}>
       <div className="space-y-3">
         {/* Search Type Toggle - Compact buttons for sidebar, full for terminal */}
-        <div className={cn('flex gap-1.5', isSidebar ? 'flex-wrap' : 'gap-2')}>
+        <div className={cn('flex gap-1.5', isSidebar ? 'flex-wrap' : 'gap-2 justify-center')}>
           <Button
             type="button"
             variant="ghost"
