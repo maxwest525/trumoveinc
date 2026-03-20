@@ -116,6 +116,7 @@ const crmRoutes = (
     <Route path="/admin/dashboard" element={<RequireAuth><AdminDashboard /></RequireAuth>} />
     <Route path="/admin/users" element={<RequireAuth><AdminUsersPage /></RequireAuth>} />
     <Route path="/admin/pricing" element={<RequireAuth><AdminPricing /></RequireAuth>} />
+    <Route path="/admin/domains" element={<RequireAuth><AdminDomains /></RequireAuth>} />
     <Route path="/admin/lead-vendors" element={<RequireAuth><AdminLeadVendors /></RequireAuth>} />
     <Route path="/leads/dashboard" element={<RequireAuth><LeadsDashboard /></RequireAuth>} />
     <Route path="/leads/vendors" element={<RequireAuth><AdminLeadVendors /></RequireAuth>} />
