@@ -25,9 +25,6 @@ export default function Footer() {
           <Link className="footer-link" to="/site/terms">
             Terms
           </Link>
-          <Link className="footer-link footer-link-muted" to="/">
-            Portal
-          </Link>
           <div className="ml-2">
             <ThemeToggle />
           </div>
