@@ -4,6 +4,10 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
+import { isCrmDomain, isMainDomain } from "@/lib/hostDetection";
+import RequireAuth from "@/components/auth/RequireAuth";
+
+// Pages
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import OnlineEstimate from "./pages/OnlineEstimate";
@@ -23,8 +27,6 @@ import AdminDeveloper from "./pages/AdminDeveloper";
 import ScanRoom from "./pages/ScanRoom";
 import Classic from "./pages/Classic";
 import LiveTracking from "./pages/LiveTracking";
-import ElevenLabsTrudyWidget from "./components/ElevenLabsTrudyWidget";
-import ScrollToTop from "./components/ScrollToTop";
 import CustomerService from "./pages/CustomerService";
 import AdminSupportTickets from "./pages/AdminSupportTickets";
 import AgentPipeline from "./pages/AgentPipeline";
@@ -74,103 +76,139 @@ import AdminTeamChat from "./pages/AdminTeamChat";
 import Leaderboard from "./pages/Leaderboard";
 import DispatchDashboard from "./pages/DispatchDashboard";
 
+import ElevenLabsTrudyWidget from "./components/ElevenLabsTrudyWidget";
+import ScrollToTop from "./components/ScrollToTop";
+
 const queryClient = new QueryClient();
 
-const App = () => (
-  <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <ScrollToTop />
-          <Routes>
-            {/* ── Root = CRM Portal Hub (always) ──────────────────── */}
-            <Route path="/" element={<AgentLogin />} />
-            <Route path="/login" element={<AgentLogin />} />
-
-            {/* Legacy route redirect */}
-            <Route path="/agent-login" element={<Navigate to="/" replace />} />
-
-            {/* ── Customer-facing website under /site ─────────────── */}
-            <Route path="/site" element={<Index />} />
-            <Route path="/site/online-estimate" element={<OnlineEstimate />} />
-            <Route path="/site/book" element={<Book />} />
-            <Route path="/site/vetting" element={<CarrierVetting />} />
-            <Route path="/site/vetting-dashboard" element={<VettingDashboard />} />
-            <Route path="/site/carrier-vetting" element={<CarrierVetting />} />
-            <Route path="/site/faq" element={<FAQ />} />
-            <Route path="/site/about" element={<About />} />
-            <Route path="/site/privacy" element={<Privacy />} />
-            <Route path="/site/terms" element={<Terms />} />
-            <Route path="/site/property-lookup" element={<PropertyLookup />} />
-            <Route path="/site/auth" element={<Auth />} />
-            <Route path="/site/scan-room" element={<ScanRoom />} />
-            <Route path="/site/classic" element={<Classic />} />
-            <Route path="/site/track" element={<LiveTracking />} />
-            <Route path="/site/customer-service" element={<CustomerService />} />
-
-            {/* ── CRM / Backend routes ─────────────────────────────── */}
-            <Route path="/agent/dashboard" element={<AgentDashboard />} />
-            <Route path="/admin/developer" element={<AdminDeveloper />} />
-            <Route path="/admin/employee-requests" element={<AdminSupportTickets />} />
-            <Route path="/agent/pipeline" element={<AgentPipeline />} />
-            <Route path="/agent/profile" element={<ProfileSettings />} />
-            <Route path="/manager/dashboard" element={<ManagerDashboard />} />
-            <Route path="/admin/dashboard" element={<AdminDashboard />} />
-            <Route path="/admin/users" element={<AdminUsersPage />} />
-            <Route path="/admin/pricing" element={<AdminPricing />} />
-            <Route path="/admin/lead-vendors" element={<AdminLeadVendors />} />
-            <Route path="/leads/dashboard" element={<LeadsDashboard />} />
-            <Route path="/leads/vendors" element={<AdminLeadVendors />} />
-            <Route path="/leads/performance" element={<LeadsPerformance />} />
-            <Route path="/kpi" element={<KpiDashboard />} />
-            <Route path="/leaderboard" element={<Leaderboard />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/set-password" element={<SetPassword />} />
-            <Route path="/marketing/dashboard" element={<GrowthDashboard />} />
-            <Route path="/marketing/campaigns" element={<GrowthCampaigns />} />
-            <Route path="/marketing/integrations" element={<GrowthIntegrations />} />
-            <Route path="/marketing/landing-pages" element={<GrowthLandingPages />} />
-            <Route path="/marketing/routing" element={<GrowthRouting />} />
-            <Route path="/accounting/dashboard" element={<AccountingDashboard />} />
-            
-            <Route path="/agent/operations" element={<AgentOperations />} />
-            <Route path="/agent/new-customer" element={<AgentNewCustomer />} />
-            <Route path="/agent/move-details/:leadId" element={<AgentMoveDetails />} />
-            <Route path="/agent/inventory/:leadId" element={<AgentInventory />} />
-            <Route path="/agent/dialer" element={<AgentDialerPage />} />
-            <Route path="/agent/esign" element={<AgentESign />} />
-            <Route path="/agent/esign/view" element={<ESignViewPage />} />
-            <Route path="/agent/payment" element={<AgentPayment />} />
-            <Route path="/agent/customers" element={<AgentCustomers />} />
-            <Route path="/agent/customers/:id" element={<AgentCustomerDetail />} />
-            <Route path="/agent/messages" element={<AgentMessaging />} />
-            <Route path="/agent/team-chat" element={<AgentTeamChat />} />
-            
-            <Route path="/portal" element={<CustomerPortal />} />
-            <Route path="/portal/dashboard" element={<CustomerPortalDashboard />} />
-            <Route path="/homepage-2" element={<HomepageV2 />} />
-            <Route path="/customer-facing-sites" element={<CustomerFacingSites />} />
-            <Route path="/tools/:tool" element={<IntegrationPlaceholder />} />
-            <Route path="/agent/pulse" element={<AgentPulse />} />
-            <Route path="/agent/pulse/call/:callId" element={<AgentPulseCallReview />} />
-            <Route path="/manager/pulse" element={<ManagerPulse />} />
-            <Route path="/manager/pulse/call/:callId" element={<ManagerPulseCallReview />} />
-            <Route path="/admin/pulse" element={<AdminPulse />} />
-            <Route path="/admin/pulse/call/:callId" element={<AdminPulseCallReview />} />
-            <Route path="/manager/team-chat" element={<ManagerTeamChat />} />
-            <Route path="/admin/team-chat" element={<AdminTeamChat />} />
-            <Route path="/dispatch/dashboard" element={<DispatchDashboard />} />
-            
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-          <ElevenLabsTrudyWidget />
-        </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
-  </ThemeProvider>
+/* ── Shared customer-facing routes (used at / on main domain, /site/* on CRM domain) ── */
+const customerRoutes = (prefix: string) => (
+  <>
+    <Route path={`${prefix}`} element={<Index />} />
+    <Route path={`${prefix}/online-estimate`} element={<OnlineEstimate />} />
+    <Route path={`${prefix}/book`} element={<Book />} />
+    <Route path={`${prefix}/vetting`} element={<CarrierVetting />} />
+    <Route path={`${prefix}/vetting-dashboard`} element={<VettingDashboard />} />
+    <Route path={`${prefix}/carrier-vetting`} element={<CarrierVetting />} />
+    <Route path={`${prefix}/faq`} element={<FAQ />} />
+    <Route path={`${prefix}/about`} element={<About />} />
+    <Route path={`${prefix}/privacy`} element={<Privacy />} />
+    <Route path={`${prefix}/terms`} element={<Terms />} />
+    <Route path={`${prefix}/property-lookup`} element={<PropertyLookup />} />
+    <Route path={`${prefix}/auth`} element={<Auth />} />
+    <Route path={`${prefix}/scan-room`} element={<ScanRoom />} />
+    <Route path={`${prefix}/classic`} element={<Classic />} />
+    <Route path={`${prefix}/track`} element={<LiveTracking />} />
+    <Route path={`${prefix}/customer-service`} element={<CustomerService />} />
+  </>
 );
+
+/* ── Auth-gated CRM routes ── */
+const crmRoutes = (
+  <>
+    <Route path="/agent/dashboard" element={<RequireAuth><AgentDashboard /></RequireAuth>} />
+    <Route path="/admin/developer" element={<RequireAuth><AdminDeveloper /></RequireAuth>} />
+    <Route path="/admin/employee-requests" element={<RequireAuth><AdminSupportTickets /></RequireAuth>} />
+    <Route path="/agent/pipeline" element={<RequireAuth><AgentPipeline /></RequireAuth>} />
+    <Route path="/agent/profile" element={<RequireAuth><ProfileSettings /></RequireAuth>} />
+    <Route path="/manager/dashboard" element={<RequireAuth><ManagerDashboard /></RequireAuth>} />
+    <Route path="/admin/dashboard" element={<RequireAuth><AdminDashboard /></RequireAuth>} />
+    <Route path="/admin/users" element={<RequireAuth><AdminUsersPage /></RequireAuth>} />
+    <Route path="/admin/pricing" element={<RequireAuth><AdminPricing /></RequireAuth>} />
+    <Route path="/admin/lead-vendors" element={<RequireAuth><AdminLeadVendors /></RequireAuth>} />
+    <Route path="/leads/dashboard" element={<RequireAuth><LeadsDashboard /></RequireAuth>} />
+    <Route path="/leads/vendors" element={<RequireAuth><AdminLeadVendors /></RequireAuth>} />
+    <Route path="/leads/performance" element={<RequireAuth><LeadsPerformance /></RequireAuth>} />
+    <Route path="/kpi" element={<RequireAuth><KpiDashboard /></RequireAuth>} />
+    <Route path="/leaderboard" element={<RequireAuth><Leaderboard /></RequireAuth>} />
+    <Route path="/marketing/dashboard" element={<RequireAuth><GrowthDashboard /></RequireAuth>} />
+    <Route path="/marketing/campaigns" element={<RequireAuth><GrowthCampaigns /></RequireAuth>} />
+    <Route path="/marketing/integrations" element={<RequireAuth><GrowthIntegrations /></RequireAuth>} />
+    <Route path="/marketing/landing-pages" element={<RequireAuth><GrowthLandingPages /></RequireAuth>} />
+    <Route path="/marketing/routing" element={<RequireAuth><GrowthRouting /></RequireAuth>} />
+    <Route path="/accounting/dashboard" element={<RequireAuth><AccountingDashboard /></RequireAuth>} />
+    <Route path="/agent/operations" element={<RequireAuth><AgentOperations /></RequireAuth>} />
+    <Route path="/agent/new-customer" element={<RequireAuth><AgentNewCustomer /></RequireAuth>} />
+    <Route path="/agent/move-details/:leadId" element={<RequireAuth><AgentMoveDetails /></RequireAuth>} />
+    <Route path="/agent/inventory/:leadId" element={<RequireAuth><AgentInventory /></RequireAuth>} />
+    <Route path="/agent/dialer" element={<RequireAuth><AgentDialerPage /></RequireAuth>} />
+    <Route path="/agent/esign" element={<RequireAuth><AgentESign /></RequireAuth>} />
+    <Route path="/agent/esign/view" element={<RequireAuth><ESignViewPage /></RequireAuth>} />
+    <Route path="/agent/payment" element={<RequireAuth><AgentPayment /></RequireAuth>} />
+    <Route path="/agent/customers" element={<RequireAuth><AgentCustomers /></RequireAuth>} />
+    <Route path="/agent/customers/:id" element={<RequireAuth><AgentCustomerDetail /></RequireAuth>} />
+    <Route path="/agent/messages" element={<RequireAuth><AgentMessaging /></RequireAuth>} />
+    <Route path="/agent/team-chat" element={<RequireAuth><AgentTeamChat /></RequireAuth>} />
+    <Route path="/agent/pulse" element={<RequireAuth><AgentPulse /></RequireAuth>} />
+    <Route path="/agent/pulse/call/:callId" element={<RequireAuth><AgentPulseCallReview /></RequireAuth>} />
+    <Route path="/manager/pulse" element={<RequireAuth><ManagerPulse /></RequireAuth>} />
+    <Route path="/manager/pulse/call/:callId" element={<RequireAuth><ManagerPulseCallReview /></RequireAuth>} />
+    <Route path="/admin/pulse" element={<RequireAuth><AdminPulse /></RequireAuth>} />
+    <Route path="/admin/pulse/call/:callId" element={<RequireAuth><AdminPulseCallReview /></RequireAuth>} />
+    <Route path="/manager/team-chat" element={<RequireAuth><ManagerTeamChat /></RequireAuth>} />
+    <Route path="/admin/team-chat" element={<RequireAuth><AdminTeamChat /></RequireAuth>} />
+    <Route path="/dispatch/dashboard" element={<RequireAuth><DispatchDashboard /></RequireAuth>} />
+    <Route path="/customer-facing-sites" element={<RequireAuth><CustomerFacingSites /></RequireAuth>} />
+    <Route path="/tools/:tool" element={<RequireAuth><IntegrationPlaceholder /></RequireAuth>} />
+    <Route path="/homepage-2" element={<RequireAuth><HomepageV2 /></RequireAuth>} />
+  </>
+);
+
+const App = () => {
+  const mainDomain = isMainDomain();
+  const crmDomain = isCrmDomain();
+
+  return (
+    <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <ScrollToTop />
+            <Routes>
+              {/* ── Root path depends on domain ── */}
+              {mainDomain && (
+                <>
+                  {/* Main domain: customer site at root */}
+                  {customerRoutes("")}
+                  <Route path="/portal" element={<CustomerPortal />} />
+                  <Route path="/portal/dashboard" element={<CustomerPortalDashboard />} />
+                </>
+              )}
+
+              {crmDomain && (
+                <>
+                  {/* CRM domain: auth-gated portal at root */}
+                  <Route path="/" element={<AgentLogin />} />
+                  <Route path="/login" element={<AgentLogin />} />
+                  <Route path="/agent-login" element={<Navigate to="/" replace />} />
+
+                  {/* Customer site available under /site/* on CRM domain */}
+                  {customerRoutes("/site")}
+
+                  {/* Customer portal */}
+                  <Route path="/portal" element={<CustomerPortal />} />
+                  <Route path="/portal/dashboard" element={<CustomerPortalDashboard />} />
+                </>
+              )}
+
+              {/* ── CRM routes (always available, auth-gated) ── */}
+              {crmRoutes}
+
+              {/* ── Shared unprotected routes ── */}
+              <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/set-password" element={<SetPassword />} />
+
+              {/* ── Catch-all ── */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+            <ElevenLabsTrudyWidget />
+          </BrowserRouter>
+        </TooltipProvider>
+      </QueryClientProvider>
+    </ThemeProvider>
+  );
+};
 
 export default App;
