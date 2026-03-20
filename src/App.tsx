@@ -64,7 +64,7 @@ import AgentMoveDetails from "./pages/AgentMoveDetails";
 import CustomerFacingSites from "./pages/CustomerFacingSites";
 import IntegrationPlaceholder from "./pages/IntegrationPlaceholder";
 import AdminPricing from "./pages/AdminPricing";
-import AdminDomains from "./pages/AdminDomains";
+
 import PulseCallReview from "./pages/pulse/PulseCallReview";
 import AgentPulse from "./pages/AgentPulse";
 import ManagerPulse from "./pages/ManagerPulse";
