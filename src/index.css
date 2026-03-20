@@ -35083,6 +35083,104 @@ gmp-map-3d-element .gmnoprint {
     gap: 8px !important;
     padding: 0 !important;
   }
+
+  /* --- 9. Analyzing strip — fit mobile viewport --- */
+  .tru-analyze-strip {
+    flex-direction: column !important;
+    gap: 12px !important;
+    align-items: center !important;
+  }
+
+  .tru-analyze-strip-frame {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 180px !important;
+  }
+
+  .tru-analyze-strip-route .tru-analyze-strip-frame,
+  .tru-analyze-strip-route-frame {
+    max-width: 100% !important;
+    height: 160px !important;
+  }
+
+  .tru-analyze-popup-modal {
+    width: 95vw !important;
+    max-width: 95vw !important;
+    padding: 16px !important;
+  }
+
+  .tru-analyze-popup-header {
+    font-size: 14px !important;
+  }
+
+  /* --- 10. Dark action buttons — compact on mobile --- */
+  .tru-dark-action-btn {
+    padding: 8px 12px !important;
+    font-size: 11px !important;
+    gap: 6px !important;
+  }
+
+  .tru-dark-action-btn svg {
+    width: 16px !important;
+    height: 16px !important;
+  }
+
+  /* --- 11. About page — responsive grid and headings --- */
+  .grid.lg\:grid-cols-2.gap-8 {
+    gap: 16px !important;
+  }
+
+  .grid.lg\:grid-cols-2.gap-8 > div {
+    padding: 20px !important;
+  }
+
+  .grid.md\:grid-cols-3.gap-6 {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  /* --- 12. FAQ — tighter mobile padding --- */
+  .max-w-\[900px\] {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+
+  /* --- 13. Touch targets — minimum 44px for interactive elements --- */
+  .tru-vetting-pill {
+    min-height: 44px !important;
+    padding: 10px 14px !important;
+  }
+
+  .tru-vetting-primary-btn,
+  .tru-vetting-secondary-btn {
+    min-height: 48px !important;
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  /* --- 14. Scan Room — upload zone mobile --- */
+  .tru-scan-upload-zone {
+    min-height: 120px !important;
+    padding: 16px !important;
+  }
+
+  .tru-scan-room-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+  }
+
+  /* --- 15. Privacy/Terms — responsive typography --- */
+  .prose h2 {
+    font-size: 1.125rem !important;
+  }
+
+  .prose h3 {
+    font-size: 1rem !important;
+  }
+
+  .prose ul {
+    padding-left: 16px !important;
+  }
 }
 
 /* ---- EXTRA SMALL MOBILE (< 480px) ---- */

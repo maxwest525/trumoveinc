@@ -7,8 +7,8 @@ export default function Privacy() {
   return (
     <SiteShell>
       
-      <div className="max-w-[900px] mx-auto px-6 py-12">
-        <h1 className="text-4xl font-black tracking-tight text-foreground mb-2">
+      <div className="max-w-[900px] mx-auto px-4 sm:px-6 py-8 sm:py-12">
+        <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-foreground mb-2">
           TruMove Inc. Privacy Policy
         </h1>
         <p className="text-muted-foreground mb-8">Effective Date: [Insert Date]</p>

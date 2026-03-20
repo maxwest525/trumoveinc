@@ -60,7 +60,7 @@ export default function FAQ() {
           <div className="text-[10px] font-black tracking-[0.24em] uppercase text-muted-foreground mb-3">
             FAQ
           </div>
-          <h1 className="text-4xl font-black tracking-tight text-foreground mb-4">
+          <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-foreground mb-4">
             How TruMove works
           </h1>
           <p className="text-lg text-muted-foreground">
