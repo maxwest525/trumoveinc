@@ -10,10 +10,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import {
   ArrowLeft, Mail, Phone, MapPin, Calendar, Package, DollarSign,
   FileText, CreditCard, MessageSquare, PhoneCall, Clock, User,
-  TrendingUp, CheckCircle2, Circle, AlertCircle, Send
+  TrendingUp, CheckCircle2, Circle, AlertCircle, Send, FolderOpen
 } from "lucide-react";
 import { DialerProvider } from "@/components/dialer/dialerProvider";
 import { AgentESignTab } from "@/components/agent/AgentESignTab";
+import { CustomerDocumentsTab } from "@/components/agent/CustomerDocumentsTab";
 
 interface Lead {
   id: string;
