@@ -119,16 +119,51 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // For SMS delivery, we'd need Twilio or similar service
-    // For now, return a simulated success
+    // For SMS delivery, send via Twilio connector gateway
     if (deliveryMethod === "sms") {
-      console.log("SMS delivery simulated for:", refNumber);
-      
+      if (!customerPhone) {
+        throw new Error("Phone number is required for SMS delivery");
+      }
+
+      const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+      if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
+
+      const TWILIO_API_KEY = Deno.env.get("TWILIO_API_KEY");
+      if (!TWILIO_API_KEY) throw new Error("TWILIO_API_KEY is not configured");
+
+      const TWILIO_PHONE_NUMBER = Deno.env.get("TWILIO_PHONE_NUMBER");
+      if (!TWILIO_PHONE_NUMBER) throw new Error("TWILIO_PHONE_NUMBER is not configured");
+
+      const smsBody = `Hi ${customerName}, your ${documentLabel} (${refNumber}) is ready for signature. Please review and sign here: ${signingUrl}`;
+
+      const twilioResponse = await fetch("https://connector-gateway.lovable.dev/twilio/Messages.json", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${LOVABLE_API_KEY}`,
+          "X-Connection-Api-Key": TWILIO_API_KEY,
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({
+          To: customerPhone,
+          From: TWILIO_PHONE_NUMBER,
+          Body: smsBody,
+        }),
+      });
+
+      const twilioData = await twilioResponse.json();
+      if (!twilioResponse.ok) {
+        console.error("Twilio API error:", twilioData);
+        throw new Error(`Twilio SMS failed [${twilioResponse.status}]: ${JSON.stringify(twilioData)}`);
+      }
+
+      console.log("SMS sent successfully via Twilio:", twilioData.sid);
+
       return new Response(
         JSON.stringify({ 
           success: true, 
           method: "sms",
-          note: "SMS delivery simulated - integrate Twilio for production",
+          messageSid: twilioData.sid,
+          sentTo: customerPhone,
         }),
         {
           status: 200,
