@@ -42,7 +42,7 @@ const PORTALS = [
   },
   {
     key: "marketing",
-    label: "Max's Crazy Marketing Things",
+    label: "Adam & Max's Crazy Marketing Things",
     description: "Ads, landing pages, customer-facing sites, Trudy tools & creative experiments",
     href: "/marketing/dashboard",
     icon: Sparkles,
