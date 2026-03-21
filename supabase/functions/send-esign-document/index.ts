@@ -38,7 +38,7 @@ function normalizePhone(phone: string): string {
 
 async function sendEmail(customerEmail: string, customerName: string, documentLabel: string, refNumber: string, signingUrl: string) {
   const emailResponse = await resend.emails.send({
-    from: "TruMove <noreply@crm.trumoveinc.com>",
+    from: "TruMove <noreply@notify.crm.trumoveinc.com>",
     to: [customerEmail],
     subject: `Action Required: Sign Your ${documentLabel} - ${refNumber}`,
     html: `
