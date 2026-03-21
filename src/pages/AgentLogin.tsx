@@ -40,14 +40,7 @@ const PORTALS = [
     icon: Users,
     accentHsl: "217 91% 60%",
   },
-  {
-    key: "marketing",
-    label: "Adam & Max's Crazy Marketing Things",
-    description: "Ads, landing pages, customer-facing sites, Trudy tools & creative experiments",
-    href: "/marketing/dashboard",
-    icon: Sparkles,
-    accentHsl: "325 84% 54%",
-  },
+  // Marketing card hidden per request
   {
     key: "admin",
     label: "Admin / Owner",
