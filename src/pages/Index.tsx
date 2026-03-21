@@ -1877,13 +1877,7 @@ export default function Index() {
                       <ArrowRight className="w-4 h-4 text-primary" />
                     </a>
 
-                    <button
-                        onClick={() => window.dispatchEvent(new CustomEvent('trudy-start'))}
-                        className="flex items-center justify-center gap-2 border border-foreground bg-background text-foreground px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-muted transition-colors">
-                      <Mic className="w-4 h-4 text-primary" />
-                      Talk to Trudy
-                      <ArrowRight className="w-4 h-4 text-primary" />
-                    </button>
+                    {/* Talk to Trudy button hidden */}
 
                     <button
                         onClick={() => navigate("/site/book")}
