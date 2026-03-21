@@ -423,6 +423,14 @@ export default function AgentCustomerDetail() {
               </div>
             </TabsContent>
 
+            {/* DOCUMENTS TAB */}
+            <TabsContent value="documents">
+              <CustomerDocumentsTab
+                leadId={lead.id}
+                customerName={fullName}
+              />
+            </TabsContent>
+
             {/* E-SIGN TAB */}
             <TabsContent value="esign">
               <AgentESignTab
