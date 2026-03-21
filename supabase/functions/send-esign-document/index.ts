@@ -35,6 +35,7 @@ const handler = async (req: Request): Promise<Response> => {
       documentType, 
       customerName, 
       customerEmail, 
+      customerPhone,
       refNumber,
       deliveryMethod,
       signingUrl 
