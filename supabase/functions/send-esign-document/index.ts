@@ -28,9 +28,17 @@ const DOCUMENT_LABELS: Record<string, string> = {
   merchant_payment: "Merchant Payment Info",
 };
 
+function normalizePhone(phone: string): string {
+  const digits = phone.replace(/\D/g, "");
+  if (digits.startsWith("1") && digits.length === 11) return `+${digits}`;
+  if (digits.length === 10) return `+1${digits}`;
+  if (phone.startsWith("+")) return phone;
+  return `+${digits}`;
+}
+
 async function sendEmail(customerEmail: string, customerName: string, documentLabel: string, refNumber: string, signingUrl: string) {
   const emailResponse = await resend.emails.send({
-    from: "TruMove <noreply@trumove.lovable.app>",
+    from: "TruMove <noreply@crm.trumoveinc.com>",
     to: [customerEmail],
     subject: `Action Required: Sign Your ${documentLabel} - ${refNumber}`,
     html: `
@@ -62,7 +70,7 @@ async function sendEmail(customerEmail: string, customerName: string, documentLa
         <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
         <p style="font-size: 12px; color: #999; text-align: center;">
           This is an automated message from TruMove. If you have questions about this document, please contact your moving coordinator.<br><br>
-          <a href="https://trumove.lovable.app" style="color: #7C3AED;">trumove.lovable.app</a>
+          <a href="https://trumoveinc.lovable.app" style="color: #7C3AED;">trumoveinc.lovable.app</a>
         </p>
       </body>
       </html>
@@ -81,6 +89,9 @@ async function sendSms(customerPhone: string, customerName: string, documentLabe
   const TWILIO_PHONE_NUMBER = Deno.env.get("TWILIO_PHONE_NUMBER");
   if (!TWILIO_PHONE_NUMBER) throw new Error("TWILIO_PHONE_NUMBER is not configured");
 
+  const normalizedPhone = normalizePhone(customerPhone);
+  console.log(`Normalizing phone: "${customerPhone}" → "${normalizedPhone}"`);
+
   const smsBody = `Hi ${customerName}, your ${documentLabel} (${refNumber}) is ready for signature. Please review and sign here: ${signingUrl}`;
 
   const response = await fetch(`${GATEWAY_URL}/Messages.json`, {
@@ -91,7 +102,7 @@ async function sendSms(customerPhone: string, customerName: string, documentLabe
       "Content-Type": "application/x-www-form-urlencoded",
     },
     body: new URLSearchParams({
-      To: customerPhone,
+      To: normalizedPhone,
       From: TWILIO_PHONE_NUMBER,
       Body: smsBody,
     }),
@@ -126,29 +137,48 @@ const handler = async (req: Request): Promise<Response> => {
 
     const documentLabel = DOCUMENT_LABELS[documentType] || documentType;
     const results: Record<string, any> = {};
+    const errors: Record<string, string> = {};
 
     // Send email if method is "email" or "both"
     if (deliveryMethod === "email" || deliveryMethod === "both") {
-      if (!customerEmail) throw new Error("Email address is required for email delivery");
-      const emailResult = await sendEmail(customerEmail, customerName, documentLabel, refNumber, signingUrl);
-      results.email = { success: true, messageId: emailResult.data?.id, sentTo: customerEmail };
-      console.log("E-Sign email sent successfully:", emailResult);
+      if (!customerEmail) {
+        errors.email = "Email address is required for email delivery";
+      } else {
+        try {
+          const emailResult = await sendEmail(customerEmail, customerName, documentLabel, refNumber, signingUrl);
+          results.email = { success: true, messageId: emailResult.data?.id, sentTo: customerEmail };
+          console.log("E-Sign email sent successfully:", emailResult);
+        } catch (err: any) {
+          console.error("Email send failed:", err.message);
+          errors.email = err.message;
+        }
+      }
     }
 
     // Send SMS if method is "sms" or "both"
     if (deliveryMethod === "sms" || deliveryMethod === "both") {
-      if (!customerPhone) throw new Error("Phone number is required for SMS delivery");
-      const smsResult = await sendSms(customerPhone, customerName, documentLabel, refNumber, signingUrl);
-      results.sms = { success: true, messageSid: smsResult.sid, sentTo: customerPhone };
-      console.log("SMS sent successfully via Twilio:", smsResult.sid);
+      if (!customerPhone) {
+        errors.sms = "Phone number is required for SMS delivery";
+      } else {
+        try {
+          const smsResult = await sendSms(customerPhone, customerName, documentLabel, refNumber, signingUrl);
+          results.sms = { success: true, messageSid: smsResult.sid, sentTo: customerPhone };
+          console.log("SMS sent successfully via Twilio:", smsResult.sid);
+        } catch (err: any) {
+          console.error("SMS send failed:", err.message);
+          errors.sms = err.message;
+        }
+      }
     }
 
+    // If nothing succeeded at all, return error
     if (!results.email && !results.sms) {
-      throw new Error("Invalid delivery method");
+      const errorMsg = Object.entries(errors).map(([k, v]) => `${k}: ${v}`).join("; ");
+      throw new Error(errorMsg || "Invalid delivery method");
     }
 
     return new Response(
-      JSON.stringify({ success: true, method: deliveryMethod, ...results }),
+      JSON.stringify({ success: true, method: deliveryMethod, ...results, errors: Object.keys(errors).length > 0 ? errors : undefined }),
       { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
   } catch (error: any) {
