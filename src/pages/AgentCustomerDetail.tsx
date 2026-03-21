@@ -10,10 +10,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import {
   ArrowLeft, Mail, Phone, MapPin, Calendar, Package, DollarSign,
   FileText, CreditCard, MessageSquare, PhoneCall, Clock, User,
-  TrendingUp, CheckCircle2, Circle, AlertCircle, Send
+  TrendingUp, CheckCircle2, Circle, AlertCircle, Send, FolderOpen
 } from "lucide-react";
 import { DialerProvider } from "@/components/dialer/dialerProvider";
 import { AgentESignTab } from "@/components/agent/AgentESignTab";
+import { CustomerDocumentsTab } from "@/components/agent/CustomerDocumentsTab";
 
 interface Lead {
   id: string;
@@ -204,6 +205,9 @@ export default function AgentCustomerDetail() {
             <TabsList>
               <TabsTrigger value="overview" className="gap-1.5 text-xs">
                 <User className="w-3.5 h-3.5" /> Overview
+              </TabsTrigger>
+              <TabsTrigger value="documents" className="gap-1.5 text-xs">
+                <FolderOpen className="w-3.5 h-3.5" /> Documents
               </TabsTrigger>
               <TabsTrigger value="esign" className="gap-1.5 text-xs">
                 <FileText className="w-3.5 h-3.5" /> E-Sign
@@ -417,6 +421,14 @@ export default function AgentCustomerDetail() {
                   </Card>
                 </div>
               </div>
+            </TabsContent>
+
+            {/* DOCUMENTS TAB */}
+            <TabsContent value="documents">
+              <CustomerDocumentsTab
+                leadId={lead.id}
+                customerName={fullName}
+              />
             </TabsContent>
 
             {/* E-SIGN TAB */}
