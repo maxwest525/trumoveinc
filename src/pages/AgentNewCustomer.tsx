@@ -7,18 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { UserPlus, Loader2, ArrowRight, Sparkles, MapPin, Calendar, Phone, Mail, User } from "lucide-react";
+import { UserPlus, Loader2, ArrowRight, MapPin, Calendar, Phone, Mail, User } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import MoveSummaryPanel from "@/components/agent/MoveSummaryPanel";
 import { toast } from "sonner";
-
-const DEMO_DATA = {
-  firstName: "Marcus", lastName: "Rivera",
-  email: "marcus.rivera@gmail.com", phone: "(305) 555-8421",
-  source: "website", originAddress: "1842 Ocean Drive, Miami, FL 33139",
-  destinationAddress: "456 Peachtree St NE, Atlanta, GA 30308",
-  moveDate: "2026-04-15", estimatedValue: "", notes: "",
-};
 
 export default function AgentNewCustomer() {
   const navigate = useNavigate();
@@ -32,11 +24,6 @@ export default function AgentNewCustomer() {
 
   const updateField = (field: string, value: string) => setForm(prev => ({ ...prev, [field]: value }));
 
-  const fillDemo = () => {
-    setForm(DEMO_DATA);
-    toast.success("Demo data loaded");
-  };
-
   const handleCreate = async () => {
     if (!form.firstName || !form.lastName) {
       toast.error("First and last name are required");
@@ -44,6 +31,28 @@ export default function AgentNewCustomer() {
     }
     setIsSaving(true);
     try {
+      // Duplicate detection: check by email or phone
+      if (form.email) {
+        const { data: emailDupes } = await supabase.from("leads").select("id, first_name, last_name").eq("email", form.email).limit(1);
+        if (emailDupes && emailDupes.length > 0) {
+          toast.error(`Duplicate detected: ${emailDupes[0].first_name} ${emailDupes[0].last_name} already has this email`, {
+            action: { label: "View", onClick: () => navigate(`/agent/customers/${emailDupes[0].id}`) },
+          });
+          setIsSaving(false);
+          return;
+        }
+      }
+      if (form.phone) {
+        const { data: phoneDupes } = await supabase.from("leads").select("id, first_name, last_name").eq("phone", form.phone).limit(1);
+        if (phoneDupes && phoneDupes.length > 0) {
+          toast.error(`Duplicate detected: ${phoneDupes[0].first_name} ${phoneDupes[0].last_name} already has this phone`, {
+            action: { label: "View", onClick: () => navigate(`/agent/customers/${phoneDupes[0].id}`) },
+          });
+          setIsSaving(false);
+          return;
+        }
+      }
+
       const { data: lead, error: leadError } = await supabase
         .from("leads")
         .insert({
@@ -95,10 +104,6 @@ export default function AgentNewCustomer() {
             </h1>
             <p className="text-sm text-muted-foreground mt-0.5">Enter customer details to start the onboarding flow</p>
           </div>
-          <Button variant="outline" size="sm" className="gap-1.5 text-xs" onClick={fillDemo}>
-            <Sparkles className="w-3.5 h-3.5" />
-            Fill Demo
-          </Button>
         </div>
 
         <div className="flex gap-6">
