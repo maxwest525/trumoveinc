@@ -40,7 +40,6 @@ const PORTALS = [
     icon: Users,
     accentHsl: "217 91% 60%",
   },
-  // Marketing card hidden per request
   {
     key: "admin",
     label: "Admin / Owner",
