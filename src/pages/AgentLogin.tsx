@@ -40,7 +40,6 @@ const PORTALS = [
     icon: Users,
     accentHsl: "217 91% 60%",
   },
-  // Marketing card hidden per request
   {
     key: "admin",
     label: "Admin / Owner",
@@ -155,7 +154,7 @@ export default function AgentLogin() {
         </motion.div>
 
         {/* Portal cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-4xl">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-3xl">
           {PORTALS.map((portal, i) => (
             <PortalCard
               key={portal.key}
