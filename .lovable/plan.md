@@ -1,35 +1,29 @@
 
 
-## Plan: Add Estimate Mode Toggle (Manual vs. AI Scan)
+## Plan: Wire Up Real Twilio SMS for E-Sign Document Delivery
 
-### What
-Add a prominent toggle at the top of the Online Estimate page that lets the user choose between two modes:
-1. **Manual Builder** — the current inventory builder flow
-2. **AI Room Scan** — navigates to the `/site/scan-room` page
+### What Changes
 
-This replaces the buried "Scan Your Room" button inside the InventoryBuilder with a top-level, visually prominent mode selector.
+**1. Update the `send-esign-document` edge function** to replace the simulated SMS block with real Twilio SMS via the connector gateway.
 
-### Changes
+- When `deliveryMethod === "sms"`, send an SMS using the Twilio gateway at `https://connector-gateway.lovable.dev/twilio/Messages.json`
+- Use `LOVABLE_API_KEY` and `TWILIO_API_KEY` environment variables (both already available)
+- The SMS body will include the customer name, document type, and signing URL
+- Need a `From` phone number — will store it as a secret (`TWILIO_PHONE_NUMBER`) so it can be changed without code edits
 
-**1. `src/pages/OnlineEstimate.tsx`**
-- Add a mode toggle strip above the main grid (below the page header area, around line 338)
-- Two-option toggle using styled buttons (not the radix ToggleGroup — simpler custom buttons matching the TruMove design)
-- Options: "Build Manually" (with Package icon) and "AI Room Scan" (with Scan icon)
-- Default selection: "Build Manually"
-- Clicking "AI Room Scan" navigates to `/site/scan-room`
-- Style: pill-shaped toggle group with the active option using the primary green accent, inactive option muted — similar to the existing TruMove design language
+**2. Add `TWILIO_PHONE_NUMBER` secret** — the Twilio phone number to send SMS from (e.g., `+18005551234`). Will prompt you to enter it.
 
-**2. `src/components/estimate/InventoryBuilder.tsx`**
-- Remove or visually de-emphasize the existing "Scan Your Room" preview card (lines 534-562), since the toggle at the top now handles this. Keeping it as a smaller secondary link is optional.
+### Technical Details
 
-### Visual Design
-```text
-┌─────────────────────────────────────────────┐
-│  [ 📦 Build Manually ]  [ 📷 AI Room Scan ] │
-│       ↑ active/green        muted/outline    │
-└─────────────────────────────────────────────┘
-```
-- Centered above the grid
-- Clear iconography and labels
-- Active state uses primary color fill, inactive uses outline/ghost style
+The edge function SMS block (lines 124-137) will be replaced with:
+- Validate `customerPhone` is provided
+- POST to `https://connector-gateway.lovable.dev/twilio/Messages.json` with `Content-Type: application/x-www-form-urlencoded`
+- Body params: `To` (customer phone), `From` (TWILIO_PHONE_NUMBER secret), `Body` (signing message with link)
+- Return the Twilio message SID on success
+
+No frontend changes needed — the existing UI already supports choosing email vs SMS delivery and passes `customerPhone`.
+
+### Steps
+1. Request the `TWILIO_PHONE_NUMBER` secret from you
+2. Update the `send-esign-document` edge function with real Twilio gateway call
 
