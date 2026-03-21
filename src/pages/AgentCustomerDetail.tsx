@@ -206,6 +206,9 @@ export default function AgentCustomerDetail() {
               <TabsTrigger value="overview" className="gap-1.5 text-xs">
                 <User className="w-3.5 h-3.5" /> Overview
               </TabsTrigger>
+              <TabsTrigger value="documents" className="gap-1.5 text-xs">
+                <FolderOpen className="w-3.5 h-3.5" /> Documents
+              </TabsTrigger>
               <TabsTrigger value="esign" className="gap-1.5 text-xs">
                 <FileText className="w-3.5 h-3.5" /> E-Sign
               </TabsTrigger>
