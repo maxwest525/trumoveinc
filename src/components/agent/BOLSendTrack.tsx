@@ -122,7 +122,7 @@ export function BOLSendTrack({ prefillName = "", prefillEmail = "", prefillPhone
 
       const methodLabel = newDoc.deliveryMethod === "email" ? "email" : "SMS";
       toast.success(`Bill of Lading sent via ${methodLabel}`, {
-        description: data?.method === "sms" ? "SMS delivery simulated for demo" : `Sent to ${newDoc.customerEmail}`,
+        description: data?.method === "sms" ? `SMS sent to ${newDoc.customerPhone}` : `Sent to ${newDoc.customerEmail}`,
       });
     } catch {
       toast.error("Failed to send Bill of Lading");
