@@ -29,34 +29,56 @@ interface Customer {
   created_at: string;
 }
 
-// Mock signing status - in production this would come from the DB
-const getSigningStatus = (customerId: string): { estimate: boolean; ccach: boolean; bol: boolean } => {
-  // Deterministic mock based on id character
-  const char = customerId.charCodeAt(0);
-  return {
-    estimate: char % 3 === 0,
-    ccach: char % 5 === 0,
-    bol: char % 7 === 0,
-  };
-};
+interface SigningStatus {
+  estimate: boolean;
+  ccach: boolean;
+  bol: boolean;
+}
 
 export default function AgentCustomers() {
   const navigate = useNavigate();
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [signingMap, setSigningMap] = useState<Record<string, SigningStatus>>({});
 
   useEffect(() => {
-    const fetchCustomers = async () => {
+    const fetchData = async () => {
       const { data } = await supabase
         .from("leads")
         .select("id, first_name, last_name, email, phone, origin_address, destination_address, move_date, status, created_at")
         .order("created_at", { ascending: false })
         .limit(100);
-      setCustomers((data as Customer[]) || []);
+      const leads = (data as Customer[]) || [];
+      setCustomers(leads);
+
+      // Fetch real signing statuses from esign_documents
+      if (leads.length > 0) {
+        const leadIds = leads.map(l => l.id);
+        const { data: docs } = await supabase
+          .from("esign_documents")
+          .select("lead_id, document_type, status")
+          .in("lead_id", leadIds);
+
+        const map: Record<string, SigningStatus> = {};
+        for (const lead of leads) {
+          map[lead.id] = { estimate: false, ccach: false, bol: false };
+        }
+        if (docs) {
+          for (const doc of docs) {
+            if (!map[doc.lead_id]) continue;
+            const completed = doc.status === "completed";
+            if (doc.document_type === "estimate_authorization") map[doc.lead_id].estimate = completed;
+            if (doc.document_type === "cc_ach_authorization") map[doc.lead_id].ccach = completed;
+            if (doc.document_type === "bill_of_lading") map[doc.lead_id].bol = completed;
+          }
+        }
+        setSigningMap(map);
+      }
+
       setLoading(false);
     };
-    fetchCustomers();
+    fetchData();
   }, []);
 
   const filtered = customers.filter(c => {
@@ -77,7 +99,7 @@ export default function AgentCustomers() {
   const lostCustomers = filtered.filter(c => c.status === "lost");
 
   const CustomerRow = ({ c }: { c: Customer }) => {
-    const signing = getSigningStatus(c.id);
+    const signing = signingMap[c.id] || { estimate: false, ccach: false, bol: false };
     const allSigned = signing.estimate && signing.ccach && signing.bol;
     const noneSigned = !signing.estimate && !signing.ccach && !signing.bol;
     return (
@@ -108,7 +130,6 @@ export default function AgentCustomers() {
                 {c.origin_address || "—"} → {c.destination_address || "—"}
               </p>
             )}
-            {/* Signing Status */}
             <div className="flex items-center gap-1.5 mt-1.5">
               {allSigned ? (
                 <Badge className="bg-primary/10 text-primary text-[10px] gap-1">
@@ -137,7 +158,6 @@ export default function AgentCustomers() {
             </div>
           </div>
 
-          {/* Quick actions */}
           <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
             <Button
               variant="outline" size="sm"
@@ -161,7 +181,6 @@ export default function AgentCustomers() {
             </Button>
           </div>
 
-          {/* Overflow menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild onClick={e => e.stopPropagation()}>
               <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0">
