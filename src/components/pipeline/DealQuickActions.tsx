@@ -250,7 +250,7 @@ export function DealQuickActions({ deal, activities, onActivityAdded }: DealQuic
           customerEmail,
           customerPhone: lead?.phone || "",
           refNumber,
-          deliveryMethod: "email",
+          deliveryMethod: esignDelivery,
           signingUrl,
         },
       });
