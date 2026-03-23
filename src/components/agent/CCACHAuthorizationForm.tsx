@@ -56,7 +56,7 @@ export function CCACHAuthorizationForm({
   const [formData, setFormData] = useState({
     email: prefillEmail || "",
     phone: prefillPhone || "",
-    address: "",
+    address: prefillAddress || "",
     paymentMethod: "card",
     cardNumber: "",
     expiry: "",
