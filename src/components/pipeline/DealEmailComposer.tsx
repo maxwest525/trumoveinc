@@ -98,8 +98,13 @@ export function DealEmailComposer({ deal, activities }: DealEmailComposerProps) 
     }
     setSending(true);
     try {
-      const { data, error } = await supabase.functions.invoke("send-deal-email", {
-        body: { to, subject, body, customerName: lead ? `${lead.first_name} ${lead.last_name}` : "Customer" },
+      const { data, error } = await supabase.functions.invoke("send-transactional-email", {
+        body: {
+          templateName: "deal-email",
+          recipientEmail: to,
+          idempotencyKey: `deal-email-${deal.id}-${Date.now()}`,
+          templateData: { subject, bodyText: body, customerName: lead ? `${lead.first_name} ${lead.last_name}` : "Customer" },
+        },
       });
 
       if (error) throw error;

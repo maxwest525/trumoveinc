@@ -274,7 +274,7 @@ export default function CustomerService() {
     try {
       const { error } = await supabase.from('support_tickets').insert({ name: name.trim(), email: email.trim(), subject: subject.trim() || null, message: message.trim() });
       if (error) throw error;
-      supabase.functions.invoke('notify-support-ticket', { body: { name, email, subject, message } }).catch(console.error);
+      supabase.functions.invoke('send-transactional-email', { body: { templateName: 'support-ticket-notification', recipientEmail: 'support@trumove.com', idempotencyKey: `ticket-${Date.now()}`, templateData: { name, email, subject, message } } }).catch(console.error);
       toast({ title: 'Message sent!', description: 'We\'ll respond within 24 hours.' });
       setFormData({ name: '', email: '', subject: '', message: '' });
     } catch {
