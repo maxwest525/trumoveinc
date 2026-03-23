@@ -17,6 +17,7 @@ import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import PropertyLookup from "./pages/PropertyLookup";
 import Auth from "./pages/Auth";
+import PublicESign from "./pages/PublicESign";
 import AgentLogin from "./pages/AgentLogin";
 import AgentDashboard from "./pages/AgentDashboard";
 import AdminDeveloper from "./pages/AdminDeveloper";
