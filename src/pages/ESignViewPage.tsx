@@ -178,7 +178,7 @@ export default function ESignViewPage() {
 
   return (
     <AgentShell breadcrumb=" / E-Sign / View Document">
-      <div className="min-h-screen bg-muted/30 py-8 px-4">
+      <div className="min-h-screen bg-muted/30 py-6 md:py-8 px-3 md:px-4">
         <div className="max-w-[1200px] mx-auto">
           <button
             onClick={() => navigate(-1)}
@@ -190,7 +190,7 @@ export default function ESignViewPage() {
             Back to E-Sign Hub
           </button>
 
-          <div className="flex gap-6 mt-4">
+          <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 mt-4">
             {!isBol && (
               <ESignSidebar
                 typedName={typedName}
@@ -208,7 +208,7 @@ export default function ESignViewPage() {
               />
             )}
 
-            <div className="flex-1 max-w-[8.5in]">
+            <div className="flex-1 max-w-full lg:max-w-[8.5in]">
               {isBol ? (
                 <BOLDocumentWrapper
                   typedName={typedName}
