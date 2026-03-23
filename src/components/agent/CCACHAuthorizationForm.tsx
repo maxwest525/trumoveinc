@@ -17,8 +17,9 @@ type SignatureField = "initial1" | "initial2" | "signature";
 interface CCACHAuthorizationFormProps {
   externalTypedName?: string;
   onExternalTypedNameChange?: (name: string) => void;
-  /** When true, hides the built-in sidebar (used when embedded inside ESignViewPage which provides its own sidebar) */
   embedded?: boolean;
+  prefillEmail?: string;
+  prefillPhone?: string;
 }
 
 export function CCACHAuthorizationForm({ 
