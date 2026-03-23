@@ -146,8 +146,8 @@ const handler = async (req: Request): Promise<Response> => {
       } else {
         try {
           const smsResult = await sendSms(customerPhone, customerName, documentLabel, refNumber, signingUrl);
-          results.sms = { success: true, messageSid: smsResult.sid, sentTo: customerPhone };
-          console.log("SMS sent successfully via Twilio:", smsResult.sid);
+          results.sms = { success: true, sentTo: customerPhone };
+          console.log("SMS sent successfully via ClickSend");
         } catch (err: any) {
           console.error("SMS send failed:", err.message);
           errors.sms = err.message;
