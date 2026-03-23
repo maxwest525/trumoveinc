@@ -20,6 +20,7 @@ interface CCACHAuthorizationFormProps {
   embedded?: boolean;
   prefillEmail?: string;
   prefillPhone?: string;
+  prefillAddress?: string;
 }
 
 export function CCACHAuthorizationForm({ 
