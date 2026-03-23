@@ -102,6 +102,7 @@ const PulseAgent: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
     lastCheckedRef.current = transcript.length;
     const processEntries = async () => {
       const entries = await getWatchEntries();
+      const notifSettings = await getNotifSettings();
       const CATEGORY_SEVERITY: Record<string, Severity> = { legal: 'critical', compliance: 'critical', pii: 'critical', safety: 'critical', hipaa: 'critical', financial: 'critical', escalation: 'high', anger: 'high', profanity: 'high', rebuttal: 'medium' };
       entries.forEach(async (entry) => {
         const matched = checkMatch(newText, entry);
@@ -113,6 +114,50 @@ const PulseAgent: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
         setLiveFlags(prev => [...prev, { keyword: entry.pattern, severity: sev, timestamp: timeLabel, context: contextSnippet }]);
         toast.warning(`Keyword flagged: "${matched}"`, { description: contextSnippet.slice(0, 80), duration: 5000 });
         await supabase.from('pulse_alerts' as any).insert({ agent_name: AGENT_NAME, keyword: entry.pattern, matched_text: matched, context: contextSnippet, severity: sev, match_type: entry.type, call_id: liveCallId } as any);
+
+        // Send email alerts to configured managers
+        if (notifSettings?.email?.enabled && notifSettings.email.recipients?.length) {
+          const enabledRecipients = notifSettings.email.recipients.filter((r: any) => r.enabled);
+          for (const recipient of enabledRecipients) {
+            try {
+              await supabase.functions.invoke('pulse-send-keyword-alert', {
+                body: {
+                  channel: 'email',
+                  keyword: entry.pattern,
+                  matched,
+                  context: contextSnippet,
+                  timestamp: new Date().toISOString(),
+                  agent_name: AGENT_NAME,
+                  to_email: recipient.value,
+                },
+              });
+            } catch (err) {
+              console.error('Failed to send keyword alert email:', err);
+            }
+          }
+        }
+
+        // Send Slack alerts if configured
+        if (notifSettings?.slack?.enabled && notifSettings.slack.recipients?.length) {
+          const slackUrls = notifSettings.slack.recipients.filter((r: any) => r.enabled).map((r: any) => r.value).join(',');
+          if (slackUrls) {
+            try {
+              await supabase.functions.invoke('pulse-send-keyword-alert', {
+                body: {
+                  channel: 'slack',
+                  keyword: entry.pattern,
+                  matched,
+                  context: contextSnippet,
+                  timestamp: new Date().toISOString(),
+                  agent_name: AGENT_NAME,
+                  slack_webhook_urls: slackUrls,
+                },
+              });
+            } catch (err) {
+              console.error('Failed to send keyword alert to Slack:', err);
+            }
+          }
+        }
       });
     };
     processEntries();
