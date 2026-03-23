@@ -133,23 +133,25 @@ export default function PublicESign() {
           </div>
 
           <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
-            <ESignSidebar
-              typedName={typedName}
-              onTypedNameChange={setTypedName}
-              typedInitials={typedInitials}
-              signatures={signatures}
-              activeDocument={activeDocument}
-              onDocumentChange={handleDocumentChange}
-              completedDocuments={completedDocuments}
-              allSigned={allSigned}
-              recipientEmail={customerEmail}
-              refNumber={refNumber}
-              onDownloadPdf={handleDownloadPdf}
-              isDownloading={isDownloading}
-              isPublic
-            />
+            <div className="w-full lg:w-72 shrink-0">
+              <ESignSidebar
+                typedName={typedName}
+                onTypedNameChange={setTypedName}
+                typedInitials={typedInitials}
+                signatures={signatures}
+                activeDocument={activeDocument}
+                onDocumentChange={handleDocumentChange}
+                completedDocuments={completedDocuments}
+                allSigned={allSigned}
+                recipientEmail={customerEmail}
+                refNumber={refNumber}
+                onDownloadPdf={handleDownloadPdf}
+                isDownloading={isDownloading}
+                isPublic
+              />
+            </div>
 
-            <div className="flex-1 max-w-full lg:max-w-[8.5in]">
+            <div className="flex-1 min-w-0 max-w-full lg:max-w-[8.5in] overflow-hidden">
               {activeDocument === "estimate" ? (
                 <EstimateAuthDocument
                   typedName={typedName}
