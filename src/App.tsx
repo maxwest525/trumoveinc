@@ -17,6 +17,7 @@ import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import PropertyLookup from "./pages/PropertyLookup";
 import Auth from "./pages/Auth";
+import PublicESign from "./pages/PublicESign";
 import AgentLogin from "./pages/AgentLogin";
 import AgentDashboard from "./pages/AgentDashboard";
 import AdminDeveloper from "./pages/AdminDeveloper";
@@ -110,6 +111,9 @@ const App = () => (
             <Route path="/site/classic" element={<Classic />} />
             <Route path="/site/track" element={<LiveTracking />} />
             <Route path="/site/customer-service" element={<CustomerService />} />
+
+            {/* ── Public e-sign route (customer clicks from email) ── */}
+            <Route path="/esign/:refNumber" element={<PublicESign />} />
 
             {/* ── CRM / Backend routes ─────────────────────────────── */}
             <Route path="/agent/dashboard" element={<AgentDashboard />} />
