@@ -40,39 +40,40 @@ function normalizePhone(phone: string): string {
 }
 
 async function sendSms(customerPhone: string, customerName: string, documentLabel: string, refNumber: string, signingUrl: string) {
-  const TWILIO_ACCOUNT_SID = Deno.env.get("TWILIO_ACCOUNT_SID");
-  if (!TWILIO_ACCOUNT_SID) throw new Error("TWILIO_ACCOUNT_SID is not configured");
+  const CLICKSEND_USERNAME = Deno.env.get("CLICKSEND_USERNAME");
+  if (!CLICKSEND_USERNAME) throw new Error("CLICKSEND_USERNAME is not configured");
 
-  const TWILIO_AUTH_TOKEN = Deno.env.get("TWILIO_AUTH_TOKEN");
-  if (!TWILIO_AUTH_TOKEN) throw new Error("TWILIO_AUTH_TOKEN is not configured");
-
-  const TWILIO_MESSAGING_SERVICE_SID = Deno.env.get("TWILIO_MESSAGING_SERVICE_SID");
-  if (!TWILIO_MESSAGING_SERVICE_SID) throw new Error("TWILIO_MESSAGING_SERVICE_SID is not configured");
+  const CLICKSEND_API_KEY = Deno.env.get("CLICKSEND_API_KEY");
+  if (!CLICKSEND_API_KEY) throw new Error("CLICKSEND_API_KEY is not configured");
 
   const normalizedPhone = normalizePhone(customerPhone);
   console.log(`Normalizing phone: "${customerPhone}" → "${normalizedPhone}"`);
 
   const smsBody = `Hi ${customerName}, your ${documentLabel} (${refNumber}) is ready for signature. Please review and sign here: ${signingUrl}`;
 
-  const basicAuth = btoa(`${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}`);
+  const basicAuth = btoa(`${CLICKSEND_USERNAME}:${CLICKSEND_API_KEY}`);
 
-  const response = await fetch(`https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json`, {
+  const response = await fetch("https://rest.clicksend.com/v3/sms/send", {
     method: "POST",
     headers: {
       "Authorization": `Basic ${basicAuth}`,
-      "Content-Type": "application/x-www-form-urlencoded",
+      "Content-Type": "application/json",
     },
-    body: new URLSearchParams({
-      To: normalizedPhone,
-      MessagingServiceSid: TWILIO_MESSAGING_SERVICE_SID,
-      Body: smsBody,
+    body: JSON.stringify({
+      messages: [
+        {
+          to: normalizedPhone,
+          body: smsBody,
+          source: "trumove",
+        },
+      ],
     }),
   });
 
   const data = await response.json();
-  console.log("Twilio API response:", JSON.stringify(data));
+  console.log("ClickSend API response:", JSON.stringify(data));
   if (!response.ok) {
-    throw new Error(`Twilio SMS failed [${response.status}]: ${JSON.stringify(data)}`);
+    throw new Error(`ClickSend SMS failed [${response.status}]: ${JSON.stringify(data)}`);
   }
   return data;
 }
@@ -145,8 +146,8 @@ const handler = async (req: Request): Promise<Response> => {
       } else {
         try {
           const smsResult = await sendSms(customerPhone, customerName, documentLabel, refNumber, signingUrl);
-          results.sms = { success: true, messageSid: smsResult.sid, sentTo: customerPhone };
-          console.log("SMS sent successfully via Twilio:", smsResult.sid);
+          results.sms = { success: true, sentTo: customerPhone };
+          console.log("SMS sent successfully via ClickSend");
         } catch (err: any) {
           console.error("SMS send failed:", err.message);
           errors.sms = err.message;
