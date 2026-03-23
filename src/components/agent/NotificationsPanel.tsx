@@ -11,17 +11,6 @@ import {
   X,
   CheckCheck,
   ExternalLink,
-} from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
-
-import {
-  Kanban,
-  Ticket,
-  Bell,
-  Info,
-  X,
-  CheckCheck,
-  ExternalLink,
   ShieldAlert,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
