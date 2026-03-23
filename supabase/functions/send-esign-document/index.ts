@@ -1,15 +1,11 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { Resend } from "npm:resend@2.0.0";
-
-const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
-
-// Direct Twilio API (Basic Auth + MessagingServiceSid)
 
 interface SendDocumentRequest {
   documentType: "estimate" | "ccach" | "bol" | "merchant_payment";
@@ -34,49 +30,6 @@ function normalizePhone(phone: string): string {
   if (digits.length === 10) return `+1${digits}`;
   if (phone.startsWith("+")) return phone;
   return `+${digits}`;
-}
-
-async function sendEmail(customerEmail: string, customerName: string, documentLabel: string, refNumber: string, signingUrl: string) {
-  const emailResponse = await resend.emails.send({
-    from: "TruMove <noreply@notify.crm.trumoveinc.com>",
-    to: [customerEmail],
-    subject: `Action Required: Sign Your ${documentLabel} - ${refNumber}`,
-    html: `
-      <!DOCTYPE html>
-      <html>
-      <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
-      <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-        <div style="text-align: center; margin-bottom: 30px;">
-          <h1 style="color: #7C3AED; margin: 0;">TruMove</h1>
-          <p style="color: #666; font-size: 14px;">Your Trusted Moving Partner</p>
-        </div>
-        <div style="background: linear-gradient(135deg, #7C3AED 0%, #9333EA 100%); color: white; padding: 30px; border-radius: 12px; text-align: center; margin-bottom: 30px;">
-          <h2 style="margin: 0 0 10px 0; font-size: 24px;">${documentLabel}</h2>
-          <p style="margin: 0; opacity: 0.9;">Reference: ${refNumber}</p>
-        </div>
-        <p>Hello ${customerName},</p>
-        <p>Your <strong>${documentLabel}</strong> is ready for your signature. Please review and sign the document at your earliest convenience to proceed with your move.</p>
-        <div style="text-align: center; margin: 30px 0;">
-          <a href="${signingUrl}" style="display: inline-block; background: #7C3AED; color: white; padding: 14px 40px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 16px;">
-            Review & Sign Document
-          </a>
-        </div>
-        <p style="font-size: 14px; color: #666;">
-          <strong>Document Details:</strong><br>
-          • Type: ${documentLabel}<br>
-          • Reference: ${refNumber}<br>
-          • Recipient: ${customerName}
-        </p>
-        <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
-        <p style="font-size: 12px; color: #999; text-align: center;">
-          This is an automated message from TruMove. If you have questions about this document, please contact your moving coordinator.<br><br>
-          <a href="https://trumoveinc.lovable.app" style="color: #7C3AED;">trumoveinc.lovable.app</a>
-        </p>
-      </body>
-      </html>
-    `,
-  });
-  return emailResponse;
 }
 
 async function sendSms(customerPhone: string, customerName: string, documentLabel: string, refNumber: string, signingUrl: string) {
@@ -123,6 +76,10 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
+    const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
+    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+
     const {
       documentType,
       customerName,
@@ -141,15 +98,31 @@ const handler = async (req: Request): Promise<Response> => {
     const results: Record<string, any> = {};
     const errors: Record<string, string> = {};
 
-    // Send email if method is "email" or "both"
+    // Send email via built-in transactional email system
     if (deliveryMethod === "email" || deliveryMethod === "both") {
       if (!customerEmail) {
         errors.email = "Email address is required for email delivery";
       } else {
         try {
-          const emailResult = await sendEmail(customerEmail, customerName, documentLabel, refNumber, signingUrl);
-          results.email = { success: true, messageId: emailResult.data?.id, sentTo: customerEmail };
-          console.log("E-Sign email sent successfully:", emailResult);
+          const { data, error } = await supabase.functions.invoke("send-transactional-email", {
+            body: {
+              templateName: "esign-request",
+              recipientEmail: customerEmail,
+              idempotencyKey: `esign-${refNumber}-${documentType}`,
+              templateData: {
+                customerName,
+                documentLabel,
+                refNumber,
+                signingUrl,
+              },
+            },
+          });
+
+          if (error) {
+            throw new Error(error.message || "Failed to send email");
+          }
+          results.email = { success: true, sentTo: customerEmail };
+          console.log("E-Sign email enqueued successfully via transactional system");
         } catch (err: any) {
           console.error("Email send failed:", err.message);
           errors.email = err.message;
@@ -157,7 +130,7 @@ const handler = async (req: Request): Promise<Response> => {
       }
     }
 
-    // Send SMS if method is "sms" or "both"
+    // Send SMS via Twilio (unchanged)
     if (deliveryMethod === "sms" || deliveryMethod === "both") {
       if (!customerPhone) {
         errors.sms = "Phone number is required for SMS delivery";

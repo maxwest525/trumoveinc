@@ -73,6 +73,7 @@ import ManagerTeamChat from "./pages/ManagerTeamChat";
 import AdminTeamChat from "./pages/AdminTeamChat";
 import Leaderboard from "./pages/Leaderboard";
 import DispatchDashboard from "./pages/DispatchDashboard";
+import Unsubscribe from "./pages/Unsubscribe";
 
 const queryClient = new QueryClient();
 
@@ -162,6 +163,7 @@ const App = () => (
             <Route path="/manager/team-chat" element={<ManagerTeamChat />} />
             <Route path="/admin/team-chat" element={<AdminTeamChat />} />
             <Route path="/dispatch/dashboard" element={<DispatchDashboard />} />
+            <Route path="/unsubscribe" element={<Unsubscribe />} />
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

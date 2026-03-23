@@ -197,8 +197,13 @@ export function DealQuickActions({ deal, activities, onActivityAdded }: DealQuic
         selectedTemplate === "move_day_reminder" ? `Move day is almost here, ${lead?.first_name}! 📦` :
         `Thank you, ${lead?.first_name}! We'd love your feedback 🌟`;
 
-      const { error } = await supabase.functions.invoke("send-deal-email", {
-        body: { to: customerEmail, subject, htmlBody, customerName },
+      const { error } = await supabase.functions.invoke("send-transactional-email", {
+        body: {
+          templateName: "deal-email",
+          recipientEmail: customerEmail,
+          idempotencyKey: `deal-quick-${deal.id}-${selectedTemplate}-${Date.now()}`,
+          templateData: { subject, htmlBody, customerName },
+        },
       });
       if (error) throw error;
 

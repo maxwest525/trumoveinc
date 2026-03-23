@@ -10,11 +10,8 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-
-    if (!RESEND_API_KEY) throw new Error("RESEND_API_KEY not configured");
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
@@ -61,55 +58,52 @@ serve(async (req) => {
 
       if (staleCount === 0 && upcomingCount === 0) continue;
 
-      // Build email HTML
-      let html = `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">`;
-      html += `<h2 style="color: #1a1a2e;">Daily Pipeline Digest</h2>`;
-      html += `<p>Hi ${agent.display_name || "Agent"},</p>`;
-
+      // Build stale deals HTML
+      let staleDealsHtml = "";
       if (staleCount > 0) {
-        html += `<h3 style="color: #ef4444;">⚠️ ${staleCount} Stale Deal${staleCount > 1 ? "s" : ""}</h3>`;
-        html += `<table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">`;
-        html += `<tr style="background: #f8f8f8;"><th style="padding: 8px; text-align: left; border-bottom: 1px solid #eee;">Customer</th><th style="padding: 8px; text-align: left; border-bottom: 1px solid #eee;">Stage</th><th style="padding: 8px; text-align: left; border-bottom: 1px solid #eee;">Value</th><th style="padding: 8px; text-align: left; border-bottom: 1px solid #eee;">Last Updated</th></tr>`;
+        staleDealsHtml += `<h3 style="color: #ef4444;">⚠️ ${staleCount} Stale Deal${staleCount > 1 ? "s" : ""}</h3>`;
+        staleDealsHtml += `<table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">`;
+        staleDealsHtml += `<tr style="background: #f8f8f8;"><th style="padding: 8px; text-align: left; border-bottom: 1px solid #eee;">Customer</th><th style="padding: 8px; text-align: left; border-bottom: 1px solid #eee;">Stage</th><th style="padding: 8px; text-align: left; border-bottom: 1px solid #eee;">Value</th><th style="padding: 8px; text-align: left; border-bottom: 1px solid #eee;">Last Updated</th></tr>`;
         for (const deal of (staleDeals || []).slice(0, 10)) {
           const lead = deal.leads;
           const name = lead ? `${lead.first_name} ${lead.last_name}` : "Unknown";
           const daysStale = Math.floor((now.getTime() - new Date(deal.updated_at).getTime()) / (1000 * 60 * 60 * 24));
-          html += `<tr><td style="padding: 8px; border-bottom: 1px solid #eee;">${name}</td><td style="padding: 8px; border-bottom: 1px solid #eee;">${deal.stage}</td><td style="padding: 8px; border-bottom: 1px solid #eee;">$${(deal.deal_value || 0).toLocaleString()}</td><td style="padding: 8px; border-bottom: 1px solid #eee; color: #ef4444;">${daysStale}d ago</td></tr>`;
+          staleDealsHtml += `<tr><td style="padding: 8px; border-bottom: 1px solid #eee;">${name}</td><td style="padding: 8px; border-bottom: 1px solid #eee;">${deal.stage}</td><td style="padding: 8px; border-bottom: 1px solid #eee;">$${(deal.deal_value || 0).toLocaleString()}</td><td style="padding: 8px; border-bottom: 1px solid #eee; color: #ef4444;">${daysStale}d ago</td></tr>`;
         }
-        html += `</table>`;
+        staleDealsHtml += `</table>`;
       }
 
+      // Build upcoming moves HTML
+      let upcomingMovesHtml = "";
       if (upcomingCount > 0) {
-        html += `<h3 style="color: #3b82f6;">📅 ${upcomingCount} Upcoming Move${upcomingCount > 1 ? "s" : ""} (Next 7 Days)</h3>`;
-        html += `<table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">`;
-        html += `<tr style="background: #f8f8f8;"><th style="padding: 8px; text-align: left; border-bottom: 1px solid #eee;">Customer</th><th style="padding: 8px; text-align: left; border-bottom: 1px solid #eee;">Move Date</th><th style="padding: 8px; text-align: left; border-bottom: 1px solid #eee;">Route</th></tr>`;
+        upcomingMovesHtml += `<h3 style="color: #3b82f6;">📅 ${upcomingCount} Upcoming Move${upcomingCount > 1 ? "s" : ""} (Next 7 Days)</h3>`;
+        upcomingMovesHtml += `<table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">`;
+        upcomingMovesHtml += `<tr style="background: #f8f8f8;"><th style="padding: 8px; text-align: left; border-bottom: 1px solid #eee;">Customer</th><th style="padding: 8px; text-align: left; border-bottom: 1px solid #eee;">Move Date</th><th style="padding: 8px; text-align: left; border-bottom: 1px solid #eee;">Route</th></tr>`;
         for (const lead of (upcomingLeads || []).slice(0, 10)) {
-          html += `<tr><td style="padding: 8px; border-bottom: 1px solid #eee;">${lead.first_name} ${lead.last_name}</td><td style="padding: 8px; border-bottom: 1px solid #eee;">${lead.move_date}</td><td style="padding: 8px; border-bottom: 1px solid #eee;">${lead.origin_address || "TBD"} → ${lead.destination_address || "TBD"}</td></tr>`;
+          upcomingMovesHtml += `<tr><td style="padding: 8px; border-bottom: 1px solid #eee;">${lead.first_name} ${lead.last_name}</td><td style="padding: 8px; border-bottom: 1px solid #eee;">${lead.move_date}</td><td style="padding: 8px; border-bottom: 1px solid #eee;">${lead.origin_address || "TBD"} → ${lead.destination_address || "TBD"}</td></tr>`;
         }
-        html += `</table>`;
+        upcomingMovesHtml += `</table>`;
       }
 
-      html += `<p style="color: #666; font-size: 12px;">— TruMove Pipeline</p></div>`;
-
-      // Send via Resend
-      const emailRes = await fetch("https://api.resend.com/emails", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${RESEND_API_KEY}`,
-          "Content-Type": "application/json",
+      // Send via built-in transactional email
+      const { error } = await supabase.functions.invoke("send-transactional-email", {
+        body: {
+          templateName: "daily-digest",
+          recipientEmail: agent.email,
+          idempotencyKey: `daily-digest-${agent.id}-${today}`,
+          templateData: {
+            agentName: agent.display_name || "Agent",
+            staleCount,
+            upcomingCount,
+            staleDealsHtml,
+            upcomingMovesHtml,
+          },
         },
-        body: JSON.stringify({
-          from: "TruMove Pipeline <onboarding@resend.dev>",
-          to: [agent.email],
-          subject: `Pipeline Digest: ${staleCount} stale deal${staleCount !== 1 ? "s" : ""}, ${upcomingCount} upcoming move${upcomingCount !== 1 ? "s" : ""}`,
-          html,
-        }),
       });
 
-      if (emailRes.ok) emailsSent++;
+      if (!error) emailsSent++;
       else {
-        const errText = await emailRes.text();
-        console.error(`Failed to email ${agent.email}:`, errText);
+        console.error(`Failed to email ${agent.email}:`, error);
       }
     }
 

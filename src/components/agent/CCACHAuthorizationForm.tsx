@@ -149,22 +149,18 @@ export function CCACHAuthorizationForm({
 
     setIsSendingEmail(true);
     try {
-      const { data, error } = await supabase.functions.invoke("send-ccach-pdf", {
+      const { data, error } = await supabase.functions.invoke("send-transactional-email", {
         body: {
-          customerName: typedName,
-          email: formData.email,
-          phone: formData.phone,
-          address: formData.address,
-          paymentMethod: formData.paymentMethod,
-          cardNumber: formData.cardNumber,
-          expiry: formData.expiry,
-          bankName: formData.bankName,
-          routingNumber: formData.routingNumber,
-          accountNumber: formData.accountNumber,
-          amount: formData.amount,
-          refNumber,
-          signedDate: today,
-          initials: typedInitials,
+          templateName: "ccach-authorization",
+          recipientEmail: formData.email,
+          idempotencyKey: `ccach-${refNumber}`,
+          templateData: {
+            customerName: typedName,
+            refNumber,
+            amount: formData.amount,
+            paymentMethod: formData.paymentMethod,
+            signedDate: today,
+          },
         },
       });
 
