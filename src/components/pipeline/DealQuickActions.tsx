@@ -175,6 +175,7 @@ export function DealQuickActions({ deal, activities, onActivityAdded }: DealQuic
   const [sendingEsign, setSendingEsign] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState("follow_up");
   const [selectedDocType, setSelectedDocType] = useState<DocumentType>("estimate");
+  const [esignDelivery, setEsignDelivery] = useState<"email" | "sms">("email");
 
   const lead = deal.leads;
   const customerName = lead ? `${lead.first_name} ${lead.last_name}` : "Customer";
