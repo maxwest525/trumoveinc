@@ -123,34 +123,35 @@ export default function PublicESign() {
 
   return (
     <SiteShell hideHeader hideTrustStrip>
-      <div className="min-h-screen bg-muted/30 py-6 md:py-8 px-3 md:px-4">
+      <div className="min-h-screen bg-muted/30 py-4 sm:py-6 md:py-8 px-2 sm:px-3 md:px-4">
         <div className="max-w-[1200px] mx-auto">
-          <div className="text-center mb-6 md:mb-8">
-            <h1 className="text-xl md:text-2xl font-bold text-foreground">Document Signing</h1>
-            <p className="text-muted-foreground mt-1 text-sm md:text-base">
-              Please review and sign your documents below.
+          <div className="text-center mb-4 sm:mb-6 md:mb-8">
+            <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-foreground">Document Signing</h1>
+            <p className="text-muted-foreground mt-1 text-xs sm:text-sm md:text-base">
+              Please review and sign your documents below. Reference: {refNumber}
             </p>
-            <p className="text-xs text-muted-foreground font-mono mt-1">Ref: {refNumber}</p>
           </div>
 
           <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
-            <ESignSidebar
-              typedName={typedName}
-              onTypedNameChange={setTypedName}
-              typedInitials={typedInitials}
-              signatures={signatures}
-              activeDocument={activeDocument}
-              onDocumentChange={handleDocumentChange}
-              completedDocuments={completedDocuments}
-              allSigned={allSigned}
-              recipientEmail={customerEmail}
-              refNumber={refNumber}
-              onDownloadPdf={handleDownloadPdf}
-              isDownloading={isDownloading}
-              isPublic
-            />
+            <div className="w-full lg:w-72 shrink-0">
+              <ESignSidebar
+                typedName={typedName}
+                onTypedNameChange={setTypedName}
+                typedInitials={typedInitials}
+                signatures={signatures}
+                activeDocument={activeDocument}
+                onDocumentChange={handleDocumentChange}
+                completedDocuments={completedDocuments}
+                allSigned={allSigned}
+                recipientEmail={customerEmail}
+                refNumber={refNumber}
+                onDownloadPdf={handleDownloadPdf}
+                isDownloading={isDownloading}
+                isPublic
+              />
+            </div>
 
-            <div className="flex-1 max-w-full lg:max-w-[8.5in]">
+            <div className="flex-1 min-w-0 max-w-full lg:max-w-[8.5in] overflow-hidden">
               {activeDocument === "estimate" ? (
                 <EstimateAuthDocument
                   typedName={typedName}
