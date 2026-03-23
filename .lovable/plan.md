@@ -1,26 +1,51 @@
 
 
-## Plan: Fix E-Sign SMS Delivery
+# Fix Email Delivery: Migrate to Built-In Email System
 
-### Root Causes Found
+## Problem
 
-**Issue 1: Phone numbers not in E.164 format**
-The `leads` table stores phone numbers as raw digits or formatted strings (e.g. `2018208143`, `6092870002`, `(305) 555-8421`). Twilio requires E.164 format (`+12018208143`). The edge function passes these raw values directly — Twilio silently rejects them.
+The domain `notify.crm.trumoveinc.com` is delegated to Lovable's nameservers via NS records. This means Resend **cannot** verify DNS for this domain — the verification will keep failing. Meanwhile, Lovable's built-in email system already shows this domain as **verified and ready**.
 
-**Issue 2: Email failure blocks SMS**
-When `deliveryMethod === "both"`, email is sent first via Resend. Since the domain `trumove.lovable.app` is unverified, Resend throws an error. Because both calls are sequential (not wrapped in try/catch individually), the email error causes the entire function to return 500 — SMS never executes.
+## Solution
 
-### Changes
+Migrate all email-sending edge functions from Resend to Lovable's built-in email infrastructure on `notify.crm.trumoveinc.com`. Keep Resend credentials available for a different domain later if needed.
 
-**1. Edge function (`send-esign-document/index.ts`)**
-- Add a `normalizePhone` helper that strips non-digits and prepends `+1` if missing (assumes US numbers)
-- Use it in `sendSms` before calling Twilio
-- Wrap email and SMS sends independently so one failing doesn't block the other
-- Return partial success when only one channel works (e.g. SMS sent, email failed)
+## Affected Edge Functions (5 total)
 
-**2. No frontend changes needed** — the phone format issue is purely server-side normalization.
+| Function | Current Sender | Issue |
+|---|---|---|
+| `send-esign-document` | `noreply@notify.crm.trumoveinc.com` via Resend | Resend can't verify domain |
+| `send-deal-email` | `onboarding@resend.dev` via Resend | Sandbox/test address |
+| `send-ccach-pdf` | `onboarding@resend.dev` via Resend | Sandbox/test address |
+| `notify-support-ticket` | `onboarding@resend.dev` via Resend | Sandbox/test address |
+| `pulse-send-keyword-alert` | `onboarding@resend.dev` via Resend | Sandbox/test address |
+| `daily-digest` | `onboarding@resend.dev` via Resend | Sandbox/test address |
 
-### Steps
-1. Update the edge function with phone normalization and independent error handling for each channel
-2. Deploy the updated function
+## Plan
+
+### Step 1: Scaffold transactional email infrastructure
+Set up the built-in email system (templates, queue, unsubscribe handling) on the already-verified `notify.crm.trumoveinc.com` domain.
+
+### Step 2: Create email templates
+Create React Email templates for each email type:
+- **esign-request** — E-sign document signing request
+- **deal-email** — Pipeline deal follow-up/communication
+- **ccach-authorization** — CC/ACH authorization with PDF
+- **support-ticket-notification** — Internal support ticket alert
+- **keyword-alert** — Pulse compliance keyword alert
+- **daily-digest** — Pipeline daily digest summary
+
+### Step 3: Update calling code
+Replace `supabase.functions.invoke('send-esign-document', ...)` and similar calls across 5+ components to use `supabase.functions.invoke('send-transactional-email', ...)` with the appropriate template name and data.
+
+### Step 4: Deploy and test
+Deploy all updated edge functions. Test e-sign email delivery end-to-end.
+
+## What stays the same
+- Twilio SMS sending in `send-esign-document` — unchanged
+- Resend API key stays configured for potential future use on a different domain
+- All UI components keep the same user-facing behavior
+
+## Result
+All emails send from `noreply@notify.crm.trumoveinc.com` via the built-in system, which is already DNS-verified and operational. No more Resend domain verification issues.
 
