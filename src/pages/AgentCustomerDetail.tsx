@@ -154,45 +154,42 @@ export default function AgentCustomerDetail() {
   return (
     <AgentShell breadcrumb=" / Customer Detail">
       {() => (
-        <div className="p-6 max-w-5xl mx-auto space-y-6">
+        <div className="p-4 sm:p-6 max-w-5xl mx-auto space-y-4 sm:space-y-6">
           {/* Header */}
-          <div className="flex items-start justify-between">
-            <div className="flex items-center gap-4">
-              <Button variant="ghost" size="icon" className="h-9 w-9" onClick={() => navigate("/agent/customers")}>
+          <div className="space-y-3">
+            <div className="flex items-center gap-3">
+              <Button variant="ghost" size="icon" className="h-9 w-9 shrink-0" onClick={() => navigate("/agent/customers")}>
                 <ArrowLeft className="w-4 h-4" />
               </Button>
-              <div className="w-12 h-12 rounded-full bg-foreground/5 border border-border flex items-center justify-center">
-                <span className="text-base font-semibold text-foreground">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-foreground/5 border border-border flex items-center justify-center shrink-0">
+                <span className="text-sm sm:text-base font-semibold text-foreground">
                   {lead.first_name[0]}{lead.last_name[0]}
                 </span>
               </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <h1 className="text-xl font-bold">{fullName}</h1>
+              <div className="min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h1 className="text-lg sm:text-xl font-bold truncate">{fullName}</h1>
                   <Badge className={`text-[10px] capitalize ${statusColor(lead.status)}`}>{lead.status}</Badge>
                 </div>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-muted-foreground truncate">
                   Added {new Date(lead.created_at).toLocaleDateString()} • Source: {lead.source}
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              {/* Status Dropdown */}
+            <div className="flex items-center gap-2 flex-wrap pl-0 sm:pl-[52px]">
               <Select value={customerStatus} onValueChange={setCustomerStatus}>
-                <SelectTrigger className="w-[160px] h-8 text-xs">
+                <SelectTrigger className="w-[140px] h-8 text-xs">
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
                 <SelectContent>
-                  {/* Empty for now — user will populate later */}
                 </SelectContent>
               </Select>
-
-              <Button variant="outline" size="sm" className="gap-1.5 text-xs"
+              <Button variant="outline" size="sm" className="gap-1.5 text-xs h-8"
                 onClick={() => navigate(`/agent/payment?name=${encodeURIComponent(fullName)}&email=${encodeURIComponent(lead.email || "")}&phone=${encodeURIComponent(lead.phone || "")}&leadId=${lead.id}`)}>
                 <CreditCard className="w-3 h-3" /> Payment
               </Button>
               {lead.phone && (
-                <Button variant="outline" size="sm" className="gap-1.5 text-xs"
+                <Button variant="outline" size="sm" className="gap-1.5 text-xs h-8"
                   onClick={() => DialerProvider.startCall(lead.phone!, undefined, fullName)}>
                   <PhoneCall className="w-3 h-3" /> Call
                 </Button>
@@ -202,15 +199,15 @@ export default function AgentCustomerDetail() {
 
           {/* Main Tabs */}
           <Tabs defaultValue="overview" className="space-y-4">
-            <TabsList>
+            <TabsList className="w-full sm:w-auto overflow-x-auto">
               <TabsTrigger value="overview" className="gap-1.5 text-xs">
-                <User className="w-3.5 h-3.5" /> Customer
+                <User className="w-3.5 h-3.5" /> Overview
               </TabsTrigger>
               <TabsTrigger value="esign" className="gap-1.5 text-xs">
-                <FileText className="w-3.5 h-3.5" /> Send E-Signs
+                <FileText className="w-3.5 h-3.5" /> E-Signs
               </TabsTrigger>
               <TabsTrigger value="documents" className="gap-1.5 text-xs">
-                <FolderOpen className="w-3.5 h-3.5" /> Customer Docs
+                <FolderOpen className="w-3.5 h-3.5" /> Docs
               </TabsTrigger>
             </TabsList>
 
