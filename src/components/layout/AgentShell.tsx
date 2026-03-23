@@ -8,6 +8,10 @@ import MiniSoftphone from "@/components/dialer/MiniSoftphone";
 import { setPortalContext } from "@/hooks/usePortalContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useNotifications } from "@/hooks/useNotifications";
+import NotificationsPanel from "@/components/agent/NotificationsPanel";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,6 +35,8 @@ export default function AgentShell({ children, breadcrumb = "" }: AgentShellProp
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [dialerOpen, setDialerOpen] = useState(false);
   const [dialerPrefill, setDialerPrefill] = useState<string | undefined>();
+  const [notifOpen, setNotifOpen] = useState(false);
+  const { notifications, unreadCount, loading: notifLoading, markAsRead, markAllAsRead, deleteNotification } = useNotifications();
   const [profile, setProfile] = useState<{ display_name: string; avatar_url: string | null; email: string }>({
     display_name: "",
     avatar_url: null,
@@ -112,10 +118,29 @@ export default function AgentShell({ children, breadcrumb = "" }: AgentShellProp
               <MessagesSquare className="w-4 h-4" />
               <span className="absolute top-0.5 right-0.5 w-1.5 h-1.5 rounded-full bg-primary" />
             </Link>
-            <button className="p-1.5 rounded-lg hover:bg-muted transition-colors relative">
-              <Bell className="w-4 h-4 text-muted-foreground" />
-              <span className="absolute top-0.5 right-0.5 w-1.5 h-1.5 rounded-full" style={{ background: "hsl(142 71% 45%)" }} />
-            </button>
+            <Popover open={notifOpen} onOpenChange={setNotifOpen}>
+              <PopoverTrigger asChild>
+                <button className="p-1.5 rounded-lg hover:bg-muted transition-colors relative">
+                  <Bell className="w-4 h-4 text-muted-foreground" />
+                  {unreadCount > 0 && (
+                    <Badge className="absolute -top-0.5 -right-0.5 h-4 min-w-4 px-1 text-[10px] leading-none bg-destructive text-destructive-foreground border-2 border-card">
+                      {unreadCount > 99 ? "99+" : unreadCount}
+                    </Badge>
+                  )}
+                </button>
+              </PopoverTrigger>
+              <PopoverContent align="end" className="p-0 w-auto bg-popover z-[100]" sideOffset={8}>
+                <NotificationsPanel
+                  notifications={notifications}
+                  unreadCount={unreadCount}
+                  loading={notifLoading}
+                  onMarkAsRead={markAsRead}
+                  onMarkAllAsRead={markAllAsRead}
+                  onDelete={deleteNotification}
+                  onClose={() => setNotifOpen(false)}
+                />
+              </PopoverContent>
+            </Popover>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="flex items-center gap-1.5 ml-1 px-1.5 py-1 rounded-lg hover:bg-muted transition-colors">
