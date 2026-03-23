@@ -204,13 +204,13 @@ export default function AgentCustomerDetail() {
           <Tabs defaultValue="overview" className="space-y-4">
             <TabsList>
               <TabsTrigger value="overview" className="gap-1.5 text-xs">
-                <User className="w-3.5 h-3.5" /> Overview
-              </TabsTrigger>
-              <TabsTrigger value="documents" className="gap-1.5 text-xs">
-                <FolderOpen className="w-3.5 h-3.5" /> Documents
+                <User className="w-3.5 h-3.5" /> Customer
               </TabsTrigger>
               <TabsTrigger value="esign" className="gap-1.5 text-xs">
-                <FileText className="w-3.5 h-3.5" /> E-Sign
+                <FileText className="w-3.5 h-3.5" /> Send E-Signs
+              </TabsTrigger>
+              <TabsTrigger value="documents" className="gap-1.5 text-xs">
+                <FolderOpen className="w-3.5 h-3.5" /> Customer Docs
               </TabsTrigger>
             </TabsList>
 
