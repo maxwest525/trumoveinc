@@ -24,6 +24,14 @@ const DOCUMENT_LABELS: Record<string, string> = {
   merchant_payment: "Merchant Payment Info",
 };
 
+// Map document types to their transactional email template names
+const TEMPLATE_MAP: Record<string, string> = {
+  estimate: "esign-request",
+  ccach: "ccach-authorization",
+  bol: "esign-request",
+  merchant_payment: "esign-request",
+};
+
 function normalizePhone(phone: string): string {
   const digits = phone.replace(/\D/g, "");
   if (digits.startsWith("1") && digits.length === 11) return `+${digits}`;
@@ -104,9 +112,10 @@ const handler = async (req: Request): Promise<Response> => {
         errors.email = "Email address is required for email delivery";
       } else {
         try {
+          const templateName = TEMPLATE_MAP[documentType] || "esign-request";
           const { data, error } = await supabase.functions.invoke("send-transactional-email", {
             body: {
-              templateName: "esign-request",
+              templateName,
               recipientEmail: customerEmail,
               idempotencyKey: `esign-${refNumber}-${documentType}`,
               templateData: {
