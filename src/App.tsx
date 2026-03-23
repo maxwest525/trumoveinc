@@ -73,6 +73,7 @@ import ManagerTeamChat from "./pages/ManagerTeamChat";
 import AdminTeamChat from "./pages/AdminTeamChat";
 import Leaderboard from "./pages/Leaderboard";
 import DispatchDashboard from "./pages/DispatchDashboard";
+import Unsubscribe from "./pages/Unsubscribe";
 
 const queryClient = new QueryClient();
 
