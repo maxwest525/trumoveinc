@@ -28,7 +28,6 @@ const DOCUMENT_LABELS: Record<string, string> = {
 const TEMPLATE_MAP: Record<string, string> = {
   estimate: "esign-request",
   ccach: "ccach-authorization",
-  bol: "esign-request",
   merchant_payment: "esign-request",
 };
 
