@@ -16,14 +16,14 @@ interface ESignRequestProps {
 const ESignRequestEmail = ({ customerName, documentLabel, refNumber, signingUrl }: ESignRequestProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Action Required: Sign Your {documentLabel || 'Document'} - {refNumber || ''}</Preview>
+    <Preview>Action Required: Sign Your {documentLabel || 'Document'} – {refNumber || ''}</Preview>
     <Body style={main}>
       <Container style={container}>
         <div style={headerBanner}>
           <Heading style={headerTitle}>{SITE_NAME}</Heading>
           <Text style={headerSub}>Your Trusted Moving Partner</Text>
         </div>
-        <div style={purpleBanner}>
+        <div style={greenBanner}>
           <Heading style={bannerTitle}>{documentLabel || 'Document'}</Heading>
           <Text style={bannerRef}>Reference: {refNumber || 'N/A'}</Text>
         </div>
@@ -54,7 +54,7 @@ const ESignRequestEmail = ({ customerName, documentLabel, refNumber, signingUrl 
 export const template = {
   component: ESignRequestEmail,
   subject: (data: Record<string, any>) =>
-    `Action Required: Sign Your ${data.documentLabel || 'Document'} - ${data.refNumber || ''}`,
+    `Action Required: Sign Your ${data.documentLabel || 'Document'} – ${data.refNumber || ''}`,
   displayName: 'E-Sign document request',
   previewData: {
     customerName: 'Jane Smith',
@@ -64,18 +64,18 @@ export const template = {
   },
 } satisfies TemplateEntry
 
-const main = { backgroundColor: '#ffffff', fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }
+const main = { backgroundColor: '#ffffff', fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif" }
 const container = { padding: '0', maxWidth: '600px', margin: '0 auto' }
 const headerBanner = { textAlign: 'center' as const, marginBottom: '0', padding: '24px 20px 8px' }
-const headerTitle = { color: '#7C3AED', fontSize: '28px', fontWeight: 'bold', margin: '0' }
-const headerSub = { color: '#666', fontSize: '14px', margin: '4px 0 0' }
-const purpleBanner = { background: 'linear-gradient(135deg, #7C3AED 0%, #9333EA 100%)', color: 'white', padding: '30px', borderRadius: '12px', textAlign: 'center' as const, margin: '20px 25px 30px' }
-const bannerTitle = { margin: '0 0 10px', fontSize: '24px', color: 'white' }
+const headerTitle = { color: '#22c55e', fontSize: '28px', fontWeight: 'bold' as const, margin: '0' }
+const headerSub = { color: '#64748b', fontSize: '14px', margin: '4px 0 0' }
+const greenBanner = { background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)', color: 'white', padding: '30px', borderRadius: '8px', textAlign: 'center' as const, margin: '20px 25px 30px' }
+const bannerTitle = { margin: '0 0 10px', fontSize: '24px', color: 'white', fontWeight: 'bold' as const }
 const bannerRef = { margin: '0', opacity: 0.9, fontSize: '14px', color: 'white' }
-const text = { fontSize: '14px', color: '#333', lineHeight: '1.6', margin: '0 25px 16px' }
+const text = { fontSize: '14px', color: '#64748b', lineHeight: '1.6', margin: '0 25px 16px' }
 const ctaWrap = { textAlign: 'center' as const, margin: '30px 0' }
-const button = { display: 'inline-block', background: '#7C3AED', color: '#ffffff', padding: '14px 40px', borderRadius: '8px', textDecoration: 'none', fontWeight: '600', fontSize: '16px' }
-const detailsLabel = { fontSize: '14px', color: '#666', margin: '0 25px 4px' }
-const detailsText = { fontSize: '14px', color: '#666', margin: '0 25px 25px', lineHeight: '1.8' }
-const hr = { border: 'none', borderTop: '1px solid #eee', margin: '30px 25px' }
-const footer = { fontSize: '12px', color: '#999', textAlign: 'center' as const, margin: '0 25px 20px' }
+const button = { display: 'inline-block' as const, background: '#22c55e', color: '#ffffff', padding: '14px 40px', borderRadius: '8px', textDecoration: 'none', fontWeight: '600' as const, fontSize: '16px' }
+const detailsLabel = { fontSize: '14px', color: '#020817', margin: '0 25px 4px', fontWeight: 'bold' as const }
+const detailsText = { fontSize: '14px', color: '#64748b', margin: '0 25px 25px', lineHeight: '1.8' }
+const hr = { border: 'none', borderTop: '1px solid #e2e8f0', margin: '30px 25px' }
+const footer = { fontSize: '12px', color: '#94a3b8', textAlign: 'center' as const, margin: '0 25px 20px' }
