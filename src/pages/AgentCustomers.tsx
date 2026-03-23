@@ -107,29 +107,23 @@ export default function AgentCustomers() {
       className="border border-border hover:border-foreground/20 transition-all cursor-pointer group"
       onClick={() => navigate(`/agent/customers/${c.id}`)}
     >
-      <CardContent className="p-4">
-        <div className="flex items-center gap-4">
+      <CardContent className="p-3 sm:p-4">
+        <div className="flex items-start gap-3">
           <div className="w-10 h-10 rounded-full bg-foreground/5 border border-border flex items-center justify-center shrink-0">
             <span className="text-sm font-semibold text-foreground">
               {c.first_name[0]}{c.last_name[0]}
             </span>
           </div>
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <p className="text-sm font-medium text-foreground">{c.first_name} {c.last_name}</p>
               <Badge className={`text-[10px] capitalize ${statusColor(c.status)}`}>{c.status}</Badge>
             </div>
-            <div className="flex items-center gap-3 text-xs text-muted-foreground mt-0.5">
-              {c.email && <span className="flex items-center gap-1"><Mail className="w-3 h-3" />{c.email}</span>}
-              {c.phone && <span className="flex items-center gap-1"><Phone className="w-3 h-3" />{c.phone}</span>}
-              {c.move_date && <span className="flex items-center gap-1"><Calendar className="w-3 h-3" />{new Date(c.move_date).toLocaleDateString()}</span>}
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-muted-foreground mt-0.5">
+              {c.email && <span className="flex items-center gap-1 truncate max-w-[180px] sm:max-w-none"><Mail className="w-3 h-3 shrink-0" />{c.email}</span>}
+              {c.phone && <span className="flex items-center gap-1"><Phone className="w-3 h-3 shrink-0" />{c.phone}</span>}
+              {c.move_date && <span className="hidden sm:flex items-center gap-1"><Calendar className="w-3 h-3" />{new Date(c.move_date).toLocaleDateString()}</span>}
             </div>
-            {(c.origin_address || c.destination_address) && (
-              <p className="text-[11px] text-muted-foreground mt-1 flex items-center gap-1 truncate">
-                <MapPin className="w-3 h-3 shrink-0" />
-                {c.origin_address || "—"} → {c.destination_address || "—"}
-              </p>
-            )}
             <div className="flex items-center gap-1.5 mt-1.5">
               {allSigned ? (
                 <Badge className="bg-primary/10 text-primary text-[10px] gap-1">
@@ -149,36 +143,9 @@ export default function AgentCustomers() {
                     {signing.ccach ? <CheckCircle2 className="w-2.5 h-2.5" /> : <AlertCircle className="w-2.5 h-2.5" />}
                     CC/ACH
                   </Badge>
-                  <Badge className={`text-[10px] gap-0.5 ${signing.bol ? "bg-primary/10 text-primary" : "bg-amber-500/10 text-amber-600"}`}>
-                    {signing.bol ? <CheckCircle2 className="w-2.5 h-2.5" /> : <AlertCircle className="w-2.5 h-2.5" />}
-                    BOL
-                  </Badge>
                 </>
               )}
             </div>
-          </div>
-
-          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-            <Button
-              variant="outline" size="sm"
-              className="h-8 gap-1.5 text-xs"
-              onClick={(e) => {
-                e.stopPropagation();
-                navigate(`/agent/esign?leadId=${c.id}&name=${encodeURIComponent(c.first_name + " " + c.last_name)}&email=${encodeURIComponent(c.email || "")}&phone=${encodeURIComponent(c.phone || "")}`);
-              }}
-            >
-              <FileText className="w-3 h-3" />E-Sign
-            </Button>
-            <Button
-              variant="outline" size="sm"
-              className="h-8 gap-1.5 text-xs"
-              onClick={(e) => {
-                e.stopPropagation();
-                navigate(`/agent/payment?name=${encodeURIComponent(c.first_name + " " + c.last_name)}&email=${encodeURIComponent(c.email || "")}&phone=${encodeURIComponent(c.phone || "")}&leadId=${c.id}`);
-              }}
-            >
-              <CreditCard className="w-3 h-3" />Payment
-            </Button>
           </div>
 
           <DropdownMenu>
@@ -188,6 +155,10 @@ export default function AgentCustomers() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-44">
+              <DropdownMenuItem onClick={() => navigate(`/agent/customers/${c.id}`)}>
+                <Eye className="w-3.5 h-3.5 mr-2" /> View Details
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => navigate(`/agent/esign?leadId=${c.id}&name=${encodeURIComponent(c.first_name + " " + c.last_name)}&email=${encodeURIComponent(c.email || "")}&phone=${encodeURIComponent(c.phone || "")}`)}>
                 <FileText className="w-3.5 h-3.5 mr-2" /> Send E-Sign
               </DropdownMenuItem>
@@ -203,14 +174,8 @@ export default function AgentCustomers() {
                   <PhoneCall className="w-3.5 h-3.5 mr-2" /> Call
                 </DropdownMenuItem>
               )}
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => navigate(`/agent/customers/${c.id}`)}>
-                <Eye className="w-3.5 h-3.5 mr-2" /> View Details
-              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-
-          <ChevronRight className="w-4 h-4 text-muted-foreground/30 group-hover:text-muted-foreground transition-colors shrink-0" />
         </div>
       </CardContent>
     </Card>
