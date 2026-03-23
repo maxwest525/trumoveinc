@@ -67,6 +67,16 @@ export function CCACHAuthorizationForm({
     amount: "2,450.00",
   });
 
+  // Sync async prefill values when they arrive after mount
+  useEffect(() => {
+    setFormData(prev => ({
+      ...prev,
+      ...(prefillEmail && !prev.email ? { email: prefillEmail } : {}),
+      ...(prefillPhone && !prev.phone ? { phone: prefillPhone } : {}),
+      ...(prefillAddress && !prev.address ? { address: prefillAddress } : {}),
+    }));
+  }, [prefillEmail, prefillPhone, prefillAddress]);
+
   const fieldRefs = {
     initial1: useRef<HTMLDivElement>(null),
     initial2: useRef<HTMLDivElement>(null),
