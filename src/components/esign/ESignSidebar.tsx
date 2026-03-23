@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
 import { Send, Mail, FileText, UserPlus, Check, Loader2, Download, Phone } from "lucide-react";
 import { toast } from "sonner";
 import { DocumentTabs, type DocumentType } from "./DocumentTabs";
@@ -54,7 +55,7 @@ export function ESignSidebar({
   };
 
   return (
-    <div className="w-72 flex-shrink-0 space-y-4">
+    <div className={cn("space-y-4", isPublic ? "w-full lg:w-72 flex-shrink-0" : "w-72 flex-shrink-0")}>
       <ClientSearchModal
         open={showClientSearch}
         onClose={() => setShowClientSearch(false)}
@@ -174,6 +175,7 @@ export function ESignSidebar({
         recipientName={typedName}
         isSigned={allSigned}
         refNumber={refNumber}
+        isPublic={isPublic}
       />
     </div>
   );
