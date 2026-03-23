@@ -14,6 +14,7 @@ import {
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { ClientSearchModal, type ClientData } from "@/components/agent/ClientSearchModal";
+import { getEsignBaseUrl } from "@/lib/esignUrl";
 
 
 type DeliveryMethod = "email" | "sms";

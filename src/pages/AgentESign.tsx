@@ -10,6 +10,7 @@ import {
   Mail, MessageSquare, Package
 } from "lucide-react";
 import { toast } from "sonner";
+import { getEsignBaseUrl } from "@/lib/esignUrl";
 
 const DOC_TYPES = [
   { key: "estimate", label: "Estimate Authorization", icon: FileText },

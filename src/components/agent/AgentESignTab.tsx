@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { getEsignBaseUrl } from "@/lib/esignUrl";
 
 type DocumentType = "estimate" | "ccach" | "bol";
 type DeliveryMethod = "email" | "sms";

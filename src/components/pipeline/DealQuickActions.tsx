@@ -7,6 +7,7 @@ import { FileText, Send, Mail, MessageSquare, Loader2, Zap, Sparkles } from "luc
 import { Deal, Activity } from "./types";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { getEsignBaseUrl } from "@/lib/esignUrl";
 
 type DocumentType = "estimate" | "ccach" | "bol";
 
