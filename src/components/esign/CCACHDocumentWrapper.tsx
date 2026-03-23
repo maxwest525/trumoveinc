@@ -8,6 +8,8 @@ interface CCACHDocumentWrapperProps {
   isSubmitted?: boolean;
   onSubmit?: () => void;
   onContinueToNext?: () => void;
+  customerEmail?: string;
+  customerPhone?: string;
 }
 
 export function CCACHDocumentWrapper({ 
@@ -16,6 +18,8 @@ export function CCACHDocumentWrapper({
   isSubmitted = false,
   onSubmit,
   onContinueToNext,
+  customerEmail,
+  customerPhone,
 }: CCACHDocumentWrapperProps) {
   return (
     <div className="bg-white rounded-lg border border-border shadow-xl">
@@ -23,6 +27,8 @@ export function CCACHDocumentWrapper({
         externalTypedName={typedName}
         onExternalTypedNameChange={onTypedNameChange}
         embedded
+        prefillEmail={customerEmail}
+        prefillPhone={customerPhone}
       />
       
       {/* Footer with Continue button */}
