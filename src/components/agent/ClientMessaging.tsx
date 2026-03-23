@@ -557,10 +557,10 @@ export function ClientMessaging() {
                   )}
                 </div>
                 <div className="flex justify-end">
-                  <Button onClick={handleSend} variant="outline" className="gap-2 border-foreground/20 hover:bg-foreground hover:text-background">
-                    <Send className="w-4 h-4" />
-                    Send SMS
-                  </Button>
+                   <Button onClick={handleSend} disabled={isSending} variant="outline" className="gap-2 border-foreground/20 hover:bg-foreground hover:text-background">
+                     {isSending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                     {isSending ? "Sending…" : "Send SMS"}
+                   </Button>
                 </div>
               </CardContent>
             </Card>
