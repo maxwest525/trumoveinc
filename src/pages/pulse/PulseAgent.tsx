@@ -137,6 +137,28 @@ const PulseAgent: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
           }
         }
 
+        // Send SMS alerts if configured
+        if (notifSettings?.sms?.enabled && notifSettings.sms.recipients?.length) {
+          const enabledSmsRecipients = notifSettings.sms.recipients.filter((r: any) => r.enabled);
+          for (const recipient of enabledSmsRecipients) {
+            try {
+              await supabase.functions.invoke('pulse-send-keyword-alert', {
+                body: {
+                  channel: 'sms',
+                  keyword: entry.pattern,
+                  matched,
+                  context: contextSnippet,
+                  timestamp: new Date().toISOString(),
+                  agent_name: AGENT_NAME,
+                  phone_number: recipient.value,
+                },
+              });
+            } catch (err) {
+              console.error('Failed to send keyword alert SMS:', err);
+            }
+          }
+        }
+
         // Send Slack alerts if configured
         if (notifSettings?.slack?.enabled && notifSettings.slack.recipients?.length) {
           const slackUrls = notifSettings.slack.recipients.filter((r: any) => r.enabled).map((r: any) => r.value).join(',');
