@@ -14,6 +14,7 @@ import {
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { ClientSearchModal, type ClientData } from "@/components/agent/ClientSearchModal";
+import { getEsignBaseUrl } from "@/lib/esignUrl";
 
 
 type DeliveryMethod = "email" | "sms";
@@ -95,7 +96,7 @@ export function BOLSendTrack({ prefillName = "", prefillEmail = "", prefillPhone
 
     setIsSending(true);
     const refNumber = `BOL-2026-${String(Math.floor(Math.random() * 9999)).padStart(4, "0")}`;
-    const signingUrl = `${window.location.origin}/esign/${refNumber}?type=bol&name=${encodeURIComponent(newDoc.customerName)}&email=${encodeURIComponent(newDoc.customerEmail)}`;
+    const signingUrl = `${getEsignBaseUrl()}/esign/${refNumber}?type=bol&name=${encodeURIComponent(newDoc.customerName)}&email=${encodeURIComponent(newDoc.customerEmail)}`;
 
     try {
       const { data, error } = await supabase.functions.invoke('send-esign-document', {

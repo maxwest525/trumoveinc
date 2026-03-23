@@ -7,6 +7,7 @@ import { FileText, Send, Mail, MessageSquare, Loader2, Zap, Sparkles } from "luc
 import { Deal, Activity } from "./types";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { getEsignBaseUrl } from "@/lib/esignUrl";
 
 type DocumentType = "estimate" | "ccach" | "bol";
 
@@ -241,7 +242,7 @@ export function DealQuickActions({ deal, activities, onActivityAdded }: DealQuic
     try {
       const refPrefix = selectedDocType === "estimate" ? "EST" : selectedDocType === "ccach" ? "CC" : "BOL";
       const refNumber = `${refPrefix}-2026-${String(Math.floor(Math.random() * 9999)).padStart(4, "0")}`;
-      const signingUrl = `${window.location.origin}/esign/${refNumber}?type=${selectedDocType}&name=${encodeURIComponent(customerName)}&email=${encodeURIComponent(customerEmail)}&leadId=${deal.lead_id || ''}`;
+      const signingUrl = `${getEsignBaseUrl()}/esign/${refNumber}?type=${selectedDocType}&name=${encodeURIComponent(customerName)}&email=${encodeURIComponent(customerEmail)}&leadId=${deal.lead_id || ''}`;
 
       const { error } = await supabase.functions.invoke("send-esign-document", {
         body: {
