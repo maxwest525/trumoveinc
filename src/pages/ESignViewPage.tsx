@@ -251,6 +251,8 @@ export default function ESignViewPage() {
                   onTypedNameChange={setTypedName}
                   isSubmitted={completedDocuments.ccach}
                   onSubmit={handleSubmitCCACH}
+                  customerEmail={customerEmail}
+                  customerPhone={customerPhone}
                 />
               )}
             </div>
