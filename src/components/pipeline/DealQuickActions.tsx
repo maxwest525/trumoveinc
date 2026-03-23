@@ -175,6 +175,7 @@ export function DealQuickActions({ deal, activities, onActivityAdded }: DealQuic
   const [sendingEsign, setSendingEsign] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState("follow_up");
   const [selectedDocType, setSelectedDocType] = useState<DocumentType>("estimate");
+  const [esignDelivery, setEsignDelivery] = useState<"email" | "sms">("email");
 
   const lead = deal.leads;
   const customerName = lead ? `${lead.first_name} ${lead.last_name}` : "Customer";
@@ -227,8 +228,12 @@ export function DealQuickActions({ deal, activities, onActivityAdded }: DealQuic
   };
 
   const handleSendEsign = async () => {
-    if (!customerEmail) {
+    if (esignDelivery === "email" && !customerEmail) {
       toast({ title: "No email on file", description: "Add an email to this lead first.", variant: "destructive" });
+      return;
+    }
+    if (esignDelivery === "sms" && !lead?.phone) {
+      toast({ title: "No phone on file", description: "Add a phone number to this lead first.", variant: "destructive" });
       return;
     }
 
@@ -245,7 +250,7 @@ export function DealQuickActions({ deal, activities, onActivityAdded }: DealQuic
           customerEmail,
           customerPhone: lead?.phone || "",
           refNumber,
-          deliveryMethod: "email",
+          deliveryMethod: esignDelivery,
           signingUrl,
         },
       });
@@ -316,15 +321,33 @@ export function DealQuickActions({ deal, activities, onActivityAdded }: DealQuic
             ))}
           </SelectContent>
         </Select>
+        <div className="flex gap-1">
+          <Button
+            size="sm"
+            variant={esignDelivery === "email" ? "default" : "outline"}
+            className="flex-1 gap-1 text-xs h-7"
+            onClick={() => setEsignDelivery("email")}
+          >
+            <Mail className="h-3 w-3" />Email
+          </Button>
+          <Button
+            size="sm"
+            variant={esignDelivery === "sms" ? "default" : "outline"}
+            className="flex-1 gap-1 text-xs h-7"
+            onClick={() => setEsignDelivery("sms")}
+          >
+            <MessageSquare className="h-3 w-3" />SMS
+          </Button>
+        </div>
         <Button
           size="sm"
           variant="outline"
           className="w-full gap-2 text-xs"
           onClick={handleSendEsign}
-          disabled={sendingEsign || !customerEmail}
+          disabled={sendingEsign || (esignDelivery === "email" ? !customerEmail : !lead?.phone)}
         >
           {sendingEsign ? <Loader2 className="h-3 w-3 animate-spin" /> : <Send className="h-3 w-3" />}
-          {sendingEsign ? "Sending..." : "Send for Signature"}
+          {sendingEsign ? "Sending..." : `Send via ${esignDelivery === "email" ? "Email" : "SMS"}`}
         </Button>
       </div>
     </div>
