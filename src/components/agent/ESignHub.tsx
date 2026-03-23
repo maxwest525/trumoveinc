@@ -97,7 +97,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
     const refNumber = `${refPrefix}-2026-${String(Math.floor(Math.random() * 9999)).padStart(4, "0")}`;
     
     // Generate a signing URL (in production, this would be a real e-sign provider URL)
-    const signingUrl = `${window.location.origin}/esign/${refNumber}`;
+    const signingUrl = `${window.location.origin}/esign/${refNumber}?type=${newDoc.type}&name=${encodeURIComponent(customerName)}&email=${encodeURIComponent(customerEmail)}`;
 
     try {
       // Call edge function to send email/SMS
