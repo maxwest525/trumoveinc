@@ -24,6 +24,14 @@ const DOCUMENT_LABELS: Record<string, string> = {
   merchant_payment: "Merchant Payment Info",
 };
 
+// Map document types to their transactional email template names
+const TEMPLATE_MAP: Record<string, string> = {
+  estimate: "esign-request",
+  ccach: "ccach-authorization",
+  bol: "esign-request",
+  merchant_payment: "esign-request",
+};
+
 function normalizePhone(phone: string): string {
   const digits = phone.replace(/\D/g, "");
   if (digits.startsWith("1") && digits.length === 11) return `+${digits}`;
