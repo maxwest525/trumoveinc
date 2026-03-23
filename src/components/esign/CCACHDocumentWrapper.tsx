@@ -10,6 +10,7 @@ interface CCACHDocumentWrapperProps {
   onContinueToNext?: () => void;
   customerEmail?: string;
   customerPhone?: string;
+  customerAddress?: string;
 }
 
 export function CCACHDocumentWrapper({ 
