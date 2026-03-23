@@ -45,6 +45,7 @@ export function ESignSidebar({
   allSigned = false,
   recipientEmail,
   refNumber = "DOC-2026-0001",
+  isPublic = false,
 }: ESignSidebarProps) {
   const [showClientSearch, setShowClientSearch] = useState(false);
 
