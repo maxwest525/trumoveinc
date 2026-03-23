@@ -99,7 +99,7 @@ export function EstimateAuthDocument({
         {/* Document Header */}
         <div className="border-b border-foreground/10 px-4 sm:px-6 lg:px-10 py-4 sm:py-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-            <img src={logo} alt="TruMove" className="h-7 sm:h-8 w-auto" />
+            <img src={logo} alt="TruMove" className="h-6 sm:h-8 w-auto max-w-[140px] sm:max-w-none object-contain" />
             <div className="text-left sm:text-right">
               <div className="font-mono text-[11px] sm:text-xs text-foreground font-semibold tracking-wide break-all sm:break-normal">{refNumber}</div>
               <div className="text-[10px] text-muted-foreground mt-0.5">{today}</div>
