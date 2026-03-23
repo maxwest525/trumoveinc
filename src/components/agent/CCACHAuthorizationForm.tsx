@@ -20,6 +20,7 @@ interface CCACHAuthorizationFormProps {
   embedded?: boolean;
   prefillEmail?: string;
   prefillPhone?: string;
+  prefillAddress?: string;
 }
 
 export function CCACHAuthorizationForm({ 
@@ -28,6 +29,7 @@ export function CCACHAuthorizationForm({
   embedded = false,
   prefillEmail,
   prefillPhone,
+  prefillAddress,
 }: CCACHAuthorizationFormProps = {}) {
   useEffect(() => { window.scrollTo(0, 0); }, []);
   
@@ -54,7 +56,7 @@ export function CCACHAuthorizationForm({
   const [formData, setFormData] = useState({
     email: prefillEmail || "",
     phone: prefillPhone || "",
-    address: "",
+    address: prefillAddress || "",
     paymentMethod: "card",
     cardNumber: "",
     expiry: "",
@@ -64,6 +66,16 @@ export function CCACHAuthorizationForm({
     accountNumber: "",
     amount: "2,450.00",
   });
+
+  // Sync async prefill values when they arrive after mount
+  useEffect(() => {
+    setFormData(prev => ({
+      ...prev,
+      ...(prefillEmail && !prev.email ? { email: prefillEmail } : {}),
+      ...(prefillPhone && !prev.phone ? { phone: prefillPhone } : {}),
+      ...(prefillAddress && !prev.address ? { address: prefillAddress } : {}),
+    }));
+  }, [prefillEmail, prefillPhone, prefillAddress]);
 
   const fieldRefs = {
     initial1: useRef<HTMLDivElement>(null),

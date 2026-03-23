@@ -10,6 +10,7 @@ interface CCACHDocumentWrapperProps {
   onContinueToNext?: () => void;
   customerEmail?: string;
   customerPhone?: string;
+  customerAddress?: string;
 }
 
 export function CCACHDocumentWrapper({ 
@@ -20,6 +21,7 @@ export function CCACHDocumentWrapper({
   onContinueToNext,
   customerEmail,
   customerPhone,
+  customerAddress,
 }: CCACHDocumentWrapperProps) {
   return (
     <div className="bg-white rounded-lg border border-border shadow-xl">
@@ -29,6 +31,7 @@ export function CCACHDocumentWrapper({
         embedded
         prefillEmail={customerEmail}
         prefillPhone={customerPhone}
+        prefillAddress={customerAddress}
       />
       
       {/* Footer with Continue button */}
