@@ -255,6 +255,7 @@ export default function ESignViewPage() {
                   onSubmit={handleSubmitCCACH}
                   customerEmail={customerEmail}
                   customerPhone={customerPhone}
+                  customerAddress={customerAddress}
                 />
               )}
             </div>
