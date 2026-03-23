@@ -62,42 +62,6 @@ export function ESignSidebar({
         onSelect={handleClientSelect}
       />
 
-      {/* E-Sign Send Buttons — agent only */}
-      {!isPublic && (
-        <>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="flex-1 h-10 gap-2 border-foreground/20 hover:bg-foreground hover:text-background transition-all group"
-              onClick={() => toast.success("SMS sent with e-sign link")}
-            >
-              <Send className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
-              <span className="text-xs font-medium">Send SMS</span>
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="flex-1 h-10 gap-2 border-foreground/20 hover:bg-foreground hover:text-background transition-all group"
-              onClick={() => toast.success("Email sent with e-sign link")}
-            >
-              <Mail className="h-4 w-4 group-hover:translate-y-[-1px] transition-transform" />
-              <span className="text-xs font-medium">Send Email</span>
-            </Button>
-          </div>
-
-          {/* Verbal Verification Button */}
-          <Button
-            variant="outline"
-            size="sm"
-            className="w-full h-10 gap-2 border-foreground/20 hover:bg-foreground hover:text-background transition-all group"
-            onClick={() => toast.success("Verbal verification recorded")}
-          >
-            <Phone className="h-4 w-4 group-hover:scale-110 transition-transform" />
-            <span className="text-xs font-medium">Verbal Verification</span>
-          </Button>
-        </>
-      )}
 
       {/* Customer Name Card */}
       <Card className="border border-border bg-background shadow-sm">
