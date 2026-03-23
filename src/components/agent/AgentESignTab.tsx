@@ -99,7 +99,7 @@ export function AgentESignTab({ leadId, customerName, customerEmail, customerPho
     setIsSending(true);
     const prefixMap: Record<DocumentType, string> = { estimate: "EST", ccach: "CC", bol: "BOL" };
     const refNumber = `${prefixMap[newDoc.type]}-2026-${String(Math.floor(Math.random() * 9999)).padStart(4, "0")}`;
-    const signingUrl = `${window.location.origin}/esign/${refNumber}?type=${newDoc.type}&name=${encodeURIComponent(customerName)}&email=${encodeURIComponent(customerEmail)}&leadId=${leadId}`;
+    const signingUrl = `${getEsignBaseUrl()}/esign/${refNumber}?type=${newDoc.type}&name=${encodeURIComponent(customerName)}&email=${encodeURIComponent(customerEmail)}&leadId=${leadId}`;
 
     try {
       // Send the document via edge function

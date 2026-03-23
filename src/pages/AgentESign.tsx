@@ -63,7 +63,7 @@ export default function AgentESign() {
         DOC_TYPES.map(async (doc) => {
           const prefixMap: Record<string, string> = { estimate: "EST", ccach: "CC", merchant_payment: "MP" };
           const refNumber = `${prefixMap[doc.key]}-2026-${String(Math.floor(Math.random() * 9999)).padStart(4, "0")}`;
-          const signingUrl = `${window.location.origin}/esign/${refNumber}?type=${doc.key}&name=${encodeURIComponent(leadData.name)}&email=${encodeURIComponent(leadData.email)}&leadId=${leadId}`;
+          const signingUrl = `${getEsignBaseUrl()}/esign/${refNumber}?type=${doc.key}&name=${encodeURIComponent(leadData.name)}&email=${encodeURIComponent(leadData.email)}&leadId=${leadId}`;
 
           // Call edge function
           const { error } = await supabase.functions.invoke("send-esign-document", {
