@@ -321,15 +321,33 @@ export function DealQuickActions({ deal, activities, onActivityAdded }: DealQuic
             ))}
           </SelectContent>
         </Select>
+        <div className="flex gap-1">
+          <Button
+            size="sm"
+            variant={esignDelivery === "email" ? "default" : "outline"}
+            className="flex-1 gap-1 text-xs h-7"
+            onClick={() => setEsignDelivery("email")}
+          >
+            <Mail className="h-3 w-3" />Email
+          </Button>
+          <Button
+            size="sm"
+            variant={esignDelivery === "sms" ? "default" : "outline"}
+            className="flex-1 gap-1 text-xs h-7"
+            onClick={() => setEsignDelivery("sms")}
+          >
+            <MessageSquare className="h-3 w-3" />SMS
+          </Button>
+        </div>
         <Button
           size="sm"
           variant="outline"
           className="w-full gap-2 text-xs"
           onClick={handleSendEsign}
-          disabled={sendingEsign || !customerEmail}
+          disabled={sendingEsign || (esignDelivery === "email" ? !customerEmail : !lead?.phone)}
         >
           {sendingEsign ? <Loader2 className="h-3 w-3 animate-spin" /> : <Send className="h-3 w-3" />}
-          {sendingEsign ? "Sending..." : "Send for Signature"}
+          {sendingEsign ? "Sending..." : `Send via ${esignDelivery === "email" ? "Email" : "SMS"}`}
         </Button>
       </div>
     </div>
