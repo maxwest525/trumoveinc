@@ -27,6 +27,8 @@ export function CCACHDocumentWrapper({
         externalTypedName={typedName}
         onExternalTypedNameChange={onTypedNameChange}
         embedded
+        prefillEmail={customerEmail}
+        prefillPhone={customerPhone}
       />
       
       {/* Footer with Continue button */}
