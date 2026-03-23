@@ -36,6 +36,20 @@ export default function ESignViewPage() {
   });
   const [consentGiven, setConsentGiven] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [customerPhone, setCustomerPhone] = useState("");
+
+  // Fetch lead phone number if leadId is available
+  useEffect(() => {
+    if (!leadId) return;
+    supabase
+      .from("leads")
+      .select("phone")
+      .eq("id", leadId)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data?.phone) setCustomerPhone(data.phone);
+      });
+  }, [leadId]);
 
   const typedInitials = typedName
     .split(" ").filter(Boolean).map((w) => w[0]).join("").toUpperCase().slice(0, 3);
