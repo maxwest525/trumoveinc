@@ -24,6 +24,8 @@ interface ESignStatusCardProps {
   onPreview?: () => void;
   onDownload?: () => void;
   className?: string;
+  /** When true, hides Preview and Download PDF buttons */
+  isPublic?: boolean;
 }
 
 type DeliveryStatus = "pending" | "sent" | "delivered" | "opened" | "signed";
@@ -37,6 +39,7 @@ export function ESignStatusCard({
   onPreview,
   onDownload,
   className,
+  isPublic = false,
 }: ESignStatusCardProps) {
   const [deliveryStatus, setDeliveryStatus] = useState<DeliveryStatus>("pending");
   const [sentAt, setSentAt] = useState<Date | null>(null);
