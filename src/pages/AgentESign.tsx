@@ -27,6 +27,7 @@ export default function AgentESign() {
   const [leadData, setLeadData] = useState<{ name: string; email: string; phone: string } | null>(null);
   const [isSending, setIsSending] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [deliveryMethod, setDeliveryMethod] = useState<"email" | "sms" | "both">("email");
 
   useEffect(() => {
     if (!leadId) { setLoading(false); return; }
