@@ -112,6 +112,9 @@ const App = () => (
             <Route path="/site/track" element={<LiveTracking />} />
             <Route path="/site/customer-service" element={<CustomerService />} />
 
+            {/* ── Public e-sign route (customer clicks from email) ── */}
+            <Route path="/esign/:refNumber" element={<PublicESign />} />
+
             {/* ── CRM / Backend routes ─────────────────────────────── */}
             <Route path="/agent/dashboard" element={<AgentDashboard />} />
             <Route path="/admin/developer" element={<AdminDeveloper />} />
