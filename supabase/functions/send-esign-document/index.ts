@@ -112,9 +112,10 @@ const handler = async (req: Request): Promise<Response> => {
         errors.email = "Email address is required for email delivery";
       } else {
         try {
+          const templateName = TEMPLATE_MAP[documentType] || "esign-request";
           const { data, error } = await supabase.functions.invoke("send-transactional-email", {
             body: {
-              templateName: "esign-request",
+              templateName,
               recipientEmail: customerEmail,
               idempotencyKey: `esign-${refNumber}-${documentType}`,
               templateData: {
