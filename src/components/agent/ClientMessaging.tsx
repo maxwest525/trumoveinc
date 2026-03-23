@@ -196,7 +196,9 @@ export function ClientMessaging() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleSend = () => {
+  const [isSending, setIsSending] = useState(false);
+
+  const handleSend = async () => {
     if (!recipient) {
       toast.error("Please enter a recipient");
       return;
@@ -205,7 +207,54 @@ export function ClientMessaging() {
       toast.error("Please enter a message");
       return;
     }
-    toast.success(`${activeTab === "email" ? "Email" : "SMS"} sent successfully!`);
+    setIsSending(true);
+    try {
+      const channel = activeTab === "email" ? "email" : "sms";
+      const payload: Record<string, string> = {
+        channel,
+        to: recipient,
+        body: messageBody,
+      };
+      if (channel === "email") {
+        payload.subject = emailSubject || "Message from TruMove";
+        payload.customer_name = selectedLead ? `${selectedLead.first_name} ${selectedLead.last_name}` : "Valued Customer";
+      }
+
+      const { data, error } = await supabase.functions.invoke("send-customer-message", {
+        body: payload,
+      });
+
+      if (error) throw error;
+      if (data?.success === false) throw new Error(data.error || "Send failed");
+
+      // Log the message to customer_messages if we have a portal access record
+      if (selectedLead) {
+        const { data: portalAccess } = await supabase
+          .from("customer_portal_access")
+          .select("id")
+          .eq("lead_id", selectedLead.id)
+          .maybeSingle();
+
+        if (portalAccess) {
+          const { data: userData } = await supabase.auth.getUser();
+          await supabase.from("customer_messages").insert({
+            portal_access_id: portalAccess.id,
+            sender_id: userData.user?.id || null,
+            sender_type: "agent",
+            content: `[${channel.toUpperCase()}] ${messageBody}`,
+          });
+        }
+      }
+
+      toast.success(`${channel === "email" ? "Email" : "SMS"} sent successfully!`);
+      setMessageBody("");
+      if (channel === "email") setEmailSubject("");
+    } catch (err: any) {
+      console.error("Send failed:", err);
+      toast.error(`Failed to send ${activeTab}`, { description: err.message });
+    } finally {
+      setIsSending(false);
+    }
   };
 
   const selectedLead = leads.find((l) => l.id === selectedCustomer);
