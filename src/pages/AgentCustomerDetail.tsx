@@ -199,15 +199,15 @@ export default function AgentCustomerDetail() {
 
           {/* Main Tabs */}
           <Tabs defaultValue="overview" className="space-y-4">
-            <TabsList>
+            <TabsList className="w-full sm:w-auto overflow-x-auto">
               <TabsTrigger value="overview" className="gap-1.5 text-xs">
-                <User className="w-3.5 h-3.5" /> Customer
+                <User className="w-3.5 h-3.5" /> Overview
               </TabsTrigger>
               <TabsTrigger value="esign" className="gap-1.5 text-xs">
-                <FileText className="w-3.5 h-3.5" /> Send E-Signs
+                <FileText className="w-3.5 h-3.5" /> E-Signs
               </TabsTrigger>
               <TabsTrigger value="documents" className="gap-1.5 text-xs">
-                <FolderOpen className="w-3.5 h-3.5" /> Customer Docs
+                <FolderOpen className="w-3.5 h-3.5" /> Docs
               </TabsTrigger>
             </TabsList>
 
