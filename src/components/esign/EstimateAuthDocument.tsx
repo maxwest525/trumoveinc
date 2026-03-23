@@ -94,46 +94,46 @@ export function EstimateAuthDocument({
   };
 
   return (
-    <Card className="shadow-xl border border-border bg-white">
+    <Card className="shadow-xl border border-border bg-white overflow-hidden">
       <CardContent className="p-0">
         {/* Document Header */}
-        <div className="border-b border-foreground/10 px-10 py-6">
-          <div className="flex items-start justify-between">
-            <img src={logo} alt="TruMove" className="h-8 w-auto" />
-            <div className="text-right">
-              <div className="font-mono text-xs text-foreground font-semibold tracking-wide">{refNumber}</div>
+        <div className="border-b border-foreground/10 px-4 sm:px-6 lg:px-10 py-4 sm:py-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <img src={logo} alt="TruMove" className="h-7 sm:h-8 w-auto" />
+            <div className="text-left sm:text-right">
+              <div className="font-mono text-[11px] sm:text-xs text-foreground font-semibold tracking-wide break-all sm:break-normal">{refNumber}</div>
               <div className="text-[10px] text-muted-foreground mt-0.5">{today}</div>
             </div>
           </div>
 
-          <div className="mt-6 mb-2">
-            <h1 className="text-lg font-bold tracking-tight text-foreground">ESTIMATE CONSENT & AUTHORIZATION</h1>
-            <p className="text-[10px] text-muted-foreground uppercase tracking-[0.15em] mt-1">
+          <div className="mt-5 sm:mt-6 mb-2">
+            <h1 className="text-base sm:text-lg font-bold tracking-tight text-foreground leading-tight">ESTIMATE CONSENT & AUTHORIZATION</h1>
+            <p className="text-[10px] text-muted-foreground uppercase tracking-[0.12em] mt-1 leading-relaxed">
               TruMove LLC • FMCSA Licensed Broker • MC-XXXXXXX
             </p>
           </div>
         </div>
 
         {/* Document Body */}
-        <div className="px-10 py-6 space-y-6 text-sm leading-relaxed text-foreground">
+        <div className="px-4 sm:px-6 lg:px-10 py-4 sm:py-6 space-y-5 sm:space-y-6 text-[13px] sm:text-sm leading-6 sm:leading-relaxed text-foreground">
           {/* Section 1 */}
           <section>
-            <h2 className="font-bold text-xs text-foreground mb-2 uppercase tracking-wide">Section 1. Broker Disclosure</h2>
+            <h2 className="font-bold text-[11px] sm:text-xs text-foreground mb-2 uppercase tracking-wide">Section 1. Broker Disclosure</h2>
 
-            <div className="space-y-3 pl-4">
-              <p className="text-justify">
+            <div className="space-y-3 sm:space-y-3 pl-0 sm:pl-4">
+              <p>
                 <span className="font-semibold">1.1</span> TruMove LLC ("TruMove") is a federally licensed household goods
                 transportation broker (FMCSA Broker License MC-XXXXXXX) and is not a motor carrier. TruMove arranges
                 transportation services through independent, federally licensed and insured motor carriers and does not perform
                 the physical transportation of goods.
               </p>
 
-              <p className="text-justify">
+              <p>
                 <span className="font-semibold">1.2</span> The performing motor carrier shall issue the bill of lading and assume
                 full responsibility for transportation services rendered.
               </p>
 
-              <p className="text-justify">
+              <p>
                 I <InitialBox field="initial1" style={{ marginLeft: "2px", marginRight: "4px" }} /> acknowledge that TruMove LLC
                 operates as a broker, not a motor carrier, and that an independent carrier will perform the actual transportation
                 services.
@@ -143,29 +143,29 @@ export function EstimateAuthDocument({
 
           {/* Section 2 */}
           <section>
-            <h2 className="font-bold text-xs text-foreground mb-2 uppercase tracking-wide">Section 2. Estimate Terms</h2>
+            <h2 className="font-bold text-[11px] sm:text-xs text-foreground mb-2 uppercase tracking-wide">Section 2. Estimate Terms</h2>
 
-            <div className="space-y-3 pl-4">
-              <p className="text-justify">
+            <div className="space-y-3 sm:space-y-3 pl-0 sm:pl-4">
+              <p>
                 <span className="font-semibold">2.1</span> The pricing provided herein constitutes a <em>non-binding estimate</em>{" "}
                 unless expressly designated in writing as a binding estimate. This estimate is based on information provided by
                 the customer regarding shipment inventory, dwelling type, access conditions, mileage, and move date.
               </p>
 
-              <p className="text-justify">
+              <p>
                 <span className="font-semibold">2.2</span> The estimate is generated using TruMove's proprietary pricing engine,
                 which incorporates customer-provided shipment data, route variables, and historical pricing and weight data from
                 federally regulated household goods shipments as reported through the U.S. Department of Transportation and
                 FMCSA.
               </p>
 
-              <p className="text-justify">
+              <p>
                 <span className="font-semibold">2.3</span> Final charges may increase or decrease based on: (a) actual certified
                 shipment weight; (b) services performed; (c) access conditions encountered; (d) items transported; and (e)
                 carrier tariffs and applicable federal regulations.
               </p>
 
-              <p className="text-justify">
+              <p>
                 I understand that this is a non-binding estimate{" "}
                 <InitialBox field="initial2" style={{ marginLeft: "4px", marginRight: "2px" }} /> and that final charges may
                 differ based on actual shipment weight, services rendered, and conditions encountered.
@@ -175,23 +175,23 @@ export function EstimateAuthDocument({
 
           {/* Section 3 */}
           <section>
-            <h2 className="font-bold text-xs text-foreground mb-2 uppercase tracking-wide">
+            <h2 className="font-bold text-[11px] sm:text-xs text-foreground mb-2 uppercase tracking-wide">
               Section 3. Additional Services & Charges
             </h2>
 
-            <div className="space-y-3 pl-4">
-              <p className="text-justify">
+            <div className="space-y-3 sm:space-y-3 pl-0 sm:pl-4">
+              <p>
                 <span className="font-semibold">3.1</span> Additional services not included in this estimate may result in
                 supplemental charges. Such services include, but are not limited to: stair carries, elevator usage, long carries
                 (&gt;75 ft), shuttle services, packing materials, specialty item handling, storage, and waiting time.
               </p>
 
-              <p className="text-justify">
+              <p>
                 <span className="font-semibold">3.2</span> Customer acknowledges that charges for additional services shall be
                 disclosed prior to performance and added to the final invoice per carrier tariff.
               </p>
 
-              <p className="text-justify">
+              <p>
                 I acknowledge that additional services{" "}
                 <InitialBox field="initial3" style={{ marginLeft: "4px", marginRight: "2px" }} /> may result in charges beyond
                 this estimate, and that I will be informed of such charges prior to service.
@@ -200,17 +200,16 @@ export function EstimateAuthDocument({
           </section>
 
           {/* Signature Section */}
-          <section className="border-t border-foreground/10 pt-6 mt-8">
-            <h2 className="font-bold text-xs text-foreground mb-4 uppercase tracking-wide">Section 4. Customer Signature</h2>
+          <section className="border-t border-foreground/10 pt-5 sm:pt-6 mt-6 sm:mt-8">
+            <h2 className="font-bold text-[11px] sm:text-xs text-foreground mb-4 uppercase tracking-wide">Section 4. Customer Signature</h2>
 
             <div className="space-y-4">
-              <p className="text-justify">
+              <p>
                 By signing below, I acknowledge that I have read, understand, and agree to the terms and conditions set forth in
                 this Estimate Authorization. I understand that TruMove LLC acts as a broker and that an independent motor carrier
                 will perform the transportation services.
               </p>
 
-              {/* Electronic Consent - above signature */}
               {onConsentChange && (
                 <ESignConsentBanner
                   consentGiven={consentGiven}
@@ -219,23 +218,23 @@ export function EstimateAuthDocument({
                 />
               )}
 
-              <div className="flex items-end gap-8 mt-6">
-                <div className="flex-1">
+              <div className="flex flex-col sm:flex-row sm:items-end gap-4 sm:gap-8 mt-6">
+                <div className="flex-1 min-w-0">
                   <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">Customer Signature</p>
                   <div
                     className={`
-                    border-b-2 border-foreground/30 pb-1 min-h-[2rem] flex items-end
+                    border-b-2 border-foreground/30 pb-1 min-h-[2.5rem] flex items-end
                     ${signatures.signature ? "" : "cursor-pointer hover:border-foreground/50"}
                   `}
                     onClick={() => canSign && !signatures.signature && onSign("signature")}
                   >
                     {signatures.signature ? (
-                      <span className="text-2xl text-foreground" style={{ fontFamily: "'Dancing Script', cursive" }}>
+                      <span className="text-xl sm:text-2xl text-foreground break-words" style={{ fontFamily: "'Dancing Script', cursive" }}>
                         {typedName}
                       </span>
                     ) : currentField === "signature" && canSign ? (
                       <span
-                        className="text-xs font-bold uppercase tracking-wide px-3 py-1 border-2 rounded"
+                        className="text-[11px] font-bold uppercase tracking-wide px-3 py-1 border-2 rounded"
                         style={{ borderColor: "#d97706", backgroundColor: "#fef3c7", color: "#b45309" }}
                       >
                         SIGN HERE
@@ -246,15 +245,14 @@ export function EstimateAuthDocument({
                   </div>
                 </div>
 
-                <div className="w-40">
+                <div className="w-full sm:w-40">
                   <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">Date</p>
-                  <div className="border-b-2 border-foreground/30 pb-1 min-h-[2rem] flex items-end">
+                  <div className="border-b-2 border-foreground/30 pb-1 min-h-[2.5rem] flex items-end">
                     <span className="text-sm text-foreground">{today}</span>
                   </div>
                 </div>
               </div>
 
-              {/* Disclaimer below signature */}
               <p className="text-[10px] text-muted-foreground leading-relaxed mt-4">
                 Your IP address, browser, and timestamp will be recorded for compliance. This document is legally binding upon submission.
               </p>
@@ -262,14 +260,13 @@ export function EstimateAuthDocument({
           </section>
 
           {/* Footer Actions */}
-          <div className="flex items-center justify-end pt-4 border-t border-muted">
-
-            <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-end gap-3 pt-4 border-t border-muted">
+            <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
               {!isSubmitted ? (
                 <Button
                   onClick={onSubmit}
                   disabled={!allSigned}
-                  className="gap-2"
+                  className="gap-2 w-full sm:w-auto"
                   variant={allSigned ? "default" : "outline"}
                 >
                   {allSigned ? (
@@ -288,7 +285,7 @@ export function EstimateAuthDocument({
                     Submitted
                   </div>
                   {onContinueToNext && (
-                    <Button onClick={onContinueToNext} className="gap-2">
+                    <Button onClick={onContinueToNext} className="gap-2 w-full sm:w-auto">
                       Continue to Next Document
                       <ArrowRight className="h-4 w-4" />
                     </Button>
