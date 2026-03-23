@@ -15,6 +15,7 @@ import { template as ccachAuthorization } from './ccach-authorization.tsx'
 import { template as supportTicketNotification } from './support-ticket-notification.tsx'
 import { template as keywordAlert } from './keyword-alert.tsx'
 import { template as dailyDigest } from './daily-digest.tsx'
+import { template as customerMessage } from './customer-message.tsx'
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'esign-request': esignRequest,
@@ -23,4 +24,5 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'support-ticket-notification': supportTicketNotification,
   'keyword-alert': keywordAlert,
   'daily-digest': dailyDigest,
+  'customer-message': customerMessage,
 }
