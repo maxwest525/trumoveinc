@@ -133,12 +133,29 @@ serve(async (req) => {
       );
     }
 
-    // ── SMS (placeholder) ──
+    // ── SMS via ClickSend ──
     if (channel === "sms") {
       if (!body.phone_number) throw new Error("phone_number is required");
-      console.log(`SMS alert would be sent to ${body.phone_number}: keyword "${keyword}" by ${agentLabel}`);
+      const CLICKSEND_USERNAME = Deno.env.get("CLICKSEND_USERNAME");
+      if (!CLICKSEND_USERNAME) throw new Error("CLICKSEND_USERNAME is not configured");
+      const CLICKSEND_API_KEY = Deno.env.get("CLICKSEND_API_KEY");
+      if (!CLICKSEND_API_KEY) throw new Error("CLICKSEND_API_KEY is not configured");
+
+      const digits = body.phone_number.replace(/\D/g, "");
+      const normalizedPhone = digits.startsWith("1") && digits.length === 11 ? `+${digits}` : digits.length === 10 ? `+1${digits}` : body.phone_number.startsWith("+") ? body.phone_number : `+${digits}`;
+
+      const smsBody = `🚨 Keyword Alert: "${keyword}" detected — Agent: ${agentLabel}. Context: ${context.slice(0, 120)}`;
+      const basicAuth = btoa(`${CLICKSEND_USERNAME}:${CLICKSEND_API_KEY}`);
+
+      const resp = await fetch("https://rest.clicksend.com/v3/sms/send", {
+        method: "POST",
+        headers: { "Authorization": `Basic ${basicAuth}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: [{ to: normalizedPhone, body: smsBody, source: "trumove-pulse" }] }),
+      });
+      const data = await resp.json();
+      if (!resp.ok) throw new Error(`ClickSend SMS failed [${resp.status}]: ${JSON.stringify(data)}`);
       return new Response(
-        JSON.stringify({ success: true, note: "SMS channel logged (no SMS provider configured yet)" }),
+        JSON.stringify({ success: true, status: resp.status }),
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
