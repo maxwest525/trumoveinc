@@ -123,7 +123,8 @@ export default function PublicESign() {
 
   return (
     <SiteShell hideHeader hideTrustStrip>
-        <div className="min-h-screen bg-muted/30 py-8 px-4">
+      <div className="min-h-screen bg-muted/30 py-8 px-4">
+        <div className="max-w-[1200px] mx-auto">
           <div className="text-center mb-8">
             <h1 className="text-2xl font-bold text-foreground">Document Signing</h1>
             <p className="text-muted-foreground mt-1">
