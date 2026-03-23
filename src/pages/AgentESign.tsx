@@ -7,10 +7,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
   FileText, Send, Loader2, CheckCircle2, ArrowRight,
-  Mail, MessageSquare, Package
+  Mail, MessageSquare, Package, Phone
 } from "lucide-react";
 import { toast } from "sonner";
 import { getEsignBaseUrl } from "@/lib/esignUrl";
+import { Label } from "@/components/ui/label";
 
 const DOC_TYPES = [
   { key: "estimate", label: "Estimate Authorization", icon: FileText },
