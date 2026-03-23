@@ -225,35 +225,37 @@ export function ESignStatusCard({
           </div>
         )}
 
-        {/* Action Buttons */}
-        <div className="flex gap-2 pt-2">
-          <Button
-            variant="outline"
-            size="sm"
-            className="flex-1 h-8 gap-1.5 text-xs"
-            onClick={handlePreview}
-          >
-            <Eye className="w-3 h-3" />
-            Preview
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className={cn(
-              "flex-1 h-8 gap-1.5 text-xs",
-              isSigned && "border-foreground/20 hover:bg-foreground hover:text-background"
-            )}
-            onClick={handleDownload}
-            disabled={isDownloading}
-          >
-            {isDownloading ? (
-              <Loader2 className="w-3 h-3 animate-spin" />
-            ) : (
-              <Download className="w-3 h-3" />
-            )}
-            {isDownloading ? "..." : "Download PDF"}
-          </Button>
-        </div>
+        {/* Action Buttons — agent only */}
+        {!isPublic && (
+          <div className="flex gap-2 pt-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex-1 h-8 gap-1.5 text-xs"
+              onClick={handlePreview}
+            >
+              <Eye className="w-3 h-3" />
+              Preview
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className={cn(
+                "flex-1 h-8 gap-1.5 text-xs",
+                isSigned && "border-foreground/20 hover:bg-foreground hover:text-background"
+              )}
+              onClick={handleDownload}
+              disabled={isDownloading}
+            >
+              {isDownloading ? (
+                <Loader2 className="w-3 h-3 animate-spin" />
+              ) : (
+                <Download className="w-3 h-3" />
+              )}
+              {isDownloading ? "..." : "Download PDF"}
+            </Button>
+          </div>
+        )}
 
         {/* Signed Success Message */}
         {isSigned && (

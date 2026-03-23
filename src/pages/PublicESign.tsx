@@ -123,16 +123,17 @@ export default function PublicESign() {
 
   return (
     <SiteShell hideHeader hideTrustStrip>
-      <div className="min-h-screen bg-muted/30 py-8 px-4">
+      <div className="min-h-screen bg-muted/30 py-6 md:py-8 px-3 md:px-4">
         <div className="max-w-[1200px] mx-auto">
-          <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold text-foreground">Document Signing</h1>
-            <p className="text-muted-foreground mt-1">
-              Please review and sign your documents below. Reference: {refNumber}
+          <div className="text-center mb-6 md:mb-8">
+            <h1 className="text-xl md:text-2xl font-bold text-foreground">Document Signing</h1>
+            <p className="text-muted-foreground mt-1 text-sm md:text-base">
+              Please review and sign your documents below.
             </p>
+            <p className="text-xs text-muted-foreground font-mono mt-1">Ref: {refNumber}</p>
           </div>
 
-          <div className="flex gap-6">
+          <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
             <ESignSidebar
               typedName={typedName}
               onTypedNameChange={setTypedName}
@@ -149,7 +150,7 @@ export default function PublicESign() {
               isPublic
             />
 
-            <div className="flex-1 max-w-[8.5in]">
+            <div className="flex-1 max-w-full lg:max-w-[8.5in]">
               {activeDocument === "estimate" ? (
                 <EstimateAuthDocument
                   typedName={typedName}

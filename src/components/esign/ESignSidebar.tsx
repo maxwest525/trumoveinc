@@ -174,6 +174,7 @@ export function ESignSidebar({
         recipientName={typedName}
         isSigned={allSigned}
         refNumber={refNumber}
+        isPublic={isPublic}
       />
     </div>
   );
