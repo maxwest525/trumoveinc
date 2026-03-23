@@ -50,8 +50,14 @@ export default function AgentESign() {
 
   const handleSendToClient = async () => {
     if (!leadData) return;
-    if (!leadData.email && !leadData.phone) {
-      toast.error("Customer has no email or phone number on file");
+
+    // Validate based on selected method
+    if ((deliveryMethod === "email" || deliveryMethod === "both") && !leadData.email) {
+      toast.error("Customer has no email on file");
+      return;
+    }
+    if ((deliveryMethod === "sms" || deliveryMethod === "both") && !leadData.phone) {
+      toast.error("Customer has no phone number on file");
       return;
     }
 
@@ -59,7 +65,6 @@ export default function AgentESign() {
 
     try {
       const { data: user } = await supabase.auth.getUser();
-      const deliveryMethod = leadData.email && leadData.phone ? "both" : leadData.email ? "email" : "sms";
 
       // Send all 3 document types
       const results = await Promise.all(
