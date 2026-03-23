@@ -487,70 +487,49 @@ export function CCACHAuthorizationForm({
                       </div>
 
                       {formData.paymentMethod === "card" ? (
-                        <>
-                          <div>
-                            <label className="text-[10px] text-muted-foreground uppercase tracking-wide block mb-1">Card Number</label>
-                            <Input
-                              value={formData.cardNumber}
-                              onChange={(e) => setFormData({ ...formData, cardNumber: e.target.value })}
-                              placeholder="1234 5678 9012 3456"
-                              className="h-9 text-sm font-mono"
-                            />
+                        <div className="border border-foreground/10 rounded-lg p-4 bg-muted/5 space-y-3">
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <Lock className="w-3.5 h-3.5" />
+                            <span>Card details are collected through our secure payment portal</span>
                           </div>
-                          <div className="grid grid-cols-2 gap-3">
-                            <div>
-                              <label className="text-[10px] text-muted-foreground uppercase tracking-wide block mb-1">Expiry</label>
-                              <Input
-                                value={formData.expiry}
-                                onChange={(e) => setFormData({ ...formData, expiry: e.target.value })}
-                                placeholder="MM/YY"
-                                className="h-9 text-sm"
-                              />
-                            </div>
-                            <div>
-                              <label className="text-[10px] text-muted-foreground uppercase tracking-wide block mb-1">CVV</label>
-                              <Input
-                                type="password"
-                                value={formData.cvv}
-                                onChange={(e) => setFormData({ ...formData, cvv: e.target.value })}
-                                placeholder="•••"
-                                className="h-9 text-sm"
-                              />
-                            </div>
-                          </div>
-                        </>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            className="w-full gap-2 h-10 border-foreground/20 hover:bg-foreground hover:text-background transition-all"
+                            onClick={() => {
+                              toast.info("Secure payment portal will open after document submission");
+                            }}
+                          >
+                            <Shield className="w-4 h-4" />
+                            Open Secure Payment Portal
+                          </Button>
+                          <p className="text-[10px] text-muted-foreground text-center leading-relaxed">
+                            For your protection, please do not share card details over phone, email, or chat.
+                            All payment information is entered directly into our PCI-compliant secure portal.
+                          </p>
+                        </div>
                       ) : (
-                        <>
-                          <div>
-                            <label className="text-[10px] text-muted-foreground uppercase tracking-wide block mb-1">Bank Name</label>
-                            <Input
-                              value={formData.bankName}
-                              onChange={(e) => setFormData({ ...formData, bankName: e.target.value })}
-                              placeholder="Bank name"
-                              className="h-9 text-sm"
-                            />
+                        <div className="border border-foreground/10 rounded-lg p-4 bg-muted/5 space-y-3">
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <Lock className="w-3.5 h-3.5" />
+                            <span>Bank details are collected through our secure payment portal</span>
                           </div>
-                          <div className="grid grid-cols-2 gap-3">
-                            <div>
-                              <label className="text-[10px] text-muted-foreground uppercase tracking-wide block mb-1">Routing #</label>
-                              <Input
-                                value={formData.routingNumber}
-                                onChange={(e) => setFormData({ ...formData, routingNumber: e.target.value })}
-                                placeholder="9 digits"
-                                className="h-9 text-sm font-mono"
-                              />
-                            </div>
-                            <div>
-                              <label className="text-[10px] text-muted-foreground uppercase tracking-wide block mb-1">Account #</label>
-                              <Input
-                                value={formData.accountNumber}
-                                onChange={(e) => setFormData({ ...formData, accountNumber: e.target.value })}
-                                placeholder="Account number"
-                                className="h-9 text-sm font-mono"
-                              />
-                            </div>
-                          </div>
-                        </>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            className="w-full gap-2 h-10 border-foreground/20 hover:bg-foreground hover:text-background transition-all"
+                            onClick={() => {
+                              toast.info("Secure payment portal will open after document submission");
+                            }}
+                          >
+                            <Building className="w-4 h-4" />
+                            Open Secure Payment Portal
+                          </Button>
+                          <p className="text-[10px] text-muted-foreground text-center leading-relaxed">
+                            For your protection, please do not share bank details over phone, email, or chat.
+                            All payment information is entered directly into our PCI-compliant secure portal.
+                          </p>
+                        </div>
                       )}
                     </div>
                   </div>
