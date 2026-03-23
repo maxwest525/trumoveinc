@@ -26,6 +26,8 @@ export function CCACHAuthorizationForm({
   externalTypedName, 
   onExternalTypedNameChange,
   embedded = false,
+  prefillEmail,
+  prefillPhone,
 }: CCACHAuthorizationFormProps = {}) {
   useEffect(() => { window.scrollTo(0, 0); }, []);
   
