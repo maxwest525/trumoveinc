@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import AgentShell from "@/components/layout/AgentShell";
 import { ESignSidebar } from "@/components/esign/ESignSidebar";
