@@ -31,6 +31,7 @@ export function CCACHDocumentWrapper({
         embedded
         prefillEmail={customerEmail}
         prefillPhone={customerPhone}
+        prefillAddress={customerAddress}
       />
       
       {/* Footer with Continue button */}
