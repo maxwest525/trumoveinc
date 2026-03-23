@@ -37,17 +37,19 @@ export default function ESignViewPage() {
   const [consentGiven, setConsentGiven] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const [customerPhone, setCustomerPhone] = useState("");
+  const [customerAddress, setCustomerAddress] = useState("");
 
-  // Fetch lead phone number if leadId is available
+  // Fetch lead phone and address if leadId is available
   useEffect(() => {
     if (!leadId) return;
     supabase
       .from("leads")
-      .select("phone")
+      .select("phone, origin_address")
       .eq("id", leadId)
       .maybeSingle()
       .then(({ data }) => {
         if (data?.phone) setCustomerPhone(data.phone);
+        if (data?.origin_address) setCustomerAddress(data.origin_address);
       });
   }, [leadId]);
 
