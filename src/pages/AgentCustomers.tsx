@@ -220,8 +220,8 @@ export default function AgentCustomers() {
   return (
     <AgentShell breadcrumb=" / My Customers">
       {() => (
-      <div className="p-6 max-w-4xl mx-auto space-y-4">
-        <div className="flex items-center justify-between">
+      <div className="p-4 sm:p-6 max-w-4xl mx-auto space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
             <h1 className="text-xl font-bold flex items-center gap-2">
               <Users className="w-5 h-5" />
@@ -229,13 +229,13 @@ export default function AgentCustomers() {
             </h1>
             <p className="text-sm text-muted-foreground">{customers.length} total • {activeCustomers.length} active</p>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="relative w-64">
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <div className="relative flex-1 sm:w-56 sm:flex-none">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search customers..." className="pl-9" />
             </div>
-            <Button size="sm" className="gap-1.5" onClick={() => navigate("/agent/new-customer")}>
-              <Users className="w-3.5 h-3.5" /> New Lead
+            <Button size="sm" className="gap-1.5 shrink-0" onClick={() => navigate("/agent/new-customer")}>
+              <Users className="w-3.5 h-3.5" /> <span className="hidden sm:inline">New Lead</span><span className="sm:hidden">+</span>
             </Button>
           </div>
         </div>
