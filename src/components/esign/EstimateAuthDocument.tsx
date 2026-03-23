@@ -94,7 +94,7 @@ export function EstimateAuthDocument({
   };
 
   return (
-    <Card className="shadow-xl border border-border bg-white overflow-hidden">
+    <Card className="shadow-xl border border-border bg-white overflow-hidden max-w-full">
       <CardContent className="p-0">
         {/* Document Header */}
         <div className="border-b border-foreground/10 px-4 sm:px-6 lg:px-10 py-4 sm:py-6">
