@@ -27,7 +27,7 @@ const DOCUMENT_LABELS: Record<string, string> = {
 // Map document types to their transactional email template names
 const TEMPLATE_MAP: Record<string, string> = {
   estimate: "esign-request",
-  ccach: "ccach-authorization",
+  ccach: "esign-request",
   merchant_payment: "esign-request",
 };
 
