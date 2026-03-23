@@ -26,6 +26,8 @@ interface ESignSidebarProps {
   allSigned?: boolean;
   recipientEmail?: string;
   refNumber?: string;
+  /** When true, hides agent-only tools (Send SMS/Email, Verbal Verification, Import) */
+  isPublic?: boolean;
 }
 
 export function ESignSidebar({
