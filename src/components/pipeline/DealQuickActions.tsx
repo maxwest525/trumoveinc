@@ -228,8 +228,12 @@ export function DealQuickActions({ deal, activities, onActivityAdded }: DealQuic
   };
 
   const handleSendEsign = async () => {
-    if (!customerEmail) {
+    if (esignDelivery === "email" && !customerEmail) {
       toast({ title: "No email on file", description: "Add an email to this lead first.", variant: "destructive" });
+      return;
+    }
+    if (esignDelivery === "sms" && !lead?.phone) {
+      toast({ title: "No phone on file", description: "Add a phone number to this lead first.", variant: "destructive" });
       return;
     }
 
