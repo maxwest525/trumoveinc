@@ -14,9 +14,22 @@ import {
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
+import {
+  Kanban,
+  Ticket,
+  Bell,
+  Info,
+  X,
+  CheckCheck,
+  ExternalLink,
+  ShieldAlert,
+} from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
+
 const typeConfig: Record<string, { icon: typeof Bell; color: string; label: string }> = {
   deal_update: { icon: Kanban, color: "text-blue-500", label: "Deal" },
   ticket_assignment: { icon: Ticket, color: "text-amber-500", label: "Ticket" },
+  pulse_coaching: { icon: ShieldAlert, color: "text-red-500", label: "Pulse" },
   system: { icon: Info, color: "text-primary", label: "System" },
   info: { icon: Bell, color: "text-muted-foreground", label: "Info" },
 };

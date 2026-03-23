@@ -27,14 +27,53 @@ export function useNotifications() {
       return;
     }
 
-    const { data } = await supabase
+    // Fetch standard notifications
+    const { data: notifData } = await supabase
       .from("notifications" as any)
       .select("*")
       .eq("user_id", session.user.id)
       .order("created_at", { ascending: false })
       .limit(50);
 
-    setNotifications((data as any as Notification[]) || []);
+    const stdNotifs = ((notifData as any as Notification[]) || []);
+
+    // Fetch pulse manager messages for this agent
+    const { data: profileData } = await supabase
+      .from("profiles")
+      .select("display_name")
+      .eq("id", session.user.id)
+      .single();
+
+    let pulseNotifs: Notification[] = [];
+    if (profileData?.display_name) {
+      const { data: pulseMessages } = await supabase
+        .from("pulse_agent_messages")
+        .select("*")
+        .eq("agent_name", profileData.display_name)
+        .order("created_at", { ascending: false })
+        .limit(20);
+
+      if (pulseMessages) {
+        pulseNotifs = (pulseMessages as any[]).map((m) => ({
+          id: `pulse-${m.id}`,
+          user_id: session.user.id,
+          type: "pulse_coaching",
+          title: "Pulse: Manager Coaching",
+          message: m.message,
+          is_read: m.read,
+          link: "/agent/pulse",
+          metadata: { call_id: m.call_id },
+          created_at: m.created_at,
+        }));
+      }
+    }
+
+    // Merge and sort by date
+    const all = [...stdNotifs, ...pulseNotifs].sort(
+      (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    ).slice(0, 50);
+
+    setNotifications(all);
     setLoading(false);
   }, []);
 
@@ -42,10 +81,18 @@ export function useNotifications() {
     setNotifications((prev) =>
       prev.map((n) => (n.id === id ? { ...n, is_read: true } : n))
     );
-    await supabase
-      .from("notifications" as any)
-      .update({ is_read: true } as any)
-      .eq("id", id);
+    if (id.startsWith("pulse-")) {
+      const realId = id.replace("pulse-", "");
+      await supabase
+        .from("pulse_agent_messages")
+        .update({ read: true })
+        .eq("id", realId);
+    } else {
+      await supabase
+        .from("notifications" as any)
+        .update({ is_read: true } as any)
+        .eq("id", id);
+    }
   }, []);
 
   const markAllAsRead = useCallback(async () => {
@@ -53,16 +100,35 @@ export function useNotifications() {
     if (!session?.user) return;
 
     setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
+
+    // Mark standard notifications
     await supabase
       .from("notifications" as any)
       .update({ is_read: true } as any)
       .eq("user_id", session.user.id)
       .eq("is_read", false);
+
+    // Mark pulse messages
+    const { data: profileData } = await supabase
+      .from("profiles")
+      .select("display_name")
+      .eq("id", session.user.id)
+      .single();
+
+    if (profileData?.display_name) {
+      await supabase
+        .from("pulse_agent_messages")
+        .update({ read: true })
+        .eq("agent_name", profileData.display_name)
+        .eq("read", false);
+    }
   }, []);
 
   const deleteNotification = useCallback(async (id: string) => {
     setNotifications((prev) => prev.filter((n) => n.id !== id));
-    await supabase.from("notifications" as any).delete().eq("id", id);
+    if (!id.startsWith("pulse-")) {
+      await supabase.from("notifications" as any).delete().eq("id", id);
+    }
   }, []);
 
   useEffect(() => {
@@ -73,6 +139,11 @@ export function useNotifications() {
       .on(
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "notifications" },
+        () => fetchNotifications()
+      )
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "pulse_agent_messages" },
         () => fetchNotifications()
       )
       .subscribe();
