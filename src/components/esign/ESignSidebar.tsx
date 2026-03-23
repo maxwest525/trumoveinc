@@ -104,10 +104,12 @@ export function ESignSidebar({
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <label className="text-xs text-muted-foreground uppercase tracking-wide font-medium">Your Full Legal Name</label>
-              <Button onClick={() => setShowClientSearch(true)} variant="ghost" size="sm" className="h-6 px-2 text-[10px] gap-1">
-                <UserPlus className="w-3 h-3" />
-                Import
-              </Button>
+              {!isPublic && (
+                <Button onClick={() => setShowClientSearch(true)} variant="ghost" size="sm" className="h-6 px-2 text-[10px] gap-1">
+                  <UserPlus className="w-3 h-3" />
+                  Import
+                </Button>
+              )}
             </div>
             <Input
               placeholder="e.g. John Smith"
