@@ -55,7 +55,7 @@ export function ESignSidebar({
   };
 
   return (
-    <div className={cn("space-y-4", isPublic ? "w-full lg:w-72 flex-shrink-0" : "w-72 flex-shrink-0")}>
+    <div className="w-full lg:w-72 flex-shrink-0 space-y-4">
       <ClientSearchModal
         open={showClientSearch}
         onClose={() => setShowClientSearch(false)}
