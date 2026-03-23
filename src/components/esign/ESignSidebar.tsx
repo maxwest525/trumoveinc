@@ -26,6 +26,8 @@ interface ESignSidebarProps {
   allSigned?: boolean;
   recipientEmail?: string;
   refNumber?: string;
+  /** When true, hides agent-only tools (Send SMS/Email, Verbal Verification, Import) */
+  isPublic?: boolean;
 }
 
 export function ESignSidebar({
@@ -43,6 +45,7 @@ export function ESignSidebar({
   allSigned = false,
   recipientEmail,
   refNumber = "DOC-2026-0001",
+  isPublic = false,
 }: ESignSidebarProps) {
   const [showClientSearch, setShowClientSearch] = useState(false);
 
@@ -58,38 +61,42 @@ export function ESignSidebar({
         onSelect={handleClientSelect}
       />
 
-      {/* E-Sign Send Buttons */}
-      <div className="flex gap-2">
-        <Button
-          variant="outline"
-          size="sm"
-          className="flex-1 h-10 gap-2 border-foreground/20 hover:bg-foreground hover:text-background transition-all group"
-          onClick={() => toast.success("SMS sent with e-sign link")}
-        >
-          <Send className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
-          <span className="text-xs font-medium">Send SMS</span>
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          className="flex-1 h-10 gap-2 border-foreground/20 hover:bg-foreground hover:text-background transition-all group"
-          onClick={() => toast.success("Email sent with e-sign link")}
-        >
-          <Mail className="h-4 w-4 group-hover:translate-y-[-1px] transition-transform" />
-          <span className="text-xs font-medium">Send Email</span>
-        </Button>
-      </div>
+      {/* E-Sign Send Buttons — agent only */}
+      {!isPublic && (
+        <>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex-1 h-10 gap-2 border-foreground/20 hover:bg-foreground hover:text-background transition-all group"
+              onClick={() => toast.success("SMS sent with e-sign link")}
+            >
+              <Send className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
+              <span className="text-xs font-medium">Send SMS</span>
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex-1 h-10 gap-2 border-foreground/20 hover:bg-foreground hover:text-background transition-all group"
+              onClick={() => toast.success("Email sent with e-sign link")}
+            >
+              <Mail className="h-4 w-4 group-hover:translate-y-[-1px] transition-transform" />
+              <span className="text-xs font-medium">Send Email</span>
+            </Button>
+          </div>
 
-      {/* Verbal Verification Button */}
-      <Button
-        variant="outline"
-        size="sm"
-        className="w-full h-10 gap-2 border-foreground/20 hover:bg-foreground hover:text-background transition-all group"
-        onClick={() => toast.success("Verbal verification recorded")}
-      >
-        <Phone className="h-4 w-4 group-hover:scale-110 transition-transform" />
-        <span className="text-xs font-medium">Verbal Verification</span>
-      </Button>
+          {/* Verbal Verification Button */}
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full h-10 gap-2 border-foreground/20 hover:bg-foreground hover:text-background transition-all group"
+            onClick={() => toast.success("Verbal verification recorded")}
+          >
+            <Phone className="h-4 w-4 group-hover:scale-110 transition-transform" />
+            <span className="text-xs font-medium">Verbal Verification</span>
+          </Button>
+        </>
+      )}
 
       {/* Customer Name Card */}
       <Card className="border border-border bg-background shadow-sm">
@@ -97,10 +104,12 @@ export function ESignSidebar({
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <label className="text-xs text-muted-foreground uppercase tracking-wide font-medium">Your Full Legal Name</label>
-              <Button onClick={() => setShowClientSearch(true)} variant="ghost" size="sm" className="h-6 px-2 text-[10px] gap-1">
-                <UserPlus className="w-3 h-3" />
-                Import
-              </Button>
+              {!isPublic && (
+                <Button onClick={() => setShowClientSearch(true)} variant="ghost" size="sm" className="h-6 px-2 text-[10px] gap-1">
+                  <UserPlus className="w-3 h-3" />
+                  Import
+                </Button>
+              )}
             </div>
             <Input
               placeholder="e.g. John Smith"

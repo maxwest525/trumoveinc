@@ -146,6 +146,7 @@ export default function PublicESign() {
               refNumber={refNumber}
               onDownloadPdf={handleDownloadPdf}
               isDownloading={isDownloading}
+              isPublic
             />
 
             <div className="flex-1 max-w-[8.5in]">
