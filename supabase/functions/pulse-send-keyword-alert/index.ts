@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -55,45 +56,37 @@ serve(async (req) => {
       );
     }
 
-    // ── Email via Resend ──
+    // ── Email via built-in transactional system ──
     if (channel === "email") {
-      const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
-      if (!RESEND_API_KEY) throw new Error("RESEND_API_KEY is not configured");
       if (!body.to_email) throw new Error("to_email is required");
 
       const recipients = body.to_email.split(',').map((e: string) => e.trim()).filter(Boolean);
       if (!recipients.length) throw new Error("No valid email addresses provided");
 
-      const { Resend } = await import("npm:resend@4.0.0");
-      const resend = new Resend(RESEND_API_KEY);
+      const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
+      const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+      const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-      const { error } = await resend.emails.send({
-        from: "PulseAI Compliance <onboarding@resend.dev>",
-        to: recipients,
-        subject: `🚨 Keyword Alert: "${keyword}" — Agent: ${agentLabel}`,
-        html: `
-          <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-            <h2 style="color: #dc2626;">🚨 Keyword Detected</h2>
-            <table style="width: 100%; border-collapse: collapse; margin: 16px 0;">
-              <tr><td style="padding: 8px; font-weight: bold; color: #666;">Agent</td><td style="padding: 8px; font-weight: bold;">${agentLabel}</td></tr>
-              <tr><td style="padding: 8px; font-weight: bold; color: #666;">Keyword</td><td style="padding: 8px;">${keyword}</td></tr>
-              <tr><td style="padding: 8px; font-weight: bold; color: #666;">Matched Text</td><td style="padding: 8px;"><code>${matched}</code></td></tr>
-              <tr><td style="padding: 8px; font-weight: bold; color: #666;">Time</td><td style="padding: 8px;">${timestamp}</td></tr>
-            </table>
-            <div style="background: #f4f4f5; padding: 12px; border-radius: 8px; margin: 16px 0;">
-              <p style="margin: 0; font-size: 13px; color: #666;">Context</p>
-              <p style="margin: 4px 0 0; font-size: 14px;">${context}</p>
-            </div>
-          </div>
-        `,
+      // Send to first recipient (transactional = 1:1)
+      const { error } = await supabase.functions.invoke("send-transactional-email", {
+        body: {
+          templateName: "keyword-alert",
+          recipientEmail: recipients[0],
+          idempotencyKey: `keyword-alert-${keyword}-${Date.now()}`,
+          templateData: {
+            keyword,
+            matched,
+            context,
+            timestamp,
+            agentName: agentLabel,
+          },
+        },
       });
 
       if (error) {
-        const errMsg = JSON.stringify(error);
-        const isDomainError = errMsg.includes('validation_error') && errMsg.includes('verify a domain');
         return new Response(
-          JSON.stringify({ success: false, error: `Resend error: ${errMsg}`, hint: isDomainError ? 'Your Resend account is in sandbox mode.' : undefined }),
-          { status: isDomainError ? 422 : 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          JSON.stringify({ success: false, error: `Email send failed: ${error.message}` }),
+          { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
       return new Response(
