@@ -213,7 +213,9 @@ export default function AgentESign() {
                   </div>
                   <div className="flex-1">
                     <p className="text-sm font-medium">{doc.label}</p>
-                    <p className="text-xs text-muted-foreground">Will be sent via {leadData.email && leadData.phone ? "email & SMS" : leadData.email ? "email" : "SMS"}</p>
+                    <p className="text-xs text-muted-foreground">
+                      Will be sent via {deliveryMethod === "both" ? "email & SMS" : deliveryMethod === "email" ? "email" : "SMS"}
+                    </p>
                   </div>
                   <Badge variant="outline" className="text-[10px]">Ready</Badge>
                 </div>
@@ -222,10 +224,51 @@ export default function AgentESign() {
           </CardContent>
         </Card>
 
+        {/* Delivery Method Selector */}
+        <Card>
+          <CardContent className="p-4 space-y-3">
+            <Label className="text-xs uppercase tracking-wide text-muted-foreground font-medium">Delivery Method</Label>
+            <div className="flex gap-2">
+              <Button
+                variant={deliveryMethod === "email" ? "default" : "outline"}
+                size="sm"
+                className="flex-1 gap-2"
+                onClick={() => setDeliveryMethod("email")}
+                disabled={!leadData.email}
+              >
+                <Mail className="w-4 h-4" />
+                Email
+              </Button>
+              <Button
+                variant={deliveryMethod === "sms" ? "default" : "outline"}
+                size="sm"
+                className="flex-1 gap-2"
+                onClick={() => setDeliveryMethod("sms")}
+                disabled={!leadData.phone}
+              >
+                <Phone className="w-4 h-4" />
+                SMS
+              </Button>
+              <Button
+                variant={deliveryMethod === "both" ? "default" : "outline"}
+                size="sm"
+                className="flex-1 gap-2"
+                onClick={() => setDeliveryMethod("both")}
+                disabled={!leadData.email || !leadData.phone}
+              >
+                <Send className="w-4 h-4" />
+                Both
+              </Button>
+            </div>
+            {!leadData.email && <p className="text-[11px] text-destructive">No email on file — email unavailable</p>}
+            {!leadData.phone && <p className="text-[11px] text-destructive">No phone on file — SMS unavailable</p>}
+          </CardContent>
+        </Card>
+
         {/* Send button */}
         <Button className="w-full gap-2 h-12 text-base" onClick={handleSendToClient} disabled={isSending}>
           {isSending ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
-          {isSending ? "Sending All Documents..." : "Send to Client"}
+          {isSending ? "Sending All Documents..." : `Send via ${deliveryMethod === "both" ? "Email & SMS" : deliveryMethod === "email" ? "Email" : "SMS"}`}
         </Button>
 
         <p className="text-xs text-center text-muted-foreground">
