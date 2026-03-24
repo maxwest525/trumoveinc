@@ -15,6 +15,7 @@ import {
 import { DialerProvider } from "@/components/dialer/dialerProvider";
 import { AgentESignTab } from "@/components/agent/AgentESignTab";
 import { CustomerDocumentsTab } from "@/components/agent/CustomerDocumentsTab";
+import { CustomerCommunicationTab } from "@/components/agent/CustomerCommunicationTab";
 
 interface Lead {
   id: string;
