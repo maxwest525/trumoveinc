@@ -200,7 +200,7 @@ export default function AgentCustomerDetail() {
           </div>
 
           {/* Main Tabs */}
-          <Tabs defaultValue="overview" className="space-y-4">
+          <Tabs defaultValue={defaultTab} className="space-y-4">
             <TabsList className="w-full sm:w-auto overflow-x-auto">
               <TabsTrigger value="overview" className="gap-1.5 text-xs">
                 <User className="w-3.5 h-3.5" /> Overview
