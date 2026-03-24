@@ -6,7 +6,8 @@ import { EstimateAuthDocument } from "@/components/esign/EstimateAuthDocument";
 import { CCACHDocumentWrapper } from "@/components/esign/CCACHDocumentWrapper";
 import { BOLDocumentWrapper } from "@/components/esign/BOLDocumentWrapper";
 import { ESignConsentBanner } from "@/components/esign/ESignConsentBanner";
-import type { DocumentType } from "@/components/esign/DocumentTabs";
+import { DocumentTabs, type DocumentType } from "@/components/esign/DocumentTabs";
+import { Card, CardContent } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
