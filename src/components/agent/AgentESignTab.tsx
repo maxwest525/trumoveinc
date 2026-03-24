@@ -200,10 +200,9 @@ export function AgentESignTab({ leadId, customerName, customerEmail, customerPho
       </Card>
 
       <Tabs defaultValue="send" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="send" className="gap-2"><Send className="w-4 h-4" />Send</TabsTrigger>
-          <TabsTrigger value="track" className="gap-2"><Eye className="w-4 h-4" />Track ({pendingDocs.length})</TabsTrigger>
-          <TabsTrigger value="completed" className="gap-2"><CheckCircle2 className="w-4 h-4" />Completed ({completedDocs.length})</TabsTrigger>
+          <TabsTrigger value="track" className="gap-2"><Eye className="w-4 h-4" />Pending ({pendingDocs.length})</TabsTrigger>
         </TabsList>
 
         {/* SEND TAB */}
