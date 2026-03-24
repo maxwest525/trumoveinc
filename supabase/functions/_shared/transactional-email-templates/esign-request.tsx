@@ -22,14 +22,12 @@ const ESignRequestEmail = ({ customerName, documentLabel, refNumber, signingUrl 
       <Container style={container}>
         {/* Logo Header */}
         <div style={logoBar}>
-          <Img src={LOGO_URL} alt="TruMove" width="140" height="auto" style={logoImg} />
+          <Heading style={brandName}>{SITE_NAME}</Heading>
+          <Text style={brandTagline}>Your Trusted Moving Partner</Text>
         </div>
 
         {/* Hero Banner */}
         <div style={heroBanner}>
-          <div style={iconCircle}>
-            <Text style={iconText}>✍️</Text>
-          </div>
           <Heading style={heroTitle}>Document Ready for Signature</Heading>
           <Text style={heroSubtitle}>{documentLabel || 'Document'} • {refNumber || 'N/A'}</Text>
         </div>
