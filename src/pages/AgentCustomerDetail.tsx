@@ -500,13 +500,25 @@ export default function AgentCustomerDetail() {
               />
             </TabsContent>
 
-            {/* COMMUNICATION TAB */}
-            <TabsContent value="communication">
+            {/* EMAIL TAB */}
+            <TabsContent value="email">
               <CustomerCommunicationTab
                 leadId={lead.id}
                 customerName={fullName}
                 customerEmail={lead.email || ""}
                 customerPhone={lead.phone || ""}
+                mode="email"
+              />
+            </TabsContent>
+
+            {/* SMS TAB */}
+            <TabsContent value="sms">
+              <CustomerCommunicationTab
+                leadId={lead.id}
+                customerName={fullName}
+                customerEmail={lead.email || ""}
+                customerPhone={lead.phone || ""}
+                mode="sms"
               />
             </TabsContent>
           </Tabs>
