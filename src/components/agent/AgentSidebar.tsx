@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import {
-  LayoutDashboard, UserPlus, CalendarCheck, Users, Phone, Mail, Kanban, Activity, Trophy, ExternalLink, Monitor,
+  LayoutDashboard, UserPlus, CalendarCheck, Users, Phone, Mail, Kanban, Activity, Trophy, ExternalLink, Monitor, Inbox,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import logoImg from "@/assets/logo.png";
