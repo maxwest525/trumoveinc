@@ -218,8 +218,8 @@ export default function AgentCustomerDetail() {
                 </Button>
               )}
               {lead.email && (
-                <Button variant={activeTab === "communication" ? "default" : "ghost"} size="sm" className="justify-start gap-2 text-xs h-9 w-full relative"
-                  onClick={() => setActiveTab("communication")}>
+                <Button variant={activeTab === "email" ? "default" : "ghost"} size="sm" className="justify-start gap-2 text-xs h-9 w-full relative"
+                  onClick={() => setActiveTab("email")}>
                   <Mail className="w-3.5 h-3.5" /> Email
                   {customerMsgCount > 0 && (
                     <span className="ml-auto w-4 h-4 rounded-full bg-destructive text-destructive-foreground text-[9px] font-bold flex items-center justify-center">
@@ -229,8 +229,8 @@ export default function AgentCustomerDetail() {
                 </Button>
               )}
               {lead.phone && (
-                <Button variant="ghost" size="sm" className="justify-start gap-2 text-xs h-9 w-full"
-                  onClick={() => setActiveTab("communication")}>
+                <Button variant={activeTab === "sms" ? "default" : "ghost"} size="sm" className="justify-start gap-2 text-xs h-9 w-full"
+                  onClick={() => setActiveTab("sms")}>
                   <MessageSquare className="w-3.5 h-3.5" /> SMS
                 </Button>
               )}
