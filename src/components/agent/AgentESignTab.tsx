@@ -104,7 +104,7 @@ export function AgentESignTab({ leadId, customerName, customerEmail, customerPho
 
     try {
       // Send the document via edge function
-      const { error: sendError } = await supabase.functions.invoke("send-esign-document", {
+      const { data: sendResult, error: sendError } = await supabase.functions.invoke("send-esign-document", {
         body: {
           documentType: newDoc.type, customerName, customerEmail, customerPhone,
           refNumber, deliveryMethod: newDoc.deliveryMethod, signingUrl,
@@ -113,6 +113,15 @@ export function AgentESignTab({ leadId, customerName, customerEmail, customerPho
 
       if (sendError) {
         toast.error("Failed to send document", { description: sendError.message });
+        setIsSending(false);
+        return;
+      }
+
+      if (!sendResult?.success) {
+        const smsError = sendResult?.errors?.sms;
+        const emailError = sendResult?.errors?.email;
+        const errorMessage = smsError || emailError || "Delivery failed";
+        toast.error("Failed to send document", { description: errorMessage });
         setIsSending(false);
         return;
       }
