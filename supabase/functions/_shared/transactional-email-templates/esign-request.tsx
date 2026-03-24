@@ -117,9 +117,9 @@ const ctaButton = { display: 'inline-block' as const, background: '#22c55e', col
 
 const detailsCard = { backgroundColor: '#f8faf9', border: '1px solid #e2e8f0', borderRadius: '10px', margin: '0 32px 28px', padding: '20px 24px', overflow: 'hidden' as const }
 const detailsTitle = { fontSize: '11px', fontWeight: '600' as const, color: '#94a3b8', textTransform: 'uppercase' as const, letterSpacing: '0.8px', margin: '0 0 16px' }
-const detailRow = { display: 'flex' as const, justifyContent: 'space-between' as const, padding: '0' }
-const detailLabel = { fontSize: '13px', color: '#94a3b8', margin: '0' }
-const detailValue = { fontSize: '13px', color: '#1e293b', fontWeight: '500' as const, margin: '0', textAlign: 'right' as const }
+const detailRow = { padding: '0' }
+const detailLabel = { fontSize: '13px', color: '#94a3b8', margin: '0 0 2px' }
+const detailValue = { fontSize: '13px', color: '#1e293b', fontWeight: '500' as const, margin: '0' }
 const divider = { height: '1px', backgroundColor: '#e2e8f0', margin: '12px 0' }
 
 const helpText = { fontSize: '13px', color: '#94a3b8', margin: '0 32px 32px', lineHeight: '1.6' }
