@@ -198,13 +198,13 @@ export default function ESignViewPage() {
       <div className="min-h-screen bg-muted/30 py-6 md:py-8 px-3 md:px-4">
         <div className="max-w-[1200px] mx-auto">
           <button
-            onClick={() => navigate(-1)}
+            onClick={() => leadId ? navigate(`/agent/customers/${leadId}?tab=documents`) : navigate(-1)}
             className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="m15 18-6-6 6-6" />
             </svg>
-            Back to E-Sign Hub
+            Back to Customer Docs
           </button>
 
           <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 mt-4">

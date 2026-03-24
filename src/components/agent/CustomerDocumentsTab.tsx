@@ -6,25 +6,27 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
-  FileText, RefreshCw, Loader2, CheckCircle2, Clock,
-  Send, Mail, Eye, Package, Box, Scale, Trash2, Plus, Minus, Save,
-  DollarSign
+  FileText, RefreshCw, Loader2, CheckCircle2, Download,
+  Package, Box, Scale, Trash2, Plus, Minus, Save,
+  DollarSign, Globe, Eye, Shield
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
-interface ESignDoc {
+interface CompletedDoc {
   id: string;
   document_type: string;
   ref_number: string;
   status: string;
   delivery_method: string;
-  sent_at: string | null;
-  opened_at: string | null;
   completed_at: string | null;
+  sent_at: string | null;
+  // From audit trail join
+  signer_ip_address?: string;
+  user_agent?: string;
+  document_hash?: string;
 }
 
 interface InventoryItem {
@@ -42,14 +44,6 @@ const DOC_LABELS: Record<string, string> = {
   ccach: "CC/ACH Authorization",
   bol: "Merchant Payment",
   merchant_payment: "Merchant Payment Info",
-};
-
-const STATUS_BADGE: Record<string, { label: string; className: string; icon: typeof Clock }> = {
-  sent: { label: "Sent", className: "bg-blue-500/10 text-blue-600 dark:text-blue-400", icon: Send },
-  delivered: { label: "Delivered", className: "bg-amber-500/10 text-amber-600 dark:text-amber-400", icon: Mail },
-  opened: { label: "Opened", className: "bg-purple-500/10 text-purple-600 dark:text-purple-400", icon: Eye },
-  in_progress: { label: "In Progress", className: "bg-orange-500/10 text-orange-600 dark:text-orange-400", icon: Loader2 },
-  completed: { label: "Completed", className: "bg-primary/10 text-primary", icon: CheckCircle2 },
 };
 
 interface Props {
@@ -92,7 +86,6 @@ function InventoryDialog({ leadId, open, onOpenChange }: { leadId: string; open:
   const handleSave = async () => {
     setSaving(true);
     try {
-      // Delete existing and re-insert
       await supabase.from("lead_inventory").delete().eq("lead_id", leadId);
       if (items.length > 0) {
         const rows = items.map(i => ({
@@ -119,7 +112,6 @@ function InventoryDialog({ leadId, open, onOpenChange }: { leadId: string; open:
     }
   };
 
-  // Group by room
   const grouped = items.reduce<Record<string, InventoryItem[]>>((acc, item) => {
     (acc[item.room] = acc[item.room] || []).push(item);
     return acc;
@@ -147,7 +139,6 @@ function InventoryDialog({ leadId, open, onOpenChange }: { leadId: string; open:
           </div>
         ) : (
           <>
-            {/* Stats strip */}
             <div className="flex items-center gap-4 text-xs border-b border-border pb-3">
               <div className="flex items-center gap-1.5">
                 <Package className="w-3.5 h-3.5 text-muted-foreground" />
@@ -179,7 +170,6 @@ function InventoryDialog({ leadId, open, onOpenChange }: { leadId: string; open:
               </div>
             </div>
 
-            {/* Items list */}
             <ScrollArea className="flex-1 -mx-6 px-6">
               <div className="space-y-4 py-2">
                 {Object.entries(grouped).map(([room, roomItems]) => (
@@ -227,7 +217,6 @@ function InventoryDialog({ leadId, open, onOpenChange }: { leadId: string; open:
               </div>
             </ScrollArea>
 
-            {/* Save footer */}
             <div className="flex justify-end gap-2 pt-3 border-t border-border">
               <Button variant="outline" size="sm" onClick={() => onOpenChange(false)}>Cancel</Button>
               <Button size="sm" className="gap-1.5" onClick={handleSave} disabled={saving}>
@@ -244,19 +233,51 @@ function InventoryDialog({ leadId, open, onOpenChange }: { leadId: string; open:
 
 export function CustomerDocumentsTab({ leadId, customerName }: Props) {
   const navigate = useNavigate();
-  const [docs, setDocs] = useState<ESignDoc[]>([]);
+  const [docs, setDocs] = useState<CompletedDoc[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [inventoryOpen, setInventoryOpen] = useState(false);
 
   const fetchDocs = useCallback(async () => {
-    const { data, error } = await supabase
+    // Fetch only completed documents
+    const { data: completedDocs, error } = await supabase
       .from("esign_documents")
-      .select("id, document_type, ref_number, status, delivery_method, sent_at, opened_at, completed_at")
+      .select("id, document_type, ref_number, status, delivery_method, sent_at, completed_at")
       .eq("lead_id", leadId)
-      .order("created_at", { ascending: false });
+      .eq("status", "completed")
+      .order("completed_at", { ascending: false });
 
-    if (!error && data) setDocs(data as ESignDoc[]);
+    if (error || !completedDocs) {
+      setDocs([]);
+      setLoading(false);
+      return;
+    }
+
+    // Fetch audit trail data for IP addresses
+    const refNumbers = completedDocs.map(d => d.ref_number);
+    const { data: auditData } = await supabase
+      .from("esign_audit_trail")
+      .select("ref_number, signer_ip_address, user_agent, document_hash")
+      .in("ref_number", refNumbers)
+      .eq("event_type", "document_signed");
+
+    const auditMap = new Map<string, { ip?: string; ua?: string; hash?: string }>();
+    if (auditData) {
+      auditData.forEach((a: any) => {
+        auditMap.set(a.ref_number, {
+          ip: a.signer_ip_address,
+          ua: a.user_agent,
+          hash: a.document_hash,
+        });
+      });
+    }
+
+    setDocs(completedDocs.map(d => ({
+      ...d,
+      signer_ip_address: auditMap.get(d.ref_number)?.ip || undefined,
+      user_agent: auditMap.get(d.ref_number)?.ua || undefined,
+      document_hash: auditMap.get(d.ref_number)?.hash || undefined,
+    })) as CompletedDoc[]);
     setLoading(false);
   }, [leadId]);
 
@@ -269,18 +290,12 @@ export function CustomerDocumentsTab({ leadId, customerName }: Props) {
     setRefreshing(false);
   };
 
-  const formatTime = (dateStr: string | null) => {
+  const formatDate = (dateStr: string | null) => {
     if (!dateStr) return "—";
-    const date = new Date(dateStr);
-    const diff = Date.now() - date.getTime();
-    const mins = Math.floor(diff / 60000);
-    if (mins < 60) return `${mins}m ago`;
-    const hours = Math.floor(mins / 60);
-    if (hours < 24) return `${hours}h ago`;
-    return date.toLocaleDateString();
+    return new Date(dateStr).toLocaleString();
   };
 
-  const viewDocument = (doc: ESignDoc) => {
+  const viewDocument = (doc: CompletedDoc) => {
     navigate(`/agent/esign/view?type=${doc.document_type}&name=${encodeURIComponent(customerName)}&ref=${encodeURIComponent(doc.ref_number)}&leadId=${leadId}`);
   };
 
@@ -299,14 +314,16 @@ export function CustomerDocumentsTab({ leadId, customerName }: Props) {
       <InventoryDialog leadId={leadId} open={inventoryOpen} onOpenChange={setInventoryOpen} />
 
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-medium text-muted-foreground">{docs.length} document{docs.length !== 1 ? "s" : ""} sent</h3>
+        <h3 className="text-sm font-medium text-muted-foreground">
+          {docs.length} completed document{docs.length !== 1 ? "s" : ""}
+        </h3>
         <Button variant="outline" size="sm" className="gap-1.5 text-xs h-8" onClick={handleRefresh} disabled={refreshing}>
           <RefreshCw className={cn("w-3 h-3", refreshing && "animate-spin")} />
           Refresh
         </Button>
       </div>
 
-      {/* Inventory link - opens inline dialog */}
+      {/* Inventory link */}
       <Card className="cursor-pointer hover:border-primary/50 transition-colors" onClick={() => setInventoryOpen(true)}>
         <CardContent className="p-4">
           <div className="flex items-center gap-3">
@@ -326,47 +343,79 @@ export function CustomerDocumentsTab({ leadId, customerName }: Props) {
         <Card>
           <CardContent className="p-8 text-center space-y-3">
             <FileText className="w-12 h-12 mx-auto text-muted-foreground/30" />
-            <p className="text-muted-foreground">No documents sent yet</p>
-            <p className="text-xs text-muted-foreground">Documents will appear here once sent from the E-Sign hub</p>
+            <p className="text-muted-foreground">No completed documents yet</p>
+            <p className="text-xs text-muted-foreground">Signed documents will appear here once the customer completes signing</p>
           </CardContent>
         </Card>
       ) : (
         <div className="space-y-3">
-          {docs.map((doc) => {
-            const status = STATUS_BADGE[doc.status] || STATUS_BADGE.sent;
-            const StatusIcon = status.icon;
-            return (
-              <Card key={doc.id}>
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between gap-4">
-                    <div className="flex items-center gap-3 min-w-0">
-                      <div className="w-8 h-8 rounded-full bg-foreground/5 border border-border flex items-center justify-center shrink-0">
-                        <FileText className="w-4 h-4 text-muted-foreground" />
-                      </div>
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-2 mb-0.5">
-                          <span className="text-sm font-medium truncate">{DOC_LABELS[doc.document_type] || doc.document_type}</span>
-                          <Badge variant="outline" className="text-[10px] shrink-0">{doc.ref_number}</Badge>
-                        </div>
-                        <p className="text-xs text-muted-foreground">
-                          Sent {formatTime(doc.sent_at)} via {doc.delivery_method === "both" ? "Email & SMS" : doc.delivery_method.toUpperCase()}
-                        </p>
-                      </div>
+          {docs.map((doc) => (
+            <Card key={doc.id}>
+              <CardContent className="p-4 space-y-3">
+                {/* Header row */}
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                      <CheckCircle2 className="w-4.5 h-4.5 text-primary" />
                     </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                      <Badge className={cn("gap-1", status.className)}>
-                        <StatusIcon className={cn("w-3 h-3", doc.status === "in_progress" && "animate-spin")} />
-                        {status.label}
-                      </Badge>
-                      <Button size="sm" variant="outline" className="gap-1 text-xs h-7" onClick={() => viewDocument(doc)}>
-                        <Eye className="w-3 h-3" />View
-                      </Button>
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2 mb-0.5">
+                        <span className="text-sm font-semibold truncate">{DOC_LABELS[doc.document_type] || doc.document_type}</span>
+                        <Badge variant="outline" className="text-[10px] shrink-0">{doc.ref_number}</Badge>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        Signed {formatDate(doc.completed_at)}
+                      </p>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            );
-          })}
+                  <div className="flex items-center gap-2 shrink-0">
+                    <Badge className="gap-1 bg-primary/10 text-primary">
+                      <CheckCircle2 className="w-3 h-3" />
+                      Completed
+                    </Badge>
+                    <Button size="sm" variant="outline" className="gap-1 text-xs h-7" onClick={() => viewDocument(doc)}>
+                      <Eye className="w-3 h-3" />View
+                    </Button>
+                    <Button size="sm" variant="outline" className="gap-1 text-xs h-7">
+                      <Download className="w-3 h-3" />PDF
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Signing details strip */}
+                <div className="bg-muted/50 rounded-lg border border-border/60 p-3">
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-1.5">
+                    <Shield className="w-3 h-3" /> Signing Details
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
+                    <div>
+                      <span className="text-muted-foreground">IP Address</span>
+                      <p className="font-mono font-medium flex items-center gap-1.5 mt-0.5">
+                        <Globe className="w-3 h-3 text-muted-foreground" />
+                        {doc.signer_ip_address || "Not captured"}
+                      </p>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground">Document Hash</span>
+                      <p className="font-mono font-medium mt-0.5 truncate">
+                        {doc.document_hash || "—"}
+                      </p>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground">Browser</span>
+                      <p className="font-medium mt-0.5 truncate text-muted-foreground">
+                        {doc.user_agent
+                          ? doc.user_agent.length > 50
+                            ? doc.user_agent.slice(0, 50) + "…"
+                            : doc.user_agent
+                          : "—"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       )}
     </div>
