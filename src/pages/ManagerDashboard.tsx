@@ -30,10 +30,9 @@ export default function ManagerDashboard() {
 
   useEffect(() => {
     const fetch = async () => {
-      const [dealsRes, profilesRes, activitiesRes] = await Promise.all([
+      const [dealsRes, profilesRes] = await Promise.all([
         supabase.from("deals").select("id, stage, deal_value, actual_revenue, assigned_agent_id, created_at, updated_at, actual_close_date, leads(first_name, last_name)"),
         supabase.from("profiles").select("id, display_name, email"),
-        supabase.from("activities").select("id, subject, description, type, is_done, due_date"),
       ]);
 
       const deals = (dealsRes.data as any[]) || [];
