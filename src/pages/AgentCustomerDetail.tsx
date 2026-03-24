@@ -490,6 +490,14 @@ export default function AgentCustomerDetail() {
               />
             </TabsContent>
 
+            {/* PAYMENT TAB */}
+            <TabsContent value="payment">
+              <InlinePaymentTab
+                customerName={fullName}
+                customerEmail={lead.email || ""}
+              />
+            </TabsContent>
+
             {/* COMMUNICATION TAB */}
             <TabsContent value="communication">
               <CustomerCommunicationTab
