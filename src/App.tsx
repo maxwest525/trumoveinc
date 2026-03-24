@@ -74,6 +74,10 @@ import ManagerTeamChat from "./pages/ManagerTeamChat";
 import AdminTeamChat from "./pages/AdminTeamChat";
 import Leaderboard from "./pages/Leaderboard";
 import DispatchDashboard from "./pages/DispatchDashboard";
+import DispatchFleet from "./pages/dispatch/DispatchFleet";
+import DispatchDrivers from "./pages/dispatch/DispatchDrivers";
+import DispatchRoutes from "./pages/dispatch/DispatchRoutes";
+import DispatchJobs from "./pages/dispatch/DispatchJobs";
 import Unsubscribe from "./pages/Unsubscribe";
 import AgentIncomingLeads from "./pages/AgentIncomingLeads";
 
@@ -169,6 +173,10 @@ const App = () => (
             <Route path="/manager/team-chat" element={<ManagerTeamChat />} />
             <Route path="/admin/team-chat" element={<AdminTeamChat />} />
             <Route path="/dispatch/dashboard" element={<DispatchDashboard />} />
+            <Route path="/dispatch/fleet" element={<DispatchFleet />} />
+            <Route path="/dispatch/drivers" element={<DispatchDrivers />} />
+            <Route path="/dispatch/routes" element={<DispatchRoutes />} />
+            <Route path="/dispatch/jobs" element={<DispatchJobs />} />
             <Route path="/unsubscribe" element={<Unsubscribe />} />
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
