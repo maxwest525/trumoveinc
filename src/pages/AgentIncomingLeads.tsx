@@ -1,14 +1,5 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import AgentShell from "@/components/layout/AgentShell";
-import { supabase } from "@/integrations/supabase/client";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  UserPlus, Phone, MapPin, Calendar, Inbox, Loader2, RefreshCw, Mail,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
-import { format, formatDistanceToNow } from "date-fns";
+import { Inbox } from "lucide-react";
 
 interface IncomingLead {
   id: string;
