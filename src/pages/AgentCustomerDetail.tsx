@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import AgentShell from "@/components/layout/AgentShell";
 import { supabase } from "@/integrations/supabase/client";
@@ -104,6 +105,26 @@ export default function AgentCustomerDetail() {
     fetch();
   }, [id]);
 
+  // Count customer messages (for notification bubble)
+  const { data: customerMsgCount = 0 } = useQuery({
+    queryKey: ["customer-msg-count", id],
+    queryFn: async () => {
+      const { data: portalAccess } = await supabase
+        .from("customer_portal_access")
+        .select("id")
+        .eq("lead_id", id!)
+        .maybeSingle();
+      if (!portalAccess) return 0;
+      const { data } = await supabase
+        .from("customer_messages")
+        .select("id", { count: "exact", head: true })
+        .eq("portal_access_id", portalAccess.id)
+        .eq("sender_type", "customer");
+      return data?.length ?? 0;
+    },
+    enabled: !!id,
+  });
+
   const statusColor = (s: string) => {
     if (s === "qualified") return "bg-primary/10 text-primary";
     if (s === "contacted") return "bg-blue-500/10 text-blue-600";
@@ -198,10 +219,23 @@ export default function AgentCustomerDetail() {
                   <PhoneCall className="w-3 h-3" /> Call
                 </Button>
               )}
-              <Button variant="outline" size="sm" className="gap-1.5 text-xs h-8"
-                onClick={() => setActiveTab("communication")}>
-                <MessageSquare className="w-3 h-3" /> Chat
-              </Button>
+              {lead.email && (
+                <Button variant="outline" size="sm" className="gap-1.5 text-xs h-8 relative"
+                  onClick={() => setActiveTab("communication")}>
+                  <Mail className="w-3 h-3" /> Email
+                  {customerMsgCount > 0 && (
+                    <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-destructive text-destructive-foreground text-[9px] font-bold flex items-center justify-center">
+                      {customerMsgCount > 9 ? "9+" : customerMsgCount}
+                    </span>
+                  )}
+                </Button>
+              )}
+              {lead.phone && (
+                <Button variant="outline" size="sm" className="gap-1.5 text-xs h-8"
+                  onClick={() => setActiveTab("communication")}>
+                  <MessageSquare className="w-3 h-3" /> SMS
+                </Button>
+              )}
             </div>
           </div>
 
@@ -210,9 +244,6 @@ export default function AgentCustomerDetail() {
             <TabsList className="w-full sm:w-auto overflow-x-auto">
               <TabsTrigger value="overview" className="gap-1.5 text-xs">
                 <User className="w-3.5 h-3.5" /> Overview
-              </TabsTrigger>
-              <TabsTrigger value="communication" className="gap-1.5 text-xs">
-                <MessageSquare className="w-3.5 h-3.5" /> Chat
               </TabsTrigger>
               <TabsTrigger value="esign" className="gap-1.5 text-xs">
                 <FileText className="w-3.5 h-3.5" /> E-Signs
