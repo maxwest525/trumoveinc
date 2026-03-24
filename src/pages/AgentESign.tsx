@@ -180,7 +180,7 @@ export default function AgentESign() {
 
   if (loading) {
     return (
-      <AgentShell breadcrumb=" / E-Sign">
+      <AgentShell breadcrumbs={[{ label: "My Customers", href: "/agent/customers" }, { label: "E-Sign" }]}>
         <div className="p-6 flex items-center justify-center min-h-[60vh]">
           <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
         </div>
