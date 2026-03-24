@@ -17,6 +17,7 @@ import { DialerProvider } from "@/components/dialer/dialerProvider";
 import { AgentESignTab } from "@/components/agent/AgentESignTab";
 import { CustomerDocumentsTab } from "@/components/agent/CustomerDocumentsTab";
 import { CustomerCommunicationTab } from "@/components/agent/CustomerCommunicationTab";
+import { InlinePaymentTab } from "@/components/agent/InlinePaymentTab";
 
 interface Lead {
   id: string;
