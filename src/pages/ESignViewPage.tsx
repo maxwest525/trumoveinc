@@ -259,6 +259,22 @@ export default function ESignViewPage() {
                   customerAddress={customerAddress}
                 />
               )}
+
+              {/* Documents to Sign — bottom of page */}
+              {!isBol && (
+                <div className="mt-6">
+                  <Card className="border border-border bg-background shadow-sm">
+                    <CardContent className="p-4 space-y-3">
+                      <h3 className="font-medium text-[10px] uppercase tracking-wider text-muted-foreground">Documents to Sign</h3>
+                      <DocumentTabs
+                        activeDocument={activeDocument}
+                        onDocumentChange={handleDocumentChange}
+                        completedDocuments={completedDocuments}
+                      />
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
             </div>
           </div>
         </div>
