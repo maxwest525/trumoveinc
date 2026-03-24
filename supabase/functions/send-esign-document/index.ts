@@ -24,7 +24,6 @@ const DOCUMENT_LABELS: Record<string, string> = {
   merchant_payment: "Merchant Payment Info",
 };
 
-// Map document types to their transactional email template names
 const TEMPLATE_MAP: Record<string, string> = {
   estimate: "esign-request",
   ccach: "esign-request",
@@ -39,7 +38,11 @@ function normalizePhone(phone: string): string {
   return `+${digits}`;
 }
 
-async function sendSms(customerPhone: string, customerName: string, documentLabel: string, refNumber: string, signingUrl: string) {
+function buildSmsBody(documentLabel: string, refNumber: string, signingUrl: string) {
+  return `Action Required: Sign Your ${documentLabel} – ${refNumber}\n\n${signingUrl}\n\nReply STOP to opt out`;
+}
+
+async function sendSmsViaClickSend(customerPhone: string, smsBody: string) {
   const CLICKSEND_USERNAME = Deno.env.get("CLICKSEND_USERNAME");
   if (!CLICKSEND_USERNAME) throw new Error("CLICKSEND_USERNAME is not configured");
 
@@ -47,10 +50,7 @@ async function sendSms(customerPhone: string, customerName: string, documentLabe
   if (!CLICKSEND_API_KEY) throw new Error("CLICKSEND_API_KEY is not configured");
 
   const normalizedPhone = normalizePhone(customerPhone);
-  console.log(`Normalizing phone: "${customerPhone}" → "${normalizedPhone}"`);
-
-  const smsBody = `Action Required: Sign Your ${documentLabel} – ${refNumber}\n\n${signingUrl}\n\nReply STOP to opt out`;
-  console.log(`SMS body (${smsBody.length} chars): ${smsBody}`);
+  console.log(`Normalizing phone for ClickSend: "${customerPhone}" → "${normalizedPhone}"`);
 
   const basicAuth = btoa(`${CLICKSEND_USERNAME}:${CLICKSEND_API_KEY}`);
 
@@ -73,10 +73,81 @@ async function sendSms(customerPhone: string, customerName: string, documentLabe
 
   const data = await response.json();
   console.log("ClickSend API response:", JSON.stringify(data));
+
   if (!response.ok) {
     throw new Error(`ClickSend SMS failed [${response.status}]: ${JSON.stringify(data)}`);
   }
-  return data;
+
+  const message = data?.data?.messages?.[0];
+  const blockedCount = Number(data?.data?.blocked_count ?? 0);
+  const messageStatus = message?.status ?? "UNKNOWN";
+
+  if (blockedCount > 0 || messageStatus === "COUNTRY_NOT_ENABLED") {
+    throw new Error(`ClickSend blocked SMS: ${messageStatus}`);
+  }
+
+  return { provider: "clicksend", data };
+}
+
+async function sendSmsViaTwilio(customerPhone: string, smsBody: string) {
+  const TWILIO_ACCOUNT_SID = Deno.env.get("TWILIO_ACCOUNT_SID");
+  if (!TWILIO_ACCOUNT_SID) throw new Error("TWILIO_ACCOUNT_SID is not configured");
+
+  const TWILIO_AUTH_TOKEN = Deno.env.get("TWILIO_AUTH_TOKEN");
+  if (!TWILIO_AUTH_TOKEN) throw new Error("TWILIO_AUTH_TOKEN is not configured");
+
+  const TWILIO_MESSAGING_SERVICE_SID = Deno.env.get("TWILIO_MESSAGING_SERVICE_SID");
+  const TWILIO_PHONE_NUMBER = Deno.env.get("TWILIO_PHONE_NUMBER");
+
+  const normalizedPhone = normalizePhone(customerPhone);
+  console.log(`Normalizing phone for Twilio: "${customerPhone}" → "${normalizedPhone}"`);
+
+  const params = new URLSearchParams({
+    To: normalizedPhone,
+    Body: smsBody,
+  });
+
+  if (TWILIO_MESSAGING_SERVICE_SID) {
+    params.set("MessagingServiceSid", TWILIO_MESSAGING_SERVICE_SID);
+  } else if (TWILIO_PHONE_NUMBER) {
+    params.set("From", TWILIO_PHONE_NUMBER);
+  } else {
+    throw new Error("Neither TWILIO_MESSAGING_SERVICE_SID nor TWILIO_PHONE_NUMBER is configured");
+  }
+
+  const basicAuth = btoa(`${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}`);
+  const response = await fetch(`https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json`, {
+    method: "POST",
+    headers: {
+      "Authorization": `Basic ${basicAuth}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: params.toString(),
+  });
+
+  const data = await response.json();
+  console.log("Twilio API response:", JSON.stringify(data));
+
+  if (!response.ok) {
+    throw new Error(`Twilio SMS failed [${response.status}]: ${JSON.stringify(data)}`);
+  }
+
+  return { provider: "twilio", data };
+}
+
+async function sendSms(customerPhone: string, documentLabel: string, refNumber: string, signingUrl: string) {
+  const smsBody = buildSmsBody(documentLabel, refNumber, signingUrl);
+  console.log(`SMS body (${smsBody.length} chars): ${smsBody}`);
+
+  try {
+    return await sendSmsViaClickSend(customerPhone, smsBody);
+  } catch (clickSendError) {
+    const clickSendMessage = clickSendError instanceof Error ? clickSendError.message : String(clickSendError);
+    console.warn("ClickSend SMS failed, falling back to Twilio:", clickSendMessage);
+
+    const twilioResult = await sendSmsViaTwilio(customerPhone, smsBody);
+    return { ...twilioResult, fallbackFrom: "clicksend", fallbackReason: clickSendMessage };
+  }
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -107,7 +178,6 @@ const handler = async (req: Request): Promise<Response> => {
     const results: Record<string, any> = {};
     const errors: Record<string, string> = {};
 
-    // Send email via built-in transactional email system
     if (deliveryMethod === "email" || deliveryMethod === "both") {
       if (!customerEmail) {
         errors.email = "Email address is required for email delivery";
@@ -131,8 +201,13 @@ const handler = async (req: Request): Promise<Response> => {
           if (error) {
             throw new Error(error.message || "Failed to send email");
           }
+
+          if (data?.success === false) {
+            throw new Error(data?.reason || "Email send was rejected");
+          }
+
           results.email = { success: true, sentTo: customerEmail };
-          console.log("E-Sign email enqueued successfully via transactional system");
+          console.log("E-Sign email enqueued successfully via app email system");
         } catch (err: any) {
           console.error("Email send failed:", err.message);
           errors.email = err.message;
@@ -140,15 +215,19 @@ const handler = async (req: Request): Promise<Response> => {
       }
     }
 
-    // Send SMS via Twilio (unchanged)
     if (deliveryMethod === "sms" || deliveryMethod === "both") {
       if (!customerPhone) {
         errors.sms = "Phone number is required for SMS delivery";
       } else {
         try {
-          const smsResult = await sendSms(customerPhone, customerName, documentLabel, refNumber, signingUrl);
-          results.sms = { success: true, sentTo: customerPhone };
-          console.log("SMS sent successfully via ClickSend");
+          const smsResult = await sendSms(customerPhone, documentLabel, refNumber, signingUrl);
+          results.sms = {
+            success: true,
+            sentTo: customerPhone,
+            provider: smsResult.provider,
+            fallbackFrom: smsResult.fallbackFrom,
+          };
+          console.log(`SMS sent successfully via ${smsResult.provider}`);
         } catch (err: any) {
           console.error("SMS send failed:", err.message);
           errors.sms = err.message;
@@ -156,7 +235,6 @@ const handler = async (req: Request): Promise<Response> => {
       }
     }
 
-    // If nothing succeeded at all, return error
     if (!results.email && !results.sms) {
       const errorMsg = Object.entries(errors).map(([k, v]) => `${k}: ${v}`).join("; ");
       throw new Error(errorMsg || "Invalid delivery method");
