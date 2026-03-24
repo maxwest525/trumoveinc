@@ -10,6 +10,61 @@ function normalizePhone(phone: string): string {
   return `+${digits}`;
 }
 
+function looksTollFree(phone?: string | null): boolean {
+  return Boolean(phone && /^\+18(00|33|44|55|66|77|88)/.test(phone));
+}
+
+async function resolveTwilioSender(LOVABLE_API_KEY: string, TWILIO_API_KEY: string) {
+  const GATEWAY_URL = 'https://connector-gateway.lovable.dev/twilio';
+  const configuredPhone = Deno.env.get('TWILIO_PHONE_NUMBER');
+  const configuredMessagingServiceSid = Deno.env.get('TWILIO_MESSAGING_SERVICE_SID');
+
+  if (configuredPhone && !looksTollFree(configuredPhone)) {
+    return { type: 'phone' as const, value: configuredPhone };
+  }
+
+  const response = await fetch(`${GATEWAY_URL}/IncomingPhoneNumbers.json`, {
+    headers: {
+      'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+      'X-Connection-Api-Key': TWILIO_API_KEY,
+    },
+  });
+
+  const data = await response.json();
+  if (!response.ok) throw new Error(`Twilio number lookup failed [${response.status}]: ${JSON.stringify(data)}`);
+
+  const smsCapableNumbers = (data?.incoming_phone_numbers ?? []).filter((phone: any) => phone?.capabilities?.sms);
+  const preferredLocalNumber = smsCapableNumbers.find((phone: any) => !looksTollFree(phone?.phone_number));
+
+  if (preferredLocalNumber?.phone_number) {
+    return { type: 'phone' as const, value: preferredLocalNumber.phone_number };
+  }
+
+  if (configuredPhone) {
+    return { type: 'phone' as const, value: configuredPhone };
+  }
+
+  if (configuredMessagingServiceSid) {
+    return { type: 'messaging_service' as const, value: configuredMessagingServiceSid };
+  }
+
+  throw new Error('No SMS-capable Twilio sender is configured');
+}
+
+async function fetchTwilioMessageStatus(LOVABLE_API_KEY: string, TWILIO_API_KEY: string, messageSid: string) {
+  const GATEWAY_URL = 'https://connector-gateway.lovable.dev/twilio';
+  const response = await fetch(`${GATEWAY_URL}/Messages/${messageSid}.json`, {
+    headers: {
+      'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+      'X-Connection-Api-Key': TWILIO_API_KEY,
+    },
+  });
+
+  const data = await response.json();
+  if (!response.ok) throw new Error(`Twilio status lookup failed [${response.status}]: ${JSON.stringify(data)}`);
+  return data;
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -32,18 +87,14 @@ Deno.serve(async (req) => {
       const TWILIO_API_KEY = Deno.env.get('TWILIO_API_KEY');
       if (!TWILIO_API_KEY) throw new Error('TWILIO_API_KEY is not configured');
 
-      const TWILIO_MESSAGING_SERVICE_SID = Deno.env.get('TWILIO_MESSAGING_SERVICE_SID');
-      const TWILIO_PHONE_NUMBER = Deno.env.get('TWILIO_PHONE_NUMBER');
-
       const normalizedPhone = normalizePhone(to);
+      const sender = await resolveTwilioSender(LOVABLE_API_KEY, TWILIO_API_KEY);
       const params = new URLSearchParams({ To: normalizedPhone, Body: body });
 
-      if (TWILIO_PHONE_NUMBER) {
-        params.set('From', TWILIO_PHONE_NUMBER);
-      } else if (TWILIO_MESSAGING_SERVICE_SID) {
-        params.set('MessagingServiceSid', TWILIO_MESSAGING_SERVICE_SID);
+      if (sender.type === 'phone') {
+        params.set('From', sender.value);
       } else {
-        throw new Error('Neither TWILIO_PHONE_NUMBER nor TWILIO_MESSAGING_SERVICE_SID is configured');
+        params.set('MessagingServiceSid', sender.value);
       }
 
       const resp = await fetch(`${GATEWAY_URL}/Messages.json`, {
@@ -58,6 +109,14 @@ Deno.serve(async (req) => {
 
       const data = await resp.json();
       if (!resp.ok) throw new Error(`Twilio SMS failed [${resp.status}]: ${JSON.stringify(data)}`);
+
+      if (data?.sid) {
+        await new Promise((resolve) => setTimeout(resolve, 1200));
+        const statusData = await fetchTwilioMessageStatus(LOVABLE_API_KEY, TWILIO_API_KEY, data.sid);
+        if (['failed', 'undelivered'].includes(statusData?.status)) {
+          throw new Error(`Twilio SMS ${statusData.status}${statusData?.error_code ? ` (${statusData.error_code})` : ''}`);
+        }
+      }
 
       return new Response(JSON.stringify({ success: true, channel: 'sms' }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
