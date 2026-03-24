@@ -126,7 +126,7 @@ export function BOLSendTrack({ prefillName = "", prefillEmail = "", prefillPhone
         description: data?.method === "sms" ? `SMS sent to ${newDoc.customerPhone}` : `Sent to ${newDoc.customerEmail}`,
       });
     } catch {
-      toast.error("Failed to send Bill of Lading");
+      toast.error("Failed to send Merchant Payment");
     } finally {
       setIsSending(false);
     }
