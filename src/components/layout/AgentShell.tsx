@@ -111,6 +111,16 @@ export default function AgentShell({ children, breadcrumb = "" }: AgentShellProp
             <span className="text-sm text-muted-foreground truncate">Agent{breadcrumb}</span>
           </div>
           <div className="flex items-center gap-1.5">
+            <button
+              onClick={() => setIncomingOpen((v) => !v)}
+              className={cn(
+                "p-1.5 rounded-lg transition-colors relative",
+                incomingOpen ? "bg-primary/10 text-primary" : "hover:bg-muted text-muted-foreground"
+              )}
+              title="Incoming Leads"
+            >
+              <Inbox className="w-4 h-4" />
+            </button>
             <Link
               to="/agent/team-chat"
               className={`p-1.5 rounded-lg transition-colors relative ${
