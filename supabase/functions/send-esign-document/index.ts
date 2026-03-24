@@ -74,6 +74,64 @@ function getErrorDetail(error: unknown): DeliveryErrorDetail | undefined {
   return undefined;
 }
 
+async function resolveTwilioSender(LOVABLE_API_KEY: string, TWILIO_API_KEY: string) {
+  const GATEWAY_URL = "https://connector-gateway.lovable.dev/twilio";
+  const configuredPhone = Deno.env.get("TWILIO_PHONE_NUMBER");
+  const configuredMessagingServiceSid = Deno.env.get("TWILIO_MESSAGING_SERVICE_SID");
+
+  const looksTollFree = (phone?: string | null) => Boolean(phone && /^\+18(00|33|44|55|66|77|88)/.test(phone));
+
+  if (configuredPhone && !looksTollFree(configuredPhone)) {
+    return { type: "phone" as const, value: configuredPhone };
+  }
+
+  const response = await fetch(`${GATEWAY_URL}/IncomingPhoneNumbers.json`, {
+    headers: {
+      "Authorization": `Bearer ${LOVABLE_API_KEY}`,
+      "X-Connection-Api-Key": TWILIO_API_KEY,
+    },
+  });
+
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(`Twilio number lookup failed [${response.status}]: ${JSON.stringify(data)}`);
+  }
+
+  const smsCapableNumbers = (data?.incoming_phone_numbers ?? []).filter((phone: any) => phone?.capabilities?.sms);
+  const preferredLocalNumber = smsCapableNumbers.find((phone: any) => !looksTollFree(phone?.phone_number));
+
+  if (preferredLocalNumber?.phone_number) {
+    return { type: "phone" as const, value: preferredLocalNumber.phone_number };
+  }
+
+  if (configuredPhone) {
+    return { type: "phone" as const, value: configuredPhone };
+  }
+
+  if (configuredMessagingServiceSid) {
+    return { type: "messaging_service" as const, value: configuredMessagingServiceSid };
+  }
+
+  throw new Error("No SMS-capable Twilio sender is configured");
+}
+
+async function fetchTwilioMessageStatus(LOVABLE_API_KEY: string, TWILIO_API_KEY: string, messageSid: string) {
+  const GATEWAY_URL = "https://connector-gateway.lovable.dev/twilio";
+  const response = await fetch(`${GATEWAY_URL}/Messages/${messageSid}.json`, {
+    headers: {
+      "Authorization": `Bearer ${LOVABLE_API_KEY}`,
+      "X-Connection-Api-Key": TWILIO_API_KEY,
+    },
+  });
+
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(`Twilio status lookup failed [${response.status}]: ${JSON.stringify(data)}`);
+  }
+
+  return data;
+}
+
 async function sendSmsViaTwilioGateway(customerPhone: string, smsBody: string) {
   const GATEWAY_URL = "https://connector-gateway.lovable.dev/twilio";
 
@@ -83,23 +141,21 @@ async function sendSmsViaTwilioGateway(customerPhone: string, smsBody: string) {
   const TWILIO_API_KEY = Deno.env.get("TWILIO_API_KEY");
   if (!TWILIO_API_KEY) throw new Error("TWILIO_API_KEY is not configured");
 
-  const TWILIO_MESSAGING_SERVICE_SID = Deno.env.get("TWILIO_MESSAGING_SERVICE_SID");
-  const TWILIO_PHONE_NUMBER = Deno.env.get("TWILIO_PHONE_NUMBER");
-
   const normalizedPhone = normalizePhone(customerPhone);
   console.log(`Normalizing phone for Twilio: "${customerPhone}" → "${normalizedPhone}"`);
+
+  const sender = await resolveTwilioSender(LOVABLE_API_KEY, TWILIO_API_KEY);
+  console.log(`Using Twilio sender: ${sender.type}=${sender.value}`);
 
   const params = new URLSearchParams({
     To: normalizedPhone,
     Body: smsBody,
   });
 
-  if (TWILIO_PHONE_NUMBER) {
-    params.set("From", TWILIO_PHONE_NUMBER);
-  } else if (TWILIO_MESSAGING_SERVICE_SID) {
-    params.set("MessagingServiceSid", TWILIO_MESSAGING_SERVICE_SID);
+  if (sender.type === "phone") {
+    params.set("From", sender.value);
   } else {
-    throw new Error("Neither TWILIO_PHONE_NUMBER nor TWILIO_MESSAGING_SERVICE_SID is configured");
+    params.set("MessagingServiceSid", sender.value);
   }
 
   const response = await fetch(`${GATEWAY_URL}/Messages.json`, {
@@ -120,6 +176,21 @@ async function sendSmsViaTwilioGateway(customerPhone: string, smsBody: string) {
       provider: "twilio",
       code: data?.code?.toString() || response.status.toString(),
     });
+  }
+
+  if (data?.sid) {
+    await new Promise((resolve) => setTimeout(resolve, 1200));
+    const statusData = await fetchTwilioMessageStatus(LOVABLE_API_KEY, TWILIO_API_KEY, data.sid);
+    console.log("Twilio delivery status:", JSON.stringify(statusData));
+
+    if (["failed", "undelivered"].includes(statusData?.status)) {
+      throw new DeliveryError(`Twilio SMS ${statusData.status}${statusData?.error_code ? ` (${statusData.error_code})` : ""}`, {
+        provider: "twilio",
+        code: statusData?.error_code?.toString() || statusData?.status,
+      });
+    }
+
+    return { provider: "twilio", data: statusData };
   }
 
   return { provider: "twilio", data };
