@@ -23,9 +23,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
+interface BreadcrumbSegment {
+  label: string;
+  href?: string;
+}
+
 interface AgentShellProps {
   children: ReactNode | ((props: { openDialer: (number?: string) => void }) => ReactNode);
   breadcrumb?: string;
+  breadcrumbs?: BreadcrumbSegment[];
 }
 
 export default function AgentShell({ children, breadcrumb = "" }: AgentShellProps) {
