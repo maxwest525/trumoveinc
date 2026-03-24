@@ -1,11 +1,10 @@
 import * as React from 'npm:react@18.3.1'
 import {
-  Body, Container, Head, Heading, Html, Preview, Text, Hr, Img,
+  Body, Container, Head, Heading, Html, Preview, Text, Hr,
 } from 'npm:@react-email/components@0.0.22'
 import type { TemplateEntry } from './registry.ts'
 
 const SITE_NAME = "TruMove"
-const LOGO_URL = "https://trumoveinc.lovable.app/logo-navbar.png"
 
 interface CCACHProps {
   customerName?: string
