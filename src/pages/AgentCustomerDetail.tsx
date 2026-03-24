@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import AgentShell from "@/components/layout/AgentShell";
 import { supabase } from "@/integrations/supabase/client";
