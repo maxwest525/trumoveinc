@@ -190,8 +190,8 @@ export default function ManagerDashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div className="rounded-xl border border-border bg-card p-4">
             <h2 className="text-sm font-semibold text-foreground mb-3">Recent Deal Activity</h2>
-            {deals.filter(d => d.stage === "closed_won" || d.stage === "closed_lost").slice(0, 4).length > 0 ? (
-              deals.filter(d => d.stage === "closed_won" || d.stage === "closed_lost").slice(0, 4).map((d, i) => {
+            {recentDeals.length > 0 ? (
+              recentDeals.map((d, i) => {
                 const lead = d.leads as any;
                 const name = lead ? `${lead.first_name} ${lead.last_name}` : "Unknown";
                 const won = d.stage === "closed_won";
