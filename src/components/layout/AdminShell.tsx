@@ -79,6 +79,9 @@ export default function AdminShell({ children, breadcrumb = "" }: AdminShellProp
             >
               <Icon className="w-4 h-4" />
               <span>{item.label}</span>
+              {item.beta && (
+                <span className="ml-auto text-[9px] font-semibold uppercase tracking-wider text-muted-foreground bg-muted px-1.5 py-0.5 rounded">Beta</span>
+              )}
             </Link>
           );
         })}
