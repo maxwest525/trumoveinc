@@ -141,6 +141,7 @@ const App = () => (
             <Route path="/marketing/routing" element={<GrowthRouting />} />
             <Route path="/accounting/dashboard" element={<AccountingDashboard />} />
             
+            <Route path="/agent/incoming" element={<AgentIncomingLeads />} />
             <Route path="/agent/operations" element={<AgentOperations />} />
             <Route path="/agent/new-customer" element={<AgentNewCustomer />} />
             <Route path="/agent/move-details/:leadId" element={<AgentMoveDetails />} />
