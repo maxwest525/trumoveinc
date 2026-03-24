@@ -162,13 +162,13 @@ export function CustomerCommunicationTab({ leadId, customerName, customerEmail, 
       {/* Top bar */}
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          <h3 className="text-sm font-semibold">Communication</h3>
-          {customerEmail && (
+          <h3 className="text-sm font-semibold">{mode === "email" ? "Email" : "SMS"}</h3>
+          {mode === "email" && customerEmail && (
             <Badge variant="secondary" className="text-[10px] gap-1">
               <Mail className="w-3 h-3" /> {customerEmail}
             </Badge>
           )}
-          {customerPhone && (
+          {mode === "sms" && customerPhone && (
             <Badge variant="secondary" className="text-[10px] gap-1">
               <MessageSquare className="w-3 h-3" /> {customerPhone}
             </Badge>
@@ -177,36 +177,14 @@ export function CustomerCommunicationTab({ leadId, customerName, customerEmail, 
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <div className="flex items-center justify-between">
-          <TabsList>
-            <TabsTrigger value="compose" className="text-xs gap-1.5">
-              <Send className="w-3.5 h-3.5" /> Compose
-            </TabsTrigger>
-            <TabsTrigger value="history" className="text-xs gap-1.5">
-              <Clock className="w-3.5 h-3.5" /> History
-            </TabsTrigger>
-          </TabsList>
-          {activeTab === "compose" && (
-            <div className="flex gap-1">
-              <Button
-                variant={composeMode === "email" ? "default" : "outline"}
-                size="sm"
-                className="h-7 text-xs gap-1"
-                onClick={() => setComposeMode("email")}
-              >
-                <Mail className="w-3 h-3" /> Email
-              </Button>
-              <Button
-                variant={composeMode === "sms" ? "default" : "outline"}
-                size="sm"
-                className="h-7 text-xs gap-1"
-                onClick={() => setComposeMode("sms")}
-              >
-                <MessageSquare className="w-3 h-3" /> SMS
-              </Button>
-            </div>
-          )}
-        </div>
+        <TabsList>
+          <TabsTrigger value="compose" className="text-xs gap-1.5">
+            <Send className="w-3.5 h-3.5" /> Compose
+          </TabsTrigger>
+          <TabsTrigger value="history" className="text-xs gap-1.5">
+            <Clock className="w-3.5 h-3.5" /> History
+          </TabsTrigger>
+        </TabsList>
 
         {/* History Tab */}
         <TabsContent value="history" className="mt-4">
