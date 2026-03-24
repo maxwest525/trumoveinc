@@ -40,7 +40,7 @@ interface InventoryItem {
 const DOC_LABELS: Record<string, string> = {
   estimate: "Estimate Authorization",
   ccach: "CC/ACH Authorization",
-  bol: "Bill of Lading",
+  bol: "Merchant Payment",
   merchant_payment: "Merchant Payment Info",
 };
 

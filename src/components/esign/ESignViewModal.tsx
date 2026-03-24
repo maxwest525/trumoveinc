@@ -95,7 +95,7 @@ export function ESignViewModal({
     day: "numeric",
   });
 
-  const label = documentType === "estimate" ? "Estimate Authorization" : documentType === "ccach" ? "CC/ACH Authorization" : "Bill of Lading";
+  const label = documentType === "estimate" ? "Estimate Authorization" : documentType === "ccach" ? "CC/ACH Authorization" : "Merchant Payment";
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>

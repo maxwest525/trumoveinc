@@ -14,7 +14,7 @@ type DocumentType = "estimate" | "ccach" | "bol";
 const DOCUMENT_LABELS: Record<DocumentType, string> = {
   estimate: "Estimate Authorization",
   ccach: "CC/ACH Authorization",
-  bol: "Bill of Lading",
+  bol: "Merchant Payment",
 };
 
 const HTML_TEMPLATES: Record<string, { label: string; getHtml: (name: string, company?: string) => string }> = {

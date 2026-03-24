@@ -122,7 +122,7 @@ export function BillOfLadingForm() {
           <div className="flex items-center justify-between flex-wrap gap-3">
             <h2 className="text-2xl font-bold flex items-center gap-2">
               <Receipt className="w-6 h-6" />
-              Bill of Lading
+              Merchant Payment
             </h2>
             <div className="flex gap-2 flex-wrap">
               <Button onClick={fillDemo} variant="outline" size="sm" className="gap-2">

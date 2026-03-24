@@ -106,7 +106,7 @@ export default function Auth() {
         ? "Estimate Authorization" 
         : activeDocument === "ccach" 
         ? "CC-ACH Authorization" 
-        : "Bill of Lading";
+        : "Merchant Payment";
       
       sonnerToast.success(`${docName} downloaded as PDF`);
     } finally {

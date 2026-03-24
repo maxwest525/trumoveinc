@@ -263,7 +263,7 @@ export default function CustomerPortalDashboard() {
                     const docLabels: Record<string, string> = {
                       estimate: "Estimate Authorization",
                       ccach: "CC/ACH Authorization",
-                      bol: "Bill of Lading",
+                      bol: "Merchant Payment",
                     };
                     return (
                       <div key={doc.id} className="rounded-xl border border-border bg-card p-4">

@@ -122,11 +122,11 @@ export function BOLSendTrack({ prefillName = "", prefillEmail = "", prefillPhone
       setDocuments(prev => [newRecord, ...prev]);
 
       const methodLabel = newDoc.deliveryMethod === "email" ? "email" : "SMS";
-      toast.success(`Bill of Lading sent via ${methodLabel}`, {
+      toast.success(`Merchant Payment sent via ${methodLabel}`, {
         description: data?.method === "sms" ? `SMS sent to ${newDoc.customerPhone}` : `Sent to ${newDoc.customerEmail}`,
       });
     } catch {
-      toast.error("Failed to send Bill of Lading");
+      toast.error("Failed to send Merchant Payment");
     } finally {
       setIsSending(false);
     }
@@ -181,7 +181,7 @@ export function BOLSendTrack({ prefillName = "", prefillEmail = "", prefillPhone
         {/* SEND TAB */}
         <TabsContent value="send" className="space-y-4">
           <Card>
-            <CardHeader><CardTitle className="text-lg flex items-center gap-2"><Send className="w-5 h-5" />Send Bill of Lading for Signature</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="text-lg flex items-center gap-2"><Send className="w-5 h-5" />Send Merchant Payment for Signature</CardTitle></CardHeader>
             <CardContent className="space-y-4">
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -211,7 +211,7 @@ export function BOLSendTrack({ prefillName = "", prefillEmail = "", prefillPhone
               </div>
               <Button className="w-full gap-2" onClick={handleSend} disabled={isSending}>
                 {isSending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-                {isSending ? "Sending..." : "Send Bill of Lading"}
+                {isSending ? "Sending..." : "Send Merchant Payment"}
               </Button>
             </CardContent>
           </Card>
@@ -234,7 +234,7 @@ export function BOLSendTrack({ prefillName = "", prefillEmail = "", prefillPhone
                           <span className="font-medium text-sm">{doc.customerName}</span>
                           <Badge variant="outline" className="text-[10px]">{doc.refNumber}</Badge>
                         </div>
-                        <p className="text-xs text-muted-foreground mb-2">Bill of Lading • Sent {formatTime(doc.sentAt)} via {doc.deliveryMethod.toUpperCase()}</p>
+                        <p className="text-xs text-muted-foreground mb-2">Merchant Payment • Sent {formatTime(doc.sentAt)} via {doc.deliveryMethod.toUpperCase()}</p>
                         <Badge className={cn("gap-1", statusConfig.color)}>
                           <StatusIcon className={cn("w-3 h-3", doc.status === "signing" && "animate-spin")} />
                           {statusConfig.label}
@@ -295,7 +295,7 @@ export function BOLSendTrack({ prefillName = "", prefillEmail = "", prefillPhone
                           <span className="font-medium text-sm">{doc.customerName}</span>
                           <Badge variant="outline" className="text-[10px]">{doc.refNumber}</Badge>
                         </div>
-                        <p className="text-xs text-muted-foreground">Bill of Lading • Completed {formatTime(doc.completedAt)}</p>
+                        <p className="text-xs text-muted-foreground">Merchant Payment • Completed {formatTime(doc.completedAt)}</p>
                       </div>
                     </div>
                     <div className="flex gap-2">

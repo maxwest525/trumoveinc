@@ -134,7 +134,7 @@ export function ESignSidebar({
               ? "Estimate Authorization" 
               : activeDocument === "ccach" 
               ? "CC/ACH Authorization" 
-              : "Bill of Lading"
+              : "Merchant Payment"
           }
           recipientEmail={recipientEmail}
           recipientName={typedName}
