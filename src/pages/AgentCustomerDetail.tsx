@@ -518,6 +518,8 @@ export default function AgentCustomerDetail() {
               />
             </TabsContent>
           </Tabs>
+            </div>
+          </div>
         </div>
       )}
     </AgentShell>
