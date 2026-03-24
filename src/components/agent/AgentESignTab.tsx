@@ -165,7 +165,7 @@ export function AgentESignTab({ leadId, customerName, customerEmail, customerPho
   };
 
   const viewDocument = (doc: DocumentRecord) => {
-    navigate(`/agent/esign/view?type=${doc.type}&name=${encodeURIComponent(customerName)}&email=${encodeURIComponent(customerEmail)}&ref=${encodeURIComponent(doc.refNumber)}&leadId=${leadId}`);
+    navigate(`/agent/esign/view?type=${doc.type}&name=${encodeURIComponent(customerName)}&email=${encodeURIComponent(customerEmail)}&ref=${encodeURIComponent(doc.refNumber)}&leadId=${leadId}&status=${doc.status}`);
   };
 
   const formatTime = (date?: Date) => {
