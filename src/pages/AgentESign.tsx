@@ -203,7 +203,11 @@ export default function AgentESign() {
   }
 
   return (
-    <AgentShell breadcrumb=" / E-Sign">
+    <AgentShell breadcrumbs={[
+      { label: "My Customers", href: "/agent/customers" },
+      ...(leadId ? [{ label: leadData.first_name + " " + leadData.last_name, href: `/agent/customers/${leadId}` }] : []),
+      { label: "E-Sign" },
+    ]}>
       <div className="p-6 max-w-2xl mx-auto space-y-6">
         {/* Workflow breadcrumb */}
         <div className="flex items-center gap-2 text-xs text-muted-foreground">

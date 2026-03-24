@@ -184,7 +184,10 @@ export default function AgentCustomerDetail() {
   const fullName = `${lead.first_name} ${lead.last_name}`;
 
   return (
-    <AgentShell breadcrumb=" / Customer Detail">
+    <AgentShell breadcrumbs={[
+      { label: "My Customers", href: "/agent/customers" },
+      { label: fullName },
+    ]}>
       {() => (
         <div className="p-6 sm:p-8 max-w-7xl mx-auto space-y-6">
           {/* Header */}

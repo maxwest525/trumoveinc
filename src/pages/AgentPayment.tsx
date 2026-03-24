@@ -66,7 +66,11 @@ export default function AgentPayment() {
   const goToCustomers = () => navigate(leadId ? `/agent/customers/${leadId}` : "/agent/customers");
 
   return (
-    <AgentShell breadcrumb=" / Payment">
+    <AgentShell breadcrumbs={[
+      { label: "My Customers", href: "/agent/customers" },
+      ...(leadId ? [{ label: prefillName || "Customer", href: `/agent/customers/${leadId}` }] : []),
+      { label: "Payment" },
+    ]}>
       <div className="p-6 max-w-md mx-auto space-y-6">
         {/* Workflow breadcrumb */}
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
