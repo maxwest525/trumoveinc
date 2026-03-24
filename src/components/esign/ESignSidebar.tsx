@@ -126,21 +126,22 @@ export function ESignSidebar({
         </CardContent>
       </Card>
 
-      {/* Document Status Card - Shows receipt/signature confirmations */}
-      <ESignStatusCard
-        documentTitle={
-          activeDocument === "estimate" 
-            ? "Estimate Authorization" 
-            : activeDocument === "ccach" 
-            ? "CC/ACH Authorization" 
-            : "Bill of Lading"
-        }
-        recipientEmail={recipientEmail}
-        recipientName={typedName}
-        isSigned={allSigned}
-        refNumber={refNumber}
-        isPublic={isPublic}
-      />
+      {/* Document Status Card - Agent-facing only */}
+      {!isPublic && (
+        <ESignStatusCard
+          documentTitle={
+            activeDocument === "estimate" 
+              ? "Estimate Authorization" 
+              : activeDocument === "ccach" 
+              ? "CC/ACH Authorization" 
+              : "Bill of Lading"
+          }
+          recipientEmail={recipientEmail}
+          recipientName={typedName}
+          isSigned={allSigned}
+          refNumber={refNumber}
+        />
+      )}
     </div>
   );
 }
