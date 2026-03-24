@@ -192,6 +192,19 @@ Deno.serve(async (req) => {
     for (let i = 0; i < messages.length; i++) {
       const msg = messages[i]
       const payload = msg.message
+
+      // Guard: messages without a message_id cannot be tracked for retries
+      // or deduplication. If read_ct is high, they are stuck — move to DLQ.
+      if (!payload?.message_id || typeof payload.message_id !== 'string') {
+        if (msg.read_ct > MAX_RETRIES) {
+          console.warn('Moving untrackable message to DLQ (no message_id)', {
+            queue, msg_id: msg.msg_id, read_ct: msg.read_ct,
+          })
+          await moveToDlq(supabase, queue, msg, `No message_id and read_ct=${msg.read_ct} exceeded max retries`)
+          continue
+        }
+      }
+
       const failedAttempts =
         payload?.message_id && typeof payload.message_id === 'string'
           ? (failedAttemptsByMessageId.get(payload.message_id) ?? 0)
