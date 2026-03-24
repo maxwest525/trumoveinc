@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
 import {
   ArrowLeft, Mail, Phone, MapPin, Calendar, Package, DollarSign,
   FileText, CreditCard, MessageSquare, PhoneCall, Clock, User,
@@ -76,7 +76,7 @@ export default function AgentCustomerDetail() {
   const [deals, setDeals] = useState<Deal[]>([]);
   const [dealHistory, setDealHistory] = useState<DealHistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [customerStatus, setCustomerStatus] = useState("");
+  
   const [activeTab, setActiveTab] = useState(defaultTab);
 
   useEffect(() => {
@@ -180,38 +180,29 @@ export default function AgentCustomerDetail() {
   return (
     <AgentShell breadcrumb=" / Customer Detail">
       {() => (
-        <div className="p-4 sm:p-6 max-w-5xl mx-auto space-y-4 sm:space-y-6">
+        <div className="p-6 sm:p-8 max-w-7xl mx-auto space-y-6">
           {/* Header */}
-          <div className="flex items-center gap-3">
-              <Button variant="ghost" size="icon" className="h-9 w-9 shrink-0" onClick={() => navigate("/agent/customers")}>
-                <ArrowLeft className="w-4 h-4" />
+          <div className="flex items-center gap-4">
+              <Button variant="ghost" size="icon" className="h-10 w-10 shrink-0" onClick={() => navigate("/agent/customers")}>
+                <ArrowLeft className="w-5 h-5" />
               </Button>
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-foreground/5 border border-border flex items-center justify-center shrink-0">
-                <span className="text-sm sm:text-base font-semibold text-foreground">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-foreground/5 border border-border flex items-center justify-center shrink-0">
+                <span className="text-base sm:text-lg font-semibold text-foreground">
                   {lead.first_name[0]}{lead.last_name[0]}
                 </span>
               </div>
               <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <h1 className="text-lg sm:text-xl font-bold truncate">{fullName}</h1>
-                  <Select value={customerStatus} onValueChange={setCustomerStatus}>
-                    <SelectTrigger className="w-[120px] h-7 text-[10px]">
-                      <SelectValue placeholder={lead.status} />
-                    </SelectTrigger>
-                    <SelectContent>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <p className="text-xs text-muted-foreground truncate">
+                <h1 className="text-xl sm:text-2xl font-bold truncate">{fullName}</h1>
+                <p className="text-sm text-muted-foreground truncate">
                   Added {new Date(lead.created_at).toLocaleDateString()} • Source: {lead.source}
                 </p>
               </div>
             </div>
 
           {/* Sidebar + Content layout */}
-          <div className="flex gap-6">
+          <div className="flex gap-8">
             {/* Left nav */}
-            <div className="hidden sm:flex flex-col gap-1 w-[140px] shrink-0">
+            <div className="hidden sm:flex flex-col gap-1.5 w-[160px] shrink-0 pt-1">
               <Button variant={activeTab === "overview" ? "default" : "ghost"} size="sm" className="justify-start gap-2 text-xs h-9 w-full"
                 onClick={() => setActiveTab("overview")}>
                 <User className="w-3.5 h-3.5" /> Overview
