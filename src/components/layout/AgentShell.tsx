@@ -200,6 +200,7 @@ export default function AgentShell({ children, breadcrumb = "" }: AgentShellProp
           {typeof children === "function" ? children({ openDialer: (num?: string) => { setDialerPrefill(num); setDialerOpen(true); } }) : children}
         </main>
       </div>
+      {!isMobile && <IncomingLeadsSidebar open={incomingOpen} onClose={() => setIncomingOpen(false)} />}
       <FloatingDialer open={dialerOpen} onOpenChange={setDialerOpen} prefillNumber={dialerPrefill} />
     </div>
   );
