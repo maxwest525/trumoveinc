@@ -105,6 +105,26 @@ export default function AgentCustomerDetail() {
     fetch();
   }, [id]);
 
+  // Count customer messages (for notification bubble)
+  const { data: customerMsgCount = 0 } = useQuery({
+    queryKey: ["customer-msg-count", id],
+    queryFn: async () => {
+      const { data: portalAccess } = await supabase
+        .from("customer_portal_access")
+        .select("id")
+        .eq("lead_id", id!)
+        .maybeSingle();
+      if (!portalAccess) return 0;
+      const { data } = await supabase
+        .from("customer_messages")
+        .select("id", { count: "exact", head: true })
+        .eq("portal_access_id", portalAccess.id)
+        .eq("sender_type", "customer");
+      return data?.length ?? 0;
+    },
+    enabled: !!id,
+  });
+
   const statusColor = (s: string) => {
     if (s === "qualified") return "bg-primary/10 text-primary";
     if (s === "contacted") return "bg-blue-500/10 text-blue-600";
