@@ -190,7 +190,7 @@ export default function AgentESign() {
 
   if (!leadId || !leadData) {
     return (
-      <AgentShell breadcrumb=" / E-Sign">
+      <AgentShell breadcrumbs={[{ label: "My Customers", href: "/agent/customers" }, { label: "E-Sign" }]}>
         <div className="p-6 text-center space-y-3">
           <FileText className="w-12 h-12 mx-auto text-muted-foreground/30" />
           <p className="text-muted-foreground">No customer selected</p>
