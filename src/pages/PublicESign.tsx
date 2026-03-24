@@ -16,14 +16,20 @@ export default function PublicESign() {
   const { refNumber: urlRef } = useParams();
   const [searchParams] = useSearchParams();
 
+  // Fallback to query params for backward compat, but prefer DB lookup
   const refNumber = urlRef || searchParams.get("ref") || "DOC-2026-0001";
-  const customerName = searchParams.get("name") || "";
-  const customerEmail = searchParams.get("email") || "";
-  const docTypeParam = searchParams.get("type") || "estimate";
-  const leadId = searchParams.get("leadId") || "";
+  const qpName = searchParams.get("name") || "";
+  const qpEmail = searchParams.get("email") || "";
+  const qpDocType = searchParams.get("type") || "estimate";
+  const qpLeadId = searchParams.get("leadId") || "";
 
-  const [typedName, setTypedName] = useState(customerName);
-  const [activeDocument, setActiveDocument] = useState<DocumentType>(docTypeParam as DocumentType);
+  const [customerName, setCustomerName] = useState(qpName);
+  const [customerEmail, setCustomerEmail] = useState(qpEmail);
+  const [leadId, setLeadId] = useState(qpLeadId);
+  const [docTypeFromDb, setDocTypeFromDb] = useState(qpDocType);
+
+  const [typedName, setTypedName] = useState(qpName);
+  const [activeDocument, setActiveDocument] = useState<DocumentType>(qpDocType as DocumentType);
   const [signatures, setSignatures] = useState<Record<SignatureField, boolean>>({
     initial1: false, initial2: false, initial3: false, signature: false,
   });
@@ -35,6 +41,42 @@ export default function PublicESign() {
   const [isDownloading, setIsDownloading] = useState(false);
 
   useEffect(() => { window.scrollTo(0, 0); }, []);
+
+  // Fetch customer data from DB using refNumber (no query params needed)
+  useEffect(() => {
+    if (!refNumber || refNumber === "DOC-2026-0001") return;
+    const fetchDocData = async () => {
+      const { data: doc } = await supabase
+        .from("esign_documents")
+        .select("lead_id, document_type")
+        .eq("ref_number", refNumber)
+        .maybeSingle();
+
+      if (doc?.lead_id) {
+        setLeadId(doc.lead_id);
+        if (doc.document_type) setDocTypeFromDb(doc.document_type);
+        if (!qpDocType || qpDocType === "estimate") {
+          setActiveDocument((doc.document_type || "estimate") as DocumentType);
+        }
+
+        const { data: lead } = await supabase
+          .from("leads")
+          .select("first_name, last_name, email")
+          .eq("id", doc.lead_id)
+          .maybeSingle();
+
+        if (lead) {
+          const fullName = `${lead.first_name} ${lead.last_name}`.trim();
+          if (fullName && !qpName) {
+            setCustomerName(fullName);
+            setTypedName(fullName);
+          }
+          if (lead.email && !qpEmail) setCustomerEmail(lead.email);
+        }
+      }
+    };
+    fetchDocData();
+  }, [refNumber]);
 
   const typedInitials = typedName
     .split(" ").filter(Boolean).map((w) => w[0]).join("").toUpperCase().slice(0, 3);
