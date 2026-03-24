@@ -22,7 +22,7 @@ const STAGE_LABELS: Record<string, string> = {
 
 export default function ManagerDashboard() {
   const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState({ revenue: 0, closeRate: 0, totalClosed: 0, atRisk: 0 });
+  const [stats, setStats] = useState({ revenue: 0, closeRate: 0, totalClosed: 0, atRisk: 0, pipelineValue: 0, newLeads: 0, activeDeals: 0 });
   const [revenueTrend, setRevenueTrend] = useState<{ month: string; revenue: number }[]>([]);
   const [bookingsStatus, setBookingsStatus] = useState<{ status: string; count: number }[]>([]);
   const [team, setTeam] = useState<{ initials: string; name: string; bookings: string; revenue: string }[]>([]);
