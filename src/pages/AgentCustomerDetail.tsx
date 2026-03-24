@@ -181,8 +181,7 @@ export default function AgentCustomerDetail() {
       {() => (
         <div className="p-4 sm:p-6 max-w-5xl mx-auto space-y-4 sm:space-y-6">
           {/* Header */}
-          <div className="space-y-3">
-            <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3">
               <Button variant="ghost" size="icon" className="h-9 w-9 shrink-0" onClick={() => navigate("/agent/customers")}>
                 <ArrowLeft className="w-4 h-4" />
               </Button>
@@ -191,67 +190,76 @@ export default function AgentCustomerDetail() {
                   {lead.first_name[0]}{lead.last_name[0]}
                 </span>
               </div>
-              <div className="min-w-0">
+              <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2 flex-wrap">
                   <h1 className="text-lg sm:text-xl font-bold truncate">{fullName}</h1>
-                  <Badge className={`text-[10px] capitalize ${statusColor(lead.status)}`}>{lead.status}</Badge>
+                  <Select value={customerStatus} onValueChange={setCustomerStatus}>
+                    <SelectTrigger className="w-[120px] h-7 text-[10px]">
+                      <SelectValue placeholder={lead.status} />
+                    </SelectTrigger>
+                    <SelectContent>
+                    </SelectContent>
+                  </Select>
                 </div>
                 <p className="text-xs text-muted-foreground truncate">
                   Added {new Date(lead.created_at).toLocaleDateString()} • Source: {lead.source}
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-2 flex-wrap pl-0 sm:pl-[52px]">
-              <Select value={customerStatus} onValueChange={setCustomerStatus}>
-                <SelectTrigger className="w-[140px] h-8 text-xs">
-                  <SelectValue placeholder="Status" />
-                </SelectTrigger>
-                <SelectContent>
-                </SelectContent>
-              </Select>
+
+          {/* Action buttons - all in one row */}
+          <div className="flex items-center gap-2 flex-wrap">
+            <Button variant={activeTab === "overview" ? "default" : "outline"} size="sm" className="gap-1.5 text-xs h-8"
+              onClick={() => setActiveTab("overview")}>
+              <User className="w-3 h-3" /> Overview
+            </Button>
+            <Button variant="outline" size="sm" className="gap-1.5 text-xs h-8"
+              onClick={() => navigate(`/agent/payment?name=${encodeURIComponent(fullName)}&email=${encodeURIComponent(lead.email || "")}&phone=${encodeURIComponent(lead.phone || "")}&leadId=${lead.id}`)}>
+              <CreditCard className="w-3 h-3" /> Payment
+            </Button>
+            {lead.phone && (
               <Button variant="outline" size="sm" className="gap-1.5 text-xs h-8"
-                onClick={() => navigate(`/agent/payment?name=${encodeURIComponent(fullName)}&email=${encodeURIComponent(lead.email || "")}&phone=${encodeURIComponent(lead.phone || "")}&leadId=${lead.id}`)}>
-                <CreditCard className="w-3 h-3" /> Payment
+                onClick={() => DialerProvider.startCall(lead.phone!, undefined, fullName)}>
+                <PhoneCall className="w-3 h-3" /> Call
               </Button>
-              {lead.phone && (
-                <Button variant="outline" size="sm" className="gap-1.5 text-xs h-8"
-                  onClick={() => DialerProvider.startCall(lead.phone!, undefined, fullName)}>
-                  <PhoneCall className="w-3 h-3" /> Call
-                </Button>
-              )}
-              {lead.email && (
-                <Button variant="outline" size="sm" className="gap-1.5 text-xs h-8 relative"
-                  onClick={() => setActiveTab("communication")}>
-                  <Mail className="w-3 h-3" /> Email
-                  {customerMsgCount > 0 && (
-                    <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-destructive text-destructive-foreground text-[9px] font-bold flex items-center justify-center">
-                      {customerMsgCount > 9 ? "9+" : customerMsgCount}
-                    </span>
-                  )}
-                </Button>
-              )}
-              {lead.phone && (
-                <Button variant="outline" size="sm" className="gap-1.5 text-xs h-8"
-                  onClick={() => setActiveTab("communication")}>
-                  <MessageSquare className="w-3 h-3" /> SMS
-                </Button>
-              )}
-            </div>
+            )}
+            {lead.email && (
+              <Button variant={activeTab === "communication" && true ? "default" : "outline"} size="sm" className="gap-1.5 text-xs h-8 relative"
+                onClick={() => setActiveTab("communication")}>
+                <Mail className="w-3 h-3" /> Email
+                {customerMsgCount > 0 && (
+                  <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-destructive text-destructive-foreground text-[9px] font-bold flex items-center justify-center">
+                    {customerMsgCount > 9 ? "9+" : customerMsgCount}
+                  </span>
+                )}
+              </Button>
+            )}
+            {lead.phone && (
+              <Button variant="outline" size="sm" className="gap-1.5 text-xs h-8"
+                onClick={() => setActiveTab("communication")}>
+                <MessageSquare className="w-3 h-3" /> SMS
+              </Button>
+            )}
+            <Button variant={activeTab === "esign" ? "default" : "outline"} size="sm" className="gap-1.5 text-xs h-8"
+              onClick={() => setActiveTab("esign")}>
+              <FileText className="w-3 h-3" /> E-Signs
+            </Button>
+            <Button variant={activeTab === "documents" ? "default" : "outline"} size="sm" className="gap-1.5 text-xs h-8"
+              onClick={() => setActiveTab("documents")}>
+              <FolderOpen className="w-3 h-3" /> Docs
+            </Button>
           </div>
 
-          {/* Main Tabs */}
+          {/* Tab Content (hidden tabs, controlled by buttons above) */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-            <TabsList className="w-full sm:w-auto overflow-x-auto">
-              <TabsTrigger value="overview" className="gap-1.5 text-xs">
-                <User className="w-3.5 h-3.5" /> Overview
-              </TabsTrigger>
-              <TabsTrigger value="esign" className="gap-1.5 text-xs">
-                <FileText className="w-3.5 h-3.5" /> E-Signs
-              </TabsTrigger>
-              <TabsTrigger value="documents" className="gap-1.5 text-xs">
-                <FolderOpen className="w-3.5 h-3.5" /> Docs
-              </TabsTrigger>
-            </TabsList>
+            <div className="hidden">
+              <TabsList>
+                <TabsTrigger value="overview" />
+                <TabsTrigger value="communication" />
+                <TabsTrigger value="esign" />
+                <TabsTrigger value="documents" />
+              </TabsList>
+            </div>
 
             {/* OVERVIEW TAB */}
             <TabsContent value="overview">
