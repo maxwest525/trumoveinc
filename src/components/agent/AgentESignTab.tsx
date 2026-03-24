@@ -200,10 +200,9 @@ export function AgentESignTab({ leadId, customerName, customerEmail, customerPho
       </Card>
 
       <Tabs defaultValue="send" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="send" className="gap-2"><Send className="w-4 h-4" />Send</TabsTrigger>
-          <TabsTrigger value="track" className="gap-2"><Eye className="w-4 h-4" />Track ({pendingDocs.length})</TabsTrigger>
-          <TabsTrigger value="completed" className="gap-2"><CheckCircle2 className="w-4 h-4" />Completed ({completedDocs.length})</TabsTrigger>
+          <TabsTrigger value="track" className="gap-2"><Eye className="w-4 h-4" />Pending ({pendingDocs.length})</TabsTrigger>
         </TabsList>
 
         {/* SEND TAB */}
@@ -304,40 +303,6 @@ export function AgentESignTab({ leadId, customerName, customerEmail, customerPho
           )}
         </TabsContent>
 
-        {/* COMPLETED TAB */}
-        <TabsContent value="completed" className="space-y-3">
-          {completedDocs.length === 0 ? (
-            <Card><CardContent className="p-8 text-center space-y-3">
-              <FileText className="w-12 h-12 mx-auto text-muted-foreground/30" />
-              <p className="text-muted-foreground">No completed documents yet</p>
-            </CardContent></Card>
-          ) : (
-            completedDocs.map(doc => (
-              <Card key={doc.id}>
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                        <CheckCircle2 className="w-5 h-5 text-primary" />
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium text-sm">{DOCUMENT_LABELS[doc.type]}</span>
-                          <Badge variant="outline" className="text-[10px]">{doc.refNumber}</Badge>
-                        </div>
-                        <p className="text-xs text-muted-foreground">Completed {formatTime(doc.completedAt)}</p>
-                      </div>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button size="sm" variant="outline" className="gap-1.5 text-xs h-8" onClick={() => viewDocument(doc)}><Eye className="w-3 h-3" />View</Button>
-                      <Button size="sm" variant="outline" className="gap-1.5 text-xs h-8"><ExternalLink className="w-3 h-3" />Download</Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))
-          )}
-        </TabsContent>
       </Tabs>
     </div>
   );
