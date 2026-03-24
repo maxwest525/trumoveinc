@@ -113,7 +113,25 @@ export default function AgentShell({ children, breadcrumb = "", breadcrumbs }: A
             <Link to="/" className="p-1.5 rounded-lg hover:bg-muted transition-colors">
               <Home className="w-4 h-4 text-muted-foreground" />
             </Link>
-            <span className="text-sm text-muted-foreground truncate">Agent{breadcrumb}</span>
+            {breadcrumbs ? (
+              <nav className="flex items-center gap-1 text-sm text-muted-foreground truncate">
+                <span>Agent</span>
+                {breadcrumbs.map((seg, i) => (
+                  <span key={i} className="flex items-center gap-1">
+                    <span className="text-muted-foreground/50">/</span>
+                    {seg.href ? (
+                      <Link to={seg.href} className="hover:text-foreground transition-colors">
+                        {seg.label}
+                      </Link>
+                    ) : (
+                      <span className="text-foreground font-medium">{seg.label}</span>
+                    )}
+                  </span>
+                ))}
+              </nav>
+            ) : (
+              <span className="text-sm text-muted-foreground truncate">Agent{breadcrumb}</span>
+            )}
           </div>
           <div className="flex items-center gap-1.5">
             <Link
