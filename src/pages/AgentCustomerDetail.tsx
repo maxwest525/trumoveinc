@@ -208,50 +208,60 @@ export default function AgentCustomerDetail() {
               </div>
             </div>
 
-          {/* Action buttons - all in one row */}
-          <div className="flex items-center gap-2 flex-wrap">
-            <Button variant={activeTab === "overview" ? "default" : "outline"} size="sm" className="gap-1.5 text-xs h-8"
-              onClick={() => setActiveTab("overview")}>
-              <User className="w-3 h-3" /> Overview
-            </Button>
-            <Button variant={activeTab === "payment" ? "default" : "outline"} size="sm" className="gap-1.5 text-xs h-8"
-              onClick={() => setActiveTab("payment")}>
-              <CreditCard className="w-3 h-3" /> Payment
-            </Button>
-            {lead.phone && (
-              <Button variant="outline" size="sm" className="gap-1.5 text-xs h-8"
-                onClick={() => DialerProvider.startCall(lead.phone!, undefined, fullName)}>
-                <PhoneCall className="w-3 h-3" /> Call
+          {/* Sidebar + Content layout */}
+          <div className="flex gap-6">
+            {/* Left nav */}
+            <div className="hidden sm:flex flex-col gap-1 w-[140px] shrink-0">
+              <Button variant={activeTab === "overview" ? "default" : "ghost"} size="sm" className="justify-start gap-2 text-xs h-9 w-full"
+                onClick={() => setActiveTab("overview")}>
+                <User className="w-3.5 h-3.5" /> Overview
               </Button>
-            )}
-            {lead.email && (
-              <Button variant={activeTab === "communication" && true ? "default" : "outline"} size="sm" className="gap-1.5 text-xs h-8 relative"
-                onClick={() => setActiveTab("communication")}>
-                <Mail className="w-3 h-3" /> Email
-                {customerMsgCount > 0 && (
-                  <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-destructive text-destructive-foreground text-[9px] font-bold flex items-center justify-center">
-                    {customerMsgCount > 9 ? "9+" : customerMsgCount}
-                  </span>
-                )}
+              <Button variant={activeTab === "payment" ? "default" : "ghost"} size="sm" className="justify-start gap-2 text-xs h-9 w-full"
+                onClick={() => setActiveTab("payment")}>
+                <CreditCard className="w-3.5 h-3.5" /> Payment
               </Button>
-            )}
-            {lead.phone && (
-              <Button variant="outline" size="sm" className="gap-1.5 text-xs h-8"
-                onClick={() => setActiveTab("communication")}>
-                <MessageSquare className="w-3 h-3" /> SMS
+              {lead.phone && (
+                <Button variant="ghost" size="sm" className="justify-start gap-2 text-xs h-9 w-full"
+                  onClick={() => DialerProvider.startCall(lead.phone!, undefined, fullName)}>
+                  <PhoneCall className="w-3.5 h-3.5" /> Call
+                </Button>
+              )}
+              {lead.email && (
+                <Button variant={activeTab === "communication" ? "default" : "ghost"} size="sm" className="justify-start gap-2 text-xs h-9 w-full relative"
+                  onClick={() => setActiveTab("communication")}>
+                  <Mail className="w-3.5 h-3.5" /> Email
+                  {customerMsgCount > 0 && (
+                    <span className="ml-auto w-4 h-4 rounded-full bg-destructive text-destructive-foreground text-[9px] font-bold flex items-center justify-center">
+                      {customerMsgCount > 9 ? "9+" : customerMsgCount}
+                    </span>
+                  )}
+                </Button>
+              )}
+              {lead.phone && (
+                <Button variant="ghost" size="sm" className="justify-start gap-2 text-xs h-9 w-full"
+                  onClick={() => setActiveTab("communication")}>
+                  <MessageSquare className="w-3.5 h-3.5" /> SMS
+                </Button>
+              )}
+              <Button variant={activeTab === "esign" ? "default" : "ghost"} size="sm" className="justify-start gap-2 text-xs h-9 w-full"
+                onClick={() => setActiveTab("esign")}>
+                <FileText className="w-3.5 h-3.5" /> E-Signs
               </Button>
-            )}
-            <Button variant={activeTab === "esign" ? "default" : "outline"} size="sm" className="gap-1.5 text-xs h-8"
-              onClick={() => setActiveTab("esign")}>
-              <FileText className="w-3 h-3" /> E-Signs
-            </Button>
-            <Button variant={activeTab === "documents" ? "default" : "outline"} size="sm" className="gap-1.5 text-xs h-8"
-              onClick={() => setActiveTab("documents")}>
-              <FolderOpen className="w-3 h-3" /> Docs
-            </Button>
-          </div>
+              <Button variant={activeTab === "documents" ? "default" : "ghost"} size="sm" className="justify-start gap-2 text-xs h-9 w-full"
+                onClick={() => setActiveTab("documents")}>
+                <FolderOpen className="w-3.5 h-3.5" /> Docs
+              </Button>
+            </div>
 
-          {/* Tab Content (hidden tabs, controlled by buttons above) */}
+            {/* Mobile horizontal nav */}
+            <div className="flex sm:hidden items-center gap-2 flex-wrap mb-4">
+              <Button variant={activeTab === "overview" ? "default" : "outline"} size="sm" className="gap-1.5 text-xs h-8" onClick={() => setActiveTab("overview")}><User className="w-3 h-3" /> Overview</Button>
+              <Button variant={activeTab === "payment" ? "default" : "outline"} size="sm" className="gap-1.5 text-xs h-8" onClick={() => setActiveTab("payment")}><CreditCard className="w-3 h-3" /> Payment</Button>
+              <Button variant={activeTab === "esign" ? "default" : "outline"} size="sm" className="gap-1.5 text-xs h-8" onClick={() => setActiveTab("esign")}><FileText className="w-3 h-3" /> E-Signs</Button>
+            </div>
+
+            {/* Content area */}
+            <div className="flex-1 min-w-0">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
             <div className="hidden">
               <TabsList>
@@ -508,6 +518,8 @@ export default function AgentCustomerDetail() {
               />
             </TabsContent>
           </Tabs>
+            </div>
+          </div>
         </div>
       )}
     </AgentShell>
