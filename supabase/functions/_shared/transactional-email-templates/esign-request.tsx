@@ -1,11 +1,10 @@
 import * as React from 'npm:react@18.3.1'
 import {
-  Body, Container, Head, Heading, Html, Preview, Text, Button, Hr, Img, Section,
+  Body, Container, Head, Heading, Html, Preview, Text, Button, Hr,
 } from 'npm:@react-email/components@0.0.22'
 import type { TemplateEntry } from './registry.ts'
 
 const SITE_NAME = "TruMove"
-const LOGO_URL = "https://trumoveinc.lovable.app/logo-navbar.png"
 
 interface ESignRequestProps {
   customerName?: string
@@ -22,14 +21,12 @@ const ESignRequestEmail = ({ customerName, documentLabel, refNumber, signingUrl 
       <Container style={container}>
         {/* Logo Header */}
         <div style={logoBar}>
-          <Img src={LOGO_URL} alt="TruMove" width="140" height="auto" style={logoImg} />
+          <Heading style={brandName}>{SITE_NAME}</Heading>
+          <Text style={brandTagline}>Your Trusted Moving Partner</Text>
         </div>
 
         {/* Hero Banner */}
         <div style={heroBanner}>
-          <div style={iconCircle}>
-            <Text style={iconText}>✍️</Text>
-          </div>
           <Heading style={heroTitle}>Document Ready for Signature</Heading>
           <Text style={heroSubtitle}>{documentLabel || 'Document'} • {refNumber || 'N/A'}</Text>
         </div>
@@ -74,7 +71,7 @@ const ESignRequestEmail = ({ customerName, documentLabel, refNumber, signingUrl 
         {/* Footer */}
         <Hr style={hr} />
         <div style={footerWrap}>
-          <Img src={LOGO_URL} alt="TruMove" width="90" height="auto" style={footerLogo} />
+          <Text style={footerBrand}>{SITE_NAME}</Text>
           <Text style={footerText}>
             © {new Date().getFullYear()} {SITE_NAME}. All rights reserved.
           </Text>
@@ -105,11 +102,10 @@ const main = { backgroundColor: '#f4f6f8', fontFamily: "'Inter', -apple-system, 
 const container = { padding: '0', maxWidth: '600px', margin: '40px auto', backgroundColor: '#ffffff', borderRadius: '12px', overflow: 'hidden' as const, boxShadow: '0 4px 24px rgba(0,0,0,0.06)' }
 
 const logoBar = { padding: '28px 32px 20px', textAlign: 'center' as const, borderBottom: '1px solid #f0f0f0' }
-const logoImg = { display: 'inline-block' as const }
+const brandName = { color: '#22c55e', fontSize: '28px', fontWeight: 'bold' as const, margin: '0', letterSpacing: '-0.5px' }
+const brandTagline = { color: '#94a3b8', fontSize: '12px', margin: '4px 0 0' }
 
 const heroBanner = { background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 50%, #15803d 100%)', padding: '40px 32px', textAlign: 'center' as const }
-const iconCircle = { width: '56px', height: '56px', borderRadius: '50%', backgroundColor: 'rgba(255,255,255,0.2)', margin: '0 auto 16px', display: 'flex' as const, alignItems: 'center' as const, justifyContent: 'center' as const }
-const iconText = { fontSize: '28px', margin: '0', lineHeight: '56px', textAlign: 'center' as const }
 const heroTitle = { color: '#ffffff', fontSize: '24px', fontWeight: '700' as const, margin: '0 0 8px', letterSpacing: '-0.3px' }
 const heroSubtitle = { color: 'rgba(255,255,255,0.85)', fontSize: '14px', margin: '0' }
 
@@ -130,6 +126,6 @@ const helpText = { fontSize: '13px', color: '#94a3b8', margin: '0 32px 32px', li
 
 const hr = { border: 'none', borderTop: '1px solid #e2e8f0', margin: '0' }
 const footerWrap = { padding: '24px 32px 28px', textAlign: 'center' as const, backgroundColor: '#fafbfc' }
-const footerLogo = { display: 'inline-block' as const, opacity: 0.6, marginBottom: '12px' }
+const footerBrand = { color: '#22c55e', fontSize: '18px', fontWeight: 'bold' as const, margin: '0 0 8px' }
 const footerText = { fontSize: '12px', color: '#94a3b8', margin: '0 0 4px' }
 const footerMuted = { fontSize: '11px', color: '#c4cad4', margin: '0' }
