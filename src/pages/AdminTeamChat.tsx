@@ -6,10 +6,13 @@ import {
   Menu, X,
 } from "lucide-react";
 import logoImg from "@/assets/logo.png";
-import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { setPortalContext } from "@/hooks/usePortalContext";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useNotifications } from "@/hooks/useNotifications";
+import NotificationsPanel from "@/components/agent/NotificationsPanel";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Badge } from "@/components/ui/badge";
 import AgentTeamChat from "@/pages/AgentTeamChat";
 
 const NAV_ITEMS = [
