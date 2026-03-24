@@ -49,7 +49,7 @@ interface Props {
 }
 
 export function CustomerCommunicationTab({ leadId, customerName, customerEmail, customerPhone }: Props) {
-  const [activeTab, setActiveTab] = useState("history");
+  const [activeTab, setActiveTab] = useState("compose");
   const [composeMode, setComposeMode] = useState<"email" | "sms">("email");
   const [selectedTemplate, setSelectedTemplate] = useState("");
   const [emailSubject, setEmailSubject] = useState("");
