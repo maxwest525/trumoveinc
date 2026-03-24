@@ -22,6 +22,8 @@ export default function ESignViewPage() {
   const refNumber = searchParams.get("ref") || "DOC-2026-0001";
   const docTypeParam = searchParams.get("type") || "estimate";
   const leadId = searchParams.get("leadId") || "";
+  const docStatus = searchParams.get("status") || "";
+  const isCompleted = docStatus === "completed";
   const isBol = docTypeParam === "bol";
 
   const [typedName, setTypedName] = useState(customerName);
