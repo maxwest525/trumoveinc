@@ -20,7 +20,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: "Dashboard", icon: LayoutDashboard, href: "/agent/dashboard" },
   { label: "New Lead", icon: UserPlus, href: "/agent/new-customer" },
   { label: "My Customers", icon: Users, href: "/agent/customers" },
-  { label: "Pipeline", icon: Kanban, href: "/agent/pipeline" },
+  { label: "Pipeline", icon: Kanban, href: "/agent/pipeline", beta: true },
   { label: "Customer Chat", icon: Mail, href: "/agent/messages" },
   { label: "Dialer", icon: Phone, href: "/agent/dialer", beta: true },
   { label: "Bookings", icon: CalendarCheck, href: "/agent/operations" },
