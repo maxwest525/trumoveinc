@@ -188,19 +188,27 @@ export default function ManagerDashboard() {
           </div>
         </div>
 
-        {/* Pending Tasks */}
+        {/* Recent Deal Activity */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div className="rounded-xl border border-border bg-card p-4">
-            <h2 className="text-sm font-semibold text-foreground mb-3">Pending Tasks</h2>
-            {pendingActivities.length > 0 ? pendingActivities.map((a, i) => (
-              <div key={i} className="flex items-center gap-3 py-3 px-2 rounded-lg hover:bg-muted/50 cursor-pointer transition-colors">
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-foreground">{a.title}</p>
-                  <p className="text-xs text-muted-foreground">{a.sub}</p>
-                </div>
-              </div>
-            )) : (
-              <p className="text-xs text-muted-foreground text-center py-6">No pending tasks</p>
+            <h2 className="text-sm font-semibold text-foreground mb-3">Recent Deal Activity</h2>
+            {deals.filter(d => d.stage === "closed_won" || d.stage === "closed_lost").slice(0, 4).length > 0 ? (
+              deals.filter(d => d.stage === "closed_won" || d.stage === "closed_lost").slice(0, 4).map((d, i) => {
+                const lead = d.leads as any;
+                const name = lead ? `${lead.first_name} ${lead.last_name}` : "Unknown";
+                const won = d.stage === "closed_won";
+                return (
+                  <div key={i} className="flex items-center gap-3 py-3 px-2 rounded-lg hover:bg-muted/50 transition-colors">
+                    <div className={`w-2 h-2 rounded-full shrink-0 ${won ? "bg-chart-2" : "bg-destructive"}`} />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-foreground truncate">{name}</p>
+                      <p className="text-xs text-muted-foreground">{won ? "Closed Won" : "Lost"} · ${(d.actual_revenue || d.deal_value || 0).toLocaleString()}</p>
+                    </div>
+                  </div>
+                );
+              })
+            ) : (
+              <p className="text-xs text-muted-foreground text-center py-6">No recent deal closures</p>
             )}
           </div>
         </div>
