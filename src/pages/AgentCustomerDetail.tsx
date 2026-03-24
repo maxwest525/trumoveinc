@@ -75,6 +75,7 @@ export default function AgentCustomerDetail() {
   const [dealHistory, setDealHistory] = useState<DealHistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [customerStatus, setCustomerStatus] = useState("");
+  const [activeTab, setActiveTab] = useState(defaultTab);
 
   useEffect(() => {
     if (!id) return;
