@@ -94,7 +94,7 @@ export default function AgentTeamChat({ embedded = false }: { embedded?: boolean
   );
 
   const content = (
-    <div className="flex h-[calc(100vh-3rem)] overflow-hidden">
+    <div className={`flex ${embedded ? "h-full" : "h-[calc(100vh-3rem)]"} overflow-hidden`}>
       {/* Left sidebar */}
       <div className="w-80 border-r flex flex-col">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="flex flex-col flex-1">
