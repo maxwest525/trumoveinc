@@ -5,7 +5,8 @@ import { ESignSidebar } from "@/components/esign/ESignSidebar";
 import { EstimateAuthDocument } from "@/components/esign/EstimateAuthDocument";
 import { CCACHDocumentWrapper } from "@/components/esign/CCACHDocumentWrapper";
 import { ESignConsentBanner } from "@/components/esign/ESignConsentBanner";
-import type { DocumentType } from "@/components/esign/DocumentTabs";
+import { DocumentTabs, type DocumentType } from "@/components/esign/DocumentTabs";
+import { Card, CardContent } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -175,6 +176,20 @@ export default function PublicESign() {
                   onSubmit={handleSubmitCCACH}
                 />
               )}
+
+              {/* Documents to Sign — bottom of page */}
+              <div className="mt-6">
+                <Card className="border border-border bg-background shadow-sm">
+                  <CardContent className="p-4 space-y-3">
+                    <h3 className="font-medium text-[10px] uppercase tracking-wider text-muted-foreground">Documents to Sign</h3>
+                    <DocumentTabs
+                      activeDocument={activeDocument}
+                      onDocumentChange={handleDocumentChange}
+                      completedDocuments={completedDocuments}
+                    />
+                  </CardContent>
+                </Card>
+              </div>
             </div>
           </div>
         </div>

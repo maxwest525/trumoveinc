@@ -101,18 +101,6 @@ export function ESignSidebar({
       </Card>
 
 
-      {/* Documents to Sign */}
-      <Card className="border border-border bg-background shadow-sm">
-        <CardContent className="p-3 space-y-2">
-          <h3 className="font-medium text-[10px] uppercase tracking-wider text-muted-foreground">Documents to Sign</h3>
-          <DocumentTabs
-            activeDocument={activeDocument}
-            onDocumentChange={onDocumentChange}
-            completedDocuments={completedDocuments}
-          />
-        </CardContent>
-      </Card>
-
       {/* Document Status Card - Agent-facing only */}
       {!isPublic && (
         <ESignStatusCard
