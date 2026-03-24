@@ -217,7 +217,7 @@ export function CustomerCommunicationTab({ leadId, customerName, customerEmail, 
               value={messageBody}
               onChange={(e) => setMessageBody(e.target.value)}
               placeholder={isEmail ? "Write your email..." : "Type your message..."}
-              rows={isEmail ? 2 : 1}
+              rows={isEmail ? 4 : 3}
               className={cn("text-xs flex-1 min-h-0 resize-none", isEmail && "font-mono")}
               maxLength={!isEmail ? 320 : undefined}
               onKeyDown={(e) => {
