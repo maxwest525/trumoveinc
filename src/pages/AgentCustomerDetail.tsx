@@ -443,6 +443,16 @@ export default function AgentCustomerDetail() {
                 customerPhone={lead.phone || ""}
               />
             </TabsContent>
+
+            {/* COMMUNICATION TAB */}
+            <TabsContent value="communication">
+              <CustomerCommunicationTab
+                leadId={lead.id}
+                customerName={fullName}
+                customerEmail={lead.email || ""}
+                customerPhone={lead.phone || ""}
+              />
+            </TabsContent>
           </Tabs>
         </div>
       )}

@@ -22,7 +22,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: "New Lead", icon: UserPlus, href: "/agent/new-customer" },
   { label: "My Customers", icon: Users, href: "/agent/customers" },
   { label: "Pipeline", icon: Kanban, href: "/agent/pipeline", beta: true },
-  { label: "Customer Chat", icon: Mail, href: "/agent/messages" },
+  
   { label: "Dialer", icon: Phone, href: "/agent/dialer", beta: true },
   { label: "Bookings", icon: CalendarCheck, href: "/agent/operations" },
   { label: "Pulse Monitor", icon: Activity, href: "/agent/pulse" },
