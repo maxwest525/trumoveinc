@@ -108,36 +108,7 @@ export function ESignSidebar({
         <p>3. Submit at the bottom</p>
       </div>
 
-      {/* Signing Progress */}
-      <Card className="border border-border bg-background shadow-sm">
-        <CardContent className="p-3">
-          <h3 className="font-medium text-[10px] uppercase tracking-wider text-muted-foreground mb-2">Complete All Signatures</h3>
-          <div className="space-y-1">
-            {fieldOrder.map((field, i) => (
-              <div key={field} className="flex items-center gap-2 text-xs">
-                <div className={cn(
-                  "w-4 h-4 rounded-full flex items-center justify-center border",
-                  signatures[field]
-                    ? "bg-primary border-primary text-primary-foreground"
-                    : "border-muted-foreground/30"
-                )}>
-                  {signatures[field] && <Check className="w-2.5 h-2.5" />}
-                </div>
-                <span className={cn(
-                  signatures[field] ? "text-foreground" : "text-muted-foreground"
-                )}>
-                  {field === "signature" ? "Full Signature" : `Initial ${i + 1}`}
-                </span>
-              </div>
-            ))}
-          </div>
-          <div className="mt-2 text-[10px] text-muted-foreground">
-            {signedCount}/{fieldOrder.length} completed
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Documents to Sign — below signing progress */}
+      {/* Documents to Sign */}
       <Card className="border border-border bg-background shadow-sm">
         <CardContent className="p-3 space-y-2">
           <h3 className="font-medium text-[10px] uppercase tracking-wider text-muted-foreground">Documents to Sign</h3>
