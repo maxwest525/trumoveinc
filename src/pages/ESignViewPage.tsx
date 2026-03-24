@@ -214,79 +214,144 @@ export default function ESignViewPage() {
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="m15 18-6-6 6-6" />
             </svg>
-            Back to Customer Docs
+            Back to Customer
           </button>
 
-          <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 mt-4">
-            {!isBol && (
-              <ESignSidebar
-                typedName={typedName}
-                onTypedNameChange={setTypedName}
-                typedInitials={typedInitials}
-                signatures={signatures}
-                activeDocument={activeDocument}
-                onDocumentChange={handleDocumentChange}
-                completedDocuments={completedDocuments}
-                allSigned={allSigned}
-                recipientEmail={customerEmail}
-                refNumber={refNumber}
-                onDownloadPdf={handleDownloadPdf}
-                isDownloading={isDownloading}
-              />
-            )}
+          {isCompleted ? (
+            /* ─── Read-only completed document view ─── */
+            <div className="max-w-2xl mx-auto space-y-6">
+              <Card className="border border-border bg-card">
+                <CardContent className="p-6 space-y-6">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                      <CheckCircle2 className="w-5 h-5 text-primary" />
+                    </div>
+                    <div>
+                      <h2 className="text-lg font-semibold">Signed Document</h2>
+                      <p className="text-sm text-muted-foreground">This document has been signed and completed</p>
+                    </div>
+                  </div>
 
-            <div className="flex-1 max-w-full lg:max-w-[8.5in]">
-              {isBol ? (
-                <BOLDocumentWrapper
+                  <div className="rounded-lg border border-border bg-muted/30 p-5 space-y-3">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">Document Type</span>
+                      <Badge variant="outline" className="capitalize">{docTypeParam === "ccach" ? "CC/ACH Authorization" : docTypeParam === "bol" ? "Merchant Payment" : "Estimate Authorization"}</Badge>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">Reference</span>
+                      <span className="font-mono text-xs">{refNumber}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">Customer</span>
+                      <span className="font-medium">{customerName}</span>
+                    </div>
+                    {customerEmail && (
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-muted-foreground">Email</span>
+                        <span>{customerEmail}</span>
+                      </div>
+                    )}
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">Status</span>
+                      <Badge className="bg-primary/10 text-primary border-primary/20">
+                        <CheckCircle2 className="w-3 h-3 mr-1" /> Completed
+                      </Badge>
+                    </div>
+                  </div>
+
+                  {/* Document preview placeholder */}
+                  <div className="rounded-lg border border-border bg-background p-8 min-h-[400px] flex flex-col items-center justify-center text-center space-y-4">
+                    <FileText className="w-16 h-16 text-muted-foreground/20" />
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">Signed Document PDF</p>
+                      <p className="text-xs text-muted-foreground/60 mt-1">
+                        {docTypeParam === "ccach" ? "CC/ACH Authorization" : docTypeParam === "bol" ? "Merchant Payment" : "Estimate Authorization"} — {refNumber}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-3">
+                    <Button variant="outline" className="flex-1 gap-2" onClick={handleDownloadPdf} disabled={isDownloading}>
+                      {isDownloading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+                      {isDownloading ? "Downloading..." : "Download PDF"}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          ) : (
+            /* ─── Signing flow (unchanged) ─── */
+            <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 mt-4">
+              {!isBol && (
+                <ESignSidebar
                   typedName={typedName}
                   onTypedNameChange={setTypedName}
-                  isSubmitted={false}
-                  onSubmit={handleSubmitBOL}
-                />
-              ) : activeDocument === "estimate" ? (
-                <EstimateAuthDocument
-                  typedName={typedName}
                   typedInitials={typedInitials}
                   signatures={signatures}
-                  currentField={currentField}
-                  onSign={handleSign}
-                  onSubmit={handleSubmitEstimate}
-                  onContinueToNext={handleContinueToNext}
-                  isSubmitted={completedDocuments.estimate}
+                  activeDocument={activeDocument}
+                  onDocumentChange={handleDocumentChange}
+                  completedDocuments={completedDocuments}
+                  allSigned={allSigned}
+                  recipientEmail={customerEmail}
                   refNumber={refNumber}
-                  today={today}
-                  consentGiven={consentGiven}
-                  onConsentChange={handleConsentChange}
-                />
-              ) : (
-                <CCACHDocumentWrapper
-                  typedName={typedName}
-                  onTypedNameChange={setTypedName}
-                  isSubmitted={completedDocuments.ccach}
-                  onSubmit={handleSubmitCCACH}
-                  customerEmail={customerEmail}
-                  customerPhone={customerPhone}
-                  customerAddress={customerAddress}
+                  onDownloadPdf={handleDownloadPdf}
+                  isDownloading={isDownloading}
                 />
               )}
 
-              {/* Documents to Sign — bottom of page */}
-              {!isBol && (
-                <div className="mt-6">
-                  <Card className="border border-border bg-background shadow-sm">
-                    <CardContent className="p-4 space-y-3">
-                      <h3 className="font-medium text-[10px] uppercase tracking-wider text-muted-foreground">Documents to Sign</h3>
-                      <DocumentTabs
-                        activeDocument={activeDocument}
-                        onDocumentChange={handleDocumentChange}
-                        completedDocuments={completedDocuments}
-                      />
-                    </CardContent>
-                  </Card>
-                </div>
-              )}
+              <div className="flex-1 max-w-full lg:max-w-[8.5in]">
+                {isBol ? (
+                  <BOLDocumentWrapper
+                    typedName={typedName}
+                    onTypedNameChange={setTypedName}
+                    isSubmitted={false}
+                    onSubmit={handleSubmitBOL}
+                  />
+                ) : activeDocument === "estimate" ? (
+                  <EstimateAuthDocument
+                    typedName={typedName}
+                    typedInitials={typedInitials}
+                    signatures={signatures}
+                    currentField={currentField}
+                    onSign={handleSign}
+                    onSubmit={handleSubmitEstimate}
+                    onContinueToNext={handleContinueToNext}
+                    isSubmitted={completedDocuments.estimate}
+                    refNumber={refNumber}
+                    today={today}
+                    consentGiven={consentGiven}
+                    onConsentChange={handleConsentChange}
+                  />
+                ) : (
+                  <CCACHDocumentWrapper
+                    typedName={typedName}
+                    onTypedNameChange={setTypedName}
+                    isSubmitted={completedDocuments.ccach}
+                    onSubmit={handleSubmitCCACH}
+                    customerEmail={customerEmail}
+                    customerPhone={customerPhone}
+                    customerAddress={customerAddress}
+                  />
+                )}
+
+                {/* Documents to Sign — bottom of page */}
+                {!isBol && (
+                  <div className="mt-6">
+                    <Card className="border border-border bg-background shadow-sm">
+                      <CardContent className="p-4 space-y-3">
+                        <h3 className="font-medium text-[10px] uppercase tracking-wider text-muted-foreground">Documents to Sign</h3>
+                        <DocumentTabs
+                          activeDocument={activeDocument}
+                          onDocumentChange={handleDocumentChange}
+                          completedDocuments={completedDocuments}
+                        />
+                      </CardContent>
+                    </Card>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </AgentShell>
