@@ -178,11 +178,11 @@ export function CustomerCommunicationTab({ leadId, customerName, customerEmail, 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <div className="flex items-center justify-between">
           <TabsList>
-            <TabsTrigger value="history" className="text-xs gap-1.5">
-              <Clock className="w-3.5 h-3.5" /> History
-            </TabsTrigger>
             <TabsTrigger value="compose" className="text-xs gap-1.5">
               <Send className="w-3.5 h-3.5" /> Compose
+            </TabsTrigger>
+            <TabsTrigger value="history" className="text-xs gap-1.5">
+              <Clock className="w-3.5 h-3.5" /> History
             </TabsTrigger>
           </TabsList>
           {activeTab === "compose" && (
