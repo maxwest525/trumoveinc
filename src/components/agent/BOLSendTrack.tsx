@@ -234,7 +234,7 @@ export function BOLSendTrack({ prefillName = "", prefillEmail = "", prefillPhone
                           <span className="font-medium text-sm">{doc.customerName}</span>
                           <Badge variant="outline" className="text-[10px]">{doc.refNumber}</Badge>
                         </div>
-                        <p className="text-xs text-muted-foreground mb-2">Bill of Lading • Sent {formatTime(doc.sentAt)} via {doc.deliveryMethod.toUpperCase()}</p>
+                        <p className="text-xs text-muted-foreground mb-2">Merchant Payment • Sent {formatTime(doc.sentAt)} via {doc.deliveryMethod.toUpperCase()}</p>
                         <Badge className={cn("gap-1", statusConfig.color)}>
                           <StatusIcon className={cn("w-3 h-3", doc.status === "signing" && "animate-spin")} />
                           {statusConfig.label}
