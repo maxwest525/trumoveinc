@@ -258,7 +258,8 @@ export default function AgentCustomerDetail() {
               <TabsList>
                 <TabsTrigger value="overview" />
                 <TabsTrigger value="payment" />
-                <TabsTrigger value="communication" />
+                <TabsTrigger value="email" />
+                <TabsTrigger value="sms" />
                 <TabsTrigger value="esign" />
                 <TabsTrigger value="documents" />
               </TabsList>
