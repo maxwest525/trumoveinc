@@ -139,15 +139,8 @@ async function sendSms(customerPhone: string, documentLabel: string, refNumber: 
   const smsBody = buildSmsBody(documentLabel, refNumber, signingUrl);
   console.log(`SMS body (${smsBody.length} chars): ${smsBody}`);
 
-  try {
-    return await sendSmsViaClickSend(customerPhone, smsBody);
-  } catch (clickSendError) {
-    const clickSendMessage = clickSendError instanceof Error ? clickSendError.message : String(clickSendError);
-    console.warn("ClickSend SMS failed, falling back to Twilio:", clickSendMessage);
-
-    const twilioResult = await sendSmsViaTwilio(customerPhone, smsBody);
-    return { ...twilioResult, fallbackFrom: "clicksend", fallbackReason: clickSendMessage };
-  }
+  // ClickSend only — no Twilio fallback until approved
+  return await sendSmsViaClickSend(customerPhone, smsBody);
 }
 
 const handler = async (req: Request): Promise<Response> => {
