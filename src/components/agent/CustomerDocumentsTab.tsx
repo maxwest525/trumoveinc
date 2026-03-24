@@ -296,7 +296,7 @@ export function CustomerDocumentsTab({ leadId, customerName }: Props) {
   };
 
   const viewDocument = (doc: CompletedDoc) => {
-    navigate(`/agent/esign/view?type=${doc.document_type}&name=${encodeURIComponent(customerName)}&ref=${encodeURIComponent(doc.ref_number)}&leadId=${leadId}`);
+    navigate(`/agent/esign/view?type=${doc.document_type}&name=${encodeURIComponent(customerName)}&ref=${encodeURIComponent(doc.ref_number)}&leadId=${leadId}&status=${doc.status}`);
   };
 
   if (loading) {
