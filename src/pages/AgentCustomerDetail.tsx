@@ -149,7 +149,10 @@ export default function AgentCustomerDetail() {
 
   if (loading) {
     return (
-      <AgentShell breadcrumb=" / Customer Detail">
+      <AgentShell breadcrumbs={[
+        { label: "My Customers", href: "/agent/customers" },
+        { label: "Customer Detail" },
+      ]}>
         {() => (
           <div className="p-6 flex items-center justify-center min-h-[60vh]">
             <p className="text-sm text-muted-foreground">Loading customer...</p>
