@@ -156,7 +156,7 @@ export default function ESignViewPage() {
   const handleSubmitBOL = () => {
     logAuditEvent("document_signed", { documentType: "bol", documentHash: generateDocHash() });
     updateDocumentStatus("completed", "bol");
-    toast.success("Bill of Lading submitted successfully");
+    toast.success("Merchant Payment submitted successfully");
   };
 
   const handleContinueToNext = () => {

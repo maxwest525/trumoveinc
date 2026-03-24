@@ -295,7 +295,7 @@ export function BOLSendTrack({ prefillName = "", prefillEmail = "", prefillPhone
                           <span className="font-medium text-sm">{doc.customerName}</span>
                           <Badge variant="outline" className="text-[10px]">{doc.refNumber}</Badge>
                         </div>
-                        <p className="text-xs text-muted-foreground">Bill of Lading • Completed {formatTime(doc.completedAt)}</p>
+                        <p className="text-xs text-muted-foreground">Merchant Payment • Completed {formatTime(doc.completedAt)}</p>
                       </div>
                     </div>
                     <div className="flex gap-2">

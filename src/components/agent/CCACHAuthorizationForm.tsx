@@ -541,6 +541,9 @@ export function CCACHAuthorizationForm({
                             Open Secure Payment Portal
                           </Button>
                           <p className="text-[10px] text-muted-foreground text-center leading-relaxed">
+                            <strong className="text-foreground">No charges will be processed at this time.</strong> This step only verifies your payment method is valid and on file. Payment will not be collected until services are confirmed and authorized.
+                          </p>
+                          <p className="text-[10px] text-muted-foreground text-center leading-relaxed">
                             For your protection, please do not share bank details over phone, email, or chat.
                             All payment information is entered directly into our PCI-compliant secure portal.
                           </p>

@@ -38,7 +38,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
  const DOCUMENT_LABELS: Record<DocumentType, string> = {
    estimate: "Estimate Authorization",
    ccach: "CC/ACH Authorization",
-   bol: "Bill of Lading",
+   bol: "Merchant Payment",
  };
  
  const STATUS_CONFIG: Record<SigningStatus, { label: string; color: string; icon: typeof Clock }> = {

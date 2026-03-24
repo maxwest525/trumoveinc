@@ -139,7 +139,7 @@ export function BOLDocumentWrapper({
         {!isSubmitted ? (
           <Button onClick={onSubmit} className="gap-2">
             <Check className="h-4 w-4" />
-            Submit Bill of Lading
+            Submit Merchant Payment
           </Button>
         ) : (
           <div className="flex items-center gap-2 text-sm text-primary font-medium">
