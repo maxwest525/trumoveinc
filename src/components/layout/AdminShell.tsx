@@ -42,6 +42,8 @@ export default function AdminShell({ children, breadcrumb = "" }: AdminShellProp
   const location = useLocation();
   const isMobile = useIsMobile();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [notifOpen, setNotifOpen] = useState(false);
+  const { notifications, unreadCount, loading: notifLoading, markAsRead, markAllAsRead, deleteNotification } = useNotifications();
 
   useEffect(() => {
     setPortalContext("admin");
