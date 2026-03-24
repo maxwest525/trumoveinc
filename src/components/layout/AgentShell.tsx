@@ -8,6 +8,7 @@ import { FloatingDialer } from "@/components/agent/FloatingDialer";
 import MiniSoftphone from "@/components/dialer/MiniSoftphone";
 import { setPortalContext } from "@/hooks/usePortalContext";
 import { supabase } from "@/integrations/supabase/client";
+import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useNotifications } from "@/hooks/useNotifications";
 import NotificationsPanel from "@/components/agent/NotificationsPanel";
