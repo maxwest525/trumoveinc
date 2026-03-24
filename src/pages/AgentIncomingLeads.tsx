@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import AgentShell from "@/components/layout/AgentShell";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import {
-  UserPlus, Phone, MapPin, Calendar, ChevronRight, Inbox, Loader2, RefreshCw, X,
+  UserPlus, Phone, MapPin, Calendar, Inbox, Loader2, RefreshCw, Mail,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format, formatDistanceToNow } from "date-fns";
@@ -24,20 +24,15 @@ interface IncomingLead {
   created_at: string;
 }
 
-interface IncomingLeadsSidebarProps {
-  open: boolean;
-  onClose: () => void;
-}
-
 const SOURCE_COLORS: Record<string, string> = {
   website: "bg-primary/10 text-primary",
-  phone: "bg-chart-2/10 text-chart-2",
-  referral: "bg-chart-3/10 text-chart-3",
-  social: "bg-chart-4/10 text-chart-4",
-  ppc: "bg-chart-5/10 text-chart-5",
+  phone: "bg-emerald-500/10 text-emerald-600",
+  referral: "bg-amber-500/10 text-amber-600",
+  social: "bg-violet-500/10 text-violet-600",
+  ppc: "bg-rose-500/10 text-rose-600",
 };
 
-export default function IncomingLeadsSidebar({ open, onClose }: IncomingLeadsSidebarProps) {
+export default function AgentIncomingLeads() {
   const navigate = useNavigate();
   const [leads, setLeads] = useState<IncomingLead[]>([]);
   const [loading, setLoading] = useState(true);
@@ -51,29 +46,32 @@ export default function IncomingLeadsSidebar({ open, onClose }: IncomingLeadsSid
       .is("assigned_agent_id", null)
       .in("status", ["new", "contacted"])
       .order("created_at", { ascending: false })
-      .limit(30);
+      .limit(50);
     setLeads((data as IncomingLead[]) || []);
     setLoading(false);
   };
 
-  useEffect(() => {
-    if (open) fetchLeads();
-  }, [open]);
+  useEffect(() => { fetchLeads(); }, []);
 
-  // Realtime subscription for new unassigned leads
+  // Realtime: new unassigned leads
   useEffect(() => {
-    if (!open) return;
     const channel = supabase
-      .channel("incoming-leads")
+      .channel("incoming-leads-page")
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "leads" }, (payload) => {
         const newLead = payload.new as IncomingLead & { assigned_agent_id: string | null };
         if (!newLead.assigned_agent_id) {
-          setLeads((prev) => [newLead, ...prev].slice(0, 30));
+          setLeads((prev) => [newLead as IncomingLead, ...prev].slice(0, 50));
+        }
+      })
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "leads" }, (payload) => {
+        const updated = payload.new as IncomingLead & { assigned_agent_id: string | null };
+        if (updated.assigned_agent_id) {
+          setLeads((prev) => prev.filter((l) => l.id !== updated.id));
         }
       })
       .subscribe();
     return () => { supabase.removeChannel(channel); };
-  }, [open]);
+  }, []);
 
   const claimLead = async (leadId: string) => {
     setClaiming(leadId);
@@ -90,63 +88,51 @@ export default function IncomingLeadsSidebar({ open, onClose }: IncomingLeadsSid
     navigate(`/agent/customers/${leadId}`);
   };
 
-  if (!open) return null;
-
   return (
-    <aside className="w-72 xl:w-80 shrink-0 border-l border-border bg-card flex flex-col h-full">
-      {/* Header */}
-      <div className="px-4 py-3 border-b border-border flex items-center justify-between shrink-0">
-        <div className="flex items-center gap-2">
-          <Inbox className="w-4 h-4 text-primary" />
-          <h2 className="text-sm font-semibold text-foreground">Incoming Leads</h2>
-          {leads.length > 0 && (
-            <Badge variant="secondary" className="text-[10px] h-5 px-1.5 bg-primary/10 text-primary border-0">
-              {leads.length}
-            </Badge>
-          )}
+    <AgentShell breadcrumb=" / Incoming Leads">
+      <div className="p-3 sm:p-6 max-w-[1200px] mx-auto">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h1 className="text-lg sm:text-xl font-bold text-foreground flex items-center gap-2">
+              <Inbox className="w-5 h-5 text-primary" />
+              Incoming Leads
+              {leads.length > 0 && (
+                <Badge variant="secondary" className="text-xs bg-primary/10 text-primary border-0">
+                  {leads.length}
+                </Badge>
+              )}
+            </h1>
+            <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">Unclaimed leads waiting to be assigned</p>
+          </div>
+          <Button variant="outline" size="sm" onClick={fetchLeads} disabled={loading} className="gap-1.5">
+            <RefreshCw className={cn("w-3.5 h-3.5", loading && "animate-spin")} />
+            Refresh
+          </Button>
         </div>
-        <div className="flex items-center gap-1">
-          <button
-            onClick={fetchLeads}
-            className="p-1.5 rounded-lg hover:bg-muted transition-colors"
-            title="Refresh"
-          >
-            <RefreshCw className={cn("w-3.5 h-3.5 text-muted-foreground", loading && "animate-spin")} />
-          </button>
-          <button
-            onClick={onClose}
-            className="p-1.5 rounded-lg hover:bg-muted transition-colors"
-          >
-            <X className="w-3.5 h-3.5 text-muted-foreground" />
-          </button>
-        </div>
-      </div>
 
-      {/* Lead list */}
-      <ScrollArea className="flex-1">
         {loading ? (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+          <div className="flex items-center justify-center py-20">
+            <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
           </div>
         ) : leads.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
-            <Inbox className="w-8 h-8 text-muted-foreground/30 mb-3" />
+          <div className="flex flex-col items-center justify-center py-20 text-center">
+            <Inbox className="w-10 h-10 text-muted-foreground/20 mb-3" />
             <p className="text-sm font-medium text-muted-foreground">No unclaimed leads</p>
             <p className="text-xs text-muted-foreground/60 mt-1">New leads will appear here in real time</p>
           </div>
         ) : (
-          <div className="p-2 space-y-1.5">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
             {leads.map((lead) => (
               <div
                 key={lead.id}
-                className="rounded-lg border border-border bg-background p-3 hover:border-primary/30 transition-colors group"
+                className="rounded-xl border border-border bg-card p-4 hover:border-primary/30 hover:shadow-sm transition-all"
               >
-                <div className="flex items-start justify-between gap-2 mb-2">
+                <div className="flex items-start justify-between gap-2 mb-3">
                   <div className="min-w-0">
-                    <p className="text-sm font-medium text-foreground truncate">
+                    <p className="text-sm font-semibold text-foreground truncate">
                       {lead.first_name} {lead.last_name}
                     </p>
-                    <p className="text-[10px] text-muted-foreground">
+                    <p className="text-[11px] text-muted-foreground">
                       {formatDistanceToNow(new Date(lead.created_at), { addSuffix: true })}
                     </p>
                   </div>
@@ -160,22 +146,34 @@ export default function IncomingLeadsSidebar({ open, onClose }: IncomingLeadsSid
                   </Badge>
                 </div>
 
-                <div className="space-y-1 mb-2.5">
+                <div className="space-y-1.5 mb-3">
                   {lead.phone && (
-                    <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-                      <Phone className="w-3 h-3 shrink-0" />
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <Phone className="w-3.5 h-3.5 shrink-0" />
                       <span className="truncate">{lead.phone}</span>
                     </div>
                   )}
+                  {lead.email && (
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <Mail className="w-3.5 h-3.5 shrink-0" />
+                      <span className="truncate">{lead.email}</span>
+                    </div>
+                  )}
                   {lead.origin_address && (
-                    <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-                      <MapPin className="w-3 h-3 shrink-0" />
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <MapPin className="w-3.5 h-3.5 shrink-0 text-emerald-500" />
                       <span className="truncate">{lead.origin_address}</span>
                     </div>
                   )}
+                  {lead.destination_address && (
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <MapPin className="w-3.5 h-3.5 shrink-0 text-rose-500" />
+                      <span className="truncate">{lead.destination_address}</span>
+                    </div>
+                  )}
                   {lead.move_date && (
-                    <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-                      <Calendar className="w-3 h-3 shrink-0" />
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <Calendar className="w-3.5 h-3.5 shrink-0" />
                       <span>{format(new Date(lead.move_date), "MMM d, yyyy")}</span>
                     </div>
                   )}
@@ -183,14 +181,14 @@ export default function IncomingLeadsSidebar({ open, onClose }: IncomingLeadsSid
 
                 <Button
                   size="sm"
-                  className="w-full h-7 text-xs gap-1.5"
+                  className="w-full gap-1.5"
                   onClick={() => claimLead(lead.id)}
                   disabled={claiming === lead.id}
                 >
                   {claiming === lead.id ? (
-                    <Loader2 className="w-3 h-3 animate-spin" />
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
                   ) : (
-                    <UserPlus className="w-3 h-3" />
+                    <UserPlus className="w-3.5 h-3.5" />
                   )}
                   Claim Lead
                 </Button>
@@ -198,7 +196,7 @@ export default function IncomingLeadsSidebar({ open, onClose }: IncomingLeadsSid
             ))}
           </div>
         )}
-      </ScrollArea>
-    </aside>
+      </div>
+    </AgentShell>
   );
 }

@@ -1,9 +1,8 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Home, Sun, Moon, Bell, MessagesSquare, Settings, LogOut, User, ChevronDown, Menu, X, Inbox } from "lucide-react";
+import { Home, Sun, Moon, Bell, MessagesSquare, Settings, LogOut, User, ChevronDown, Menu, X } from "lucide-react";
 import { useTheme } from "next-themes";
 import AgentSidebar from "@/components/agent/AgentSidebar";
-import IncomingLeadsSidebar from "@/components/agent/IncomingLeadsSidebar";
 import { FloatingDialer } from "@/components/agent/FloatingDialer";
 import MiniSoftphone from "@/components/dialer/MiniSoftphone";
 import { setPortalContext } from "@/hooks/usePortalContext";
@@ -37,7 +36,6 @@ export default function AgentShell({ children, breadcrumb = "" }: AgentShellProp
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [dialerOpen, setDialerOpen] = useState(false);
   const [dialerPrefill, setDialerPrefill] = useState<string | undefined>();
-  const [incomingOpen, setIncomingOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const { notifications, unreadCount, loading: notifLoading, markAsRead, markAllAsRead, deleteNotification } = useNotifications();
   const [profile, setProfile] = useState<{ display_name: string; avatar_url: string | null; email: string }>({
@@ -112,16 +110,6 @@ export default function AgentShell({ children, breadcrumb = "" }: AgentShellProp
             <span className="text-sm text-muted-foreground truncate">Agent{breadcrumb}</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <button
-              onClick={() => setIncomingOpen((v) => !v)}
-              className={cn(
-                "p-1.5 rounded-lg transition-colors relative",
-                incomingOpen ? "bg-primary/10 text-primary" : "hover:bg-muted text-muted-foreground"
-              )}
-              title="Incoming Leads"
-            >
-              <Inbox className="w-4 h-4" />
-            </button>
             <Link
               to="/agent/team-chat"
               className={`p-1.5 rounded-lg transition-colors relative ${
@@ -200,7 +188,6 @@ export default function AgentShell({ children, breadcrumb = "" }: AgentShellProp
           {typeof children === "function" ? children({ openDialer: (num?: string) => { setDialerPrefill(num); setDialerOpen(true); } }) : children}
         </main>
       </div>
-      {!isMobile && <IncomingLeadsSidebar open={incomingOpen} onClose={() => setIncomingOpen(false)} />}
       <FloatingDialer open={dialerOpen} onOpenChange={setDialerOpen} prefillNumber={dialerPrefill} />
     </div>
   );
