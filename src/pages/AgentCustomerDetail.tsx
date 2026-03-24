@@ -198,10 +198,18 @@ export default function AgentCustomerDetail() {
                   <PhoneCall className="w-3 h-3" /> Call
                 </Button>
               )}
-              <Button variant="outline" size="sm" className="gap-1.5 text-xs h-8"
-                onClick={() => setActiveTab("communication")}>
-                <MessageSquare className="w-3 h-3" /> Chat
-              </Button>
+              {lead.email && (
+                <Button variant="outline" size="sm" className="gap-1.5 text-xs h-8"
+                  onClick={() => setActiveTab("communication")}>
+                  <Mail className="w-3 h-3" /> Email
+                </Button>
+              )}
+              {lead.phone && (
+                <Button variant="outline" size="sm" className="gap-1.5 text-xs h-8"
+                  onClick={() => setActiveTab("communication")}>
+                  <MessageSquare className="w-3 h-3" /> SMS
+                </Button>
+              )}
             </div>
           </div>
 
@@ -210,9 +218,6 @@ export default function AgentCustomerDetail() {
             <TabsList className="w-full sm:w-auto overflow-x-auto">
               <TabsTrigger value="overview" className="gap-1.5 text-xs">
                 <User className="w-3.5 h-3.5" /> Overview
-              </TabsTrigger>
-              <TabsTrigger value="communication" className="gap-1.5 text-xs">
-                <MessageSquare className="w-3.5 h-3.5" /> Chat
               </TabsTrigger>
               <TabsTrigger value="esign" className="gap-1.5 text-xs">
                 <FileText className="w-3.5 h-3.5" /> E-Signs
