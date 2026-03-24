@@ -36,6 +36,7 @@ export default function AgentShell({ children, breadcrumb = "" }: AgentShellProp
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [dialerOpen, setDialerOpen] = useState(false);
   const [dialerPrefill, setDialerPrefill] = useState<string | undefined>();
+  const [incomingOpen, setIncomingOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const { notifications, unreadCount, loading: notifLoading, markAsRead, markAllAsRead, deleteNotification } = useNotifications();
   const [profile, setProfile] = useState<{ display_name: string; avatar_url: string | null; email: string }>({
