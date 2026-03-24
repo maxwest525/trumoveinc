@@ -46,21 +46,22 @@ interface Props {
   customerName: string;
   customerEmail: string;
   customerPhone: string;
+  mode: "email" | "sms";
 }
 
-export function CustomerCommunicationTab({ leadId, customerName, customerEmail, customerPhone }: Props) {
+export function CustomerCommunicationTab({ leadId, customerName, customerEmail, customerPhone, mode }: Props) {
   const [activeTab, setActiveTab] = useState("compose");
-  const [composeMode, setComposeMode] = useState<"email" | "sms">("email");
+  const composeMode = mode;
   const [selectedTemplate, setSelectedTemplate] = useState("");
   const [emailSubject, setEmailSubject] = useState("");
   const [messageBody, setMessageBody] = useState("");
-  const [recipient, setRecipient] = useState(customerEmail);
+  const [recipient, setRecipient] = useState(mode === "email" ? customerEmail : customerPhone);
   const [copied, setCopied] = useState(false);
   const [isSending, setIsSending] = useState(false);
 
   useEffect(() => {
-    setRecipient(composeMode === "email" ? customerEmail : customerPhone);
-  }, [composeMode, customerEmail, customerPhone]);
+    setRecipient(mode === "email" ? customerEmail : customerPhone);
+  }, [mode, customerEmail, customerPhone]);
 
   // Fetch message history from customer_messages
   const { data: messages = [], refetch: refetchMessages } = useQuery({
