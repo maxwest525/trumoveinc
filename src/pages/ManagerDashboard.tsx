@@ -30,13 +30,15 @@ export default function ManagerDashboard() {
 
   useEffect(() => {
     const fetch = async () => {
-      const [dealsRes, profilesRes] = await Promise.all([
+      const [dealsRes, profilesRes, leadsRes] = await Promise.all([
         supabase.from("deals").select("id, stage, deal_value, actual_revenue, assigned_agent_id, created_at, updated_at, actual_close_date, leads(first_name, last_name)"),
         supabase.from("profiles").select("id, display_name, email"),
+        supabase.from("leads").select("id, created_at, status"),
       ]);
 
       const deals = (dealsRes.data as any[]) || [];
       const profiles = (profilesRes.data as any[]) || [];
+      const leads = (leadsRes.data as any[]) || [];
 
       // Stats
       const closedWon = deals.filter(d => d.stage === "closed_won");
@@ -45,8 +47,13 @@ export default function ManagerDashboard() {
       const closeRate = totalClosed > 0 ? Math.round((closedWon.length / totalClosed) * 100) : 0;
       const totalRevenue = closedWon.reduce((s, d) => s + (d.actual_revenue || d.deal_value || 0), 0);
       const atRisk = deals.filter(d => d.stage === "follow_up").length;
+      const openStages = ["new_lead", "contacted", "quoted", "follow_up", "booked", "dispatched", "in_transit"];
+      const activeDeals = deals.filter(d => openStages.includes(d.stage));
+      const pipelineValue = activeDeals.reduce((s, d) => s + (d.deal_value || 0), 0);
+      const thirtyDaysAgo = new Date(); thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      const newLeads = leads.filter(l => new Date(l.created_at) >= thirtyDaysAgo).length;
 
-      setStats({ revenue: totalRevenue, closeRate, totalClosed, atRisk });
+      setStats({ revenue: totalRevenue, closeRate, totalClosed, atRisk, pipelineValue, newLeads, activeDeals: activeDeals.length });
 
       // Revenue trend (last 6 months)
       const monthlyRev: Record<string, number> = {};
