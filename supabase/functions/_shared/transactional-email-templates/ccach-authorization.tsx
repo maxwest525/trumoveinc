@@ -23,14 +23,12 @@ const CCACHAuthorizationEmail = ({ customerName, refNumber, amount, paymentMetho
       <Container style={container}>
         {/* Logo Header */}
         <div style={logoBar}>
-          <Img src={LOGO_URL} alt="TruMove" width="140" height="auto" style={logoImg} />
+          <Heading style={brandName}>{SITE_NAME}</Heading>
+          <Text style={brandTagline}>Your Trusted Moving Partner</Text>
         </div>
 
         {/* Hero Banner */}
         <div style={heroBanner}>
-          <div style={iconCircle}>
-            <Text style={iconText}>✅</Text>
-          </div>
           <Heading style={heroTitle}>Payment Authorization Confirmed</Heading>
           <Text style={heroSubtitle}>Reference: {refNumber || 'N/A'}</Text>
         </div>
