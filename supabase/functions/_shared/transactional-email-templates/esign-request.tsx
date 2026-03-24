@@ -48,17 +48,17 @@ const ESignRequestEmail = ({ customerName, documentLabel, refNumber, signingUrl 
         <div style={detailsCard}>
           <Text style={detailsTitle}>Document Details</Text>
           <div style={detailRow}>
-            <Text style={detailLabel}>Document Type</Text>
+51:             <Text style={detailLabel}>Document Type:</Text>
             <Text style={detailValue}>{documentLabel || 'N/A'}</Text>
           </div>
           <div style={divider} />
           <div style={detailRow}>
-            <Text style={detailLabel}>Reference</Text>
+            <Text style={detailLabel}>Reference:</Text>
             <Text style={detailValue}>{refNumber || 'N/A'}</Text>
           </div>
           <div style={divider} />
           <div style={detailRow}>
-            <Text style={detailLabel}>Recipient</Text>
+            <Text style={detailLabel}>Recipient:</Text>
             <Text style={detailValue}>{customerName || 'N/A'}</Text>
           </div>
         </div>
