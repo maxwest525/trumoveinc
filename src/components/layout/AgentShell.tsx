@@ -34,7 +34,7 @@ interface AgentShellProps {
   breadcrumbs?: BreadcrumbSegment[];
 }
 
-export default function AgentShell({ children, breadcrumb = "" }: AgentShellProps) {
+export default function AgentShell({ children, breadcrumb = "", breadcrumbs }: AgentShellProps) {
   const { theme, setTheme } = useTheme();
   const location = useLocation();
   const navigate = useNavigate();
