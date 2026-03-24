@@ -105,9 +105,9 @@ const logoBar = { padding: '28px 32px 20px', textAlign: 'center' as const, borde
 const brandName = { color: '#22c55e', fontSize: '28px', fontWeight: 'bold' as const, margin: '0', letterSpacing: '-0.5px' }
 const brandTagline = { color: '#94a3b8', fontSize: '12px', margin: '4px 0 0' }
 
-const heroBanner = { background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 50%, #15803d 100%)', padding: '40px 32px', textAlign: 'center' as const }
-const heroTitle = { color: '#ffffff', fontSize: '24px', fontWeight: '700' as const, margin: '0 0 8px', letterSpacing: '-0.3px' }
-const heroSubtitle = { color: 'rgba(255,255,255,0.85)', fontSize: '14px', margin: '0' }
+const heroBanner = { backgroundColor: '#22c55e', padding: '40px 32px', textAlign: 'center' as const }
+const heroTitle = { color: '#000000', fontSize: '24px', fontWeight: '700' as const, margin: '0 0 8px', letterSpacing: '-0.3px' }
+const heroSubtitle = { color: '#1e293b', fontSize: '14px', margin: '0' }
 
 const greeting = { fontSize: '15px', color: '#000000', margin: '32px 32px 8px', fontWeight: '500' as const }
 const bodyText = { fontSize: '14px', color: '#000000', lineHeight: '1.7', margin: '0 32px 24px' }
