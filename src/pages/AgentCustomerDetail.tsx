@@ -206,14 +206,14 @@ export default function AgentCustomerDetail() {
               <TabsTrigger value="overview" className="gap-1.5 text-xs">
                 <User className="w-3.5 h-3.5" /> Overview
               </TabsTrigger>
+              <TabsTrigger value="communication" className="gap-1.5 text-xs">
+                <MessageSquare className="w-3.5 h-3.5" /> Chat
+              </TabsTrigger>
               <TabsTrigger value="esign" className="gap-1.5 text-xs">
                 <FileText className="w-3.5 h-3.5" /> E-Signs
               </TabsTrigger>
               <TabsTrigger value="documents" className="gap-1.5 text-xs">
                 <FolderOpen className="w-3.5 h-3.5" /> Docs
-              </TabsTrigger>
-              <TabsTrigger value="communication" className="gap-1.5 text-xs">
-                <MessageSquare className="w-3.5 h-3.5" /> Chat
               </TabsTrigger>
             </TabsList>
 
