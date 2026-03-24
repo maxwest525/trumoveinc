@@ -109,8 +109,8 @@ const heroBanner = { background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 50
 const heroTitle = { color: '#ffffff', fontSize: '24px', fontWeight: '700' as const, margin: '0 0 8px', letterSpacing: '-0.3px' }
 const heroSubtitle = { color: 'rgba(255,255,255,0.85)', fontSize: '14px', margin: '0' }
 
-const greeting = { fontSize: '15px', color: '#1e293b', margin: '32px 32px 8px', fontWeight: '500' as const }
-const bodyText = { fontSize: '14px', color: '#64748b', lineHeight: '1.7', margin: '0 32px 24px' }
+const greeting = { fontSize: '15px', color: '#000000', margin: '32px 32px 8px', fontWeight: '500' as const }
+const bodyText = { fontSize: '14px', color: '#000000', lineHeight: '1.7', margin: '0 32px 24px' }
 
 const ctaWrap = { textAlign: 'center' as const, margin: '8px 32px 32px' }
 const ctaButton = { display: 'inline-block' as const, background: '#22c55e', color: '#ffffff', padding: '14px 48px', borderRadius: '8px', textDecoration: 'none', fontWeight: '600' as const, fontSize: '15px', letterSpacing: '0.2px', boxShadow: '0 2px 8px rgba(34,197,94,0.3)' }

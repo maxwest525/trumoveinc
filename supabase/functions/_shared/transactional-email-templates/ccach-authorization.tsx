@@ -109,8 +109,8 @@ const heroBanner = { background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 50
 const heroTitle = { color: '#ffffff', fontSize: '24px', fontWeight: '700' as const, margin: '0 0 8px', letterSpacing: '-0.3px' }
 const heroSubtitle = { color: 'rgba(255,255,255,0.85)', fontSize: '14px', margin: '0' }
 
-const greeting = { fontSize: '15px', color: '#1e293b', margin: '32px 32px 8px', fontWeight: '500' as const }
-const bodyText = { fontSize: '14px', color: '#64748b', lineHeight: '1.7', margin: '0 32px 24px' }
+const greeting = { fontSize: '15px', color: '#000000', margin: '32px 32px 8px', fontWeight: '500' as const }
+const bodyText = { fontSize: '14px', color: '#000000', lineHeight: '1.7', margin: '0 32px 24px' }
 
 const detailsCard = { backgroundColor: '#f8faf9', border: '1px solid #e2e8f0', borderRadius: '10px', margin: '0 32px 28px', padding: '20px 24px', overflow: 'hidden' as const }
 const detailsTitle = { fontSize: '11px', fontWeight: '600' as const, color: '#94a3b8', textTransform: 'uppercase' as const, letterSpacing: '0.8px', margin: '0 0 16px' }
