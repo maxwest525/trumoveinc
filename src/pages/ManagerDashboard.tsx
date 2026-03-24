@@ -26,19 +26,17 @@ export default function ManagerDashboard() {
   const [revenueTrend, setRevenueTrend] = useState<{ month: string; revenue: number }[]>([]);
   const [bookingsStatus, setBookingsStatus] = useState<{ status: string; count: number }[]>([]);
   const [team, setTeam] = useState<{ initials: string; name: string; bookings: string; revenue: string }[]>([]);
-  const [pendingActivities, setPendingActivities] = useState<{ title: string; sub: string }[]>([]);
+  const [recentDeals, setRecentDeals] = useState<any[]>([]);
 
   useEffect(() => {
     const fetch = async () => {
-      const [dealsRes, profilesRes, activitiesRes] = await Promise.all([
+      const [dealsRes, profilesRes] = await Promise.all([
         supabase.from("deals").select("id, stage, deal_value, actual_revenue, assigned_agent_id, created_at, updated_at, actual_close_date, leads(first_name, last_name)"),
         supabase.from("profiles").select("id, display_name, email"),
-        supabase.from("activities").select("id, subject, description, type, is_done, due_date"),
       ]);
 
       const deals = (dealsRes.data as any[]) || [];
       const profiles = (profilesRes.data as any[]) || [];
-      const activities = (activitiesRes.data as any[]) || [];
 
       // Stats
       const closedWon = deals.filter(d => d.stage === "closed_won");
@@ -100,13 +98,13 @@ export default function ManagerDashboard() {
         }));
       setTeam(teamData);
 
-      // Pending activities as approvals/alerts
-      const pending = activities
-        .filter(a => !a.is_done)
-        .sort((a, b) => (a.due_date || "z").localeCompare(b.due_date || "z"))
-        .slice(0, 3)
-        .map(a => ({ title: a.subject || "Pending task", sub: a.description || a.type?.replace("_", " ") || "" }));
-      setPendingActivities(pending);
+      // Recent closed deals
+      setRecentDeals(
+        deals
+          .filter(d => d.stage === "closed_won" || d.stage === "closed_lost")
+          .sort((a, b) => (b.updated_at || "").localeCompare(a.updated_at || ""))
+          .slice(0, 4)
+      );
 
       setLoading(false);
     };
@@ -188,19 +186,27 @@ export default function ManagerDashboard() {
           </div>
         </div>
 
-        {/* Pending Tasks */}
+        {/* Recent Deal Activity */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div className="rounded-xl border border-border bg-card p-4">
-            <h2 className="text-sm font-semibold text-foreground mb-3">Pending Tasks</h2>
-            {pendingActivities.length > 0 ? pendingActivities.map((a, i) => (
-              <div key={i} className="flex items-center gap-3 py-3 px-2 rounded-lg hover:bg-muted/50 cursor-pointer transition-colors">
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-foreground">{a.title}</p>
-                  <p className="text-xs text-muted-foreground">{a.sub}</p>
-                </div>
-              </div>
-            )) : (
-              <p className="text-xs text-muted-foreground text-center py-6">No pending tasks</p>
+            <h2 className="text-sm font-semibold text-foreground mb-3">Recent Deal Activity</h2>
+            {recentDeals.length > 0 ? (
+              recentDeals.map((d, i) => {
+                const lead = d.leads as any;
+                const name = lead ? `${lead.first_name} ${lead.last_name}` : "Unknown";
+                const won = d.stage === "closed_won";
+                return (
+                  <div key={i} className="flex items-center gap-3 py-3 px-2 rounded-lg hover:bg-muted/50 transition-colors">
+                    <div className={`w-2 h-2 rounded-full shrink-0 ${won ? "bg-chart-2" : "bg-destructive"}`} />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-foreground truncate">{name}</p>
+                      <p className="text-xs text-muted-foreground">{won ? "Closed Won" : "Lost"} · ${(d.actual_revenue || d.deal_value || 0).toLocaleString()}</p>
+                    </div>
+                  </div>
+                );
+              })
+            ) : (
+              <p className="text-xs text-muted-foreground text-center py-6">No recent deal closures</p>
             )}
           </div>
         </div>
