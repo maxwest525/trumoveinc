@@ -94,12 +94,12 @@ async function sendSmsViaTwilioGateway(customerPhone: string, smsBody: string) {
     Body: smsBody,
   });
 
-  if (TWILIO_MESSAGING_SERVICE_SID) {
-    params.set("MessagingServiceSid", TWILIO_MESSAGING_SERVICE_SID);
-  } else if (TWILIO_PHONE_NUMBER) {
+  if (TWILIO_PHONE_NUMBER) {
     params.set("From", TWILIO_PHONE_NUMBER);
+  } else if (TWILIO_MESSAGING_SERVICE_SID) {
+    params.set("MessagingServiceSid", TWILIO_MESSAGING_SERVICE_SID);
   } else {
-    throw new Error("Neither TWILIO_MESSAGING_SERVICE_SID nor TWILIO_PHONE_NUMBER is configured");
+    throw new Error("Neither TWILIO_PHONE_NUMBER nor TWILIO_MESSAGING_SERVICE_SID is configured");
   }
 
   const response = await fetch(`${GATEWAY_URL}/Messages.json`, {
