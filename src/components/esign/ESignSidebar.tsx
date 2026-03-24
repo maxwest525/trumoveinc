@@ -2,10 +2,8 @@ import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
-import { Send, Mail, FileText, UserPlus, Check, Loader2, Download, Phone } from "lucide-react";
-import { toast } from "sonner";
+import { UserPlus, Check } from "lucide-react";
 import { DocumentTabs, type DocumentType } from "./DocumentTabs";
 import { ESignStatusCard } from "./ESignStatusCard";
 import { ClientSearchModal, type ClientData } from "@/components/agent/ClientSearchModal";
@@ -54,69 +52,94 @@ export function ESignSidebar({
     onTypedNameChange(client.name);
   };
 
+  const fieldOrder: SignatureField[] = ["initial1", "initial2", "initial3", "signature"];
+  const signedCount = fieldOrder.filter((f) => signatures[f]).length;
+
   return (
-    <div className="w-full lg:w-72 flex-shrink-0 space-y-4">
+    <div className="w-full lg:w-72 flex-shrink-0 space-y-3">
       <ClientSearchModal
         open={showClientSearch}
         onClose={() => setShowClientSearch(false)}
         onSelect={handleClientSelect}
       />
 
-
-      {/* Customer Name Card */}
+      {/* Customer Name — compact */}
       <Card className="border border-border bg-background shadow-sm">
-        <CardContent className="p-5 space-y-4">
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <label className="text-xs text-muted-foreground uppercase tracking-wide font-medium">Your Full Legal Name</label>
-              {!isPublic && (
-                <Button onClick={() => setShowClientSearch(true)} variant="ghost" size="sm" className="h-6 px-2 text-[10px] gap-1">
-                  <UserPlus className="w-3 h-3" />
-                  Import
-                </Button>
-              )}
-            </div>
-            <Input
-              placeholder="e.g. John Smith"
-              value={typedName}
-              onChange={(e) => onTypedNameChange(e.target.value)}
-              className="bg-background border-foreground/20 h-10 text-base"
-            />
-
-            {/* Signature/Initials Preview */}
-            <div className="flex gap-3 pt-1">
-              <div className="flex-1 border border-foreground/20 rounded px-3 py-2 bg-muted/10">
-                <span className="text-[10px] text-muted-foreground uppercase tracking-wide block mb-1">Signature</span>
-                <div className="text-lg text-foreground truncate min-h-[1.5rem]" style={{ fontFamily: "'Dancing Script', cursive" }}>
-                  {typedName || <span className="text-muted-foreground/50 text-sm">—</span>}
-                </div>
-              </div>
-
-              <div className="w-16 border border-foreground/20 rounded px-3 py-2 bg-muted/10">
-                <span className="text-[10px] text-muted-foreground uppercase tracking-wide block mb-1">Initials</span>
-                <div className="text-lg text-foreground min-h-[1.5rem]" style={{ fontFamily: "'Dancing Script', cursive" }}>
-                  {typedInitials || <span className="text-muted-foreground/50 text-sm">—</span>}
-                </div>
-              </div>
-            </div>
+        <CardContent className="p-3 space-y-2">
+          <div className="flex items-center justify-between">
+            <label className="text-[10px] text-muted-foreground uppercase tracking-wide font-medium">Full Legal Name</label>
+            {!isPublic && (
+              <Button onClick={() => setShowClientSearch(true)} variant="ghost" size="sm" className="h-5 px-1.5 text-[9px] gap-0.5">
+                <UserPlus className="w-2.5 h-2.5" />
+                Import
+              </Button>
+            )}
           </div>
+          <Input
+            placeholder="e.g. John Smith"
+            value={typedName}
+            onChange={(e) => onTypedNameChange(e.target.value)}
+            className="bg-background border-foreground/20 h-8 text-sm"
+          />
 
-          <Separator />
-
-          <div className="space-y-2 text-sm text-muted-foreground">
-            <p className="font-semibold text-foreground text-xs uppercase tracking-wide">How to Sign</p>
-            <p>1. Enter your full legal name above</p>
-            <p>
-              2. Click each highlighted <span className="font-mono text-xs border px-1 rounded">initial</span> box
-            </p>
-            <p>3. Sign and submit at the bottom</p>
+          {/* Signature/Initials Preview — compact */}
+          <div className="flex gap-2">
+            <div className="flex-1 border border-foreground/20 rounded px-2 py-1 bg-muted/10">
+              <span className="text-[9px] text-muted-foreground uppercase tracking-wide block">Signature</span>
+              <div className="text-sm text-foreground truncate min-h-[1.2rem]" style={{ fontFamily: "'Dancing Script', cursive" }}>
+                {typedName || <span className="text-muted-foreground/50 text-xs">—</span>}
+              </div>
+            </div>
+            <div className="w-14 border border-foreground/20 rounded px-2 py-1 bg-muted/10">
+              <span className="text-[9px] text-muted-foreground uppercase tracking-wide block">Initials</span>
+              <div className="text-sm text-foreground min-h-[1.2rem]" style={{ fontFamily: "'Dancing Script', cursive" }}>
+                {typedInitials || <span className="text-muted-foreground/50 text-xs">—</span>}
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Document Selection */}
+      {/* How to Sign — minimal */}
+      <div className="px-1 space-y-1 text-[11px] text-muted-foreground">
+        <p className="font-medium text-foreground text-[10px] uppercase tracking-wide">How to sign</p>
+        <p>1. Enter your name above</p>
+        <p>2. Click each <span className="font-mono text-[10px] border px-0.5 rounded">initial</span> / <span className="font-mono text-[10px] border px-0.5 rounded">sign</span> box</p>
+        <p>3. Submit at the bottom</p>
+      </div>
+
+      {/* Signing Progress */}
       <Card className="border border-border bg-background shadow-sm">
-        <CardContent className="p-4 space-y-3">
+        <CardContent className="p-3">
+          <h3 className="font-medium text-[10px] uppercase tracking-wider text-muted-foreground mb-2">Complete All Signatures</h3>
+          <div className="space-y-1">
+            {fieldOrder.map((field, i) => (
+              <div key={field} className="flex items-center gap-2 text-xs">
+                <div className={cn(
+                  "w-4 h-4 rounded-full flex items-center justify-center border",
+                  signatures[field]
+                    ? "bg-primary border-primary text-primary-foreground"
+                    : "border-muted-foreground/30"
+                )}>
+                  {signatures[field] && <Check className="w-2.5 h-2.5" />}
+                </div>
+                <span className={cn(
+                  signatures[field] ? "text-foreground" : "text-muted-foreground"
+                )}>
+                  {field === "signature" ? "Full Signature" : `Initial ${i + 1}`}
+                </span>
+              </div>
+            ))}
+          </div>
+          <div className="mt-2 text-[10px] text-muted-foreground">
+            {signedCount}/{fieldOrder.length} completed
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Documents to Sign — below signing progress */}
+      <Card className="border border-border bg-background shadow-sm">
+        <CardContent className="p-3 space-y-2">
           <h3 className="font-medium text-[10px] uppercase tracking-wider text-muted-foreground">Documents to Sign</h3>
           <DocumentTabs
             activeDocument={activeDocument}
