@@ -100,13 +100,6 @@ export function ESignSidebar({
         </CardContent>
       </Card>
 
-      {/* How to Sign — minimal */}
-      <div className="px-1 space-y-1 text-[11px] text-muted-foreground">
-        <p className="font-medium text-foreground text-[10px] uppercase tracking-wide">How to sign</p>
-        <p>1. Enter your name above</p>
-        <p>2. Click each <span className="font-mono text-[10px] border px-0.5 rounded">initial</span> / <span className="font-mono text-[10px] border px-0.5 rounded">sign</span> box</p>
-        <p>3. Submit at the bottom</p>
-      </div>
 
       {/* Documents to Sign */}
       <Card className="border border-border bg-background shadow-sm">
