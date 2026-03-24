@@ -13,6 +13,42 @@ import { toast } from "sonner";
 import { getEsignBaseUrl } from "@/lib/esignUrl";
 import { Label } from "@/components/ui/label";
 
+type DeliveryMethod = "email" | "sms" | "both";
+
+type SendEsignResponse = {
+  success: boolean;
+  partialFailure?: boolean;
+  email?: { success: true; sentTo: string };
+  sms?: { success: true; sentTo: string; provider?: string };
+  errors?: Partial<Record<"email" | "sms", string>>;
+  errorDetails?: Partial<Record<"email" | "sms", { provider?: string; code?: string }>>;
+};
+
+type SendDocumentResult = {
+  key: string;
+  success: boolean;
+  refNumber?: string;
+  error?: string;
+  warning?: string;
+};
+
+function getDeliveryMethodLabel(method: DeliveryMethod) {
+  if (method === "both") return "Email & SMS";
+  if (method === "email") return "Email";
+  return "SMS";
+}
+
+function getFriendlyDeliveryError(response?: SendEsignResponse) {
+  const smsCode = response?.errorDetails?.sms?.code;
+  const smsProvider = response?.errorDetails?.sms?.provider;
+
+  if (smsProvider === "clicksend" && smsCode === "COUNTRY_NOT_ENABLED") {
+    return "ClickSend is rejecting US SMS for this account. Enable United States sending in ClickSend first.";
+  }
+
+  return response?.errors?.sms || response?.errors?.email || "Failed to send document";
+}
+
 const DOC_TYPES = [
   { key: "estimate", label: "Estimate Authorization", icon: FileText },
   { key: "ccach", label: "CC/ACH Authorization", icon: FileText },
@@ -27,7 +63,7 @@ export default function AgentESign() {
   const [leadData, setLeadData] = useState<{ name: string; email: string; phone: string } | null>(null);
   const [isSending, setIsSending] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [deliveryMethod, setDeliveryMethod] = useState<"email" | "sms" | "both">("email");
+  const [deliveryMethod, setDeliveryMethod] = useState<DeliveryMethod>("email");
 
   useEffect(() => {
     if (!leadId) { setLoading(false); return; }
@@ -65,16 +101,15 @@ export default function AgentESign() {
 
     try {
       const { data: user } = await supabase.auth.getUser();
+      const deliveryLabel = getDeliveryMethodLabel(deliveryMethod);
 
-      // Send all 3 document types
-      const results = await Promise.all(
+      const results: SendDocumentResult[] = await Promise.all(
         DOC_TYPES.map(async (doc) => {
           const prefixMap: Record<string, string> = { estimate: "EST", ccach: "CC", merchant_payment: "MP" };
           const refNumber = `${prefixMap[doc.key]}-2026-${String(Math.floor(Math.random() * 9999)).padStart(4, "0")}`;
           const signingUrl = `${getEsignBaseUrl()}/esign/${refNumber}`;
 
-          // Call edge function
-          const { error } = await supabase.functions.invoke("send-esign-document", {
+          const { data, error } = await supabase.functions.invoke("send-esign-document", {
             body: {
               documentType: doc.key,
               customerName: leadData.name,
@@ -86,12 +121,22 @@ export default function AgentESign() {
             },
           });
 
+          const response = data as SendEsignResponse | null;
+
           if (error) {
             console.error(`Failed to send ${doc.key}:`, error);
-            return { key: doc.key, success: false, error };
+            return { key: doc.key, success: false, error: error.message || "Failed to send document" };
           }
 
-          // Persist to DB
+          const delivered = Boolean(response?.email?.success || response?.sms?.success);
+          if (!delivered) {
+            return {
+              key: doc.key,
+              success: false,
+              error: getFriendlyDeliveryError(response || undefined),
+            };
+          }
+
           await supabase.from("esign_documents").insert({
             lead_id: leadId,
             document_type: doc.key,
@@ -101,25 +146,29 @@ export default function AgentESign() {
             sent_by: user?.user?.id || null,
           });
 
-          return { key: doc.key, success: true, refNumber };
+          return {
+            key: doc.key,
+            success: true,
+            refNumber,
+            warning: response?.partialFailure ? getFriendlyDeliveryError(response || undefined) : undefined,
+          };
         })
       );
 
       const failed = results.filter((r) => !r.success);
+      const warnings = results.flatMap((result) => (result.warning ? [result.warning] : []));
+
       if (failed.length === results.length) {
-        toast.error("Failed to send all documents");
-      } else if (failed.length > 0) {
+        toast.error(failed[0]?.error || "Failed to send all documents");
+        return;
+      } else if (failed.length > 0 || warnings.length > 0) {
         toast.warning(`${results.length - failed.length} of ${results.length} documents sent`);
       } else {
-        const channels = [];
-        if (leadData.email) channels.push("email");
-        if (leadData.phone) channels.push("SMS");
-        toast.success(`All documents sent via ${channels.join(" & ")}`, {
+        toast.success(`All documents sent via ${deliveryLabel}`, {
           description: `Sent to ${leadData.name}`,
         });
       }
 
-      // Redirect to customer profile
       navigate(`/agent/customers/${leadId}`);
     } catch (err) {
       console.error("Send error:", err);

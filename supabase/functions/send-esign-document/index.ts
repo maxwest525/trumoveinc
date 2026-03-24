@@ -17,6 +17,23 @@ interface SendDocumentRequest {
   signingUrl: string;
 }
 
+interface DeliveryErrorDetail {
+  provider?: "clicksend" | "twilio";
+  code?: string;
+}
+
+class DeliveryError extends Error {
+  provider?: "clicksend" | "twilio";
+  code?: string;
+
+  constructor(message: string, detail?: DeliveryErrorDetail) {
+    super(message);
+    this.name = "DeliveryError";
+    this.provider = detail?.provider;
+    this.code = detail?.code;
+  }
+}
+
 const DOCUMENT_LABELS: Record<string, string> = {
   estimate: "Estimate Authorization",
   ccach: "CC/ACH Authorization",
@@ -40,6 +57,21 @@ function normalizePhone(phone: string): string {
 
 function buildSmsBody(documentLabel: string, refNumber: string, signingUrl: string) {
   return `Action Required: Sign Your ${documentLabel} – ${refNumber}\n\n${signingUrl}\n\nReply STOP to opt out`;
+}
+
+function getErrorMessage(error: unknown) {
+  return error instanceof Error ? error.message : "Unknown delivery error";
+}
+
+function getErrorDetail(error: unknown): DeliveryErrorDetail | undefined {
+  if (error instanceof DeliveryError) {
+    return {
+      provider: error.provider,
+      code: error.code,
+    };
+  }
+
+  return undefined;
 }
 
 async function sendSmsViaClickSend(customerPhone: string, smsBody: string) {
@@ -83,7 +115,10 @@ async function sendSmsViaClickSend(customerPhone: string, smsBody: string) {
   const messageStatus = message?.status ?? "UNKNOWN";
 
   if (blockedCount > 0 || messageStatus === "COUNTRY_NOT_ENABLED") {
-    throw new Error(`ClickSend blocked SMS: ${messageStatus}`);
+    throw new DeliveryError(`ClickSend blocked SMS: ${messageStatus}`, {
+      provider: "clicksend",
+      code: messageStatus,
+    });
   }
 
   return { provider: "clicksend", data };
@@ -170,6 +205,7 @@ const handler = async (req: Request): Promise<Response> => {
     const documentLabel = DOCUMENT_LABELS[documentType] || documentType;
     const results: Record<string, any> = {};
     const errors: Record<string, string> = {};
+    const errorDetails: Record<string, DeliveryErrorDetail> = {};
 
     if (deliveryMethod === "email" || deliveryMethod === "both") {
       if (!customerEmail) {
@@ -202,8 +238,9 @@ const handler = async (req: Request): Promise<Response> => {
           results.email = { success: true, sentTo: customerEmail };
           console.log("E-Sign email enqueued successfully via app email system");
         } catch (err: any) {
-          console.error("Email send failed:", err.message);
-          errors.email = err.message;
+          const message = getErrorMessage(err);
+          console.error("Email send failed:", message);
+          errors.email = message;
         }
       }
     }
@@ -222,19 +259,29 @@ const handler = async (req: Request): Promise<Response> => {
           };
           console.log(`SMS sent successfully via ${smsResult.provider}`);
         } catch (err: any) {
-          console.error("SMS send failed:", err.message);
-          errors.sms = err.message;
+          const message = getErrorMessage(err);
+          console.error("SMS send failed:", message);
+          errors.sms = message;
+
+          const detail = getErrorDetail(err);
+          if (detail) {
+            errorDetails.sms = detail;
+          }
         }
       }
     }
 
-    if (!results.email && !results.sms) {
-      const errorMsg = Object.entries(errors).map(([k, v]) => `${k}: ${v}`).join("; ");
-      throw new Error(errorMsg || "Invalid delivery method");
-    }
+    const hasSuccess = Boolean(results.email || results.sms);
 
     return new Response(
-      JSON.stringify({ success: true, method: deliveryMethod, ...results, errors: Object.keys(errors).length > 0 ? errors : undefined }),
+      JSON.stringify({
+        success: hasSuccess,
+        partialFailure: hasSuccess && Object.keys(errors).length > 0,
+        method: deliveryMethod,
+        ...results,
+        errors: Object.keys(errors).length > 0 ? errors : undefined,
+        errorDetails: Object.keys(errorDetails).length > 0 ? errorDetails : undefined,
+      }),
       { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
   } catch (error: any) {
