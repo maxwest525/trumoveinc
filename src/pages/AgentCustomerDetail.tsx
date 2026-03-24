@@ -15,6 +15,7 @@ import {
 import { DialerProvider } from "@/components/dialer/dialerProvider";
 import { AgentESignTab } from "@/components/agent/AgentESignTab";
 import { CustomerDocumentsTab } from "@/components/agent/CustomerDocumentsTab";
+import { CustomerCommunicationTab } from "@/components/agent/CustomerCommunicationTab";
 
 interface Lead {
   id: string;
@@ -210,6 +211,9 @@ export default function AgentCustomerDetail() {
               </TabsTrigger>
               <TabsTrigger value="documents" className="gap-1.5 text-xs">
                 <FolderOpen className="w-3.5 h-3.5" /> Docs
+              </TabsTrigger>
+              <TabsTrigger value="communication" className="gap-1.5 text-xs">
+                <MessageSquare className="w-3.5 h-3.5" /> Chat
               </TabsTrigger>
             </TabsList>
 
@@ -433,6 +437,16 @@ export default function AgentCustomerDetail() {
             {/* E-SIGN TAB */}
             <TabsContent value="esign">
               <AgentESignTab
+                leadId={lead.id}
+                customerName={fullName}
+                customerEmail={lead.email || ""}
+                customerPhone={lead.phone || ""}
+              />
+            </TabsContent>
+
+            {/* COMMUNICATION TAB */}
+            <TabsContent value="communication">
+              <CustomerCommunicationTab
                 leadId={lead.id}
                 customerName={fullName}
                 customerEmail={lead.email || ""}
