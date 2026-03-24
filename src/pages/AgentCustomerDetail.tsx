@@ -256,6 +256,7 @@ export default function AgentCustomerDetail() {
             <div className="hidden">
               <TabsList>
                 <TabsTrigger value="overview" />
+                <TabsTrigger value="payment" />
                 <TabsTrigger value="communication" />
                 <TabsTrigger value="esign" />
                 <TabsTrigger value="documents" />
