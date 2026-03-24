@@ -18,7 +18,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Badge } from "@/components/ui/badge";
 
 
-const NAV_ITEMS = [
+const NAV_ITEMS: { label: string; icon: any; href: string; beta?: boolean }[] = [
   { label: "Dashboard", icon: LayoutDashboard, href: "/admin/dashboard" },
   { label: "Users & Roles", icon: Users, href: "/admin/users" },
   { label: "Employee Requests", icon: FileText, href: "/admin/employee-requests" },
