@@ -16,14 +16,20 @@ export default function PublicESign() {
   const { refNumber: urlRef } = useParams();
   const [searchParams] = useSearchParams();
 
+  // Fallback to query params for backward compat, but prefer DB lookup
   const refNumber = urlRef || searchParams.get("ref") || "DOC-2026-0001";
-  const customerName = searchParams.get("name") || "";
-  const customerEmail = searchParams.get("email") || "";
-  const docTypeParam = searchParams.get("type") || "estimate";
-  const leadId = searchParams.get("leadId") || "";
+  const qpName = searchParams.get("name") || "";
+  const qpEmail = searchParams.get("email") || "";
+  const qpDocType = searchParams.get("type") || "estimate";
+  const qpLeadId = searchParams.get("leadId") || "";
 
-  const [typedName, setTypedName] = useState(customerName);
-  const [activeDocument, setActiveDocument] = useState<DocumentType>(docTypeParam as DocumentType);
+  const [customerName, setCustomerName] = useState(qpName);
+  const [customerEmail, setCustomerEmail] = useState(qpEmail);
+  const [leadId, setLeadId] = useState(qpLeadId);
+  const [docTypeFromDb, setDocTypeFromDb] = useState(qpDocType);
+
+  const [typedName, setTypedName] = useState(qpName);
+  const [activeDocument, setActiveDocument] = useState<DocumentType>(qpDocType as DocumentType);
   const [signatures, setSignatures] = useState<Record<SignatureField, boolean>>({
     initial1: false, initial2: false, initial3: false, signature: false,
   });
