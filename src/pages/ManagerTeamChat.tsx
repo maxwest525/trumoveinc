@@ -108,6 +108,8 @@ export default function ManagerTeamChat() {
               <PopoverContent align="end" className="w-80 p-0">
                 <NotificationsPanel
                   notifications={notifications}
+                  unreadCount={unreadCount}
+                  loading={false}
                   onMarkAsRead={markAsRead}
                   onMarkAllAsRead={markAllAsRead}
                   onDelete={deleteNotification}
