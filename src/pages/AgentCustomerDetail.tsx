@@ -17,6 +17,7 @@ import { DialerProvider } from "@/components/dialer/dialerProvider";
 import { AgentESignTab } from "@/components/agent/AgentESignTab";
 import { CustomerDocumentsTab } from "@/components/agent/CustomerDocumentsTab";
 import { CustomerCommunicationTab } from "@/components/agent/CustomerCommunicationTab";
+import { InlinePaymentTab } from "@/components/agent/InlinePaymentTab";
 
 interface Lead {
   id: string;
@@ -213,8 +214,8 @@ export default function AgentCustomerDetail() {
               onClick={() => setActiveTab("overview")}>
               <User className="w-3 h-3" /> Overview
             </Button>
-            <Button variant="outline" size="sm" className="gap-1.5 text-xs h-8"
-              onClick={() => navigate(`/agent/payment?name=${encodeURIComponent(fullName)}&email=${encodeURIComponent(lead.email || "")}&phone=${encodeURIComponent(lead.phone || "")}&leadId=${lead.id}`)}>
+            <Button variant={activeTab === "payment" ? "default" : "outline"} size="sm" className="gap-1.5 text-xs h-8"
+              onClick={() => setActiveTab("payment")}>
               <CreditCard className="w-3 h-3" /> Payment
             </Button>
             {lead.phone && (
@@ -255,6 +256,7 @@ export default function AgentCustomerDetail() {
             <div className="hidden">
               <TabsList>
                 <TabsTrigger value="overview" />
+                <TabsTrigger value="payment" />
                 <TabsTrigger value="communication" />
                 <TabsTrigger value="esign" />
                 <TabsTrigger value="documents" />
@@ -485,6 +487,14 @@ export default function AgentCustomerDetail() {
                 customerName={fullName}
                 customerEmail={lead.email || ""}
                 customerPhone={lead.phone || ""}
+              />
+            </TabsContent>
+
+            {/* PAYMENT TAB */}
+            <TabsContent value="payment">
+              <InlinePaymentTab
+                customerName={fullName}
+                customerEmail={lead.email || ""}
               />
             </TabsContent>
 
