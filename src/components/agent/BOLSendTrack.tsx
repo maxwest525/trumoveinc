@@ -96,7 +96,7 @@ export function BOLSendTrack({ prefillName = "", prefillEmail = "", prefillPhone
 
     setIsSending(true);
     const refNumber = `BOL-2026-${String(Math.floor(Math.random() * 9999)).padStart(4, "0")}`;
-    const signingUrl = `${getEsignBaseUrl()}/esign/${refNumber}?type=bol&name=${encodeURIComponent(newDoc.customerName)}&email=${encodeURIComponent(newDoc.customerEmail)}`;
+    const signingUrl = `${getEsignBaseUrl()}/esign/${refNumber}`;
 
     try {
       const { data, error } = await supabase.functions.invoke('send-esign-document', {

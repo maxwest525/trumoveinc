@@ -97,8 +97,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
     const refPrefix = newDoc.type === "estimate" ? "EST" : newDoc.type === "ccach" ? "CC" : "BOL";
     const refNumber = `${refPrefix}-2026-${String(Math.floor(Math.random() * 9999)).padStart(4, "0")}`;
     
-    // Generate a signing URL (in production, this would be a real e-sign provider URL)
-    const signingUrl = `${getEsignBaseUrl()}/esign/${refNumber}?type=${newDoc.type}&name=${encodeURIComponent(newDoc.customerName)}&email=${encodeURIComponent(newDoc.customerEmail)}`;
+    // Generate a short branded signing URL for SMS/email delivery
+    const signingUrl = `${getEsignBaseUrl()}/esign/${refNumber}`;
 
     try {
       // Call edge function to send email/SMS
