@@ -100,11 +100,26 @@ export function CustomerCommunicationTab({ leadId, customerName, customerEmail, 
       if (error) throw error;
       if (data?.success === false) throw new Error(data.error || "Send failed");
 
-      const { data: portalAccess } = await supabase
+      // Ensure portal access exists, create if not
+      let { data: portalAccess } = await supabase
         .from("customer_portal_access")
         .select("id")
         .eq("lead_id", leadId)
         .maybeSingle();
+
+      if (!portalAccess) {
+        const { data: userData } = await supabase.auth.getUser();
+        const { data: newAccess } = await supabase
+          .from("customer_portal_access")
+          .insert({
+            lead_id: leadId,
+            customer_email: mode === "email" ? recipient : customerEmail || "",
+            invited_by: userData.user?.id || null,
+          })
+          .select("id")
+          .single();
+        portalAccess = newAccess;
+      }
 
       if (portalAccess) {
         const { data: userData } = await supabase.auth.getUser();
