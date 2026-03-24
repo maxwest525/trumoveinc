@@ -149,7 +149,10 @@ export default function AgentCustomerDetail() {
 
   if (loading) {
     return (
-      <AgentShell breadcrumb=" / Customer Detail">
+      <AgentShell breadcrumbs={[
+        { label: "My Customers", href: "/agent/customers" },
+        { label: "Customer Detail" },
+      ]}>
         {() => (
           <div className="p-6 flex items-center justify-center min-h-[60vh]">
             <p className="text-sm text-muted-foreground">Loading customer...</p>
@@ -161,7 +164,10 @@ export default function AgentCustomerDetail() {
 
   if (!lead) {
     return (
-      <AgentShell breadcrumb=" / Customer Detail">
+      <AgentShell breadcrumbs={[
+        { label: "My Customers", href: "/agent/customers" },
+        { label: "Customer Detail" },
+      ]}>
         {() => (
           <div className="p-6 text-center">
             <AlertCircle className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
@@ -178,7 +184,10 @@ export default function AgentCustomerDetail() {
   const fullName = `${lead.first_name} ${lead.last_name}`;
 
   return (
-    <AgentShell breadcrumb=" / Customer Detail">
+    <AgentShell breadcrumbs={[
+      { label: "My Customers", href: "/agent/customers" },
+      { label: fullName },
+    ]}>
       {() => (
         <div className="p-6 sm:p-8 max-w-7xl mx-auto space-y-6">
           {/* Header */}

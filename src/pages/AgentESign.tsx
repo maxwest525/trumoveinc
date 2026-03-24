@@ -180,7 +180,7 @@ export default function AgentESign() {
 
   if (loading) {
     return (
-      <AgentShell breadcrumb=" / E-Sign">
+      <AgentShell breadcrumbs={[{ label: "My Customers", href: "/agent/customers" }, { label: "E-Sign" }]}>
         <div className="p-6 flex items-center justify-center min-h-[60vh]">
           <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
         </div>
@@ -190,7 +190,7 @@ export default function AgentESign() {
 
   if (!leadId || !leadData) {
     return (
-      <AgentShell breadcrumb=" / E-Sign">
+      <AgentShell breadcrumbs={[{ label: "My Customers", href: "/agent/customers" }, { label: "E-Sign" }]}>
         <div className="p-6 text-center space-y-3">
           <FileText className="w-12 h-12 mx-auto text-muted-foreground/30" />
           <p className="text-muted-foreground">No customer selected</p>
@@ -203,7 +203,11 @@ export default function AgentESign() {
   }
 
   return (
-    <AgentShell breadcrumb=" / E-Sign">
+    <AgentShell breadcrumbs={[
+      { label: "My Customers", href: "/agent/customers" },
+      ...(leadId ? [{ label: leadData.name, href: `/agent/customers/${leadId}` }] : []),
+      { label: "E-Sign" },
+    ]}>
       <div className="p-6 max-w-2xl mx-auto space-y-6">
         {/* Workflow breadcrumb */}
         <div className="flex items-center gap-2 text-xs text-muted-foreground">

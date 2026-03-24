@@ -194,7 +194,12 @@ export default function ESignViewPage() {
   };
 
   return (
-    <AgentShell breadcrumb=" / E-Sign / View Document">
+    <AgentShell breadcrumbs={[
+      { label: "My Customers", href: "/agent/customers" },
+      ...(leadId ? [{ label: customerName, href: `/agent/customers/${leadId}` }] : []),
+      { label: "E-Sign" , href: leadId ? `/agent/esign?leadId=${leadId}` : "/agent/customers" },
+      { label: "View Document" },
+    ]}>
       <div className="min-h-screen bg-muted/30 py-6 md:py-8 px-3 md:px-4">
         <div className="max-w-[1200px] mx-auto">
           <button
