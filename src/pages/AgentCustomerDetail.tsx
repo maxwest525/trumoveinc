@@ -164,7 +164,10 @@ export default function AgentCustomerDetail() {
 
   if (!lead) {
     return (
-      <AgentShell breadcrumb=" / Customer Detail">
+      <AgentShell breadcrumbs={[
+        { label: "My Customers", href: "/agent/customers" },
+        { label: "Customer Detail" },
+      ]}>
         {() => (
           <div className="p-6 text-center">
             <AlertCircle className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
