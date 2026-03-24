@@ -37,7 +37,6 @@ export default function ManagerDashboard() {
 
       const deals = (dealsRes.data as any[]) || [];
       const profiles = (profilesRes.data as any[]) || [];
-      const activities = (activitiesRes.data as any[]) || [];
 
       // Stats
       const closedWon = deals.filter(d => d.stage === "closed_won");
@@ -99,13 +98,13 @@ export default function ManagerDashboard() {
         }));
       setTeam(teamData);
 
-      // Pending activities as approvals/alerts
-      const pending = activities
-        .filter(a => !a.is_done)
-        .sort((a, b) => (a.due_date || "z").localeCompare(b.due_date || "z"))
-        .slice(0, 3)
-        .map(a => ({ title: a.subject || "Pending task", sub: a.description || a.type?.replace("_", " ") || "" }));
-      setPendingActivities(pending);
+      // Recent closed deals
+      setRecentDeals(
+        deals
+          .filter(d => d.stage === "closed_won" || d.stage === "closed_lost")
+          .sort((a, b) => (b.updated_at || "").localeCompare(a.updated_at || ""))
+          .slice(0, 4)
+      );
 
       setLoading(false);
     };
