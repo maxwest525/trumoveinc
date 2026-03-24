@@ -4,7 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Mail, MessageSquare, Send, FileText, Loader2, ArrowUpRight, ArrowDownLeft } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -132,130 +132,106 @@ export function CustomerCommunicationTab({ leadId, customerName, customerEmail, 
   const Icon = isEmail ? Mail : MessageSquare;
 
   return (
-    <div className="flex flex-col h-[calc(100vh-280px)] min-h-[400px] border border-border rounded-lg bg-background overflow-hidden">
-      {/* Header bar */}
-      <div className="flex items-center justify-between px-4 py-2.5 border-b border-border bg-muted/30">
-        <div className="flex items-center gap-2">
-          <Icon className="w-4 h-4 text-muted-foreground" />
-          <span className="text-sm font-semibold">{isEmail ? "Email" : "SMS"}</span>
+    <div className="flex h-[calc(100vh-280px)] min-h-[400px] border border-border rounded-lg bg-background overflow-hidden">
+      {/* Templates sidebar */}
+      <div className="w-44 shrink-0 border-r border-border bg-muted/20 flex flex-col">
+        <div className="px-3 py-2 border-b border-border">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+            <FileText className="w-3 h-3" /> Templates
+          </p>
+        </div>
+        <ScrollArea className="flex-1">
+          <div className="p-1.5 space-y-0.5">
+            {templates.map((t) => (
+              <button
+                key={t.id}
+                className="w-full text-left text-[11px] px-2.5 py-1.5 rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+                onClick={() => handleTemplateSelect(t)}
+              >
+                {t.name}
+              </button>
+            ))}
+          </div>
+        </ScrollArea>
+      </div>
+
+      {/* Main chat area */}
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* Header bar */}
+        <div className="flex items-center gap-2 px-4 py-2 border-b border-border bg-muted/30">
+          <Icon className="w-3.5 h-3.5 text-muted-foreground" />
+          <span className="text-xs font-semibold">{isEmail ? "Email" : "SMS"}</span>
           <Badge variant="secondary" className="text-[10px] gap-1">
             {isEmail ? customerEmail || "No email" : customerPhone || "No phone"}
           </Badge>
         </div>
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button variant="outline" size="sm" className="h-7 text-xs gap-1.5">
-              <FileText className="w-3 h-3" /> Templates
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent align="end" className="w-48 p-1.5">
-            {templates.map((t) => (
-              <Button
-                key={t.id}
-                variant="ghost"
-                size="sm"
-                className="w-full justify-start text-xs h-7"
-                onClick={() => handleTemplateSelect(t)}
-              >
-                {t.name}
-              </Button>
-            ))}
-          </PopoverContent>
-        </Popover>
-      </div>
 
-      {/* Message thread */}
-      <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
-        {messages.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full text-center">
-            <Icon className="w-10 h-10 text-muted-foreground/15 mb-2" />
-            <p className="text-sm text-muted-foreground">No {isEmail ? "emails" : "texts"} yet</p>
-            <p className="text-xs text-muted-foreground/60 mt-0.5">Send the first message below</p>
-          </div>
-        ) : (
-          messages.map((msg) => {
-            const isAgent = msg.sender_type === "agent";
-            const cleanContent = msg.content.replace(/^\[(EMAIL|SMS)\]\s*/, "");
-            return (
-              <div key={msg.id} className={cn("flex", isAgent ? "justify-end" : "justify-start")}>
-                <div className={cn(
-                  "max-w-[75%] rounded-xl px-3.5 py-2.5 text-sm",
-                  isAgent
-                    ? "bg-primary text-primary-foreground rounded-br-sm"
-                    : "bg-muted border border-border rounded-bl-sm"
-                )}>
-                  <div className="flex items-center gap-1.5 mb-1">
-                    {isAgent ? (
-                      <ArrowUpRight className="w-3 h-3 opacity-60" />
-                    ) : (
-                      <ArrowDownLeft className="w-3 h-3 opacity-60" />
-                    )}
-                    <span className="text-[10px] font-medium opacity-70">
-                      {isAgent ? "You" : customerName}
-                    </span>
-                  </div>
-                  <p className="text-xs whitespace-pre-wrap leading-relaxed">{cleanContent}</p>
-                  <p className={cn(
-                    "text-[9px] mt-1.5 text-right",
-                    isAgent ? "opacity-50" : "text-muted-foreground/60"
+        {/* Message thread */}
+        <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-3 space-y-2.5">
+          {messages.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-full text-center">
+              <Icon className="w-8 h-8 text-muted-foreground/15 mb-1.5" />
+              <p className="text-xs text-muted-foreground">No {isEmail ? "emails" : "texts"} yet</p>
+              <p className="text-[10px] text-muted-foreground/60 mt-0.5">Send the first message below</p>
+            </div>
+          ) : (
+            messages.map((msg) => {
+              const isAgent = msg.sender_type === "agent";
+              const cleanContent = msg.content.replace(/^\[(EMAIL|SMS)\]\s*/, "");
+              return (
+                <div key={msg.id} className={cn("flex", isAgent ? "justify-end" : "justify-start")}>
+                  <div className={cn(
+                    "max-w-[75%] rounded-xl px-3 py-2 text-sm",
+                    isAgent
+                      ? "bg-primary text-primary-foreground rounded-br-sm"
+                      : "bg-muted border border-border rounded-bl-sm"
                   )}>
-                    {new Date(msg.created_at).toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
-                  </p>
+                    <div className="flex items-center gap-1.5 mb-0.5">
+                      {isAgent ? <ArrowUpRight className="w-2.5 h-2.5 opacity-60" /> : <ArrowDownLeft className="w-2.5 h-2.5 opacity-60" />}
+                      <span className="text-[9px] font-medium opacity-70">{isAgent ? "You" : customerName}</span>
+                    </div>
+                    <p className="text-xs whitespace-pre-wrap leading-relaxed">{cleanContent}</p>
+                    <p className={cn("text-[9px] mt-1 text-right", isAgent ? "opacity-50" : "text-muted-foreground/60")}>
+                      {new Date(msg.created_at).toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            );
-          })
-        )}
-      </div>
-
-      {/* Compose area */}
-      <div className="border-t border-border bg-muted/20 px-4 py-3 space-y-2">
-        {isEmail && (
-          <div className="flex gap-2">
-            <Input
-              value={recipient}
-              onChange={(e) => setRecipient(e.target.value)}
-              placeholder="To: customer@email.com"
-              className="h-7 text-xs flex-1"
-            />
-            <Input
-              value={emailSubject}
-              onChange={(e) => setEmailSubject(e.target.value)}
-              placeholder="Subject"
-              className="h-7 text-xs flex-1"
-            />
-          </div>
-        )}
-        {!isEmail && (
-          <Input
-            value={recipient}
-            onChange={(e) => setRecipient(formatPhoneNumber(e.target.value))}
-            placeholder="To: (555) 123-4567"
-            className="h-7 text-xs"
-          />
-        )}
-        <div className="flex gap-2 items-end">
-          <Textarea
-            value={messageBody}
-            onChange={(e) => setMessageBody(e.target.value)}
-            placeholder={isEmail ? "Write your email..." : "Type your message..."}
-            rows={isEmail ? 3 : 2}
-            className={cn("text-xs flex-1 min-h-0 resize-none", isEmail && "font-mono")}
-            maxLength={!isEmail ? 320 : undefined}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey && !isEmail) {
-                e.preventDefault();
-                handleSend();
-              }
-            }}
-          />
-          <Button onClick={handleSend} disabled={isSending || !messageBody.trim()} size="sm" className="h-9 w-9 p-0 shrink-0">
-            {isSending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-          </Button>
+              );
+            })
+          )}
         </div>
-        {!isEmail && messageBody.length > 160 && (
-          <p className="text-[10px] text-amber-500">⚠️ {Math.ceil(messageBody.length / 160)} segments ({messageBody.length}/320)</p>
-        )}
+
+        {/* Compose area */}
+        <div className="border-t border-border bg-muted/20 px-3 py-2 space-y-1.5">
+          {isEmail && (
+            <div className="flex gap-2">
+              <Input value={recipient} onChange={(e) => setRecipient(e.target.value)} placeholder="To" className="h-6 text-[11px] flex-1" />
+              <Input value={emailSubject} onChange={(e) => setEmailSubject(e.target.value)} placeholder="Subject" className="h-6 text-[11px] flex-1" />
+            </div>
+          )}
+          {!isEmail && (
+            <Input value={recipient} onChange={(e) => setRecipient(formatPhoneNumber(e.target.value))} placeholder="To: (555) 123-4567" className="h-6 text-[11px]" />
+          )}
+          <div className="flex gap-2 items-end">
+            <Textarea
+              value={messageBody}
+              onChange={(e) => setMessageBody(e.target.value)}
+              placeholder={isEmail ? "Write your email..." : "Type your message..."}
+              rows={isEmail ? 2 : 1}
+              className={cn("text-xs flex-1 min-h-0 resize-none", isEmail && "font-mono")}
+              maxLength={!isEmail ? 320 : undefined}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey && !isEmail) { e.preventDefault(); handleSend(); }
+              }}
+            />
+            <Button onClick={handleSend} disabled={isSending || !messageBody.trim()} size="sm" className="h-8 w-8 p-0 shrink-0">
+              {isSending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
+            </Button>
+          </div>
+          {!isEmail && messageBody.length > 160 && (
+            <p className="text-[10px] text-amber-500">⚠️ {Math.ceil(messageBody.length / 160)} segments</p>
+          )}
+        </div>
       </div>
     </div>
   );
