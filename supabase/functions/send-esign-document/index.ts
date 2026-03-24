@@ -50,6 +50,7 @@ async function sendSms(customerPhone: string, customerName: string, documentLabe
   console.log(`Normalizing phone: "${customerPhone}" → "${normalizedPhone}"`);
 
   const smsBody = `TruMove: Hi ${customerName}, your ${documentLabel} is ready to sign. Open here: ${signingUrl}`;
+  console.log(`SMS body (${smsBody.length} chars): ${smsBody}`);
 
   const basicAuth = btoa(`${CLICKSEND_USERNAME}:${CLICKSEND_API_KEY}`);
 
