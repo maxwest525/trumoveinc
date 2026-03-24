@@ -26,7 +26,7 @@ export default function ManagerDashboard() {
   const [revenueTrend, setRevenueTrend] = useState<{ month: string; revenue: number }[]>([]);
   const [bookingsStatus, setBookingsStatus] = useState<{ status: string; count: number }[]>([]);
   const [team, setTeam] = useState<{ initials: string; name: string; bookings: string; revenue: string }[]>([]);
-  const [pendingActivities, setPendingActivities] = useState<{ title: string; sub: string }[]>([]);
+  const [recentDeals, setRecentDeals] = useState<any[]>([]);
 
   useEffect(() => {
     const fetch = async () => {
