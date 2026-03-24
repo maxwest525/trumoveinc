@@ -26,23 +26,38 @@ Deno.serve(async (req) => {
     }
 
     if (channel === 'sms') {
-      const CLICKSEND_USERNAME = Deno.env.get('CLICKSEND_USERNAME');
-      const CLICKSEND_API_KEY = Deno.env.get('CLICKSEND_API_KEY');
-      if (!CLICKSEND_USERNAME || !CLICKSEND_API_KEY) {
-        throw new Error('ClickSend credentials not configured');
-      }
+      const GATEWAY_URL = 'https://connector-gateway.lovable.dev/twilio';
+      const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+      if (!LOVABLE_API_KEY) throw new Error('LOVABLE_API_KEY is not configured');
+      const TWILIO_API_KEY = Deno.env.get('TWILIO_API_KEY');
+      if (!TWILIO_API_KEY) throw new Error('TWILIO_API_KEY is not configured');
+
+      const TWILIO_MESSAGING_SERVICE_SID = Deno.env.get('TWILIO_MESSAGING_SERVICE_SID');
+      const TWILIO_PHONE_NUMBER = Deno.env.get('TWILIO_PHONE_NUMBER');
 
       const normalizedPhone = normalizePhone(to);
-      const basicAuth = btoa(`${CLICKSEND_USERNAME}:${CLICKSEND_API_KEY}`);
+      const params = new URLSearchParams({ To: normalizedPhone, Body: body });
 
-      const resp = await fetch('https://rest.clicksend.com/v3/sms/send', {
+      if (TWILIO_MESSAGING_SERVICE_SID) {
+        params.set('MessagingServiceSid', TWILIO_MESSAGING_SERVICE_SID);
+      } else if (TWILIO_PHONE_NUMBER) {
+        params.set('From', TWILIO_PHONE_NUMBER);
+      } else {
+        throw new Error('Neither TWILIO_MESSAGING_SERVICE_SID nor TWILIO_PHONE_NUMBER is configured');
+      }
+
+      const resp = await fetch(`${GATEWAY_URL}/Messages.json`, {
         method: 'POST',
-        headers: { 'Authorization': `Basic ${basicAuth}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: [{ body, to: normalizedPhone, source: 'sdk' }] }),
+        headers: {
+          'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+          'X-Connection-Api-Key': TWILIO_API_KEY,
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: params.toString(),
       });
 
       const data = await resp.json();
-      if (!resp.ok) throw new Error(`ClickSend SMS failed [${resp.status}]: ${JSON.stringify(data)}`);
+      if (!resp.ok) throw new Error(`Twilio SMS failed [${resp.status}]: ${JSON.stringify(data)}`);
 
       return new Response(JSON.stringify({ success: true, channel: 'sms' }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
