@@ -22,7 +22,7 @@ const STAGE_LABELS: Record<string, string> = {
 
 export default function ManagerDashboard() {
   const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState({ revenue: 0, closeRate: 0, totalClosed: 0, atRisk: 0 });
+  const [stats, setStats] = useState({ revenue: 0, closeRate: 0, totalClosed: 0, atRisk: 0, pipelineValue: 0, newLeads: 0, activeDeals: 0 });
   const [revenueTrend, setRevenueTrend] = useState<{ month: string; revenue: number }[]>([]);
   const [bookingsStatus, setBookingsStatus] = useState<{ status: string; count: number }[]>([]);
   const [team, setTeam] = useState<{ initials: string; name: string; bookings: string; revenue: string }[]>([]);
@@ -30,13 +30,15 @@ export default function ManagerDashboard() {
 
   useEffect(() => {
     const fetch = async () => {
-      const [dealsRes, profilesRes] = await Promise.all([
+      const [dealsRes, profilesRes, leadsRes] = await Promise.all([
         supabase.from("deals").select("id, stage, deal_value, actual_revenue, assigned_agent_id, created_at, updated_at, actual_close_date, leads(first_name, last_name)"),
         supabase.from("profiles").select("id, display_name, email"),
+        supabase.from("leads").select("id, created_at, status"),
       ]);
 
       const deals = (dealsRes.data as any[]) || [];
       const profiles = (profilesRes.data as any[]) || [];
+      const leads = (leadsRes.data as any[]) || [];
 
       // Stats
       const closedWon = deals.filter(d => d.stage === "closed_won");
@@ -45,8 +47,13 @@ export default function ManagerDashboard() {
       const closeRate = totalClosed > 0 ? Math.round((closedWon.length / totalClosed) * 100) : 0;
       const totalRevenue = closedWon.reduce((s, d) => s + (d.actual_revenue || d.deal_value || 0), 0);
       const atRisk = deals.filter(d => d.stage === "follow_up").length;
+      const openStages = ["new_lead", "contacted", "quoted", "follow_up", "booked", "dispatched", "in_transit"];
+      const activeDeals = deals.filter(d => openStages.includes(d.stage));
+      const pipelineValue = activeDeals.reduce((s, d) => s + (d.deal_value || 0), 0);
+      const thirtyDaysAgo = new Date(); thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      const newLeads = leads.filter(l => new Date(l.created_at) >= thirtyDaysAgo).length;
 
-      setStats({ revenue: totalRevenue, closeRate, totalClosed, atRisk });
+      setStats({ revenue: totalRevenue, closeRate, totalClosed, atRisk, pipelineValue, newLeads, activeDeals: activeDeals.length });
 
       // Revenue trend (last 6 months)
       const monthlyRev: Record<string, number> = {};
@@ -127,13 +134,16 @@ export default function ManagerDashboard() {
           <p className="text-sm text-muted-foreground">Team performance and approvals overview</p>
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* KPIs */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-4">
           {[
-            { label: "Team Revenue", value: `$${stats.revenue.toLocaleString()}` },
-            { label: "Close Rate", value: `${stats.closeRate}%`, sub: `${stats.totalClosed} total closed` },
-            { label: "Active Deals", value: String(stats.totalClosed), sub: "All-time closed" },
-            { label: "At-Risk Deals", value: String(stats.atRisk), sub: "In follow-up stage" },
+            { label: "Pipeline Value", value: `$${stats.pipelineValue.toLocaleString()}`, sub: `${stats.activeDeals} active deals` },
+            { label: "Team Revenue", value: `$${stats.revenue.toLocaleString()}`, sub: "Closed-won total" },
+            { label: "Win Rate", value: `${stats.closeRate}%`, sub: `${stats.totalClosed} total closed` },
+            { label: "New Leads (30d)", value: String(stats.newLeads) },
+            { label: "Active Deals", value: String(stats.activeDeals) },
+            { label: "At-Risk", value: String(stats.atRisk), sub: "Follow-up stage" },
+            { label: "All-Time Closed", value: String(stats.totalClosed) },
           ].map((s) => (
             <div key={s.label} className="rounded-xl border border-border bg-card p-4">
               <span className="text-xs text-muted-foreground">{s.label}</span>
