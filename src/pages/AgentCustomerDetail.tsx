@@ -220,9 +220,14 @@ export default function AgentCustomerDetail() {
                 </Button>
               )}
               {lead.email && (
-                <Button variant="outline" size="sm" className="gap-1.5 text-xs h-8"
+                <Button variant="outline" size="sm" className="gap-1.5 text-xs h-8 relative"
                   onClick={() => setActiveTab("communication")}>
                   <Mail className="w-3 h-3" /> Email
+                  {customerMsgCount > 0 && (
+                    <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-destructive text-destructive-foreground text-[9px] font-bold flex items-center justify-center">
+                      {customerMsgCount > 9 ? "9+" : customerMsgCount}
+                    </span>
+                  )}
                 </Button>
               )}
               {lead.phone && (
