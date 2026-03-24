@@ -74,6 +74,10 @@ import ManagerTeamChat from "./pages/ManagerTeamChat";
 import AdminTeamChat from "./pages/AdminTeamChat";
 import Leaderboard from "./pages/Leaderboard";
 import DispatchDashboard from "./pages/DispatchDashboard";
+import DispatchFleet from "./pages/dispatch/DispatchFleet";
+import DispatchDrivers from "./pages/dispatch/DispatchDrivers";
+import DispatchRoutes from "./pages/dispatch/DispatchRoutes";
+import DispatchJobs from "./pages/dispatch/DispatchJobs";
 import Unsubscribe from "./pages/Unsubscribe";
 import AgentIncomingLeads from "./pages/AgentIncomingLeads";
 
