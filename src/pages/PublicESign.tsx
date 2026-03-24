@@ -42,6 +42,42 @@ export default function PublicESign() {
 
   useEffect(() => { window.scrollTo(0, 0); }, []);
 
+  // Fetch customer data from DB using refNumber (no query params needed)
+  useEffect(() => {
+    if (!refNumber || refNumber === "DOC-2026-0001") return;
+    const fetchDocData = async () => {
+      const { data: doc } = await supabase
+        .from("esign_documents")
+        .select("lead_id, document_type")
+        .eq("ref_number", refNumber)
+        .maybeSingle();
+
+      if (doc?.lead_id) {
+        setLeadId(doc.lead_id);
+        if (doc.document_type) setDocTypeFromDb(doc.document_type);
+        if (!qpDocType || qpDocType === "estimate") {
+          setActiveDocument((doc.document_type || "estimate") as DocumentType);
+        }
+
+        const { data: lead } = await supabase
+          .from("leads")
+          .select("first_name, last_name, email")
+          .eq("id", doc.lead_id)
+          .maybeSingle();
+
+        if (lead) {
+          const fullName = `${lead.first_name} ${lead.last_name}`.trim();
+          if (fullName && !qpName) {
+            setCustomerName(fullName);
+            setTypedName(fullName);
+          }
+          if (lead.email && !qpEmail) setCustomerEmail(lead.email);
+        }
+      }
+    };
+    fetchDocData();
+  }, [refNumber]);
+
   const typedInitials = typedName
     .split(" ").filter(Boolean).map((w) => w[0]).join("").toUpperCase().slice(0, 3);
 
