@@ -103,8 +103,21 @@ export default function AgentLogin() {
   if (loading) {
     return (
       <PageShell>
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="w-5 h-5 border-2 border-foreground/20 border-t-foreground rounded-full animate-spin" />
+        <div className="flex flex-col items-center justify-center min-h-screen gap-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <img src={logoImg} alt="TruMove" className="h-8 mb-2" />
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.25, duration: 0.4 }}
+          >
+            <div className="w-5 h-5 border-2 border-foreground/20 border-t-foreground rounded-full animate-spin" />
+          </motion.div>
         </div>
       </PageShell>
     );
@@ -114,7 +127,13 @@ export default function AgentLogin() {
     return (
       <PageShell>
         <div className="flex items-center justify-center min-h-screen px-4 py-16">
-          <PortalAuthForm onAuthenticated={() => {}} />
+          <motion.div
+            initial={{ opacity: 0, y: 20, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <PortalAuthForm onAuthenticated={() => {}} />
+          </motion.div>
         </div>
       </PageShell>
     );
