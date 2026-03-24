@@ -66,7 +66,7 @@ export default function IncomingLeadsSidebar({ open, onClose }: IncomingLeadsSid
     const channel = supabase
       .channel("incoming-leads")
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "leads" }, (payload) => {
-        const newLead = payload.new as IncomingLead;
+        const newLead = payload.new as IncomingLead & { assigned_agent_id: string | null };
         if (!newLead.assigned_agent_id) {
           setLeads((prev) => [newLead, ...prev].slice(0, 30));
         }
