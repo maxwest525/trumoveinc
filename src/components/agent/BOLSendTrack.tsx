@@ -181,7 +181,7 @@ export function BOLSendTrack({ prefillName = "", prefillEmail = "", prefillPhone
         {/* SEND TAB */}
         <TabsContent value="send" className="space-y-4">
           <Card>
-            <CardHeader><CardTitle className="text-lg flex items-center gap-2"><Send className="w-5 h-5" />Send Bill of Lading for Signature</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="text-lg flex items-center gap-2"><Send className="w-5 h-5" />Send Merchant Payment for Signature</CardTitle></CardHeader>
             <CardContent className="space-y-4">
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="space-y-2">
