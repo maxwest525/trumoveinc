@@ -197,6 +197,14 @@ export default function AgentCustomerDetail() {
                   <PhoneCall className="w-3 h-3" /> Call
                 </Button>
               )}
+              <Button variant="outline" size="sm" className="gap-1.5 text-xs h-8"
+                onClick={() => {
+                  const tabs = document.querySelector('[data-state="active"][value="communication"]') ? undefined : undefined;
+                  const el = document.querySelector('[data-radix-collection-item][value="communication"]') as HTMLElement;
+                  if (el) el.click();
+                }}>
+                <MessageSquare className="w-3 h-3" /> Chat
+              </Button>
             </div>
           </div>
 
