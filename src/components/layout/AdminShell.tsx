@@ -18,13 +18,13 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Badge } from "@/components/ui/badge";
 
 
-const NAV_ITEMS = [
+const NAV_ITEMS: { label: string; icon: any; href: string; beta?: boolean }[] = [
   { label: "Dashboard", icon: LayoutDashboard, href: "/admin/dashboard" },
   { label: "Users & Roles", icon: Users, href: "/admin/users" },
   { label: "Employee Requests", icon: FileText, href: "/admin/employee-requests" },
   { label: "Leaderboard", icon: Trophy, href: "/leaderboard" },
   { label: "Products & Pricing", icon: DollarSign, href: "/admin/pricing" },
-  { label: "Developer", icon: Link2, href: "/admin/developer" },
+  { label: "Developer", icon: Link2, href: "/admin/developer", beta: true },
   { label: "Pulse Settings", icon: Settings2, href: "/admin/pulse" },
 ];
 
@@ -79,6 +79,9 @@ export default function AdminShell({ children, breadcrumb = "" }: AdminShellProp
             >
               <Icon className="w-4 h-4" />
               <span>{item.label}</span>
+              {item.beta && (
+                <span className="ml-auto text-[9px] font-semibold uppercase tracking-wider text-muted-foreground bg-muted px-1.5 py-0.5 rounded">Beta</span>
+              )}
             </Link>
           );
         })}
