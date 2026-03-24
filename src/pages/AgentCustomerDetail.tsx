@@ -212,6 +212,9 @@ export default function AgentCustomerDetail() {
               <TabsTrigger value="documents" className="gap-1.5 text-xs">
                 <FolderOpen className="w-3.5 h-3.5" /> Docs
               </TabsTrigger>
+              <TabsTrigger value="communication" className="gap-1.5 text-xs">
+                <MessageSquare className="w-3.5 h-3.5" /> Chat
+              </TabsTrigger>
             </TabsList>
 
             {/* OVERVIEW TAB */}
