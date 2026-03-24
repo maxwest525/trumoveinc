@@ -72,7 +72,7 @@ const ESignRequestEmail = ({ customerName, documentLabel, refNumber, signingUrl 
         {/* Footer */}
         <Hr style={hr} />
         <div style={footerWrap}>
-          <Img src={LOGO_URL} alt="TruMove" width="90" height="auto" style={footerLogo} />
+          <Text style={footerBrand}>{SITE_NAME}</Text>
           <Text style={footerText}>
             © {new Date().getFullYear()} {SITE_NAME}. All rights reserved.
           </Text>
