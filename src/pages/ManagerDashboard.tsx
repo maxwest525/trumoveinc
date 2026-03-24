@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
-import { cn } from "@/lib/utils";
+import { Settings2 } from "lucide-react";
 import ManagerShell from "@/components/layout/ManagerShell";
 import { supabase } from "@/integrations/supabase/client";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Switch } from "@/components/ui/switch";
 
 const BOOKING_COLORS = [
   "hsl(var(--primary))",
@@ -20,6 +22,36 @@ const STAGE_LABELS: Record<string, string> = {
   closed_lost: "Cancelled",
 };
 
+const ALL_SECTIONS = [
+  "kpis", "revenueTrend", "dealsByStatus", "recentDeals", "teamPerformance",
+] as const;
+type SectionKey = typeof ALL_SECTIONS[number];
+
+const SECTION_LABELS: Record<SectionKey, string> = {
+  kpis: "KPI Cards",
+  revenueTrend: "Revenue Trend",
+  dealsByStatus: "Deals by Status",
+  recentDeals: "Recent Deal Activity",
+  teamPerformance: "Team Performance",
+};
+
+const STORAGE_KEY = "manager-dashboard-sections";
+
+function loadVisibleSections(): SectionKey[] {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch {}
+  return [...ALL_SECTIONS];
+}
+
+function saveVisibleSections(keys: SectionKey[]) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(keys));
+}
+
 export default function ManagerDashboard() {
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ revenue: 0, closeRate: 0, totalClosed: 0, atRisk: 0, pipelineValue: 0, newLeads: 0, activeDeals: 0 });
@@ -27,6 +59,17 @@ export default function ManagerDashboard() {
   const [bookingsStatus, setBookingsStatus] = useState<{ status: string; count: number }[]>([]);
   const [team, setTeam] = useState<{ initials: string; name: string; bookings: string; revenue: string }[]>([]);
   const [recentDeals, setRecentDeals] = useState<any[]>([]);
+  const [visibleSections, setVisibleSections] = useState<SectionKey[]>(loadVisibleSections);
+
+  const toggleSection = (key: SectionKey) => {
+    setVisibleSections(prev => {
+      const next = prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key];
+      saveVisibleSections(next);
+      return next;
+    });
+  };
+
+  const show = (key: SectionKey) => visibleSections.includes(key);
 
   useEffect(() => {
     const fetch = async () => {
@@ -40,7 +83,6 @@ export default function ManagerDashboard() {
       const profiles = (profilesRes.data as any[]) || [];
       const leads = (leadsRes.data as any[]) || [];
 
-      // Stats
       const closedWon = deals.filter(d => d.stage === "closed_won");
       const closedLost = deals.filter(d => d.stage === "closed_lost");
       const totalClosed = closedWon.length + closedLost.length;
@@ -55,7 +97,6 @@ export default function ManagerDashboard() {
 
       setStats({ revenue: totalRevenue, closeRate, totalClosed, atRisk, pipelineValue, newLeads, activeDeals: activeDeals.length });
 
-      // Revenue trend (last 6 months)
       const monthlyRev: Record<string, number> = {};
       const now = new Date();
       for (let i = 5; i >= 0; i--) {
@@ -74,14 +115,12 @@ export default function ManagerDashboard() {
         revenue,
       })));
 
-      // Bookings by status (operational stages)
       const opStages = ["booked", "dispatched", "in_transit", "delivered", "closed_won", "closed_lost"];
       const bStatus = opStages
         .map(s => ({ status: STAGE_LABELS[s] || s, count: deals.filter(d => d.stage === s).length }))
         .filter(d => d.count > 0);
       setBookingsStatus(bStatus);
 
-      // Team performance
       const agentMap: Record<string, { name: string; bookings: number; revenue: number }> = {};
       deals.forEach(d => {
         if (!d.assigned_agent_id) return;
@@ -105,7 +144,6 @@ export default function ManagerDashboard() {
         }));
       setTeam(teamData);
 
-      // Recent closed deals
       setRecentDeals(
         deals
           .filter(d => d.stage === "closed_won" || d.stage === "closed_lost")
@@ -129,100 +167,131 @@ export default function ManagerDashboard() {
   return (
     <ManagerShell>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-xl font-bold text-foreground">Manager Dashboard</h1>
-          <p className="text-sm text-muted-foreground">Team performance and approvals overview</p>
-        </div>
-
-        {/* KPIs */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-4">
-          {[
-            { label: "Pipeline Value", value: `$${stats.pipelineValue.toLocaleString()}`, sub: `${stats.activeDeals} active deals` },
-            { label: "Team Revenue", value: `$${stats.revenue.toLocaleString()}`, sub: "Closed-won total" },
-            { label: "Win Rate", value: `${stats.closeRate}%`, sub: `${stats.totalClosed} total closed` },
-            { label: "New Leads (30d)", value: String(stats.newLeads) },
-            { label: "Active Deals", value: String(stats.activeDeals) },
-            { label: "At-Risk", value: String(stats.atRisk), sub: "Follow-up stage" },
-            { label: "All-Time Closed", value: String(stats.totalClosed) },
-          ].map((s) => (
-            <div key={s.label} className="rounded-xl border border-border bg-card p-4">
-              <span className="text-xs text-muted-foreground">{s.label}</span>
-              <div className="mt-2 text-2xl font-bold text-foreground">{s.value}</div>
-              {s.sub && <span className="text-[11px] text-muted-foreground">{s.sub}</span>}
-            </div>
-          ))}
-        </div>
-
-        {/* Charts */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          <div className="lg:col-span-2 rounded-xl border border-border bg-card p-4">
-            <h2 className="text-sm font-semibold text-foreground mb-3">Team Revenue Trend</h2>
-            <ResponsiveContainer width="100%" height={180}>
-              <LineChart data={revenueTrend}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
-                <XAxis dataKey="month" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`} />
-                <Tooltip contentStyle={{ borderRadius: 8, border: "1px solid hsl(var(--border))", background: "hsl(var(--card))" }} formatter={(v: number) => [`$${v.toLocaleString()}`, "Revenue"]} />
-                <Line type="monotone" dataKey="revenue" stroke="hsl(var(--primary))" strokeWidth={2} dot={{ r: 3, fill: "hsl(var(--primary))" }} />
-              </LineChart>
-            </ResponsiveContainer>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-xl font-bold text-foreground">Manager Dashboard</h1>
+            <p className="text-sm text-muted-foreground">Team performance and approvals overview</p>
           </div>
-          <div className="rounded-xl border border-border bg-card p-4">
-            <h2 className="text-sm font-semibold text-foreground mb-3">Deals by Status</h2>
-            {bookingsStatus.length > 0 ? (
-              <>
-                <ResponsiveContainer width="100%" height={140}>
-                  <PieChart>
-                    <Pie data={bookingsStatus} dataKey="count" nameKey="status" cx="50%" cy="50%" innerRadius={35} outerRadius={55} paddingAngle={4}>
-                      {bookingsStatus.map((_, idx) => (
-                        <Cell key={idx} fill={BOOKING_COLORS[idx % BOOKING_COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip contentStyle={{ borderRadius: 8, border: "1px solid hsl(var(--border))", background: "hsl(var(--card))" }} />
-                  </PieChart>
+          <Popover>
+            <PopoverTrigger asChild>
+              <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-card text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
+                <Settings2 className="w-3.5 h-3.5" />
+                Customize
+              </button>
+            </PopoverTrigger>
+            <PopoverContent align="end" className="w-56 p-3">
+              <p className="text-xs font-semibold text-foreground mb-2">Show / Hide Sections</p>
+              <div className="space-y-2">
+                {ALL_SECTIONS.map(key => (
+                  <label key={key} className="flex items-center justify-between gap-2 cursor-pointer">
+                    <span className="text-xs text-muted-foreground">{SECTION_LABELS[key]}</span>
+                    <Switch
+                      checked={visibleSections.includes(key)}
+                      onCheckedChange={() => toggleSection(key)}
+                      className="scale-75"
+                    />
+                  </label>
+                ))}
+              </div>
+            </PopoverContent>
+          </Popover>
+        </div>
+
+        {show("kpis") && (
+          <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-4">
+            {[
+              { label: "Pipeline Value", value: `$${stats.pipelineValue.toLocaleString()}`, sub: `${stats.activeDeals} active deals` },
+              { label: "Team Revenue", value: `$${stats.revenue.toLocaleString()}`, sub: "Closed-won total" },
+              { label: "Win Rate", value: `${stats.closeRate}%`, sub: `${stats.totalClosed} total closed` },
+              { label: "New Leads (30d)", value: String(stats.newLeads) },
+              { label: "Active Deals", value: String(stats.activeDeals) },
+              { label: "At-Risk", value: String(stats.atRisk), sub: "Follow-up stage" },
+              { label: "All-Time Closed", value: String(stats.totalClosed) },
+            ].map((s) => (
+              <div key={s.label} className="rounded-xl border border-border bg-card p-4">
+                <span className="text-xs text-muted-foreground">{s.label}</span>
+                <div className="mt-2 text-2xl font-bold text-foreground">{s.value}</div>
+                {s.sub && <span className="text-[11px] text-muted-foreground">{s.sub}</span>}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {(show("revenueTrend") || show("dealsByStatus")) && (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            {show("revenueTrend") && (
+              <div className="lg:col-span-2 rounded-xl border border-border bg-card p-4">
+                <h2 className="text-sm font-semibold text-foreground mb-3">Team Revenue Trend</h2>
+                <ResponsiveContainer width="100%" height={180}>
+                  <LineChart data={revenueTrend}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
+                    <XAxis dataKey="month" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`} />
+                    <Tooltip contentStyle={{ borderRadius: 8, border: "1px solid hsl(var(--border))", background: "hsl(var(--card))" }} formatter={(v: number) => [`$${v.toLocaleString()}`, "Revenue"]} />
+                    <Line type="monotone" dataKey="revenue" stroke="hsl(var(--primary))" strokeWidth={2} dot={{ r: 3, fill: "hsl(var(--primary))" }} />
+                  </LineChart>
                 </ResponsiveContainer>
-                <div className="flex flex-wrap gap-x-3 gap-y-1 mt-2 justify-center">
-                  {bookingsStatus.map((d, i) => (
-                    <span key={i} className="flex items-center gap-1 text-[11px] text-muted-foreground">
-                      <span className="w-2 h-2 rounded-full" style={{ background: BOOKING_COLORS[i % BOOKING_COLORS.length] }} />
-                      {d.status}
-                    </span>
-                  ))}
-                </div>
-              </>
-            ) : (
-              <p className="text-xs text-muted-foreground text-center py-12">No deals yet</p>
+              </div>
             )}
-          </div>
-        </div>
-
-        {/* Recent Deal Activity */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <div className="rounded-xl border border-border bg-card p-4">
-            <h2 className="text-sm font-semibold text-foreground mb-3">Recent Deal Activity</h2>
-            {recentDeals.length > 0 ? (
-              recentDeals.map((d, i) => {
-                const lead = d.leads as any;
-                const name = lead ? `${lead.first_name} ${lead.last_name}` : "Unknown";
-                const won = d.stage === "closed_won";
-                return (
-                  <div key={i} className="flex items-center gap-3 py-3 px-2 rounded-lg hover:bg-muted/50 transition-colors">
-                    <div className={`w-2 h-2 rounded-full shrink-0 ${won ? "bg-chart-2" : "bg-destructive"}`} />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-foreground truncate">{name}</p>
-                      <p className="text-xs text-muted-foreground">{won ? "Closed Won" : "Lost"} · ${(d.actual_revenue || d.deal_value || 0).toLocaleString()}</p>
+            {show("dealsByStatus") && (
+              <div className="rounded-xl border border-border bg-card p-4">
+                <h2 className="text-sm font-semibold text-foreground mb-3">Deals by Status</h2>
+                {bookingsStatus.length > 0 ? (
+                  <>
+                    <ResponsiveContainer width="100%" height={140}>
+                      <PieChart>
+                        <Pie data={bookingsStatus} dataKey="count" nameKey="status" cx="50%" cy="50%" innerRadius={35} outerRadius={55} paddingAngle={4}>
+                          {bookingsStatus.map((_, idx) => (
+                            <Cell key={idx} fill={BOOKING_COLORS[idx % BOOKING_COLORS.length]} />
+                          ))}
+                        </Pie>
+                        <Tooltip contentStyle={{ borderRadius: 8, border: "1px solid hsl(var(--border))", background: "hsl(var(--card))" }} />
+                      </PieChart>
+                    </ResponsiveContainer>
+                    <div className="flex flex-wrap gap-x-3 gap-y-1 mt-2 justify-center">
+                      {bookingsStatus.map((d, i) => (
+                        <span key={i} className="flex items-center gap-1 text-[11px] text-muted-foreground">
+                          <span className="w-2 h-2 rounded-full" style={{ background: BOOKING_COLORS[i % BOOKING_COLORS.length] }} />
+                          {d.status}
+                        </span>
+                      ))}
                     </div>
-                  </div>
-                );
-              })
-            ) : (
-              <p className="text-xs text-muted-foreground text-center py-6">No recent deal closures</p>
+                  </>
+                ) : (
+                  <p className="text-xs text-muted-foreground text-center py-12">No deals yet</p>
+                )}
+              </div>
             )}
           </div>
-        </div>
+        )}
 
-        {/* Team Performance */}
-        {team.length > 0 && (
+        {show("recentDeals") && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div className="rounded-xl border border-border bg-card p-4">
+              <h2 className="text-sm font-semibold text-foreground mb-3">Recent Deal Activity</h2>
+              {recentDeals.length > 0 ? (
+                recentDeals.map((d, i) => {
+                  const lead = d.leads as any;
+                  const name = lead ? `${lead.first_name} ${lead.last_name}` : "Unknown";
+                  const won = d.stage === "closed_won";
+                  return (
+                    <div key={i} className="flex items-center gap-3 py-3 px-2 rounded-lg hover:bg-muted/50 transition-colors">
+                      <div className={`w-2 h-2 rounded-full shrink-0 ${won ? "bg-chart-2" : "bg-destructive"}`} />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-foreground truncate">{name}</p>
+                        <p className="text-xs text-muted-foreground">{won ? "Closed Won" : "Lost"} · ${(d.actual_revenue || d.deal_value || 0).toLocaleString()}</p>
+                      </div>
+                    </div>
+                  );
+                })
+              ) : (
+                <p className="text-xs text-muted-foreground text-center py-6">No recent deal closures</p>
+              )}
+            </div>
+          </div>
+        )}
+
+        {show("teamPerformance") && team.length > 0 && (
           <div className="rounded-xl border border-border bg-card p-4">
             <h2 className="text-sm font-semibold text-foreground mb-3">Team Performance</h2>
             {team.map((t, i) => (
