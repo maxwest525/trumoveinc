@@ -211,7 +211,7 @@ export function BOLSendTrack({ prefillName = "", prefillEmail = "", prefillPhone
               </div>
               <Button className="w-full gap-2" onClick={handleSend} disabled={isSending}>
                 {isSending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-                {isSending ? "Sending..." : "Send Bill of Lading"}
+                {isSending ? "Sending..." : "Send Merchant Payment"}
               </Button>
             </CardContent>
           </Card>
