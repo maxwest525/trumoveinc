@@ -134,13 +134,16 @@ export default function ManagerDashboard() {
           <p className="text-sm text-muted-foreground">Team performance and approvals overview</p>
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* KPIs */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-4">
           {[
-            { label: "Team Revenue", value: `$${stats.revenue.toLocaleString()}` },
-            { label: "Close Rate", value: `${stats.closeRate}%`, sub: `${stats.totalClosed} total closed` },
-            { label: "Active Deals", value: String(stats.totalClosed), sub: "All-time closed" },
-            { label: "At-Risk Deals", value: String(stats.atRisk), sub: "In follow-up stage" },
+            { label: "Pipeline Value", value: `$${stats.pipelineValue.toLocaleString()}`, sub: `${stats.activeDeals} active deals` },
+            { label: "Team Revenue", value: `$${stats.revenue.toLocaleString()}`, sub: "Closed-won total" },
+            { label: "Win Rate", value: `${stats.closeRate}%`, sub: `${stats.totalClosed} total closed` },
+            { label: "New Leads (30d)", value: String(stats.newLeads) },
+            { label: "Active Deals", value: String(stats.activeDeals) },
+            { label: "At-Risk", value: String(stats.atRisk), sub: "Follow-up stage" },
+            { label: "All-Time Closed", value: String(stats.totalClosed) },
           ].map((s) => (
             <div key={s.label} className="rounded-xl border border-border bg-card p-4">
               <span className="text-xs text-muted-foreground">{s.label}</span>
