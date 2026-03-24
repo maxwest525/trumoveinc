@@ -10,7 +10,7 @@ import { setPortalContext } from "@/hooks/usePortalContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useNotifications } from "@/hooks/useNotifications";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { NotificationsPanel } from "@/components/agent/NotificationsPanel";
+import NotificationsPanel from "@/components/agent/NotificationsPanel";
 import { Badge } from "@/components/ui/badge";
 import AgentTeamChat from "@/pages/AgentTeamChat";
 
