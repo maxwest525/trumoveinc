@@ -40,8 +40,48 @@ interface Props {
 
 export default function EmailBlockEditor({ blocks, onChange }: Props) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const historyRef = useRef<EmailBlock[][]>([[]]);
+  const historyIndexRef = useRef(0);
 
   const selectedBlock = blocks.find((b) => b.id === selectedId) || null;
+
+  const pushHistory = useCallback((newBlocks: EmailBlock[]) => {
+    const idx = historyIndexRef.current;
+    const newHistory = historyRef.current.slice(0, idx + 1);
+    newHistory.push(JSON.parse(JSON.stringify(newBlocks)));
+    historyRef.current = newHistory;
+    historyIndexRef.current = newHistory.length - 1;
+  }, []);
+
+  const handleChange = useCallback((newBlocks: EmailBlock[]) => {
+    pushHistory(newBlocks);
+    onChange(newBlocks);
+  }, [onChange, pushHistory]);
+
+  const undo = useCallback(() => {
+    const idx = historyIndexRef.current;
+    if (idx <= 0) return;
+    historyIndexRef.current = idx - 1;
+    const restored = JSON.parse(JSON.stringify(historyRef.current[idx - 1]));
+    onChange(restored);
+  }, [onChange]);
+
+  const redo = useCallback(() => {
+    const idx = historyIndexRef.current;
+    if (idx >= historyRef.current.length - 1) return;
+    historyIndexRef.current = idx + 1;
+    const restored = JSON.parse(JSON.stringify(historyRef.current[idx + 1]));
+    onChange(restored);
+  }, [onChange]);
+
+  const clearAll = useCallback(() => {
+    pushHistory([]);
+    onChange([]);
+    setSelectedId(null);
+  }, [onChange, pushHistory]);
+
+  const canUndo = historyIndexRef.current > 0;
+  const canRedo = historyIndexRef.current < historyRef.current.length - 1;
 
   const addBlock = useCallback((type: BlockType) => {
     const newBlock: EmailBlock = {
