@@ -193,6 +193,63 @@ export default function AgentInventory() {
     navigate(`/agent/esign?leadId=${leadId}&doc=estimate`);
   };
 
+  const handleEmailInventory = async () => {
+    if (!leadData?.email) {
+      toast.error("No customer email found", { description: "This lead doesn't have an email address on file." });
+      return;
+    }
+    if (inventory.length === 0) {
+      toast.error("No inventory items", { description: "Add items to the inventory before emailing." });
+      return;
+    }
+
+    setIsSendingEmail(true);
+    try {
+      // Group inventory by room
+      const inventoryByRoom: Record<string, Array<{ name: string; room: string; quantity: number; cubicFeet: number; weight: number }>> = {};
+      for (const item of inventory) {
+        if (!inventoryByRoom[item.room]) inventoryByRoom[item.room] = [];
+        inventoryByRoom[item.room].push({
+          name: item.name,
+          room: item.room,
+          quantity: item.quantity,
+          cubicFeet: item.cubicFeet,
+          weight: item.weight,
+        });
+      }
+
+      const refNumber = `TM-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 9999)).padStart(4, "0")}`;
+      const cost = pricePerCuFt ? totalCuFt * Number(pricePerCuFt) : 0;
+
+      await supabase.functions.invoke("send-transactional-email", {
+        body: {
+          templateName: "inventory-summary",
+          recipientEmail: leadData.email,
+          idempotencyKey: `inventory-${leadId}-${Date.now()}`,
+          templateData: {
+            customerName: `${leadData.first_name} ${leadData.last_name}`.trim(),
+            refNumber,
+            totalItems,
+            totalCuFt,
+            totalWeight,
+            estimatedTotal: cost > 0 ? `$${cost.toLocaleString()}` : undefined,
+            pricePerCuFt: pricePerCuFt ? `$${pricePerCuFt}` : undefined,
+            inventoryByRoom,
+          },
+        },
+      });
+
+      toast.success("Inventory emailed to customer", {
+        description: `Sent to ${leadData.email}`,
+      });
+    } catch (err: any) {
+      console.error("Error emailing inventory:", err);
+      toast.error("Failed to send email", { description: err.message });
+    } finally {
+      setIsSendingEmail(false);
+    }
+  };
+
   return (
     <AgentShell breadcrumb=" / Inventory">
       <div className="p-4 h-[calc(100vh-3.5rem)] flex gap-6">
