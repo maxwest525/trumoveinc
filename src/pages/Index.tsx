@@ -597,7 +597,7 @@ function TrustCompactSection() {
 
 // Steps Compact Section with parallax effect
 function StepsCompactSection({ navigate }: {navigate: (path: string) => void;}) {
-  const [sectionRef, isInView] = useScrollAnimation<HTMLElement>({
+  const [sectionRef, isInView, isInstant] = useScrollAnimation<HTMLElement>({
     threshold: 0.1,
     rootMargin: "0px",
     triggerOnce: true
