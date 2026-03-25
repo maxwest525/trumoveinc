@@ -207,6 +207,8 @@ export default function MarketingTemplates() {
     setTplSubject("");
     setTplBody("");
     setEditingId(null);
+    setEmailBlocks([]);
+    setEditorMode("builder");
   };
 
   const loadTemplate = (t: any) => {
@@ -214,6 +216,8 @@ export default function MarketingTemplates() {
     setTplSubject(t.subject || "");
     setTplBody(t.body);
     setEditingId(t.id || null);
+    setEmailBlocks([]);
+    if (channel === "email") setEditorMode("code");
   };
 
   const loadStarter = (s: any) => {
@@ -221,6 +225,8 @@ export default function MarketingTemplates() {
     setTplSubject(s.subject || "");
     setTplBody(s.body);
     setEditingId(null);
+    setEmailBlocks([]);
+    if (channel === "email") setEditorMode("code");
   };
 
   const insertTag = useCallback((tag: string) => {
