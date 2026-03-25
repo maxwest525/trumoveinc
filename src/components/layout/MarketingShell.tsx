@@ -73,28 +73,8 @@ export default function MarketingShell({ children, breadcrumb = "", breadcrumbs 
         })}
       </nav>
 
-      {/* Agent status footer */}
       <div className="px-3 py-3 border-t border-border">
-        <div className="space-y-1.5">
-          {[
-            { label: "SEO Agent", status: "active" },
-            { label: "Ads Agent", status: "active" },
-            
-          ].map((a) => (
-            <div key={a.label} className="flex items-center justify-between text-[10px]">
-              <span className="text-muted-foreground">{a.label}</span>
-              <span className="flex items-center gap-1">
-                <span className={cn(
-                  "w-1.5 h-1.5 rounded-full",
-                  a.status === "active" ? "bg-emerald-500" : "bg-muted-foreground/40"
-                )} />
-                <span className={cn(
-                  a.status === "active" ? "text-emerald-600" : "text-muted-foreground"
-                )}>{a.status === "active" ? "Active" : "Idle"}</span>
-              </span>
-            </div>
-          ))}
-        </div>
+        <span className="text-[10px] text-muted-foreground">Email Templates</span>
       </div>
     </>
   );
