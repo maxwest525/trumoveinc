@@ -90,18 +90,18 @@ export default function EmailBlockEditor({ blocks, onChange }: Props) {
       props: { ...DEFAULT_BLOCK_PROPS[type] },
     };
     const updated = [...blocks, newBlock];
-    onChange(updated);
+    handleChange(updated);
     setSelectedId(newBlock.id);
-  }, [blocks, onChange]);
+  }, [blocks, handleChange]);
 
   const updateBlockProps = useCallback((id: string, props: Record<string, any>) => {
-    onChange(blocks.map((b) => (b.id === id ? { ...b, props: { ...b.props, ...props } } : b)));
-  }, [blocks, onChange]);
+    handleChange(blocks.map((b) => (b.id === id ? { ...b, props: { ...b.props, ...props } } : b)));
+  }, [blocks, handleChange]);
 
   const removeBlock = useCallback((id: string) => {
-    onChange(blocks.filter((b) => b.id !== id));
+    handleChange(blocks.filter((b) => b.id !== id));
     if (selectedId === id) setSelectedId(null);
-  }, [blocks, onChange, selectedId]);
+  }, [blocks, handleChange, selectedId]);
 
   const moveBlock = useCallback((id: string, dir: -1 | 1) => {
     const idx = blocks.findIndex((b) => b.id === id);
@@ -110,8 +110,8 @@ export default function EmailBlockEditor({ blocks, onChange }: Props) {
     if (newIdx < 0 || newIdx >= blocks.length) return;
     const arr = [...blocks];
     [arr[idx], arr[newIdx]] = [arr[newIdx], arr[idx]];
-    onChange(arr);
-  }, [blocks, onChange]);
+    handleChange(arr);
+  }, [blocks, handleChange]);
 
   const duplicateBlock = useCallback((id: string) => {
     const idx = blocks.findIndex((b) => b.id === id);
@@ -119,9 +119,9 @@ export default function EmailBlockEditor({ blocks, onChange }: Props) {
     const dup: EmailBlock = { ...blocks[idx], id: genId(), props: { ...blocks[idx].props } };
     const arr = [...blocks];
     arr.splice(idx + 1, 0, dup);
-    onChange(arr);
+    handleChange(arr);
     setSelectedId(dup.id);
-  }, [blocks, onChange]);
+  }, [blocks, handleChange]);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[1fr_260px] gap-3">
