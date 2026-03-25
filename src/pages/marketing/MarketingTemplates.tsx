@@ -558,17 +558,6 @@ export default function MarketingTemplates() {
                       {saveMutation.isPending ? <Loader2 className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />}
                       {editingId ? "Update Template" : "Save SMS Template"}
                     </Button>
-                    {!editingId && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="gap-1.5 text-xs"
-                        disabled={!tplName || !tplBody || saveMutation.isPending}
-                        onClick={() => { setSaveTarget("both"); saveMutation.mutate(); }}
-                      >
-                        Save to Email & SMS
-                      </Button>
-                    )}
                   </div>
                   <p className="text-[9px] text-muted-foreground">
                     <CheckCircle2 className="w-2.5 h-2.5 inline mr-0.5 text-emerald-500" />
