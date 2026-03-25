@@ -37,6 +37,11 @@ const MERGE_TAGS = [
   { tag: "{eta}", label: "ETA", icon: Calendar, desc: "Estimated arrival" },
   { tag: "{agent_name}", label: "Agent Name", icon: User, desc: "Assigned agent" },
   { tag: "{company_name}", label: "Company Name", icon: FileText, desc: "TruMove Inc" },
+  { tag: "{inventory_table}", label: "Inventory Table", icon: Package, desc: "Full item list by room" },
+  { tag: "{total_cuft}", label: "Total Cu Ft", icon: Package, desc: "Total cubic feet" },
+  { tag: "{total_weight}", label: "Total Weight", icon: Package, desc: "Total weight (lbs)" },
+  { tag: "{total_items}", label: "Total Items", icon: Package, desc: "Total item count" },
+  { tag: "{price_per_cuft}", label: "Price/Cu Ft", icon: DollarSign, desc: "Rate per cubic foot" },
 ];
 
 // ─── Starter Templates ───
