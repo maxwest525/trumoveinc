@@ -36,6 +36,7 @@ const ADVANCED_ITEMS = [
 interface AdminShellProps {
   children: ReactNode;
   breadcrumb?: string;
+  breadcrumbs?: BreadcrumbSegment[];
 }
 
 export default function AdminShell({ children, breadcrumb = "" }: AdminShellProps) {
