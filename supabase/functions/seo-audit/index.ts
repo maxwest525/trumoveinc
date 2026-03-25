@@ -206,16 +206,20 @@ Deno.serve(async (req) => {
         }
       }
 
-      // Step 2: Fallback — use Firecrawl map (follows links from homepage)
-      if (discoveredUrls.length === 0) {
-        console.log("No sitemap found, falling back to Firecrawl link discovery");
+      // Step 2: ALWAYS use Firecrawl map to supplement — sitemaps are often incomplete
+      console.log(`Sitemap found ${discoveredUrls.length} URLs, supplementing with Firecrawl link discovery`);
+      try {
         const mapRes = await fetch("https://api.firecrawl.dev/v1/map", {
           method: "POST",
           headers: { Authorization: `Bearer ${FIRECRAWL_API_KEY}`, "Content-Type": "application/json" },
-          body: JSON.stringify({ url: baseUrl, limit: 50, includeSubdomains: false }),
+          body: JSON.stringify({ url: baseUrl, limit: 100, includeSubdomains: false }),
         });
         const mapData = await mapRes.json();
-        discoveredUrls = mapData?.links || [];
+        const crawledUrls = mapData?.links || [];
+        console.log(`Firecrawl map found ${crawledUrls.length} additional URLs`);
+        discoveredUrls.push(...crawledUrls);
+      } catch (e) {
+        console.error("Firecrawl map error:", e);
       }
 
       // Deduplicate, filter to same domain, limit to 50
