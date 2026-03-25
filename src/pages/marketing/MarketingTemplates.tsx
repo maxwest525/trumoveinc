@@ -4,8 +4,10 @@ import {
   Mail, MessageSquare, Plus, Trash2, Save, Eye, Code, Paintbrush,
   Copy, Loader2, FileText, ChevronDown, Bold, Italic, Link2,
   Image, AlignLeft, List, Type, Hash, User, MapPin, Calendar,
-  Phone, Package, Truck, DollarSign, Pencil, CheckCircle2,
+  Phone, Package, Truck, DollarSign, Pencil, CheckCircle2, Blocks,
 } from "lucide-react";
+import EmailBlockEditor, { blocksToHtml } from "@/components/email-builder/EmailBlockEditor";
+import { type EmailBlock } from "@/components/email-builder/types";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -124,8 +126,9 @@ const SMS_STARTERS = [
 
 export default function MarketingTemplates() {
   const [channel, setChannel] = useState<"email" | "sms">("email");
-  const [editorMode, setEditorMode] = useState<"visual" | "code">("visual");
+  const [editorMode, setEditorMode] = useState<"builder" | "code" | "preview">("builder");
   const [showPreview, setShowPreview] = useState(false);
+  const [emailBlocks, setEmailBlocks] = useState<EmailBlock[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
 
   // Form state
@@ -204,6 +207,8 @@ export default function MarketingTemplates() {
     setTplSubject("");
     setTplBody("");
     setEditingId(null);
+    setEmailBlocks([]);
+    setEditorMode("builder");
   };
 
   const loadTemplate = (t: any) => {
@@ -211,6 +216,8 @@ export default function MarketingTemplates() {
     setTplSubject(t.subject || "");
     setTplBody(t.body);
     setEditingId(t.id || null);
+    setEmailBlocks([]);
+    if (channel === "email") setEditorMode("code");
   };
 
   const loadStarter = (s: any) => {
@@ -218,6 +225,8 @@ export default function MarketingTemplates() {
     setTplSubject(s.subject || "");
     setTplBody(s.body);
     setEditingId(null);
+    setEmailBlocks([]);
+    if (channel === "email") setEditorMode("code");
   };
 
   const insertTag = useCallback((tag: string) => {
@@ -328,7 +337,6 @@ export default function MarketingTemplates() {
                 </ScrollArea>
               </div>
 
-              {/* Main Editor */}
               <div className="lg:col-span-3 space-y-3">
                 {/* Name + Subject */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -342,73 +350,90 @@ export default function MarketingTemplates() {
                   </div>
                 </div>
 
-                {/* Merge Tags Bar */}
-                <div className="bg-card rounded-xl border border-border p-3">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Hash className="w-3.5 h-3.5 text-primary" />
-                    <span className="text-[11px] font-bold text-foreground">Merge Tags</span>
-                    <span className="text-[9px] text-muted-foreground">— click to insert at cursor</span>
-                  </div>
-                  <div className="flex flex-wrap gap-1.5">
-                    {MERGE_TAGS.map((mt) => {
-                      const Icon = mt.icon;
-                      return (
-                        <button
-                          key={mt.tag}
-                          onClick={() => insertTag(mt.tag)}
-                          title={mt.desc}
-                          className="inline-flex items-center gap-1 bg-muted/50 hover:bg-primary/10 hover:text-primary border border-border rounded-md px-2 py-1 text-[10px] font-medium text-muted-foreground transition-colors"
-                        >
-                          <Icon className="w-2.5 h-2.5" />
-                          {mt.label}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Editor / Preview Toggle */}
+                {/* Mode Toggle */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1 bg-muted/30 rounded-lg p-0.5">
-                    <button onClick={() => setEditorMode("code")} className={cn("px-3 py-1 rounded-md text-[10px] font-medium transition-colors", editorMode === "code" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground")}>
-                      <Code className="w-3 h-3 inline mr-1" />HTML Editor
+                    <button onClick={() => setEditorMode("builder")} className={cn("px-3 py-1 rounded-md text-[10px] font-medium transition-colors", editorMode === "builder" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground")}>
+                      <Blocks className="w-3 h-3 inline mr-1" />Visual Builder
                     </button>
-                    <button onClick={() => setEditorMode("visual")} className={cn("px-3 py-1 rounded-md text-[10px] font-medium transition-colors", editorMode === "visual" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground")}>
+                    <button onClick={() => { setEditorMode("code"); if (emailBlocks.length > 0 && !tplBody) setTplBody(blocksToHtml(emailBlocks)); }} className={cn("px-3 py-1 rounded-md text-[10px] font-medium transition-colors", editorMode === "code" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground")}>
+                      <Code className="w-3 h-3 inline mr-1" />HTML
+                    </button>
+                    <button onClick={() => { setEditorMode("preview"); if (emailBlocks.length > 0 && !tplBody) setTplBody(blocksToHtml(emailBlocks)); }} className={cn("px-3 py-1 rounded-md text-[10px] font-medium transition-colors", editorMode === "preview" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground")}>
                       <Eye className="w-3 h-3 inline mr-1" />Preview
                     </button>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Button variant="outline" size="sm" className="text-[10px] h-7 gap-1" onClick={() => { navigator.clipboard.writeText(tplBody); toast.success("Copied to clipboard"); }}>
+                    <Button variant="outline" size="sm" className="text-[10px] h-7 gap-1" onClick={() => {
+                      const html = emailBlocks.length > 0 ? blocksToHtml(emailBlocks) : tplBody;
+                      navigator.clipboard.writeText(html);
+                      toast.success("Copied to clipboard");
+                    }}>
                       <Copy className="w-3 h-3" /> Copy HTML
                     </Button>
                   </div>
                 </div>
 
                 {/* Editor Area */}
-                <div className="bg-card rounded-xl border border-border overflow-hidden min-h-[350px]">
-                  {editorMode === "code" ? (
-                    <Textarea
-                      ref={bodyRef}
-                      value={tplBody}
-                      onChange={(e) => setTplBody(e.target.value)}
-                      placeholder="Paste HTML or write your email template here...&#10;&#10;Use merge tags like {first_name} to personalize."
-                      className="min-h-[350px] font-mono text-xs border-0 rounded-none resize-none focus-visible:ring-0"
-                    />
-                  ) : (
-                    <div className="p-4 min-h-[350px]">
-                      {tplBody ? (
-                        <div className="bg-white rounded-lg border border-border shadow-sm mx-auto max-w-[620px]">
-                          <div dangerouslySetInnerHTML={{ __html: previewResolve(tplBody) }} />
-                        </div>
-                      ) : (
-                        <div className="flex flex-col items-center justify-center h-[300px] text-center">
-                          <Paintbrush className="w-8 h-8 text-muted-foreground/15 mb-2" />
-                          <p className="text-xs text-muted-foreground">Start typing in the HTML editor or pick a starter template</p>
-                        </div>
-                      )}
+                {editorMode === "builder" && (
+                  <EmailBlockEditor blocks={emailBlocks} onChange={(blocks) => {
+                    setEmailBlocks(blocks);
+                    setTplBody(blocksToHtml(blocks));
+                  }} />
+                )}
+
+                {editorMode === "code" && (
+                  <>
+                    {/* Merge Tags Bar */}
+                    <div className="bg-card rounded-xl border border-border p-3">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Hash className="w-3.5 h-3.5 text-primary" />
+                        <span className="text-[11px] font-bold text-foreground">Merge Tags</span>
+                        <span className="text-[9px] text-muted-foreground">— click to insert at cursor</span>
+                      </div>
+                      <div className="flex flex-wrap gap-1.5">
+                        {MERGE_TAGS.map((mt) => {
+                          const Icon = mt.icon;
+                          return (
+                            <button
+                              key={mt.tag}
+                              onClick={() => insertTag(mt.tag)}
+                              title={mt.desc}
+                              className="inline-flex items-center gap-1 bg-muted/50 hover:bg-primary/10 hover:text-primary border border-border rounded-md px-2 py-1 text-[10px] font-medium text-muted-foreground transition-colors"
+                            >
+                              <Icon className="w-2.5 h-2.5" />
+                              {mt.label}
+                            </button>
+                          );
+                        })}
+                      </div>
                     </div>
-                  )}
-                </div>
+                    <div className="bg-card rounded-xl border border-border overflow-hidden min-h-[350px]">
+                      <Textarea
+                        ref={bodyRef}
+                        value={tplBody}
+                        onChange={(e) => setTplBody(e.target.value)}
+                        placeholder="Paste HTML or write your email template here...&#10;&#10;Use merge tags like {first_name} to personalize."
+                        className="min-h-[350px] font-mono text-xs border-0 rounded-none resize-none focus-visible:ring-0"
+                      />
+                    </div>
+                  </>
+                )}
+
+                {editorMode === "preview" && (
+                  <div className="bg-muted/30 rounded-xl border border-border p-4 min-h-[400px]">
+                    {tplBody ? (
+                      <div className="bg-white rounded-lg border border-border shadow-sm mx-auto max-w-[620px]">
+                        <div dangerouslySetInnerHTML={{ __html: previewResolve(tplBody) }} />
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center justify-center h-[300px] text-center">
+                        <Paintbrush className="w-8 h-8 text-muted-foreground/15 mb-2" />
+                        <p className="text-xs text-muted-foreground">Add blocks in Visual Builder or write HTML to see a preview</p>
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 {/* Actions */}
                 <div className="flex items-center justify-between">
