@@ -5,6 +5,12 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+interface IssueSuggestion {
+  issue: string;
+  suggestion: string;
+  priority: "high" | "medium" | "low";
+}
+
 interface PageAnalysis {
   url: string;
   fetchedTitle: string | null;
@@ -16,6 +22,7 @@ interface PageAnalysis {
   suggestedDescription: string | null;
   suggestedH1: string | null;
   aiChecklist: string[];
+  issueSuggestions: IssueSuggestion[];
 }
 
 function parseHtml(html: string, url: string): Omit<PageAnalysis, "suggestedTitle" | "suggestedDescription" | "suggestedH1" | "aiChecklist"> {
