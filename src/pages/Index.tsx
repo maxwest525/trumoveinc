@@ -620,7 +620,7 @@ function StepsCompactSection({ navigate }: {navigate: (path: string) => void;}) 
           {steps.map((step, index) =>
           <div
             key={step.num}
-            className={`tru-steps-compact-card tru-steps-parallax-card ${isInView ? 'in-view' : ''}`}
+            className={`tru-steps-compact-card tru-steps-parallax-card ${isInstant ? 'instant' : ''} ${isInView ? 'in-view' : ''}`}
             style={{ '--card-index': index } as React.CSSProperties}
             onClick={() => navigate("/site/online-estimate")}>
             
