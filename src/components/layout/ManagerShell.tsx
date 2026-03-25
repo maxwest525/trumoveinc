@@ -12,6 +12,7 @@ import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 import { setPortalContext } from "@/hooks/usePortalContext";
 import { useIsMobile } from "@/hooks/use-mobile";
+import ShellBreadcrumbs, { type BreadcrumbSegment } from "@/components/layout/ShellBreadcrumbs";
 
 
 const NAV_ITEMS = [
@@ -27,9 +28,10 @@ const ADVANCED_ITEMS: { label: string; icon: typeof Target; badge?: number; href
 interface ManagerShellProps {
   children: ReactNode;
   breadcrumb?: string;
+  breadcrumbs?: BreadcrumbSegment[];
 }
 
-export default function ManagerShell({ children, breadcrumb = "" }: ManagerShellProps) {
+export default function ManagerShell({ children, breadcrumb = "", breadcrumbs }: ManagerShellProps) {
   const { theme, setTheme } = useTheme();
   const location = useLocation();
   const isMobile = useIsMobile();
@@ -133,7 +135,11 @@ export default function ManagerShell({ children, breadcrumb = "" }: ManagerShell
             <Link to="/" className="p-1.5 rounded-lg hover:bg-muted transition-colors">
               <Home className="w-4 h-4 text-muted-foreground" />
             </Link>
-            <span className="text-sm text-muted-foreground truncate">Management{breadcrumb}</span>
+            <ShellBreadcrumbs
+              root={{ label: "Management", href: "/manager/dashboard" }}
+              segments={breadcrumbs}
+              legacyString={!breadcrumbs ? breadcrumb : undefined}
+            />
           </div>
           <div className="flex items-center gap-1.5">
             <Link

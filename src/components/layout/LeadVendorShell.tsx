@@ -8,6 +8,7 @@ import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 import { setPortalContext } from "@/hooks/usePortalContext";
 import { useIsMobile } from "@/hooks/use-mobile";
+import ShellBreadcrumbs, { type BreadcrumbSegment } from "@/components/layout/ShellBreadcrumbs";
 
 import logoImg from "@/assets/logo.png";
 
@@ -20,9 +21,10 @@ const NAV_ITEMS = [
 interface LeadVendorShellProps {
   children: ReactNode;
   breadcrumb?: string;
+  breadcrumbs?: BreadcrumbSegment[];
 }
 
-export default function LeadVendorShell({ children, breadcrumb = "" }: LeadVendorShellProps) {
+export default function LeadVendorShell({ children, breadcrumb = "", breadcrumbs }: LeadVendorShellProps) {
   const { theme, setTheme } = useTheme();
   const location = useLocation();
   const isMobile = useIsMobile();
@@ -98,7 +100,11 @@ export default function LeadVendorShell({ children, breadcrumb = "" }: LeadVendo
             <Link to="/" className="p-1.5 rounded-lg hover:bg-muted transition-colors shrink-0">
               <Home className="w-4 h-4 text-muted-foreground" />
             </Link>
-            <span className="text-sm text-muted-foreground truncate hidden sm:inline">Lead Vendors{breadcrumb}</span>
+            <ShellBreadcrumbs
+              root={{ label: "Lead Vendors", href: "/leads/dashboard" }}
+              segments={breadcrumbs}
+              legacyString={!breadcrumbs ? breadcrumb : undefined}
+            />
           </div>
           <div className="flex items-center gap-3">
             

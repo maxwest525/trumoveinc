@@ -10,6 +10,7 @@ import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 import { setPortalContext } from "@/hooks/usePortalContext";
 import { useIsMobile } from "@/hooks/use-mobile";
+import ShellBreadcrumbs, { type BreadcrumbSegment } from "@/components/layout/ShellBreadcrumbs";
 
 const NAV_ITEMS = [
   { label: "Dashboard", icon: LayoutDashboard, href: "/dispatch/dashboard" },
@@ -22,9 +23,10 @@ const NAV_ITEMS = [
 interface DispatchShellProps {
   children: ReactNode;
   breadcrumb?: string;
+  breadcrumbs?: BreadcrumbSegment[];
 }
 
-export default function DispatchShell({ children, breadcrumb = "" }: DispatchShellProps) {
+export default function DispatchShell({ children, breadcrumb = "", breadcrumbs }: DispatchShellProps) {
   const { theme, setTheme } = useTheme();
   const location = useLocation();
   const isMobile = useIsMobile();
@@ -98,7 +100,11 @@ export default function DispatchShell({ children, breadcrumb = "" }: DispatchShe
             <Link to="/" className="p-1.5 rounded-lg hover:bg-muted transition-colors">
               <Home className="w-4 h-4 text-muted-foreground" />
             </Link>
-            <span className="text-sm text-muted-foreground truncate">Dispatch{breadcrumb}</span>
+            <ShellBreadcrumbs
+              root={{ label: "Dispatch", href: "/dispatch/dashboard" }}
+              segments={breadcrumbs}
+              legacyString={!breadcrumbs ? breadcrumb : undefined}
+            />
           </div>
           <div className="flex items-center gap-1.5">
             <button

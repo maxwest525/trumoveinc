@@ -9,6 +9,7 @@ import { setPortalContext } from "@/hooks/usePortalContext";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
+import ShellBreadcrumbs, { type BreadcrumbSegment } from "@/components/layout/ShellBreadcrumbs";
 import { useNotifications } from "@/hooks/useNotifications";
 import NotificationsPanel from "@/components/agent/NotificationsPanel";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -22,11 +23,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-
-interface BreadcrumbSegment {
-  label: string;
-  href?: string;
-}
 
 interface AgentShellProps {
   children: ReactNode | ((props: { openDialer: (number?: string) => void }) => ReactNode);
@@ -113,25 +109,11 @@ export default function AgentShell({ children, breadcrumb = "", breadcrumbs }: A
             <Link to="/" className="p-1.5 rounded-lg hover:bg-muted transition-colors">
               <Home className="w-4 h-4 text-muted-foreground" />
             </Link>
-            {breadcrumbs ? (
-              <nav className="flex items-center gap-1 text-sm text-muted-foreground truncate">
-                <span>Agent</span>
-                {breadcrumbs.map((seg, i) => (
-                  <span key={i} className="flex items-center gap-1">
-                    <span className="text-muted-foreground/50">/</span>
-                    {seg.href ? (
-                      <Link to={seg.href} className="hover:text-foreground transition-colors">
-                        {seg.label}
-                      </Link>
-                    ) : (
-                      <span className="text-foreground font-medium">{seg.label}</span>
-                    )}
-                  </span>
-                ))}
-              </nav>
-            ) : (
-              <span className="text-sm text-muted-foreground truncate">Agent{breadcrumb}</span>
-            )}
+            <ShellBreadcrumbs
+              root={{ label: "Agent", href: "/agent/dashboard" }}
+              segments={breadcrumbs}
+              legacyString={!breadcrumbs ? breadcrumb : undefined}
+            />
           </div>
           <div className="flex items-center gap-1.5">
             <Link
