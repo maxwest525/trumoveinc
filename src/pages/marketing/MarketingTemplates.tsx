@@ -448,6 +448,8 @@ export default function MarketingTemplates() {
                   </p>
                 </div>
               </div>
+            </div>
+          </TabsContent>
 
           {/* ═══ SMS TAB ═══ */}
           <TabsContent value="sms" className="mt-3">
