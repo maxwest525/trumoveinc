@@ -24,7 +24,7 @@ interface LeadVendorShellProps {
   breadcrumbs?: BreadcrumbSegment[];
 }
 
-export default function LeadVendorShell({ children, breadcrumb = "" }: LeadVendorShellProps) {
+export default function LeadVendorShell({ children, breadcrumb = "", breadcrumbs }: LeadVendorShellProps) {
   const { theme, setTheme } = useTheme();
   const location = useLocation();
   const isMobile = useIsMobile();
