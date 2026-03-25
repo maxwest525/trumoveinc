@@ -400,6 +400,11 @@ export default function MarketingTemplates() {
                   <div className="p-2 space-y-0.5">
                     {/* Starters */}
                     <p className="text-[9px] uppercase tracking-wider text-muted-foreground/50 px-2 pt-1 pb-1">Starters</p>
+                    <button onClick={loadBlankBranded} className="w-full text-left text-[11px] px-2.5 py-1.5 rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground flex items-center gap-2">
+                      <Blocks className="w-3 h-3 shrink-0 text-primary" />
+                      <span className="truncate">Blank (TruMove Branded)</span>
+                      <Badge variant="outline" className="ml-auto text-[8px] px-1 py-0 h-3.5 border-primary/30 text-primary">Builder</Badge>
+                    </button>
                     {EMAIL_STARTERS.map((s, i) => (
                       <button key={i} onClick={() => loadStarter(s)} className="w-full text-left text-[11px] px-2.5 py-1.5 rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground flex items-center gap-2">
                         <Paintbrush className="w-3 h-3 shrink-0 text-primary/50" />
