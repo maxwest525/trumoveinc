@@ -571,7 +571,7 @@ function TrustCompactSection() {
           {stats.map((stat, index) =>
           <div
             key={stat.label}
-            className={`tru-trust-compact-stat ${isInView ? 'in-view' : ''}`}
+            className={`tru-trust-compact-stat ${isInstant ? 'instant' : ''} ${isInView ? 'in-view' : ''}`}
             style={{ '--stagger-index': index } as React.CSSProperties}>
             
               <stat.icon className="w-5 h-5" />
