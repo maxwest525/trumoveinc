@@ -50,8 +50,10 @@ export default function MarketingSEO() {
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
       const urls = (data?.urls || []) as string[];
+      const source = data?.source || "crawl";
       setDiscoveredUrls(urls);
-      toast.success(`Found ${urls.length} pages`);
+      setDiscoverySource(source);
+      toast.success(`Found ${urls.length} pages via ${source === "sitemap" ? "sitemap.xml" : "link crawl"}`);
     } catch (e: any) {
       console.error(e);
       toast.error(e.message || "Failed to discover pages");
