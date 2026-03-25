@@ -124,7 +124,7 @@ const BLANK_BRANDED_BLOCKS: EmailBlock[] = [
     id: "brand-logo",
     type: "image",
     props: {
-      src: "https://trumoveinc.lovable.app/lovable-uploads/logo.png",
+      src: "/images/logo-email.png",
       alt: "TruMove Inc",
       width: 35,
       align: "center",
