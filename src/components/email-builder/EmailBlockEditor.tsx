@@ -144,9 +144,25 @@ export default function EmailBlockEditor({ blocks, onChange }: Props) {
               </button>
             );
           })}
+          </div>
+          <div className="flex items-center gap-1">
+            <button onClick={undo} disabled={!canUndo} title="Undo"
+              className="p-1.5 rounded-md hover:bg-muted disabled:opacity-30 text-muted-foreground transition-colors">
+              <Undo2 className="w-3.5 h-3.5" />
+            </button>
+            <button onClick={redo} disabled={!canRedo} title="Redo"
+              className="p-1.5 rounded-md hover:bg-muted disabled:opacity-30 text-muted-foreground transition-colors">
+              <Redo2 className="w-3.5 h-3.5" />
+            </button>
+            {blocks.length > 0 && (
+              <button onClick={clearAll} title="Clear All"
+                className="p-1.5 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors ml-1">
+                <XCircle className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
         </div>
 
-        {/* Email Canvas */}
         <div className="bg-muted/30 rounded-xl border border-border p-4 min-h-[400px]">
           <div className="max-w-[620px] mx-auto bg-white rounded-xl border border-border shadow-sm overflow-hidden">
             {blocks.length === 0 && (
