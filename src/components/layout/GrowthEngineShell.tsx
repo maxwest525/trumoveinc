@@ -141,9 +141,11 @@ export default function GrowthEngineShell({ children }: GrowthEngineShellProps) 
             <Link to="/" className="p-1.5 rounded-lg hover:bg-muted transition-colors">
               <Home className="w-4 h-4 text-muted-foreground" />
             </Link>
-            <span className="text-sm text-muted-foreground truncate">
-              Growth Engine &gt; {NAV.find(s => isActive(s.href))?.label || "Dashboard"}
-            </span>
+            <nav className="flex items-center gap-1 text-sm text-muted-foreground truncate">
+              <Link to="/marketing/dashboard" className="hover:text-foreground transition-colors">Growth Engine</Link>
+              <span className="text-muted-foreground/50">›</span>
+              <span className="text-foreground font-medium">{NAV.find(s => isActive(s.href))?.label || "Dashboard"}</span>
+            </nav>
           </div>
           <div className="flex items-center gap-1.5">
             <button className="p-1.5 rounded-lg hover:bg-muted transition-colors relative">

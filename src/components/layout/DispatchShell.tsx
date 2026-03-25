@@ -100,7 +100,11 @@ export default function DispatchShell({ children, breadcrumb = "", breadcrumbs }
             <Link to="/" className="p-1.5 rounded-lg hover:bg-muted transition-colors">
               <Home className="w-4 h-4 text-muted-foreground" />
             </Link>
-            <span className="text-sm text-muted-foreground truncate">Dispatch{breadcrumb}</span>
+            <ShellBreadcrumbs
+              root={{ label: "Dispatch", href: "/dispatch/dashboard" }}
+              segments={breadcrumbs}
+              legacyString={!breadcrumbs ? breadcrumb : undefined}
+            />
           </div>
           <div className="flex items-center gap-1.5">
             <button
