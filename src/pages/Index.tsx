@@ -583,7 +583,7 @@ function TrustCompactSection() {
           {badges.map((badge, index) =>
           <span
             key={badge}
-            className={`tru-trust-compact-badge ${isInView ? 'in-view' : ''}`}
+            className={`tru-trust-compact-badge ${isInstant ? 'instant' : ''} ${isInView ? 'in-view' : ''}`}
             style={{ '--stagger-index': index + 3 } as React.CSSProperties}>
             
               {badge}
