@@ -550,7 +550,7 @@ function ShipmentTrackerSection({ navigate }: {navigate: (path: string) => void;
 
 // Trust Compact Section with scroll-triggered staggered reveal
 function TrustCompactSection() {
-  const [sectionRef, isInView] = useScrollAnimation<HTMLElement>({
+  const [sectionRef, isInView, isInstant] = useScrollAnimation<HTMLElement>({
     threshold: 0.2,
     rootMargin: "0px",
     triggerOnce: true
@@ -571,7 +571,7 @@ function TrustCompactSection() {
           {stats.map((stat, index) =>
           <div
             key={stat.label}
-            className={`tru-trust-compact-stat ${isInView ? 'in-view' : ''}`}
+            className={`tru-trust-compact-stat ${isInstant ? 'instant' : ''} ${isInView ? 'in-view' : ''}`}
             style={{ '--stagger-index': index } as React.CSSProperties}>
             
               <stat.icon className="w-5 h-5" />
@@ -583,7 +583,7 @@ function TrustCompactSection() {
           {badges.map((badge, index) =>
           <span
             key={badge}
-            className={`tru-trust-compact-badge ${isInView ? 'in-view' : ''}`}
+            className={`tru-trust-compact-badge ${isInstant ? 'instant' : ''} ${isInView ? 'in-view' : ''}`}
             style={{ '--stagger-index': index + 3 } as React.CSSProperties}>
             
               {badge}
@@ -597,7 +597,7 @@ function TrustCompactSection() {
 
 // Steps Compact Section with parallax effect
 function StepsCompactSection({ navigate }: {navigate: (path: string) => void;}) {
-  const [sectionRef, isInView] = useScrollAnimation<HTMLElement>({
+  const [sectionRef, isInView, isInstant] = useScrollAnimation<HTMLElement>({
     threshold: 0.1,
     rootMargin: "0px",
     triggerOnce: true
@@ -620,7 +620,7 @@ function StepsCompactSection({ navigate }: {navigate: (path: string) => void;}) 
           {steps.map((step, index) =>
           <div
             key={step.num}
-            className={`tru-steps-compact-card tru-steps-parallax-card ${isInView ? 'in-view' : ''}`}
+            className={`tru-steps-compact-card tru-steps-parallax-card ${isInstant ? 'instant' : ''} ${isInView ? 'in-view' : ''}`}
             style={{ '--card-index': index } as React.CSSProperties}
             onClick={() => navigate("/site/online-estimate")}>
             
@@ -645,7 +645,7 @@ export default function Index() {
   const heroSectionRef = useRef<HTMLElement>(null);
 
   // Scroll-triggered animation for hero content
-  const [heroContentRef, isHeroInView] = useScrollAnimation<HTMLDivElement>({
+  const [heroContentRef, isHeroInView, isHeroInstant] = useScrollAnimation<HTMLDivElement>({
     threshold: 0.1,
     rootMargin: "0px",
     triggerOnce: true
