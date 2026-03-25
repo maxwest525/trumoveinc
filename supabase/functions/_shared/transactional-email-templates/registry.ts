@@ -16,6 +16,7 @@ import { template as supportTicketNotification } from './support-ticket-notifica
 import { template as keywordAlert } from './keyword-alert.tsx'
 import { template as dailyDigest } from './daily-digest.tsx'
 import { template as customerMessage } from './customer-message.tsx'
+import { template as inventorySummary } from './inventory-summary.tsx'
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'esign-request': esignRequest,
@@ -25,4 +26,5 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'keyword-alert': keywordAlert,
   'daily-digest': dailyDigest,
   'customer-message': customerMessage,
+  'inventory-summary': inventorySummary,
 }
