@@ -31,7 +31,7 @@ interface ManagerShellProps {
   breadcrumbs?: BreadcrumbSegment[];
 }
 
-export default function ManagerShell({ children, breadcrumb = "" }: ManagerShellProps) {
+export default function ManagerShell({ children, breadcrumb = "", breadcrumbs }: ManagerShellProps) {
   const { theme, setTheme } = useTheme();
   const location = useLocation();
   const isMobile = useIsMobile();
