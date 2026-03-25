@@ -1,6 +1,6 @@
 import * as React from 'npm:react@18.3.1'
 import {
-  Body, Container, Head, Heading, Html, Preview, Text, Button, Hr,
+  Body, Container, Head, Heading, Html, Preview, Text, Button, Hr, Section,
 } from 'npm:@react-email/components@0.0.22'
 import type { TemplateEntry } from './registry.ts'
 
@@ -20,48 +20,44 @@ const ESignRequestEmail = ({ customerName, documentLabel, refNumber, signingUrl 
     <Body style={main}>
       <Container style={container}>
         {/* Logo Header */}
-        <div style={logoBar}>
+        <Section style={logoBar}>
           <Heading style={brandName}>{SITE_NAME}</Heading>
           <Text style={brandTagline}>Your Trusted Moving Partner</Text>
-        </div>
+        </Section>
 
         {/* Hero Banner */}
-        <div style={heroBanner}>
+        <Section style={heroBanner}>
           <Heading style={heroTitle}>Document Ready for Signature</Heading>
           <Text style={heroSubtitle}>{documentLabel || 'Document'} • {refNumber || 'N/A'}</Text>
-        </div>
+        </Section>
 
         {/* Greeting */}
-        <Text style={greeting}>Hello {customerName || 'there'},</Text>
-        <Text style={bodyText}>
-          Your <strong>{documentLabel || 'document'}</strong> is ready for your review and signature. Please sign at your earliest convenience to keep your move on track.
-        </Text>
+        <Section style={bodySection}>
+          <Text style={greeting}>Hello {customerName || 'there'},</Text>
+          <Text style={bodyText}>
+            Your <strong>{documentLabel || 'document'}</strong> is ready for your review and signature. Please sign at your earliest convenience to keep your move on track.
+          </Text>
+        </Section>
 
         {/* CTA Button */}
         {signingUrl && (
-          <div style={ctaWrap}>
+          <Section style={ctaWrap}>
             <Button style={ctaButton} href={signingUrl}>Review & Sign Document</Button>
-          </div>
+          </Section>
         )}
 
         {/* Details Card */}
-        <div style={detailsCard}>
+        <Section style={detailsCard}>
           <Text style={detailsTitle}>Document Details</Text>
-          <div style={detailRow}>
-51:             <Text style={detailLabel}>Document Type:</Text>
-            <Text style={detailValue}>{documentLabel || 'N/A'}</Text>
-          </div>
-          <div style={divider} />
-          <div style={detailRow}>
-            <Text style={detailLabel}>Reference:</Text>
-            <Text style={detailValue}>{refNumber || 'N/A'}</Text>
-          </div>
-          <div style={divider} />
-          <div style={detailRow}>
-            <Text style={detailLabel}>Recipient:</Text>
-            <Text style={detailValue}>{customerName || 'N/A'}</Text>
-          </div>
-        </div>
+          <Text style={detailLabel}>Document Type:</Text>
+          <Text style={detailValue}>{documentLabel || 'N/A'}</Text>
+          <Hr style={divider} />
+          <Text style={detailLabel}>Reference:</Text>
+          <Text style={detailValue}>{refNumber || 'N/A'}</Text>
+          <Hr style={divider} />
+          <Text style={detailLabel}>Recipient:</Text>
+          <Text style={detailValue}>{customerName || 'N/A'}</Text>
+        </Section>
 
         {/* Help text */}
         <Text style={helpText}>
@@ -70,7 +66,7 @@ const ESignRequestEmail = ({ customerName, documentLabel, refNumber, signingUrl 
 
         {/* Footer */}
         <Hr style={hr} />
-        <div style={footerWrap}>
+        <Section style={footerWrap}>
           <Text style={footerBrand}>{SITE_NAME}</Text>
           <Text style={footerText}>
             © {new Date().getFullYear()} {SITE_NAME}. All rights reserved.
@@ -78,7 +74,7 @@ const ESignRequestEmail = ({ customerName, documentLabel, refNumber, signingUrl 
           <Text style={footerMuted}>
             This is an automated message. Please do not reply directly to this email.
           </Text>
-        </div>
+        </Section>
       </Container>
     </Body>
   </Html>
@@ -98,8 +94,8 @@ export const template = {
 } satisfies TemplateEntry
 
 /* ── Styles ── */
-const main = { backgroundColor: '#f4f6f8', fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif" }
-const container = { padding: '0', maxWidth: '600px', margin: '40px auto', backgroundColor: '#ffffff', borderRadius: '12px', overflow: 'hidden' as const, boxShadow: '0 4px 24px rgba(0,0,0,0.06)' }
+const main = { backgroundColor: '#ffffff', fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif" }
+const container = { padding: '0', maxWidth: '600px', margin: '0 auto', backgroundColor: '#ffffff' }
 
 const logoBar = { padding: '28px 32px 20px', textAlign: 'center' as const, borderBottom: '1px solid #f0f0f0' }
 const brandName = { color: '#22c55e', fontSize: '28px', fontWeight: 'bold' as const, margin: '0', letterSpacing: '-0.5px' }
@@ -109,18 +105,18 @@ const heroBanner = { backgroundColor: '#22c55e', padding: '40px 32px', textAlign
 const heroTitle = { color: '#000000', fontSize: '24px', fontWeight: '700' as const, margin: '0 0 8px', letterSpacing: '-0.3px' }
 const heroSubtitle = { color: '#1e293b', fontSize: '14px', margin: '0' }
 
-const greeting = { fontSize: '15px', color: '#000000', margin: '32px 32px 8px', fontWeight: '500' as const }
-const bodyText = { fontSize: '14px', color: '#000000', lineHeight: '1.7', margin: '0 32px 24px' }
+const bodySection = { padding: '0 32px' }
+const greeting = { fontSize: '15px', color: '#000000', margin: '32px 0 8px', fontWeight: '500' as const }
+const bodyText = { fontSize: '14px', color: '#000000', lineHeight: '1.7', margin: '0 0 24px' }
 
-const ctaWrap = { textAlign: 'center' as const, margin: '8px 32px 32px' }
+const ctaWrap = { textAlign: 'center' as const, padding: '8px 32px 32px' }
 const ctaButton = { display: 'inline-block' as const, background: '#22c55e', color: '#ffffff', padding: '14px 48px', borderRadius: '8px', textDecoration: 'none', fontWeight: '600' as const, fontSize: '15px', letterSpacing: '0.2px', boxShadow: '0 2px 8px rgba(34,197,94,0.3)' }
 
-const detailsCard = { backgroundColor: '#f8faf9', border: '1px solid #e2e8f0', borderRadius: '10px', margin: '0 32px 28px', padding: '20px 24px', overflow: 'hidden' as const }
+const detailsCard = { backgroundColor: '#f8faf9', border: '1px solid #e2e8f0', borderRadius: '10px', margin: '0 32px 28px', padding: '20px 24px' }
 const detailsTitle = { fontSize: '11px', fontWeight: '600' as const, color: '#94a3b8', textTransform: 'uppercase' as const, letterSpacing: '0.8px', margin: '0 0 16px' }
-const detailRow = { padding: '0' }
 const detailLabel = { fontSize: '13px', color: '#94a3b8', margin: '0 0 2px' }
 const detailValue = { fontSize: '13px', color: '#1e293b', fontWeight: '500' as const, margin: '0' }
-const divider = { height: '1px', backgroundColor: '#e2e8f0', margin: '12px 0' }
+const divider = { border: 'none', borderTop: '1px solid #e2e8f0', margin: '12px 0' }
 
 const helpText = { fontSize: '13px', color: '#94a3b8', margin: '0 32px 32px', lineHeight: '1.6' }
 

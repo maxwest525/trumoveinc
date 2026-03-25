@@ -1,6 +1,6 @@
 import * as React from 'npm:react@18.3.1'
 import {
-  Body, Container, Head, Heading, Html, Preview, Text, Hr, Link,
+  Body, Container, Head, Heading, Html, Preview, Text, Hr, Link, Section,
 } from 'npm:@react-email/components@0.0.22'
 import type { TemplateEntry } from './registry.ts'
 
@@ -17,10 +17,10 @@ const SupportTicketNotificationEmail = ({ name, email, subject, message }: Suppo
     <Preview>New Support Ticket from {name || 'a customer'}</Preview>
     <Body style={main}>
       <Container style={container}>
-        <div style={headerBar}>
+        <Section style={headerBar}>
           <Heading style={headerTitle}>🎫 New Support Ticket</Heading>
-        </div>
-        <div style={contentBox}>
+        </Section>
+        <Section style={contentBox}>
           <table style={table}>
             <tr>
               <td style={labelCell}>Name:</td>
@@ -39,11 +39,11 @@ const SupportTicketNotificationEmail = ({ name, email, subject, message }: Suppo
           </table>
           <Hr style={hr} />
           <Heading style={msgHeading}>Message</Heading>
-          <div style={msgBox}>
+          <Section style={msgBox}>
             <Text style={msgText}>{message || ''}</Text>
-          </div>
+          </Section>
           <Text style={footer}>This ticket was submitted via the TruMove Customer Service page.</Text>
-        </div>
+        </Section>
       </Container>
     </Body>
   </Html>
