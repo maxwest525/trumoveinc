@@ -17,6 +17,7 @@ const NAV_ITEMS = [
   { label: "SEO & GEO Agent", icon: Search, href: "/marketing/seo" },
   { label: "Paid Ads Agent", icon: Megaphone, href: "/marketing/ads" },
   { label: "Website Agent", icon: Globe, href: "/marketing/website" },
+  { label: "Templates", icon: FileText, href: "/marketing/templates" },
   { label: "Tasks", icon: ListTodo, href: "/marketing/tasks" },
   { label: "Settings", icon: Settings, href: "/marketing/settings" },
 ];
