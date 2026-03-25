@@ -21,6 +21,7 @@ const NAV_ITEMS = [
 interface LeadVendorShellProps {
   children: ReactNode;
   breadcrumb?: string;
+  breadcrumbs?: BreadcrumbSegment[];
 }
 
 export default function LeadVendorShell({ children, breadcrumb = "" }: LeadVendorShellProps) {
