@@ -37,6 +37,11 @@ const MERGE_TAGS = [
   { tag: "{eta}", label: "ETA", icon: Calendar, desc: "Estimated arrival" },
   { tag: "{agent_name}", label: "Agent Name", icon: User, desc: "Assigned agent" },
   { tag: "{company_name}", label: "Company Name", icon: FileText, desc: "TruMove Inc" },
+  { tag: "{inventory_table}", label: "Inventory Table", icon: Package, desc: "Full item list by room" },
+  { tag: "{total_cuft}", label: "Total Cu Ft", icon: Package, desc: "Total cubic feet" },
+  { tag: "{total_weight}", label: "Total Weight", icon: Package, desc: "Total weight (lbs)" },
+  { tag: "{total_items}", label: "Total Items", icon: Package, desc: "Total item count" },
+  { tag: "{price_per_cuft}", label: "Price/Cu Ft", icon: DollarSign, desc: "Rate per cubic foot" },
 ];
 
 // ─── Starter Templates ───
@@ -112,6 +117,60 @@ const EMAIL_STARTERS = [
     <p style="font-size: 13px; color: #555;">Please ensure everything is packed and ready. Your crew will arrive at the scheduled time.</p>
     <p style="font-size: 12px; color: #999; margin-top: 20px;">— The TruMove Team</p>
   </div>
+</div>`,
+  },
+  {
+    name: "Inventory Summary",
+    subject: "Your Inventory & Moving Estimate — {booking_id}",
+    body: `<div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 0; overflow: hidden;">
+  <div style="background: #22c55e; padding: 4px 0;"></div>
+  <div style="padding: 32px 32px 20px; text-align: center;">
+    <img src="/images/logo-email.png" alt="TruMove" style="height: 28px; margin-bottom: 16px;" />
+  </div>
+  <div style="background: #0a0a0a; padding: 36px 32px; text-align: center;">
+    <h1 style="color: #ffffff; margin: 0 0 8px; font-size: 26px; font-weight: 700; letter-spacing: -0.3px;">Your Inventory Summary</h1>
+    <p style="color: #9ca3af; margin: 0; font-size: 14px;">Reference: {booking_id}</p>
+  </div>
+  <div style="padding: 28px 32px;">
+    <p style="font-size: 15px; color: #1a1a1a; margin: 0 0 16px;">Hi {first_name},</p>
+    <p style="font-size: 14px; color: #555; line-height: 1.7; margin: 0 0 24px;">Here's a complete breakdown of the items we'll be moving for you. Please review and let us know if anything needs to be added or changed.</p>
+    <div style="background: #f8fafc; border-radius: 10px; padding: 20px; margin: 0 0 24px; border: 1px solid #e5e7eb;">
+      <table style="width: 100%; border-collapse: collapse;">
+        <tr>
+          <td style="padding: 8px 0; text-align: center; border-right: 1px solid #e5e7eb;">
+            <p style="margin: 0; font-size: 22px; font-weight: 700; color: #0a0a0a;">{total_items}</p>
+            <p style="margin: 4px 0 0; font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">Items</p>
+          </td>
+          <td style="padding: 8px 0; text-align: center; border-right: 1px solid #e5e7eb;">
+            <p style="margin: 0; font-size: 22px; font-weight: 700; color: #0a0a0a;">{total_cuft}</p>
+            <p style="margin: 4px 0 0; font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">Cu Ft</p>
+          </td>
+          <td style="padding: 8px 0; text-align: center;">
+            <p style="margin: 0; font-size: 22px; font-weight: 700; color: #0a0a0a;">{total_weight}</p>
+            <p style="margin: 4px 0 0; font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">Lbs</p>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div style="background: #0a0a0a; border-radius: 10px; padding: 20px 24px; margin: 0 0 24px; text-align: center;">
+      <p style="margin: 0 0 4px; font-size: 11px; color: #9ca3af; text-transform: uppercase; letter-spacing: 1px;">Estimated Total</p>
+      <p style="margin: 0; font-size: 30px; font-weight: 700; color: #22c55e;">{estimated_value}</p>
+      <p style="margin: 6px 0 0; font-size: 12px; color: #6b7280;">at {price_per_cuft}/cu ft</p>
+    </div>
+    <h2 style="font-size: 16px; font-weight: 700; color: #0a0a0a; margin: 0 0 12px; padding-bottom: 8px; border-bottom: 2px solid #22c55e; display: inline-block;">Inventory by Room</h2>
+    {inventory_table}
+    <div style="margin: 28px 0 0; text-align: center;">
+      <a href="{tracking_link}" style="display: inline-block; background: #22c55e; color: #ffffff; padding: 14px 40px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 15px;">Confirm Your Move →</a>
+    </div>
+  </div>
+  <div style="border-top: 1px solid #e5e7eb; padding: 20px 32px; text-align: center;">
+    <p style="margin: 0; font-size: 14px; color: #374151;">Questions about your inventory?</p>
+    <p style="margin: 6px 0 0; font-size: 13px; color: #6b7280;">Reply to this email or call <strong>(800) 555-MOVE</strong></p>
+  </div>
+  <div style="padding: 20px 32px; text-align: center;">
+    <p style="margin: 0; font-size: 11px; color: #9ca3af; line-height: 1.6;">TruMove Inc · Licensed & Insured<br/>You're receiving this because you requested a quote.<br/>Unsubscribe · Privacy Policy</p>
+  </div>
+  <div style="background: #0a0a0a; padding: 4px 0;"></div>
 </div>`,
   },
 ];
