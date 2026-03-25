@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import {
   Home, Bell, Menu, X,
   LayoutDashboard, Search, Megaphone, Globe, ListTodo, Settings,
-  Bot,
+  Bot, FileText,
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -17,6 +17,7 @@ const NAV_ITEMS = [
   { label: "SEO & GEO Agent", icon: Search, href: "/marketing/seo" },
   { label: "Paid Ads Agent", icon: Megaphone, href: "/marketing/ads" },
   { label: "Website Agent", icon: Globe, href: "/marketing/website" },
+  { label: "Templates", icon: FileText, href: "/marketing/templates" },
   { label: "Tasks", icon: ListTodo, href: "/marketing/tasks" },
   { label: "Settings", icon: Settings, href: "/marketing/settings" },
 ];

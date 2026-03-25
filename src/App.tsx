@@ -45,6 +45,7 @@ import MarketingAds from "./pages/marketing/MarketingAds";
 import MarketingWebsite from "./pages/marketing/MarketingWebsite";
 import MarketingTasks from "./pages/marketing/MarketingTasks";
 import MarketingSettings from "./pages/marketing/MarketingSettings";
+import MarketingTemplates from "./pages/marketing/MarketingTemplates";
 import GrowthCampaigns from "./pages/growth-engine/GrowthCampaigns";
 import GrowthIntegrations from "./pages/growth-engine/GrowthIntegrations";
 import GrowthLandingPages from "./pages/growth-engine/GrowthLandingPages";
@@ -147,6 +148,7 @@ const App = () => (
             <Route path="/marketing/seo" element={<MarketingSEO />} />
             <Route path="/marketing/ads" element={<MarketingAds />} />
             <Route path="/marketing/website" element={<MarketingWebsite />} />
+            <Route path="/marketing/templates" element={<MarketingTemplates />} />
             <Route path="/marketing/tasks" element={<MarketingTasks />} />
             <Route path="/marketing/settings" element={<MarketingSettings />} />
             <Route path="/marketing/campaigns" element={<GrowthCampaigns />} />
