@@ -45,6 +45,7 @@ import MarketingAds from "./pages/marketing/MarketingAds";
 import MarketingWebsite from "./pages/marketing/MarketingWebsite";
 import MarketingTasks from "./pages/marketing/MarketingTasks";
 import MarketingSettings from "./pages/marketing/MarketingSettings";
+import MarketingTemplates from "./pages/marketing/MarketingTemplates";
 import GrowthCampaigns from "./pages/growth-engine/GrowthCampaigns";
 import GrowthIntegrations from "./pages/growth-engine/GrowthIntegrations";
 import GrowthLandingPages from "./pages/growth-engine/GrowthLandingPages";
