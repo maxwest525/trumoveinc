@@ -47,12 +47,10 @@ export default function MarketingShell({ children, breadcrumb = "", breadcrumbs 
   const sidebarContent = (
     <>
       <div className="px-4 py-4 flex items-center gap-2.5">
-        <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
-          <Bot className="w-4 h-4 text-primary" />
-        </div>
+        <img src={logoImg} alt="TruMove" className="h-6" />
         <div className="flex flex-col">
-          <span className="text-sm font-bold text-foreground tracking-tight leading-none">Mega</span>
-          <span className="text-[9px] text-muted-foreground leading-none mt-0.5">AI Marketing Agents</span>
+          <span className="text-sm font-bold text-foreground tracking-tight leading-none">Marketing</span>
+          <span className="text-[9px] text-muted-foreground leading-none mt-0.5">AI-Powered Growth Engine</span>
         </div>
         {isMobile && (
           <button onClick={() => setSidebarOpen(false)} className="ml-auto p-1 rounded-lg hover:bg-muted">
