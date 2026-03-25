@@ -34,7 +34,7 @@ interface AccountingShellProps {
   breadcrumbs?: BreadcrumbSegment[];
 }
 
-export default function AccountingShell({ children, breadcrumb = "" }: AccountingShellProps) {
+export default function AccountingShell({ children, breadcrumb = "", breadcrumbs }: AccountingShellProps) {
   const { theme, setTheme } = useTheme();
   const location = useLocation();
   const isMobile = useIsMobile();
