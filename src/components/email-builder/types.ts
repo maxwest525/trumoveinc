@@ -83,7 +83,7 @@ export function blockToHtml(block: EmailBlock): string {
 
 export function blocksToHtml(blocks: EmailBlock[]): string {
   const inner = blocks.map(blockToHtml).join("\n");
-  return `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#ffffff;border-radius:12px;overflow:hidden;">
+  return `<div style="font-family:'Helvetica Neue',Arial,sans-serif;max-width:600px;margin:0 auto;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;">
 ${inner}
 </div>`;
 }
