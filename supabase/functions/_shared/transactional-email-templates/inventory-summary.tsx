@@ -1,6 +1,6 @@
 import * as React from 'npm:react@18.3.1'
 import {
-  Body, Container, Head, Heading, Html, Preview, Text, Button, Hr, Section, Row, Column,
+  Body, Container, Head, Heading, Html, Preview, Text, Button, Hr, Section,
 } from 'npm:@react-email/components@0.0.22'
 import type { TemplateEntry } from './registry.ts'
 
@@ -42,29 +42,28 @@ const InventorySummaryEmail = ({
     <Preview>Your Inventory Summary — {totalItems} items, {totalCuFt} cu ft — {refNumber || ''}</Preview>
     <Body style={main}>
       <Container style={container}>
-        {/* Top accent */}
-        <div style={topAccent} />
-
         {/* Logo */}
-        <div style={logoBar}>
+        <Section style={logoBar}>
           <Heading style={brandName}>{SITE_NAME}</Heading>
           <Text style={brandTagline}>Your Trusted Moving Partner</Text>
-        </div>
+        </Section>
 
         {/* Hero */}
-        <div style={heroBanner}>
+        <Section style={heroBanner}>
           <Heading style={heroTitle}>Your Inventory Summary</Heading>
           <Text style={heroSubtitle}>Reference: {refNumber || 'N/A'}</Text>
-        </div>
+        </Section>
 
         {/* Greeting */}
-        <Text style={greeting}>Hi {customerName || 'there'},</Text>
-        <Text style={bodyText}>
-          Here's a complete breakdown of the items we'll be moving for you. Please review and let us know if anything needs to be added or changed.
-        </Text>
+        <Section style={bodySection}>
+          <Text style={greeting}>Hi {customerName || 'there'},</Text>
+          <Text style={bodyText}>
+            Here's a complete breakdown of the items we'll be moving for you. Please review and let us know if anything needs to be added or changed.
+          </Text>
+        </Section>
 
         {/* Stats Card */}
-        <div style={statsCard}>
+        <Section style={statsCard}>
           <table style={{ width: '100%', borderCollapse: 'collapse' as const }}>
             <tr>
               <td style={statCell}>
@@ -81,25 +80,25 @@ const InventorySummaryEmail = ({
               </td>
             </tr>
           </table>
-        </div>
+        </Section>
 
         {/* Estimated Total */}
         {estimatedTotal && (
-          <div style={totalCard}>
-            <Text style={totalLabel}>ESTIMATED TOTAL</Text>
+          <Section style={totalCard}>
+            <Text style={totalLabelStyle}>ESTIMATED TOTAL</Text>
             <Text style={totalAmount}>{estimatedTotal}</Text>
             {pricePerCuFt && <Text style={totalRate}>at {pricePerCuFt}/cu ft</Text>}
-          </div>
+          </Section>
         )}
 
         {/* Inventory by Room */}
-        <div style={sectionWrap}>
+        <Section style={sectionWrap}>
           <Text style={sectionTitle}>Inventory by Room</Text>
-          <div style={greenBar} />
-        </div>
+          <Hr style={greenBar} />
+        </Section>
 
         {Object.entries(inventoryByRoom).map(([room, items]) => (
-          <div key={room} style={roomBlock}>
+          <Section key={room} style={roomBlock}>
             <Text style={roomName}>{room}</Text>
             <table style={{ width: '100%', borderCollapse: 'collapse' as const }}>
               <tr>
@@ -117,14 +116,14 @@ const InventorySummaryEmail = ({
                 </tr>
               ))}
             </table>
-          </div>
+          </Section>
         ))}
 
         {/* CTA */}
         {ctaUrl && (
-          <div style={ctaWrap}>
+          <Section style={ctaWrap}>
             <Button style={ctaButton} href={ctaUrl}>Confirm Your Move →</Button>
-          </div>
+          </Section>
         )}
 
         {/* Help text */}
@@ -134,7 +133,7 @@ const InventorySummaryEmail = ({
 
         {/* Footer */}
         <Hr style={hr} />
-        <div style={footerWrap}>
+        <Section style={footerWrap}>
           <Text style={footerBrand}>{SITE_NAME}</Text>
           <Text style={footerText}>
             © {new Date().getFullYear()} {SITE_NAME}. All rights reserved.
@@ -142,10 +141,7 @@ const InventorySummaryEmail = ({
           <Text style={footerMuted}>
             Licensed & Insured · You're receiving this because you requested a quote.
           </Text>
-        </div>
-
-        {/* Bottom accent */}
-        <div style={bottomAccent} />
+        </Section>
       </Container>
     </Body>
   </Html>
@@ -179,11 +175,8 @@ export const template = {
 } satisfies TemplateEntry
 
 /* ── Styles ── */
-const main = { backgroundColor: '#f4f6f8', fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif" }
-const container = { padding: '0', maxWidth: '600px', margin: '40px auto', backgroundColor: '#ffffff', borderRadius: '12px', overflow: 'hidden' as const, boxShadow: '0 4px 24px rgba(0,0,0,0.06)' }
-
-const topAccent = { backgroundColor: '#22c55e', height: '4px' }
-const bottomAccent = { backgroundColor: '#0a0a0a', height: '4px' }
+const main = { backgroundColor: '#ffffff', fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif" }
+const container = { padding: '0', maxWidth: '600px', margin: '0 auto', backgroundColor: '#ffffff' }
 
 const logoBar = { padding: '28px 32px 20px', textAlign: 'center' as const, borderBottom: '1px solid #f0f0f0' }
 const brandName = { color: '#22c55e', fontSize: '28px', fontWeight: 'bold' as const, margin: '0', letterSpacing: '-0.5px' }
@@ -193,29 +186,30 @@ const heroBanner = { backgroundColor: '#0a0a0a', padding: '36px 32px', textAlign
 const heroTitle = { color: '#ffffff', fontSize: '24px', fontWeight: '700' as const, margin: '0 0 8px', letterSpacing: '-0.3px' }
 const heroSubtitle = { color: '#9ca3af', fontSize: '14px', margin: '0' }
 
-const greeting = { fontSize: '15px', color: '#000000', margin: '32px 32px 8px', fontWeight: '500' as const }
-const bodyText = { fontSize: '14px', color: '#000000', lineHeight: '1.7', margin: '0 32px 24px' }
+const bodySection = { padding: '0 32px' }
+const greeting = { fontSize: '15px', color: '#000000', margin: '32px 0 8px', fontWeight: '500' as const }
+const bodyText = { fontSize: '14px', color: '#000000', lineHeight: '1.7', margin: '0 0 24px' }
 
-const statsCard = { backgroundColor: '#f8fafc', border: '1px solid #e5e7eb', borderRadius: '10px', margin: '0 32px 20px', padding: '16px', overflow: 'hidden' as const }
+const statsCard = { backgroundColor: '#f8fafc', border: '1px solid #e5e7eb', borderRadius: '10px', margin: '0 32px 20px', padding: '16px' }
 const statCell = { padding: '8px 0', textAlign: 'center' as const }
 const statNumber = { margin: '0', fontSize: '24px', fontWeight: '700' as const, color: '#0a0a0a' }
 const statLabel = { margin: '4px 0 0', fontSize: '10px', color: '#6b7280', letterSpacing: '0.8px' }
 
 const totalCard = { backgroundColor: '#0a0a0a', borderRadius: '10px', padding: '20px 24px', margin: '0 32px 24px', textAlign: 'center' as const }
-const totalLabel = { margin: '0 0 4px', fontSize: '10px', color: '#9ca3af', letterSpacing: '1px' }
+const totalLabelStyle = { margin: '0 0 4px', fontSize: '10px', color: '#9ca3af', letterSpacing: '1px' }
 const totalAmount = { margin: '0', fontSize: '30px', fontWeight: '700' as const, color: '#22c55e' }
 const totalRate = { margin: '6px 0 0', fontSize: '12px', color: '#6b7280' }
 
 const sectionWrap = { margin: '0 32px 16px' }
 const sectionTitle = { fontSize: '16px', fontWeight: '700' as const, color: '#0a0a0a', margin: '0 0 8px' }
-const greenBar = { height: '2px', width: '40px', backgroundColor: '#22c55e' }
+const greenBar = { border: 'none', borderTop: '2px solid #22c55e', width: '40px', margin: '0' }
 
 const roomBlock = { margin: '0 32px 16px', border: '1px solid #f0f0f0', borderRadius: '8px', overflow: 'hidden' as const }
 const roomName = { fontSize: '12px', fontWeight: '600' as const, color: '#374151', margin: '0', padding: '10px 14px', backgroundColor: '#f8fafc', borderBottom: '1px solid #f0f0f0' }
 const tableHeader = { fontSize: '10px', fontWeight: '600' as const, color: '#9ca3af', padding: '8px 14px', textTransform: 'uppercase' as const, letterSpacing: '0.5px', borderBottom: '1px solid #f0f0f0' }
 const tableCell = { fontSize: '13px', color: '#374151', padding: '8px 14px', borderBottom: '1px solid #fafafa' }
 
-const ctaWrap = { textAlign: 'center' as const, margin: '24px 32px 28px' }
+const ctaWrap = { textAlign: 'center' as const, padding: '24px 32px 28px' }
 const ctaButton = { display: 'inline-block' as const, background: '#22c55e', color: '#ffffff', padding: '14px 40px', borderRadius: '8px', textDecoration: 'none', fontWeight: '600' as const, fontSize: '15px', boxShadow: '0 2px 8px rgba(34,197,94,0.3)' }
 
 const helpText = { fontSize: '13px', color: '#6b7280', margin: '0 32px 32px', lineHeight: '1.6', textAlign: 'center' as const }
