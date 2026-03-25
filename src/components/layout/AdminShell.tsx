@@ -12,6 +12,7 @@ import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 import { setPortalContext } from "@/hooks/usePortalContext";
 import { useIsMobile } from "@/hooks/use-mobile";
+import ShellBreadcrumbs, { type BreadcrumbSegment } from "@/components/layout/ShellBreadcrumbs";
 import { useNotifications } from "@/hooks/useNotifications";
 import NotificationsPanel from "@/components/agent/NotificationsPanel";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
