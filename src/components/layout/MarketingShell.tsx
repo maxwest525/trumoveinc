@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import {
   Home, Bell, Menu, X,
   LayoutDashboard, Search, Megaphone, Globe, ListTodo, Settings,
-  Bot,
+  Bot, FileText,
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
