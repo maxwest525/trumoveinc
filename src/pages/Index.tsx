@@ -645,7 +645,7 @@ export default function Index() {
   const heroSectionRef = useRef<HTMLElement>(null);
 
   // Scroll-triggered animation for hero content
-  const [heroContentRef, isHeroInView] = useScrollAnimation<HTMLDivElement>({
+  const [heroContentRef, isHeroInView, isHeroInstant] = useScrollAnimation<HTMLDivElement>({
     threshold: 0.1,
     rootMargin: "0px",
     triggerOnce: true
