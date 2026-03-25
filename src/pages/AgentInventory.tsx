@@ -52,6 +52,7 @@ export default function AgentInventory() {
   const [inventory, setInventory] = useState<InventoryEntry[]>([]);
   const [pricePerCuFt, setPricePerCuFt] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [isSendingEmail, setIsSendingEmail] = useState(false);
   const [activeTab, setActiveTab] = useState("manual");
   const [leadData, setLeadData] = useState<any>(null);
 
