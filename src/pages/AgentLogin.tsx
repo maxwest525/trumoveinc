@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import SiteShell from "@/components/layout/SiteShell";
 import PortalAuthForm from "@/components/auth/PortalAuthForm";
-import { LogOut, Bell, Headset, Users, Shield, Sparkles, Truck } from "lucide-react";
+import { LogOut, Bell, Headset, Users, Shield, Sparkles, Truck, Megaphone } from "lucide-react";
 import logoImg from "@/assets/logo.png";
 import PortalCard from "@/components/portal/PortalCard";
 import { useAgentProfile } from "@/hooks/useAgentProfile";
@@ -55,6 +55,14 @@ const PORTALS = [
     href: "/dispatch/dashboard",
     icon: Truck,
     accentHsl: "262 83% 58%",
+  },
+  {
+    key: "marketing",
+    label: "Marketing",
+    description: "Campaigns, landing pages, lead sources & growth analytics",
+    href: "/marketing/dashboard",
+    icon: Megaphone,
+    accentHsl: "330 81% 60%",
   },
 ];
 
@@ -155,7 +163,7 @@ export default function AgentLogin() {
         </motion.div>
 
         {/* Portal cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-3xl">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-4xl">
           {PORTALS.map((portal, i) => (
             <PortalCard
               key={portal.key}
