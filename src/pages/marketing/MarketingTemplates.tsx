@@ -311,6 +311,16 @@ export default function MarketingTemplates() {
     if (channel === "email") setEditorMode("code");
   };
 
+  const loadBlankBranded = () => {
+    const blocks = JSON.parse(JSON.stringify(BLANK_BRANDED_BLOCKS)) as EmailBlock[];
+    setTplName("New Email");
+    setTplSubject("");
+    setEmailBlocks(blocks);
+    setTplBody(blocksToHtml(blocks));
+    setEditingId(null);
+    setEditorMode("builder");
+  };
+
   const insertTag = useCallback((tag: string) => {
     const el = bodyRef.current;
     if (!el) {
