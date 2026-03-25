@@ -56,6 +56,14 @@ const PORTALS = [
     icon: Truck,
     accentHsl: "262 83% 58%",
   },
+  {
+    key: "marketing",
+    label: "Marketing",
+    description: "Campaigns, landing pages, lead sources & growth analytics",
+    href: "/marketing/dashboard",
+    icon: Megaphone,
+    accentHsl: "330 81% 60%",
+  },
 ];
 
 export default function AgentLogin() {
