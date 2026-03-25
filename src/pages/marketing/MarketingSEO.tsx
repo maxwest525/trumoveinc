@@ -35,6 +35,7 @@ export default function MarketingSEO() {
   const [discoveredUrls, setDiscoveredUrls] = useState<string[]>([]);
   const [auditPages, setAuditPages] = useState<AuditPage[]>([]);
   const [discovering, setDiscovering] = useState(false);
+  const [discoverySource, setDiscoverySource] = useState<string | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
   const [expandedUrl, setExpandedUrl] = useState<string | null>(null);
   const [analyzeProgress, setAnalyzeProgress] = useState({ done: 0, total: 0 });
@@ -49,8 +50,10 @@ export default function MarketingSEO() {
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
       const urls = (data?.urls || []) as string[];
+      const source = data?.source || "crawl";
       setDiscoveredUrls(urls);
-      toast.success(`Found ${urls.length} pages`);
+      setDiscoverySource(source);
+      toast.success(`Found ${urls.length} pages via ${source === "sitemap" ? "sitemap.xml" : "link crawl"}`);
     } catch (e: any) {
       console.error(e);
       toast.error(e.message || "Failed to discover pages");
@@ -226,13 +229,22 @@ export default function MarketingSEO() {
 
             {/* Discovered URLs preview */}
             {discoveredUrls.length > 0 && !auditPages.length && (
-              <div className="bg-muted/50 rounded-lg p-3 max-h-40 overflow-auto text-xs space-y-0.5">
-                {discoveredUrls.map((u) => (
-                  <div key={u} className="flex items-center gap-1.5 text-muted-foreground">
-                    <Link2 className="w-3 h-3 shrink-0" />
-                    <span className="truncate">{u}</span>
+              <div className="space-y-1.5">
+                {discoverySource && (
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <CheckCircle2 className="w-3 h-3 text-primary" />
+                    Discovered via <span className="font-medium">{discoverySource === "sitemap" ? "sitemap.xml" : "homepage link crawl"}</span>
+                    <Badge variant="secondary" className="text-[10px]">{discoveredUrls.length} pages</Badge>
                   </div>
-                ))}
+                )}
+                <div className="bg-muted/50 rounded-lg p-3 max-h-40 overflow-auto text-xs space-y-0.5">
+                  {discoveredUrls.map((u) => (
+                    <div key={u} className="flex items-center gap-1.5 text-muted-foreground">
+                      <Link2 className="w-3 h-3 shrink-0" />
+                      <span className="truncate">{u}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
 

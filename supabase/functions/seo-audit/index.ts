@@ -154,19 +154,78 @@ Deno.serve(async (req) => {
 
     // ACTION: discover - get list of URLs from sitemap/crawl
     if (action === "discover") {
-      console.log("Discovering URLs for:", url);
+      const baseUrl = url || "https://trumoveinc.com";
+      console.log("Discovering URLs for:", baseUrl);
 
-      // Try sitemap first via firecrawl map
-      const mapRes = await fetch("https://api.firecrawl.dev/v1/map", {
-        method: "POST",
-        headers: { Authorization: `Bearer ${FIRECRAWL_API_KEY}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ url, limit: 50, includeSubdomains: false }),
-      });
+      let discoveredUrls: string[] = [];
 
-      const mapData = await mapRes.json();
-      const links = mapData?.links || [];
+      // Step 1: Try sitemap.xml first (direct fetch, no Firecrawl credits)
+      const sitemapCandidates = [
+        `${baseUrl}/sitemap.xml`,
+        `${baseUrl}/sitemap_index.xml`,
+        `${baseUrl}/sitemap-0.xml`,
+      ];
 
-      return new Response(JSON.stringify({ success: true, urls: links.slice(0, 50) }), {
+      for (const sitemapUrl of sitemapCandidates) {
+        try {
+          console.log("Trying sitemap:", sitemapUrl);
+          const sitemapRes = await fetch(sitemapUrl, {
+            headers: { "User-Agent": "TruMoveSEOAudit/1.0" },
+          });
+          if (sitemapRes.ok) {
+            const xml = await sitemapRes.text();
+            // Check if it's a sitemap index (contains other sitemaps)
+            const sitemapRefs = [...xml.matchAll(/<sitemap>\s*<loc>([\s\S]*?)<\/loc>/gi)].map(m => m[1].trim());
+            if (sitemapRefs.length > 0) {
+              console.log(`Found sitemap index with ${sitemapRefs.length} child sitemaps`);
+              // Fetch each child sitemap
+              for (const childUrl of sitemapRefs.slice(0, 5)) {
+                try {
+                  const childRes = await fetch(childUrl, { headers: { "User-Agent": "TruMoveSEOAudit/1.0" } });
+                  if (childRes.ok) {
+                    const childXml = await childRes.text();
+                    const childUrls = [...childXml.matchAll(/<url>\s*<loc>([\s\S]*?)<\/loc>/gi)].map(m => m[1].trim());
+                    discoveredUrls.push(...childUrls);
+                  }
+                } catch (e) {
+                  console.error("Child sitemap fetch error:", e);
+                }
+              }
+            }
+            // Also parse direct <url><loc> entries
+            const directUrls = [...xml.matchAll(/<url>\s*<loc>([\s\S]*?)<\/loc>/gi)].map(m => m[1].trim());
+            discoveredUrls.push(...directUrls);
+
+            if (discoveredUrls.length > 0) {
+              console.log(`Sitemap yielded ${discoveredUrls.length} URLs`);
+              break;
+            }
+          }
+        } catch (e) {
+          console.log("Sitemap not found at", sitemapUrl);
+        }
+      }
+
+      // Step 2: Fallback — use Firecrawl map (follows links from homepage)
+      if (discoveredUrls.length === 0) {
+        console.log("No sitemap found, falling back to Firecrawl link discovery");
+        const mapRes = await fetch("https://api.firecrawl.dev/v1/map", {
+          method: "POST",
+          headers: { Authorization: `Bearer ${FIRECRAWL_API_KEY}`, "Content-Type": "application/json" },
+          body: JSON.stringify({ url: baseUrl, limit: 50, includeSubdomains: false }),
+        });
+        const mapData = await mapRes.json();
+        discoveredUrls = mapData?.links || [];
+      }
+
+      // Deduplicate, filter to same domain, limit to 50
+      const domain = new URL(baseUrl).hostname;
+      const unique = [...new Set(discoveredUrls)]
+        .filter(u => { try { return new URL(u).hostname === domain; } catch { return false; } })
+        .slice(0, 50);
+
+      const source = unique.length > 0 && discoveredUrls.length > 0 ? "sitemap" : "crawl";
+      return new Response(JSON.stringify({ success: true, urls: unique, source, total: unique.length }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
