@@ -417,7 +417,7 @@ export default function MarketingTemplates() {
                       size="sm"
                       className="gap-1.5 text-xs"
                       disabled={!tplName || !tplBody || saveMutation.isPending}
-                      onClick={() => { setSaveTarget("current"); saveMutation.mutate(); }}
+                      onClick={() => saveMutation.mutate()}
                     >
                       {saveMutation.isPending ? <Loader2 className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />}
                       {editingId ? "Update Template" : "Save Email Template"}
