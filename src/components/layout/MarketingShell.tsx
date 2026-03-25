@@ -2,7 +2,7 @@ import { useState, useEffect, type ReactNode } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   Home, Bell, Menu, X,
-  FileText,
+  FileText, Search,
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -14,6 +14,7 @@ import logoImg from "@/assets/logo.png";
 
 const NAV_ITEMS = [
   { label: "Templates", icon: FileText, href: "/marketing/templates" },
+  { label: "SEO Helper", icon: Search, href: "/marketing/seo" },
 ];
 
 interface MarketingShellProps {
