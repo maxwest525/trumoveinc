@@ -1,8 +1,8 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import {
   Type, Image, MousePointerClick, Minus, ArrowUpDown, Heading,
   Trash2, GripVertical, ChevronUp, ChevronDown, Copy, Plus,
-  AlignLeft, AlignCenter, AlignRight,
+  AlignLeft, AlignCenter, AlignRight, Undo2, Redo2, XCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
@@ -40,8 +40,48 @@ interface Props {
 
 export default function EmailBlockEditor({ blocks, onChange }: Props) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const historyRef = useRef<EmailBlock[][]>([[]]);
+  const historyIndexRef = useRef(0);
 
   const selectedBlock = blocks.find((b) => b.id === selectedId) || null;
+
+  const pushHistory = useCallback((newBlocks: EmailBlock[]) => {
+    const idx = historyIndexRef.current;
+    const newHistory = historyRef.current.slice(0, idx + 1);
+    newHistory.push(JSON.parse(JSON.stringify(newBlocks)));
+    historyRef.current = newHistory;
+    historyIndexRef.current = newHistory.length - 1;
+  }, []);
+
+  const handleChange = useCallback((newBlocks: EmailBlock[]) => {
+    pushHistory(newBlocks);
+    onChange(newBlocks);
+  }, [onChange, pushHistory]);
+
+  const undo = useCallback(() => {
+    const idx = historyIndexRef.current;
+    if (idx <= 0) return;
+    historyIndexRef.current = idx - 1;
+    const restored = JSON.parse(JSON.stringify(historyRef.current[idx - 1]));
+    onChange(restored);
+  }, [onChange]);
+
+  const redo = useCallback(() => {
+    const idx = historyIndexRef.current;
+    if (idx >= historyRef.current.length - 1) return;
+    historyIndexRef.current = idx + 1;
+    const restored = JSON.parse(JSON.stringify(historyRef.current[idx + 1]));
+    onChange(restored);
+  }, [onChange]);
+
+  const clearAll = useCallback(() => {
+    pushHistory([]);
+    onChange([]);
+    setSelectedId(null);
+  }, [onChange, pushHistory]);
+
+  const canUndo = historyIndexRef.current > 0;
+  const canRedo = historyIndexRef.current < historyRef.current.length - 1;
 
   const addBlock = useCallback((type: BlockType) => {
     const newBlock: EmailBlock = {
@@ -50,18 +90,18 @@ export default function EmailBlockEditor({ blocks, onChange }: Props) {
       props: { ...DEFAULT_BLOCK_PROPS[type] },
     };
     const updated = [...blocks, newBlock];
-    onChange(updated);
+    handleChange(updated);
     setSelectedId(newBlock.id);
-  }, [blocks, onChange]);
+  }, [blocks, handleChange]);
 
   const updateBlockProps = useCallback((id: string, props: Record<string, any>) => {
-    onChange(blocks.map((b) => (b.id === id ? { ...b, props: { ...b.props, ...props } } : b)));
-  }, [blocks, onChange]);
+    handleChange(blocks.map((b) => (b.id === id ? { ...b, props: { ...b.props, ...props } } : b)));
+  }, [blocks, handleChange]);
 
   const removeBlock = useCallback((id: string) => {
-    onChange(blocks.filter((b) => b.id !== id));
+    handleChange(blocks.filter((b) => b.id !== id));
     if (selectedId === id) setSelectedId(null);
-  }, [blocks, onChange, selectedId]);
+  }, [blocks, handleChange, selectedId]);
 
   const moveBlock = useCallback((id: string, dir: -1 | 1) => {
     const idx = blocks.findIndex((b) => b.id === id);
@@ -70,8 +110,8 @@ export default function EmailBlockEditor({ blocks, onChange }: Props) {
     if (newIdx < 0 || newIdx >= blocks.length) return;
     const arr = [...blocks];
     [arr[idx], arr[newIdx]] = [arr[newIdx], arr[idx]];
-    onChange(arr);
-  }, [blocks, onChange]);
+    handleChange(arr);
+  }, [blocks, handleChange]);
 
   const duplicateBlock = useCallback((id: string) => {
     const idx = blocks.findIndex((b) => b.id === id);
@@ -79,17 +119,18 @@ export default function EmailBlockEditor({ blocks, onChange }: Props) {
     const dup: EmailBlock = { ...blocks[idx], id: genId(), props: { ...blocks[idx].props } };
     const arr = [...blocks];
     arr.splice(idx + 1, 0, dup);
-    onChange(arr);
+    handleChange(arr);
     setSelectedId(dup.id);
-  }, [blocks, onChange]);
+  }, [blocks, handleChange]);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[1fr_260px] gap-3">
       {/* Canvas */}
       <div className="space-y-3">
-        {/* Block Palette */}
-        <div className="flex items-center gap-1.5 flex-wrap">
-          <span className="text-[10px] text-muted-foreground font-medium mr-1">Add:</span>
+        {/* Block Palette + Actions */}
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <span className="text-[10px] text-muted-foreground font-medium mr-1">Add:</span>
           {BLOCK_PALETTE.map((bp) => {
             const Icon = bp.icon;
             return (
@@ -103,9 +144,25 @@ export default function EmailBlockEditor({ blocks, onChange }: Props) {
               </button>
             );
           })}
+          </div>
+          <div className="flex items-center gap-1">
+            <button onClick={undo} disabled={!canUndo} title="Undo"
+              className="p-1.5 rounded-md hover:bg-muted disabled:opacity-30 text-muted-foreground transition-colors">
+              <Undo2 className="w-3.5 h-3.5" />
+            </button>
+            <button onClick={redo} disabled={!canRedo} title="Redo"
+              className="p-1.5 rounded-md hover:bg-muted disabled:opacity-30 text-muted-foreground transition-colors">
+              <Redo2 className="w-3.5 h-3.5" />
+            </button>
+            {blocks.length > 0 && (
+              <button onClick={clearAll} title="Clear All"
+                className="p-1.5 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors ml-1">
+                <XCircle className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
         </div>
 
-        {/* Email Canvas */}
         <div className="bg-muted/30 rounded-xl border border-border p-4 min-h-[400px]">
           <div className="max-w-[620px] mx-auto bg-white rounded-xl border border-border shadow-sm overflow-hidden">
             {blocks.length === 0 && (
