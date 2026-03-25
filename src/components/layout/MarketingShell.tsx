@@ -26,6 +26,7 @@ const NAV_ITEMS = [
 interface MarketingShellProps {
   children: ReactNode;
   breadcrumb?: string;
+  breadcrumbs?: BreadcrumbSegment[];
 }
 
 export default function MarketingShell({ children, breadcrumb = "" }: MarketingShellProps) {
