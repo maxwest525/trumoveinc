@@ -37,16 +37,6 @@ const AGENTS = [
     accentClass: "text-blue-600 bg-blue-500/10",
     href: "/marketing/ads",
   },
-  {
-    name: "Website Agent",
-    icon: Globe,
-    status: "idle",
-    tasksCompleted: 12,
-    tasksInProgress: 0,
-    lastAction: "A/B test on landing page CTA completed — Variant B won",
-    accentClass: "text-violet-600 bg-violet-500/10",
-    href: "/marketing/website",
-  },
 ];
 
 const RECENT_TASKS = [
