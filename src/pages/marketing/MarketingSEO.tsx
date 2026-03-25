@@ -229,13 +229,22 @@ export default function MarketingSEO() {
 
             {/* Discovered URLs preview */}
             {discoveredUrls.length > 0 && !auditPages.length && (
-              <div className="bg-muted/50 rounded-lg p-3 max-h-40 overflow-auto text-xs space-y-0.5">
-                {discoveredUrls.map((u) => (
-                  <div key={u} className="flex items-center gap-1.5 text-muted-foreground">
-                    <Link2 className="w-3 h-3 shrink-0" />
-                    <span className="truncate">{u}</span>
+              <div className="space-y-1.5">
+                {discoverySource && (
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <CheckCircle2 className="w-3 h-3 text-primary" />
+                    Discovered via <span className="font-medium">{discoverySource === "sitemap" ? "sitemap.xml" : "homepage link crawl"}</span>
+                    <Badge variant="secondary" className="text-[10px]">{discoveredUrls.length} pages</Badge>
                   </div>
-                ))}
+                )}
+                <div className="bg-muted/50 rounded-lg p-3 max-h-40 overflow-auto text-xs space-y-0.5">
+                  {discoveredUrls.map((u) => (
+                    <div key={u} className="flex items-center gap-1.5 text-muted-foreground">
+                      <Link2 className="w-3 h-3 shrink-0" />
+                      <span className="truncate">{u}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
 
