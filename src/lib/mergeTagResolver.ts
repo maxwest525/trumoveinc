@@ -140,7 +140,7 @@ export async function resolveMergeTags(
 
   let result = template;
   for (const [tag, value] of Object.entries(replacements)) {
-    result = result.replaceAll(tag, value);
+    result = result.split(tag).join(value);
   }
 
   return result;
