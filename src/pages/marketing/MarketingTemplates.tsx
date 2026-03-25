@@ -116,6 +116,88 @@ const EMAIL_STARTERS = [
   },
 ];
 
+// ─── Branded blank starter for visual builder ───
+const TRUMOVE_LOGO_URL = "https://3d87f9a0-12f4-4e01-8410-d49a9b30353c.lovableproject.com/lovable-uploads/logo.png";
+
+const BLANK_BRANDED_BLOCKS: EmailBlock[] = [
+  {
+    id: "brand-logo",
+    type: "image",
+    props: {
+      src: "/images/logo-email.png",
+      alt: "TruMove Inc",
+      width: 35,
+      align: "center",
+      padding: 28,
+    },
+  },
+  {
+    id: "brand-divider-top",
+    type: "divider",
+    props: { color: "#16a34a", thickness: 2, padding: 4 },
+  },
+  {
+    id: "brand-heading",
+    type: "header",
+    props: {
+      text: "Your Headline Here",
+      bgColor: "#ffffff",
+      textColor: "#0a0a0a",
+      fontSize: 26,
+      padding: 28,
+      align: "center",
+    },
+  },
+  {
+    id: "brand-body",
+    type: "text",
+    props: {
+      text: "Hi {first_name},\n\nWrite your message here. This is a clean starting point — customize the blocks, colors, and content to fit your campaign.",
+      fontSize: 14,
+      textColor: "#444444",
+      lineHeight: 1.7,
+      padding: 24,
+      align: "left",
+    },
+  },
+  {
+    id: "brand-cta",
+    type: "button",
+    props: {
+      text: "Call to Action",
+      href: "{tracking_link}",
+      bgColor: "#16a34a",
+      textColor: "#ffffff",
+      borderRadius: 8,
+      fontSize: 14,
+      padding: 24,
+      align: "center",
+    },
+  },
+  {
+    id: "brand-spacer",
+    type: "spacer",
+    props: { height: 16 },
+  },
+  {
+    id: "brand-divider-bottom",
+    type: "divider",
+    props: { color: "#e5e7eb", thickness: 1, padding: 8 },
+  },
+  {
+    id: "brand-footer",
+    type: "text",
+    props: {
+      text: "TruMove Inc · Questions? Reply to this email or call (800) 555-MOVE",
+      fontSize: 11,
+      textColor: "#999999",
+      lineHeight: 1.5,
+      padding: 16,
+      align: "center",
+    },
+  },
+];
+
 const SMS_STARTERS = [
   { name: "Booking Confirmed", body: "TruMove: Hi {first_name}, your move is confirmed for {move_date}! Booking #{booking_id}. From: {origin_address} → {dest_address}. Questions? Reply HELP." },
   { name: "Crew On The Way", body: "TruMove: Your crew is on the way! ETA: {eta}. Track live: {tracking_link}" },
@@ -229,6 +311,16 @@ export default function MarketingTemplates() {
     if (channel === "email") setEditorMode("code");
   };
 
+  const loadBlankBranded = () => {
+    const blocks = JSON.parse(JSON.stringify(BLANK_BRANDED_BLOCKS)) as EmailBlock[];
+    setTplName("New Email");
+    setTplSubject("");
+    setEmailBlocks(blocks);
+    setTplBody(blocksToHtml(blocks));
+    setEditingId(null);
+    setEditorMode("builder");
+  };
+
   const insertTag = useCallback((tag: string) => {
     const el = bodyRef.current;
     if (!el) {
@@ -308,6 +400,11 @@ export default function MarketingTemplates() {
                   <div className="p-2 space-y-0.5">
                     {/* Starters */}
                     <p className="text-[9px] uppercase tracking-wider text-muted-foreground/50 px-2 pt-1 pb-1">Starters</p>
+                    <button onClick={loadBlankBranded} className="w-full text-left text-[11px] px-2.5 py-1.5 rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground flex items-center gap-2">
+                      <Blocks className="w-3 h-3 shrink-0 text-primary" />
+                      <span className="truncate">Blank (TruMove Branded)</span>
+                      <Badge variant="outline" className="ml-auto text-[8px] px-1 py-0 h-3.5 border-primary/30 text-primary">Builder</Badge>
+                    </button>
                     {EMAIL_STARTERS.map((s, i) => (
                       <button key={i} onClick={() => loadStarter(s)} className="w-full text-left text-[11px] px-2.5 py-1.5 rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground flex items-center gap-2">
                         <Paintbrush className="w-3 h-3 shrink-0 text-primary/50" />
