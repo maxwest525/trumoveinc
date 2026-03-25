@@ -39,17 +39,7 @@ import LeadsPerformance from "./pages/LeadsPerformance";
 import KpiDashboard from "./pages/KpiDashboard";
 import ResetPassword from "./pages/ResetPassword";
 import SetPassword from "./pages/SetPassword";
-import MarketingDashboard from "./pages/marketing/MarketingDashboard";
-import MarketingSEO from "./pages/marketing/MarketingSEO";
-import MarketingAds from "./pages/marketing/MarketingAds";
-
-import MarketingTasks from "./pages/marketing/MarketingTasks";
-import MarketingSettings from "./pages/marketing/MarketingSettings";
 import MarketingTemplates from "./pages/marketing/MarketingTemplates";
-import GrowthCampaigns from "./pages/growth-engine/GrowthCampaigns";
-import GrowthIntegrations from "./pages/growth-engine/GrowthIntegrations";
-import GrowthLandingPages from "./pages/growth-engine/GrowthLandingPages";
-import GrowthRouting from "./pages/growth-engine/GrowthRouting";
 import AccountingDashboard from "./pages/AccountingDashboard";
 import AgentOperations from "./pages/AgentOperations";
 import AgentNewCustomer from "./pages/AgentNewCustomer";
