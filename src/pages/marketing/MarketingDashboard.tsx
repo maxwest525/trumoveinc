@@ -1,6 +1,6 @@
 import MarketingShell from "@/components/layout/MarketingShell";
 import {
-  ArrowUpRight, ArrowDownRight, Search, Megaphone, Globe,
+  ArrowUpRight, ArrowDownRight, Search, Megaphone,
   CheckCircle2, Clock, Zap, TrendingUp, Eye, MousePointerClick,
   FileText, Link2, BarChart3, Bot,
 } from "lucide-react";
@@ -37,16 +37,6 @@ const AGENTS = [
     accentClass: "text-blue-600 bg-blue-500/10",
     href: "/marketing/ads",
   },
-  {
-    name: "Website Agent",
-    icon: Globe,
-    status: "idle",
-    tasksCompleted: 12,
-    tasksInProgress: 0,
-    lastAction: "A/B test on landing page CTA completed — Variant B won",
-    accentClass: "text-violet-600 bg-violet-500/10",
-    href: "/marketing/website",
-  },
 ];
 
 const RECENT_TASKS = [
@@ -54,7 +44,7 @@ const RECENT_TASKS = [
   { agent: "Ads", text: "Paused underperforming ad group 'movers near me'", time: "15m ago", status: "done" },
   { agent: "SEO", text: "Technical SEO audit — fixed 3 broken links", time: "1h ago", status: "done" },
   { agent: "Ads", text: "Created new responsive search ad variants", time: "2h ago", status: "done" },
-  { agent: "Website", text: "Optimizing hero section load time", time: "3h ago", status: "in_progress" },
+  
   { agent: "SEO", text: "Building backlink outreach list", time: "4h ago", status: "in_progress" },
 ];
 

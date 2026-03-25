@@ -2,8 +2,9 @@ import { useState, useEffect, type ReactNode } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   Home, Bell, Menu, X,
-  LayoutDashboard, Search, Megaphone, Globe, ListTodo, Settings,
+  LayoutDashboard, Search, Megaphone, ListTodo, Settings,
   Bot, FileText,
+
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -17,7 +18,7 @@ const NAV_ITEMS = [
   { label: "Dashboard", icon: LayoutDashboard, href: "/marketing/dashboard" },
   { label: "SEO & GEO Agent", icon: Search, href: "/marketing/seo" },
   { label: "Paid Ads Agent", icon: Megaphone, href: "/marketing/ads" },
-  { label: "Website Agent", icon: Globe, href: "/marketing/website" },
+  
   { label: "Templates", icon: FileText, href: "/marketing/templates" },
   { label: "Tasks", icon: ListTodo, href: "/marketing/tasks" },
   { label: "Settings", icon: Settings, href: "/marketing/settings" },
@@ -88,7 +89,7 @@ export default function MarketingShell({ children, breadcrumb = "", breadcrumbs 
           {[
             { label: "SEO Agent", status: "active" },
             { label: "Ads Agent", status: "active" },
-            { label: "Website Agent", status: "idle" },
+            
           ].map((a) => (
             <div key={a.label} className="flex items-center justify-between text-[10px]">
               <span className="text-muted-foreground">{a.label}</span>
