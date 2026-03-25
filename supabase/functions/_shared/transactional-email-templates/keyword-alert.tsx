@@ -1,6 +1,6 @@
 import * as React from 'npm:react@18.3.1'
 import {
-  Body, Container, Head, Heading, Html, Preview, Text,
+  Body, Container, Head, Heading, Html, Preview, Text, Section,
 } from 'npm:@react-email/components@0.0.22'
 import type { TemplateEntry } from './registry.ts'
 
@@ -25,10 +25,10 @@ const KeywordAlertEmail = ({ keyword, matched, context, timestamp, agentName }: 
           <tr><td style={labelCell}>Matched Text</td><td style={valueCell}><code>{matched || 'N/A'}</code></td></tr>
           <tr><td style={labelCell}>Time</td><td style={valueCell}>{timestamp || 'N/A'}</td></tr>
         </table>
-        <div style={contextBox}>
+        <Section style={contextBox}>
           <Text style={contextLabel}>Context</Text>
           <Text style={contextText}>{context || 'No context available'}</Text>
-        </div>
+        </Section>
       </Container>
     </Body>
   </Html>
