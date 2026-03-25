@@ -127,9 +127,10 @@ export default function EmailBlockEditor({ blocks, onChange }: Props) {
     <div className="grid grid-cols-1 lg:grid-cols-[1fr_260px] gap-3">
       {/* Canvas */}
       <div className="space-y-3">
-        {/* Block Palette */}
-        <div className="flex items-center gap-1.5 flex-wrap">
-          <span className="text-[10px] text-muted-foreground font-medium mr-1">Add:</span>
+        {/* Block Palette + Actions */}
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <span className="text-[10px] text-muted-foreground font-medium mr-1">Add:</span>
           {BLOCK_PALETTE.map((bp) => {
             const Icon = bp.icon;
             return (
