@@ -275,10 +275,26 @@ export default function MarketingSEO() {
         {/* Controls */}
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-base flex items-center gap-2">
-              <Globe className="w-4 h-4 text-primary" /> Audit Controls
-            </CardTitle>
-            <CardDescription className="text-xs">Crawl the full site or audit a single page. Full crawl auto-analyzes every page found.</CardDescription>
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              <div>
+                <CardTitle className="text-base flex items-center gap-2">
+                  <Globe className="w-4 h-4 text-primary" /> Audit Controls
+                </CardTitle>
+                <CardDescription className="text-xs mt-1">Full crawl auto-analyzes every page found.</CardDescription>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Input
+                  value={singleUrl}
+                  onChange={(e) => setSingleUrl(e.target.value)}
+                  placeholder="Single URL…"
+                  className="h-8 w-48 text-xs"
+                  onKeyDown={(e) => e.key === "Enter" && singleUrl && handleAnalyzeSingle()}
+                />
+                <Button onClick={handleAnalyzeSingle} disabled={analyzing || !singleUrl} variant="secondary" size="sm" className="h-8 shrink-0">
+                  {analyzing ? <Loader2 className="w-3 h-3 animate-spin" /> : <Search className="w-3 h-3" />}
+                </Button>
+              </div>
+            </div>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex flex-wrap gap-2">
@@ -307,21 +323,6 @@ export default function MarketingSEO() {
                 </div>
               </div>
             )}
-
-            <div className="flex gap-2 items-end border-t border-border pt-4">
-              <div className="flex-1 space-y-1.5">
-                <span className="text-xs font-medium text-foreground">Or audit a single page</span>
-                <Input
-                  value={singleUrl}
-                  onChange={(e) => setSingleUrl(e.target.value)}
-                  placeholder="https://trumoveinc.com/long-distance-movers-dallas"
-                />
-              </div>
-              <Button onClick={handleAnalyzeSingle} disabled={analyzing || !singleUrl} variant="secondary" size="sm" className="shrink-0">
-                {analyzing ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <Search className="w-3 h-3 mr-1" />}
-                Audit
-              </Button>
-            </div>
           </CardContent>
         </Card>
 
