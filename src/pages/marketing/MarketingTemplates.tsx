@@ -155,10 +155,8 @@ export default function MarketingTemplates() {
   const saveMutation = useMutation({
     mutationFn: async () => {
       const { data: userData } = await supabase.auth.getUser();
-      const channels = saveTarget === "both" ? ["email", "sms"] : [channel];
 
       if (editingId) {
-        // Update existing
         const { error } = await supabase
           .from("message_templates" as any)
           .update({
@@ -169,15 +167,13 @@ export default function MarketingTemplates() {
           .eq("id", editingId);
         if (error) throw error;
       } else {
-        // Insert new
-        const inserts = channels.map((ch) => ({
+        const { error } = await supabase.from("message_templates" as any).insert({
           name: tplName,
-          channel: ch,
-          subject: ch === "email" ? tplSubject : null,
+          channel,
+          subject: channel === "email" ? tplSubject : null,
           body: tplBody,
           created_by: userData.user?.id || null,
-        }));
-        const { error } = await supabase.from("message_templates" as any).insert(inserts as any);
+        } as any);
         if (error) throw error;
       }
     },
