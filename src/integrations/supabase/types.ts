@@ -1467,6 +1467,60 @@ export type Database = {
           },
         ]
       }
+      seo_audit_pages: {
+        Row: {
+          ai_checklist: Json
+          audit_batch_id: string | null
+          created_at: string
+          fetched_canonical: string | null
+          fetched_description: string | null
+          fetched_h1: string | null
+          fetched_title: string | null
+          id: string
+          issues: Json
+          status: string
+          suggested_description: string | null
+          suggested_h1: string | null
+          suggested_title: string | null
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          ai_checklist?: Json
+          audit_batch_id?: string | null
+          created_at?: string
+          fetched_canonical?: string | null
+          fetched_description?: string | null
+          fetched_h1?: string | null
+          fetched_title?: string | null
+          id?: string
+          issues?: Json
+          status?: string
+          suggested_description?: string | null
+          suggested_h1?: string | null
+          suggested_title?: string | null
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          ai_checklist?: Json
+          audit_batch_id?: string | null
+          created_at?: string
+          fetched_canonical?: string | null
+          fetched_description?: string | null
+          fetched_h1?: string | null
+          fetched_title?: string | null
+          id?: string
+          issues?: Json
+          status?: string
+          suggested_description?: string | null
+          suggested_h1?: string | null
+          suggested_title?: string | null
+          updated_at?: string
+          url?: string
+        }
+        Relationships: []
+      }
       support_tickets: {
         Row: {
           created_at: string
