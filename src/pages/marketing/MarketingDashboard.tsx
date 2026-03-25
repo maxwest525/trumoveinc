@@ -44,7 +44,7 @@ const RECENT_TASKS = [
   { agent: "Ads", text: "Paused underperforming ad group 'movers near me'", time: "15m ago", status: "done" },
   { agent: "SEO", text: "Technical SEO audit — fixed 3 broken links", time: "1h ago", status: "done" },
   { agent: "Ads", text: "Created new responsive search ad variants", time: "2h ago", status: "done" },
-  { agent: "Website", text: "Optimizing hero section load time", time: "3h ago", status: "in_progress" },
+  
   { agent: "SEO", text: "Building backlink outreach list", time: "4h ago", status: "in_progress" },
 ];
 

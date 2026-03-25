@@ -88,7 +88,7 @@ export default function MarketingShell({ children, breadcrumb = "", breadcrumbs 
           {[
             { label: "SEO Agent", status: "active" },
             { label: "Ads Agent", status: "active" },
-            { label: "Website Agent", status: "idle" },
+            
           ].map((a) => (
             <div key={a.label} className="flex items-center justify-between text-[10px]">
               <span className="text-muted-foreground">{a.label}</span>
