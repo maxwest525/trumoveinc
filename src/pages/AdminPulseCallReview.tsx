@@ -3,7 +3,7 @@ import PulseCallReview from "@/pages/pulse/PulseCallReview";
 
 export default function AdminPulseCallReview() {
   return (
-    <AdminShell breadcrumb="/ Pulse / Call Review">
+    <AdminShell breadcrumbs={[{ label: "Pulse", href: "/admin/pulse" }, { label: "Call Review" }]}>
       <PulseCallReview embedded basePath="/admin/pulse" />
     </AdminShell>
   );
