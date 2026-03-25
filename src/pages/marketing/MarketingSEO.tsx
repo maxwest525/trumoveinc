@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import MarketingShell from "@/components/layout/MarketingShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import {
   Search, Sparkles, Globe, CheckCircle2, AlertCircle, Loader2,
   Download, ChevronDown, ChevronUp, RefreshCw, ScanSearch, Link2,
+  AlertTriangle, CircleCheck, Filter,
 } from "lucide-react";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -35,6 +36,8 @@ const defaultDecisions = (): PageDecisions => ({
   h1: { status: "pending" },
 });
 
+type FilterMode = "all" | "issues" | "ok";
+
 export default function MarketingSEO() {
   const [singleUrl, setSingleUrl] = useState("");
   const [discoveredUrls, setDiscoveredUrls] = useState<string[]>([]);
@@ -46,30 +49,9 @@ export default function MarketingSEO() {
   const [expandedUrl, setExpandedUrl] = useState<string | null>(null);
   const [analyzeProgress, setAnalyzeProgress] = useState({ done: 0, total: 0 });
   const [regeneratingUrl, setRegeneratingUrl] = useState<string | null>(null);
+  const [filterMode, setFilterMode] = useState<FilterMode>("all");
 
-  const handleDiscover = async () => {
-    setDiscovering(true);
-    setDiscoveredUrls([]);
-    try {
-      const { data, error } = await supabase.functions.invoke("seo-audit", {
-        body: { action: "discover", url: "https://trumoveinc.com" },
-      });
-      if (error) throw error;
-      if (data?.error) throw new Error(data.error);
-      const urls = (data?.urls || []) as string[];
-      const source = data?.source || "crawl";
-      setDiscoveredUrls(urls);
-      setDiscoverySource(source);
-      toast.success(`Found ${urls.length} pages via ${source === "sitemap" ? "sitemap.xml" : "link crawl"}`);
-    } catch (e: any) {
-      console.error(e);
-      toast.error(e.message || "Failed to discover pages");
-    } finally {
-      setDiscovering(false);
-    }
-  };
-
-  const analyzeUrls = async (urls: string[]) => {
+  const analyzeUrls = useCallback(async (urls: string[]) => {
     setAnalyzing(true);
     setAuditPages([]);
     setDecisions({});
@@ -132,7 +114,36 @@ export default function MarketingSEO() {
     }
 
     setAnalyzing(false);
-    toast.success(`Audit complete — ${allResults.length} pages analyzed`);
+    const withIssues = allResults.filter(p => (p.issues?.length || 0) > 0).length;
+    toast.success(`Audit complete — ${allResults.length} pages analyzed, ${withIssues} need improvement`);
+  }, []);
+
+  // Crawl + auto-analyze in one click
+  const handleFullCrawl = async () => {
+    setDiscovering(true);
+    setDiscoveredUrls([]);
+    setAuditPages([]);
+    setFilterMode("all");
+    try {
+      const { data, error } = await supabase.functions.invoke("seo-audit", {
+        body: { action: "discover", url: "https://trumoveinc.com" },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      const urls = (data?.urls || []) as string[];
+      const source = data?.source || "crawl";
+      setDiscoveredUrls(urls);
+      setDiscoverySource(source);
+      toast.success(`Found ${urls.length} pages via ${source === "sitemap" ? "sitemap.xml" : "link crawl"} — starting analysis…`);
+      setDiscovering(false);
+      if (urls.length > 0) {
+        await analyzeUrls(urls);
+      }
+    } catch (e: any) {
+      console.error(e);
+      toast.error(e.message || "Failed to discover pages");
+      setDiscovering(false);
+    }
   };
 
   const handleAnalyzeSingle = async () => {
@@ -142,14 +153,8 @@ export default function MarketingSEO() {
     await analyzeUrls([u]);
   };
 
-  const handleAnalyzeAll = async () => {
-    if (!discoveredUrls.length) return;
-    await analyzeUrls(discoveredUrls);
-  };
-
   const handleDecisionChange = (url: string, d: PageDecisions) => {
     setDecisions((prev) => ({ ...prev, [url]: d }));
-    // Save approved/edited to DB
     const updates: any = {};
     if (d.title.status === "approved") updates.suggested_title = auditPages.find(p => p.url === url)?.suggestedTitle;
     if (d.title.status === "edited") updates.suggested_title = d.title.editedValue;
@@ -243,10 +248,19 @@ export default function MarketingSEO() {
     );
   };
 
-  const hasExportable = auditPages.some((p) => {
-    const s = getPageStatus(p.url);
-    return s === "actioned";
-  });
+  const hasExportable = auditPages.some((p) => getPageStatus(p.url) === "actioned");
+
+  // Stats
+  const pagesWithIssues = auditPages.filter(p => issueCount(p) > 0);
+  const pagesOk = auditPages.filter(p => issueCount(p) === 0);
+  const totalIssues = auditPages.reduce((sum, p) => sum + issueCount(p), 0);
+
+  // Filtered + sorted: pages with issues first
+  const filteredPages = filterMode === "issues"
+    ? pagesWithIssues
+    : filterMode === "ok"
+      ? pagesOk
+      : [...pagesWithIssues, ...pagesOk];
 
   return (
     <MarketingShell breadcrumbs={[{ label: "SEO Audit" }]}>
@@ -264,20 +278,14 @@ export default function MarketingSEO() {
             <CardTitle className="text-base flex items-center gap-2">
               <Globe className="w-4 h-4 text-primary" /> Audit Controls
             </CardTitle>
-            <CardDescription className="text-xs">Crawl the full site or audit a single page.</CardDescription>
+            <CardDescription className="text-xs">Crawl the full site or audit a single page. Full crawl auto-analyzes every page found.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex flex-wrap gap-2">
-              <Button onClick={handleDiscover} disabled={discovering || analyzing} variant="default" size="sm">
-                {discovering ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <ScanSearch className="w-3 h-3 mr-1" />}
-                Crawl trumoveinc.com
+              <Button onClick={handleFullCrawl} disabled={discovering || analyzing} variant="default" size="sm">
+                {(discovering || analyzing) ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <ScanSearch className="w-3 h-3 mr-1" />}
+                {discovering ? "Discovering pages…" : analyzing ? `Analyzing…` : "Crawl & Analyze trumoveinc.com"}
               </Button>
-              {discoveredUrls.length > 0 && (
-                <Button onClick={handleAnalyzeAll} disabled={analyzing} variant="default" size="sm">
-                  {analyzing ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <Sparkles className="w-3 h-3 mr-1" />}
-                  Analyze {discoveredUrls.length} pages
-                </Button>
-              )}
               {hasExportable && (
                 <Button onClick={handleExportCSV} variant="outline" size="sm">
                   <Download className="w-3 h-3 mr-1" /> Export Approved (CSV)
@@ -285,22 +293,17 @@ export default function MarketingSEO() {
               )}
             </div>
 
-            {discoveredUrls.length > 0 && !auditPages.length && (
+            {analyzing && analyzeProgress.total > 0 && (
               <div className="space-y-1.5">
-                {discoverySource && (
-                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                    <CheckCircle2 className="w-3 h-3 text-primary" />
-                    Discovered via <span className="font-medium">{discoverySource === "sitemap" ? "sitemap.xml" : "homepage link crawl"}</span>
-                    <Badge variant="secondary" className="text-[10px]">{discoveredUrls.length} pages</Badge>
-                  </div>
-                )}
-                <div className="bg-muted/50 rounded-lg p-3 max-h-40 overflow-auto text-xs space-y-0.5">
-                  {discoveredUrls.map((u) => (
-                    <div key={u} className="flex items-center gap-1.5 text-muted-foreground">
-                      <Link2 className="w-3 h-3 shrink-0" />
-                      <span className="truncate">{u}</span>
-                    </div>
-                  ))}
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <Loader2 className="w-3 h-3 animate-spin" />
+                  Analyzing {analyzeProgress.done}/{analyzeProgress.total} pages…
+                </div>
+                <div className="w-full bg-muted rounded-full h-1.5">
+                  <div
+                    className="bg-primary h-1.5 rounded-full transition-all duration-300"
+                    style={{ width: `${(analyzeProgress.done / analyzeProgress.total) * 100}%` }}
+                  />
                 </div>
               </div>
             )}
@@ -319,55 +322,122 @@ export default function MarketingSEO() {
                 Audit
               </Button>
             </div>
-
-            {analyzing && analyzeProgress.total > 0 && (
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <Loader2 className="w-3 h-3 animate-spin" />
-                Analyzing {analyzeProgress.done}/{analyzeProgress.total} pages…
-              </div>
-            )}
           </CardContent>
         </Card>
+
+        {/* Summary Strip */}
+        {auditPages.length > 0 && !analyzing && (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <Card className="bg-muted/30">
+              <CardContent className="p-4 text-center">
+                <p className="text-2xl font-bold text-foreground">{auditPages.length}</p>
+                <p className="text-[11px] text-muted-foreground">Pages Scanned</p>
+              </CardContent>
+            </Card>
+            <Card className={pagesWithIssues.length > 0 ? "bg-destructive/5 border-destructive/20" : "bg-muted/30"}>
+              <CardContent className="p-4 text-center">
+                <p className="text-2xl font-bold text-destructive">{pagesWithIssues.length}</p>
+                <p className="text-[11px] text-muted-foreground">Pages Need Work</p>
+              </CardContent>
+            </Card>
+            <Card className="bg-muted/30">
+              <CardContent className="p-4 text-center">
+                <p className="text-2xl font-bold text-foreground">{totalIssues}</p>
+                <p className="text-[11px] text-muted-foreground">Total Issues</p>
+              </CardContent>
+            </Card>
+            <Card className="bg-muted/30">
+              <CardContent className="p-4 text-center">
+                <p className="text-2xl font-bold text-primary">{pagesOk.length}</p>
+                <p className="text-[11px] text-muted-foreground">Pages OK</p>
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
         {/* Results */}
         {auditPages.length > 0 && (
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-base flex items-center gap-2">
-                <ScanSearch className="w-4 h-4 text-primary" /> Audit Results
-                <Badge variant="secondary" className="ml-auto text-[10px]">{auditPages.length} pages</Badge>
-              </CardTitle>
+              <div className="flex items-center justify-between flex-wrap gap-2">
+                <CardTitle className="text-base flex items-center gap-2">
+                  <ScanSearch className="w-4 h-4 text-primary" /> Audit Results
+                </CardTitle>
+                <div className="flex items-center gap-1.5">
+                  <Filter className="w-3 h-3 text-muted-foreground" />
+                  <Button
+                    variant={filterMode === "all" ? "default" : "ghost"}
+                    size="sm"
+                    className="h-6 text-[11px] px-2"
+                    onClick={() => setFilterMode("all")}
+                  >
+                    All ({auditPages.length})
+                  </Button>
+                  <Button
+                    variant={filterMode === "issues" ? "destructive" : "ghost"}
+                    size="sm"
+                    className="h-6 text-[11px] px-2"
+                    onClick={() => setFilterMode("issues")}
+                  >
+                    <AlertTriangle className="w-3 h-3 mr-1" />
+                    Needs Work ({pagesWithIssues.length})
+                  </Button>
+                  <Button
+                    variant={filterMode === "ok" ? "default" : "ghost"}
+                    size="sm"
+                    className="h-6 text-[11px] px-2"
+                    onClick={() => setFilterMode("ok")}
+                  >
+                    <CircleCheck className="w-3 h-3 mr-1" />
+                    OK ({pagesOk.length})
+                  </Button>
+                </div>
+              </div>
             </CardHeader>
             <CardContent className="p-0">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-[40%]">URL</TableHead>
+                    <TableHead className="w-[35%]">Page</TableHead>
                     <TableHead className="w-[15%]">Issues</TableHead>
                     <TableHead className="w-[15%]">Title</TableHead>
                     <TableHead className="w-[15%]">Description</TableHead>
-                    <TableHead className="w-[15%]">Status</TableHead>
+                    <TableHead className="w-[20%]">Status</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {auditPages.map((page) => {
+                  {filteredPages.map((page) => {
                     const status = getPageStatus(page.url);
+                    const hasIssues = issueCount(page) > 0;
                     return (
                       <Collapsible key={page.url} open={expandedUrl === page.url} onOpenChange={(open) => setExpandedUrl(open ? page.url : null)} asChild>
                         <>
                           <CollapsibleTrigger asChild>
-                            <TableRow className="cursor-pointer hover:bg-muted/50">
-                              <TableCell className="font-mono text-xs truncate max-w-[300px]">
-                                <div className="flex items-center gap-1">
-                                  {expandedUrl === page.url ? <ChevronUp className="w-3 h-3 shrink-0" /> : <ChevronDown className="w-3 h-3 shrink-0" />}
-                                  <span className="truncate">{page.url.replace("https://trumoveinc.com", "") || "/"}</span>
+                            <TableRow className={`cursor-pointer hover:bg-muted/50 ${hasIssues ? "border-l-2 border-l-destructive" : ""}`}>
+                              <TableCell>
+                                <div className="flex items-center gap-1.5">
+                                  {expandedUrl === page.url ? <ChevronUp className="w-3 h-3 shrink-0 text-muted-foreground" /> : <ChevronDown className="w-3 h-3 shrink-0 text-muted-foreground" />}
+                                  <div className="min-w-0">
+                                    <p className="font-mono text-xs truncate">{page.url.replace("https://trumoveinc.com", "") || "/"}</p>
+                                    {hasIssues && (
+                                      <p className="text-[10px] text-destructive mt-0.5 truncate">
+                                        {page.issues.slice(0, 2).join(" · ")}{page.issues.length > 2 ? ` +${page.issues.length - 2} more` : ""}
+                                      </p>
+                                    )}
+                                  </div>
                                 </div>
                               </TableCell>
                               <TableCell>
-                                {issueCount(page) > 0 ? (
-                                  <Badge variant="destructive" className="text-[10px]">{issueCount(page)}</Badge>
+                                {hasIssues ? (
+                                  <Badge variant="destructive" className="text-[10px]">
+                                    <AlertTriangle className="w-2.5 h-2.5 mr-0.5" />
+                                    {issueCount(page)}
+                                  </Badge>
                                 ) : (
-                                  <Badge variant="default" className="text-[10px]">OK</Badge>
+                                  <Badge variant="default" className="text-[10px]">
+                                    <CircleCheck className="w-2.5 h-2.5 mr-0.5" />
+                                    OK
+                                  </Badge>
                                 )}
                               </TableCell>
                               <TableCell>{charBadge(page.fetchedTitle, 50, 60)}</TableCell>
@@ -401,6 +471,12 @@ export default function MarketingSEO() {
                   })}
                 </TableBody>
               </Table>
+
+              {filteredPages.length === 0 && (
+                <div className="text-center py-8 text-sm text-muted-foreground">
+                  No pages match this filter.
+                </div>
+              )}
             </CardContent>
           </Card>
         )}
