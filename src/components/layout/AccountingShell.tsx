@@ -31,6 +31,7 @@ const NAV_ITEMS = [
 interface AccountingShellProps {
   children: ReactNode;
   breadcrumb?: string;
+  breadcrumbs?: BreadcrumbSegment[];
 }
 
 export default function AccountingShell({ children, breadcrumb = "" }: AccountingShellProps) {
