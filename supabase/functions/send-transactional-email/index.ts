@@ -5,8 +5,8 @@ import { TEMPLATES } from '../_shared/transactional-email-templates/registry.ts'
 
 // Configuration baked in at scaffold time
 const SITE_NAME = "trumoveinc"
-const SENDER_DOMAIN = "notify.crm.trumoveinc.com"
-const FROM_DOMAIN = "notify.crm.trumoveinc.com"
+const SENDER_DOMAIN = "notify.trumoveinc.com"
+const FROM_DOMAIN = "notify.trumoveinc.com"
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
