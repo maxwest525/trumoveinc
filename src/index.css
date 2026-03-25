@@ -20339,6 +20339,12 @@
   animation-delay: calc(var(--card-index, 0) * 0.15s);
 }
 
+.tru-steps-parallax-card.instant {
+  opacity: 1 !important;
+  transform: none !important;
+  animation: none !important;
+}
+
 /* Enhanced parallax depth effect on scroll */
 .tru-steps-parallax-card.in-view:nth-child(1) {
   transform-origin: center bottom;
