@@ -132,7 +132,7 @@ export default function MarketingTemplates() {
   const [tplName, setTplName] = useState("");
   const [tplSubject, setTplSubject] = useState("");
   const [tplBody, setTplBody] = useState("");
-  const [saveTarget, setSaveTarget] = useState<"current" | "both">("current");
+  
 
   const bodyRef = useRef<HTMLTextAreaElement>(null);
   const queryClient = useQueryClient();
