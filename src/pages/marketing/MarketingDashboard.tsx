@@ -1,6 +1,6 @@
 import MarketingShell from "@/components/layout/MarketingShell";
 import {
-  ArrowUpRight, ArrowDownRight, Search, Megaphone, Globe,
+  ArrowUpRight, ArrowDownRight, Search, Megaphone,
   CheckCircle2, Clock, Zap, TrendingUp, Eye, MousePointerClick,
   FileText, Link2, BarChart3, Bot,
 } from "lucide-react";

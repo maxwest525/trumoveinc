@@ -2,7 +2,7 @@ import { useState, useEffect, type ReactNode } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   Home, Bell, Menu, X,
-  LayoutDashboard, Search, Megaphone, Globe, ListTodo, Settings,
+  LayoutDashboard, Search, Megaphone, ListTodo, Settings,
   Bot, FileText,
 
 } from "lucide-react";
