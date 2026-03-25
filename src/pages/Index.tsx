@@ -550,7 +550,7 @@ function ShipmentTrackerSection({ navigate }: {navigate: (path: string) => void;
 
 // Trust Compact Section with scroll-triggered staggered reveal
 function TrustCompactSection() {
-  const [sectionRef, isInView] = useScrollAnimation<HTMLElement>({
+  const [sectionRef, isInView, isInstant] = useScrollAnimation<HTMLElement>({
     threshold: 0.2,
     rootMargin: "0px",
     triggerOnce: true
