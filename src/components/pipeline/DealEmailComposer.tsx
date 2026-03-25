@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
+import { resolveMergeTags } from "@/lib/mergeTagResolver";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -98,12 +99,16 @@ export function DealEmailComposer({ deal, activities }: DealEmailComposerProps) 
     }
     setSending(true);
     try {
+      // Resolve merge tags (e.g. {inventory_table}, {customer_name}) with real lead data
+      const resolvedSubject = deal.lead_id ? await resolveMergeTags(subject, deal.lead_id) : subject;
+      const resolvedBody = deal.lead_id ? await resolveMergeTags(body, deal.lead_id) : body;
+
       const { data, error } = await supabase.functions.invoke("send-transactional-email", {
         body: {
           templateName: "deal-email",
           recipientEmail: to,
           idempotencyKey: `deal-email-${deal.id}-${Date.now()}`,
-          templateData: { subject, bodyText: body, customerName: lead ? `${lead.first_name} ${lead.last_name}` : "Customer" },
+          templateData: { subject: resolvedSubject, bodyText: resolvedBody, customerName: lead ? `${lead.first_name} ${lead.last_name}` : "Customer" },
         },
       });
 
