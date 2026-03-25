@@ -23,7 +23,7 @@ const NAV_ITEMS: { label: string; icon: any; href: string; beta?: boolean }[] = 
   { label: "Dashboard", icon: LayoutDashboard, href: "/admin/dashboard" },
   { label: "Users & Roles", icon: Users, href: "/admin/users" },
   { label: "Employee Requests", icon: FileText, href: "/admin/employee-requests" },
-  { label: "Leaderboard", icon: Trophy, href: "/leaderboard" },
+  
   { label: "Products & Pricing", icon: DollarSign, href: "/admin/pricing" },
   { label: "Developer", icon: Link2, href: "/admin/developer", beta: true },
   { label: "Pulse Settings", icon: Settings2, href: "/admin/pulse" },
