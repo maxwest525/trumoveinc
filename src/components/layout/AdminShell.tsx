@@ -39,7 +39,7 @@ interface AdminShellProps {
   breadcrumbs?: BreadcrumbSegment[];
 }
 
-export default function AdminShell({ children, breadcrumb = "" }: AdminShellProps) {
+export default function AdminShell({ children, breadcrumb = "", breadcrumbs }: AdminShellProps) {
   const { theme, setTheme } = useTheme();
   const location = useLocation();
   const isMobile = useIsMobile();
