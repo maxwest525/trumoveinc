@@ -2,9 +2,7 @@ import { useState, useEffect, type ReactNode } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   Home, Bell, Menu, X,
-  LayoutDashboard, Search, Megaphone, ListTodo, Settings,
-  Bot, FileText,
-
+  FileText,
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
