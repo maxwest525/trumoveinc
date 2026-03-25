@@ -29,7 +29,7 @@ interface MarketingShellProps {
   breadcrumbs?: BreadcrumbSegment[];
 }
 
-export default function MarketingShell({ children, breadcrumb = "" }: MarketingShellProps) {
+export default function MarketingShell({ children, breadcrumb = "", breadcrumbs }: MarketingShellProps) {
   const location = useLocation();
   const isMobile = useIsMobile();
   const [sidebarOpen, setSidebarOpen] = useState(false);
