@@ -134,17 +134,8 @@ const App = () => (
             <Route path="/leaderboard" element={<Leaderboard />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/set-password" element={<SetPassword />} />
-            <Route path="/marketing/dashboard" element={<MarketingDashboard />} />
-            <Route path="/marketing/seo" element={<MarketingSEO />} />
-            <Route path="/marketing/ads" element={<MarketingAds />} />
-            
+            <Route path="/marketing/dashboard" element={<Navigate to="/marketing/templates" replace />} />
             <Route path="/marketing/templates" element={<MarketingTemplates />} />
-            <Route path="/marketing/tasks" element={<MarketingTasks />} />
-            <Route path="/marketing/settings" element={<MarketingSettings />} />
-            <Route path="/marketing/campaigns" element={<GrowthCampaigns />} />
-            <Route path="/marketing/integrations" element={<GrowthIntegrations />} />
-            <Route path="/marketing/landing-pages" element={<GrowthLandingPages />} />
-            <Route path="/marketing/routing" element={<GrowthRouting />} />
             <Route path="/accounting/dashboard" element={<AccountingDashboard />} />
             
             <Route path="/agent/incoming" element={<AgentIncomingLeads />} />

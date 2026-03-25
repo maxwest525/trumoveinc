@@ -15,13 +15,7 @@ import ShellBreadcrumbs, { type BreadcrumbSegment } from "@/components/layout/Sh
 import logoImg from "@/assets/logo.png";
 
 const NAV_ITEMS = [
-  { label: "Dashboard", icon: LayoutDashboard, href: "/marketing/dashboard" },
-  { label: "SEO & GEO Agent", icon: Search, href: "/marketing/seo" },
-  { label: "Paid Ads Agent", icon: Megaphone, href: "/marketing/ads" },
-  
   { label: "Templates", icon: FileText, href: "/marketing/templates" },
-  { label: "Tasks", icon: ListTodo, href: "/marketing/tasks" },
-  { label: "Settings", icon: Settings, href: "/marketing/settings" },
 ];
 
 interface MarketingShellProps {
