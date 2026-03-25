@@ -74,9 +74,9 @@ function parseHtml(html: string, url: string): Omit<PageAnalysis, "suggestedTitl
 }
 
 async function getAiSuggestions(
-  page: Omit<PageAnalysis, "suggestedTitle" | "suggestedDescription" | "suggestedH1" | "aiChecklist">,
+  page: Omit<PageAnalysis, "suggestedTitle" | "suggestedDescription" | "suggestedH1" | "aiChecklist" | "issueSuggestions">,
   apiKey: string
-): Promise<{ suggestedTitle: string; suggestedDescription: string; suggestedH1: string | null; aiChecklist: string[] }> {
+): Promise<{ suggestedTitle: string; suggestedDescription: string; suggestedH1: string | null; aiChecklist: string[]; issueSuggestions: IssueSuggestion[] }> {
   const prompt = `Analyse this page and give SEO recommendations:
 URL: ${page.url}
 Current Title: ${page.fetchedTitle || "(empty)"}
@@ -85,7 +85,7 @@ Current H1: ${page.fetchedH1 || "(empty)"}
 Canonical: ${page.fetchedCanonical || "(missing)"}
 Issues detected: ${page.issues.join("; ") || "none"}
 
-Return recommendations for a moving company website (trumoveinc.com).`;
+For EACH issue listed above, provide a specific, actionable suggestion to fix it. Also provide overall title/description/H1 recommendations.`;
 
   const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
     method: "POST",
@@ -109,7 +109,7 @@ CRITICAL RULE — TruMove Inc. is a LONG DISTANCE / INTERSTATE moving broker. Th
           type: "function",
           function: {
             name: "seo_recommendations",
-            description: "Return structured SEO recommendations",
+            description: "Return structured SEO recommendations with per-issue suggestions",
             parameters: {
               type: "object",
               properties: {
@@ -117,8 +117,22 @@ CRITICAL RULE — TruMove Inc. is a LONG DISTANCE / INTERSTATE moving broker. Th
                 suggestedDescription: { type: "string", description: "Suggested meta description (150-160 chars)" },
                 suggestedH1: { type: "string", description: "Suggested H1 or null if current is fine", nullable: true },
                 checklist: { type: "array", items: { type: "string" }, description: "3-6 actionable items" },
+                issueSuggestions: {
+                  type: "array",
+                  description: "One specific suggestion for EACH issue detected. Must match issues 1:1.",
+                  items: {
+                    type: "object",
+                    properties: {
+                      issue: { type: "string", description: "The exact issue text from the detected issues list" },
+                      suggestion: { type: "string", description: "Specific, actionable fix for this issue. Include exact copy/code when possible." },
+                      priority: { type: "string", enum: ["high", "medium", "low"], description: "Impact priority" },
+                    },
+                    required: ["issue", "suggestion", "priority"],
+                    additionalProperties: false,
+                  },
+                },
               },
-              required: ["suggestedTitle", "suggestedDescription", "suggestedH1", "checklist"],
+              required: ["suggestedTitle", "suggestedDescription", "suggestedH1", "checklist", "issueSuggestions"],
               additionalProperties: false,
             },
           },
@@ -144,6 +158,7 @@ CRITICAL RULE — TruMove Inc. is a LONG DISTANCE / INTERSTATE moving broker. Th
     suggestedDescription: result.suggestedDescription,
     suggestedH1: result.suggestedH1,
     aiChecklist: result.checklist || [],
+    issueSuggestions: result.issueSuggestions || [],
   };
 }
 
