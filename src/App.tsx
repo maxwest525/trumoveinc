@@ -143,7 +143,12 @@ const App = () => (
             <Route path="/leaderboard" element={<Leaderboard />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/set-password" element={<SetPassword />} />
-            <Route path="/marketing/dashboard" element={<GrowthDashboard />} />
+            <Route path="/marketing/dashboard" element={<MarketingDashboard />} />
+            <Route path="/marketing/seo" element={<MarketingSEO />} />
+            <Route path="/marketing/ads" element={<MarketingAds />} />
+            <Route path="/marketing/website" element={<MarketingWebsite />} />
+            <Route path="/marketing/tasks" element={<MarketingTasks />} />
+            <Route path="/marketing/settings" element={<MarketingSettings />} />
             <Route path="/marketing/campaigns" element={<GrowthCampaigns />} />
             <Route path="/marketing/integrations" element={<GrowthIntegrations />} />
             <Route path="/marketing/landing-pages" element={<GrowthLandingPages />} />
