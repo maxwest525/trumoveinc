@@ -23,6 +23,7 @@ const NAV_ITEMS = [
 interface DispatchShellProps {
   children: ReactNode;
   breadcrumb?: string;
+  breadcrumbs?: BreadcrumbSegment[];
 }
 
 export default function DispatchShell({ children, breadcrumb = "" }: DispatchShellProps) {
