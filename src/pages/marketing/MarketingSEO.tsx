@@ -35,6 +35,7 @@ export default function MarketingSEO() {
   const [discoveredUrls, setDiscoveredUrls] = useState<string[]>([]);
   const [auditPages, setAuditPages] = useState<AuditPage[]>([]);
   const [discovering, setDiscovering] = useState(false);
+  const [discoverySource, setDiscoverySource] = useState<string | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
   const [expandedUrl, setExpandedUrl] = useState<string | null>(null);
   const [analyzeProgress, setAnalyzeProgress] = useState({ done: 0, total: 0 });
