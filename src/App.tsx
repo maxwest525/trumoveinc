@@ -137,6 +137,7 @@ const App = () => (
             <Route path="/set-password" element={<SetPassword />} />
             <Route path="/marketing/dashboard" element={<Navigate to="/marketing/templates" replace />} />
             <Route path="/marketing/templates" element={<MarketingTemplates />} />
+            <Route path="/marketing/seo" element={<MarketingSEO />} />
             <Route path="/accounting/dashboard" element={<AccountingDashboard />} />
             
             <Route path="/agent/incoming" element={<AgentIncomingLeads />} />
