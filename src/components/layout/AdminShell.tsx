@@ -154,7 +154,6 @@ export default function AdminShell({ children, breadcrumb = "", breadcrumbs }: A
               }`}
             >
               <MessageSquare className="w-4 h-4" />
-              <span className="absolute top-0.5 right-0.5 w-1.5 h-1.5 rounded-full bg-primary" />
             </Link>
             <Popover open={notifOpen} onOpenChange={setNotifOpen}>
               <PopoverTrigger asChild>
