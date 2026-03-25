@@ -157,7 +157,25 @@ Deno.serve(async (req) => {
       const baseUrl = url || "https://trumoveinc.com";
       console.log("Discovering URLs for:", baseUrl);
 
-      let discoveredUrls: string[] = [];
+      // Known pages for trumoveinc.com (ensures we always audit these)
+      const knownPages: string[] = [
+        "https://trumoveinc.com",
+        "https://trumoveinc.com/online-estimate",
+        "https://trumoveinc.com/scan-room",
+        "https://trumoveinc.com/auto-transport",
+        "https://trumoveinc.com/track",
+        "https://trumoveinc.com/vetting",
+        "https://trumoveinc.com/customer-service",
+        "https://trumoveinc.com/book",
+        "https://trumoveinc.com/about",
+        "https://trumoveinc.com/faq",
+        "https://trumoveinc.com/privacy",
+        "https://trumoveinc.com/terms",
+        "https://trumoveinc.com/property-lookup",
+        "https://trumoveinc.com/classic",
+      ];
+
+      let discoveredUrls: string[] = [...knownPages];
 
       // Step 1: Try sitemap.xml first (direct fetch, no Firecrawl credits)
       const sitemapCandidates = [
