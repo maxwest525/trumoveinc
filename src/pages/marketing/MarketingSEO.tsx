@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import MarketingShell from "@/components/layout/MarketingShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,9 +14,9 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import AuditPageDetail, { type PageDecisions } from "@/components/seo/AuditPageDetail";
 
 interface AuditPage {
-  id?: string;
   url: string;
   fetchedTitle: string | null;
   fetchedDescription: string | null;
@@ -27,18 +27,25 @@ interface AuditPage {
   suggestedDescription: string | null;
   suggestedH1: string | null;
   aiChecklist: string[];
-  status: "pending" | "approved" | "exported";
 }
+
+const defaultDecisions = (): PageDecisions => ({
+  title: { status: "pending" },
+  description: { status: "pending" },
+  h1: { status: "pending" },
+});
 
 export default function MarketingSEO() {
   const [singleUrl, setSingleUrl] = useState("");
   const [discoveredUrls, setDiscoveredUrls] = useState<string[]>([]);
   const [auditPages, setAuditPages] = useState<AuditPage[]>([]);
+  const [decisions, setDecisions] = useState<Record<string, PageDecisions>>({});
   const [discovering, setDiscovering] = useState(false);
   const [discoverySource, setDiscoverySource] = useState<string | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
   const [expandedUrl, setExpandedUrl] = useState<string | null>(null);
   const [analyzeProgress, setAnalyzeProgress] = useState({ done: 0, total: 0 });
+  const [regeneratingUrl, setRegeneratingUrl] = useState<string | null>(null);
 
   const handleDiscover = async () => {
     setDiscovering(true);
@@ -65,7 +72,9 @@ export default function MarketingSEO() {
   const analyzeUrls = async (urls: string[]) => {
     setAnalyzing(true);
     setAuditPages([]);
+    setDecisions({});
     const allResults: AuditPage[] = [];
+    const allDecisions: Record<string, PageDecisions> = {};
     const batchSize = 5;
     const total = urls.length;
     setAnalyzeProgress({ done: 0, total });
@@ -81,22 +90,25 @@ export default function MarketingSEO() {
           ...r,
           issues: r.issues || [],
           aiChecklist: r.aiChecklist || [],
-          status: "pending" as const,
         }));
+        results.forEach((r: AuditPage) => { allDecisions[r.url] = defaultDecisions(); });
         allResults.push(...results);
         setAuditPages([...allResults]);
+        setDecisions({ ...allDecisions });
         setAnalyzeProgress({ done: Math.min(i + batchSize, total), total });
       } catch (e: any) {
         console.error("Batch error:", e);
-        batch.forEach((u) =>
+        batch.forEach((u) => {
           allResults.push({
             url: u, fetchedTitle: null, fetchedDescription: null, fetchedH1: null,
             fetchedCanonical: null, issues: [`Analysis failed: ${e.message}`],
             suggestedTitle: null, suggestedDescription: null, suggestedH1: null,
-            aiChecklist: [], status: "pending",
-          })
-        );
+            aiChecklist: [],
+          });
+          allDecisions[u] = defaultDecisions();
+        });
         setAuditPages([...allResults]);
+        setDecisions({ ...allDecisions });
       }
     }
 
@@ -135,46 +147,88 @@ export default function MarketingSEO() {
     await analyzeUrls(discoveredUrls);
   };
 
-  const handleApprove = async (url: string) => {
-    setAuditPages((prev) =>
-      prev.map((p) => (p.url === url ? { ...p, status: "approved" } : p))
-    );
+  const handleDecisionChange = (url: string, d: PageDecisions) => {
+    setDecisions((prev) => ({ ...prev, [url]: d }));
+    // Save approved/edited to DB
+    const updates: any = {};
+    if (d.title.status === "approved") updates.suggested_title = auditPages.find(p => p.url === url)?.suggestedTitle;
+    if (d.title.status === "edited") updates.suggested_title = d.title.editedValue;
+    if (d.description.status === "approved") updates.suggested_description = auditPages.find(p => p.url === url)?.suggestedDescription;
+    if (d.description.status === "edited") updates.suggested_description = d.description.editedValue;
+    if (d.h1.status === "approved") updates.suggested_h1 = auditPages.find(p => p.url === url)?.suggestedH1;
+    if (d.h1.status === "edited") updates.suggested_h1 = d.h1.editedValue;
+
+    const anyApproved = ["approved", "edited"].includes(d.title.status) ||
+      ["approved", "edited"].includes(d.description.status) ||
+      ["approved", "edited"].includes(d.h1.status);
+    if (anyApproved) updates.status = "approved";
+
+    if (Object.keys(updates).length > 0) {
+      supabase.from("seo_audit_pages" as any).update(updates as any).eq("url", url).then();
+    }
+  };
+
+  const handleRegenerate = async (url: string) => {
+    setRegeneratingUrl(url);
     try {
-      await supabase
-        .from("seo_audit_pages" as any)
-        .update({ status: "approved" } as any)
-        .eq("url", url);
-      toast.success("Suggestion approved");
-    } catch {}
+      const { data, error } = await supabase.functions.invoke("seo-audit", {
+        body: { action: "analyze", urls: [url] },
+      });
+      if (error) throw error;
+      const result = data?.results?.[0];
+      if (result) {
+        setAuditPages((prev) => prev.map((p) =>
+          p.url === url ? { ...p, suggestedTitle: result.suggestedTitle, suggestedDescription: result.suggestedDescription, suggestedH1: result.suggestedH1, aiChecklist: result.aiChecklist || [] } : p
+        ));
+        setDecisions((prev) => ({ ...prev, [url]: defaultDecisions() }));
+        toast.success("New suggestions generated");
+      }
+    } catch (e: any) {
+      toast.error(e.message || "Regeneration failed");
+    } finally {
+      setRegeneratingUrl(null);
+    }
   };
 
   const handleExportCSV = () => {
-    const approved = auditPages.filter((p) => p.status === "approved");
-    if (!approved.length) {
-      toast.error("Approve at least one suggestion first");
-      return;
-    }
-    const header = "URL,Current Title,Suggested Title,Current Description,Suggested Description,Current H1,Suggested H1,Issues\n";
-    const rows = approved
-      .map((p) =>
-        [
-          `"${p.url}"`,
-          `"${(p.fetchedTitle || "").replace(/"/g, '""')}"`,
-          `"${(p.suggestedTitle || "").replace(/"/g, '""')}"`,
-          `"${(p.fetchedDescription || "").replace(/"/g, '""')}"`,
-          `"${(p.suggestedDescription || "").replace(/"/g, '""')}"`,
-          `"${(p.fetchedH1 || "").replace(/"/g, '""')}"`,
-          `"${(p.suggestedH1 || "").replace(/"/g, '""')}"`,
-          `"${(p.issues || []).join("; ").replace(/"/g, '""')}"`,
-        ].join(",")
-      )
-      .join("\n");
-    const blob = new Blob([header + rows], { type: "text/csv" });
+    const rows: string[] = [];
+    auditPages.forEach((p) => {
+      const d = decisions[p.url];
+      if (!d) return;
+      const titleVal = d.title.status === "edited" ? d.title.editedValue : d.title.status === "approved" ? p.suggestedTitle : null;
+      const descVal = d.description.status === "edited" ? d.description.editedValue : d.description.status === "approved" ? p.suggestedDescription : null;
+      const h1Val = d.h1.status === "edited" ? d.h1.editedValue : d.h1.status === "approved" ? p.suggestedH1 : null;
+      if (!titleVal && !descVal && !h1Val) return;
+      rows.push([
+        `"${p.url}"`,
+        `"${(p.fetchedTitle || "").replace(/"/g, '""')}"`,
+        `"${(titleVal || "").replace(/"/g, '""')}"`,
+        `"${d.title.status}"`,
+        `"${(p.fetchedDescription || "").replace(/"/g, '""')}"`,
+        `"${(descVal || "").replace(/"/g, '""')}"`,
+        `"${d.description.status}"`,
+        `"${(p.fetchedH1 || "").replace(/"/g, '""')}"`,
+        `"${(h1Val || "").replace(/"/g, '""')}"`,
+        `"${d.h1.status}"`,
+      ].join(","));
+    });
+    if (!rows.length) return toast.error("Approve or edit at least one field first");
+    const header = "URL,Current Title,New Title,Title Status,Current Description,New Description,Desc Status,Current H1,New H1,H1 Status\n";
+    const blob = new Blob([header + rows.join("\n")], { type: "text/csv" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
     a.download = `seo-audit-${new Date().toISOString().slice(0, 10)}.csv`;
     a.click();
     toast.success("CSV exported");
+  };
+
+  const getPageStatus = (url: string) => {
+    const d = decisions[url];
+    if (!d) return "pending";
+    const statuses = [d.title.status, d.description.status, d.h1.status];
+    if (statuses.every((s) => s === "ignored")) return "ignored";
+    if (statuses.some((s) => s === "approved" || s === "edited")) return "actioned";
+    return "pending";
   };
 
   const issueCount = (p: AuditPage) => p.issues?.length || 0;
@@ -184,10 +238,15 @@ export default function MarketingSEO() {
     const ok = len >= min && len <= max;
     return (
       <Badge variant={ok ? "default" : "secondary"} className="text-[10px] font-normal">
-        {len} chars {ok ? "✓" : `(${min}–${max})`}
+        {len} {ok ? "✓" : `(${min}–${max})`}
       </Badge>
     );
   };
+
+  const hasExportable = auditPages.some((p) => {
+    const s = getPageStatus(p.url);
+    return s === "actioned";
+  });
 
   return (
     <MarketingShell breadcrumbs={[{ label: "SEO Audit" }]}>
@@ -208,7 +267,6 @@ export default function MarketingSEO() {
             <CardDescription className="text-xs">Crawl the full site or audit a single page.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Crawl site */}
             <div className="flex flex-wrap gap-2">
               <Button onClick={handleDiscover} disabled={discovering || analyzing} variant="default" size="sm">
                 {discovering ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <ScanSearch className="w-3 h-3 mr-1" />}
@@ -220,14 +278,13 @@ export default function MarketingSEO() {
                   Analyze {discoveredUrls.length} pages
                 </Button>
               )}
-              {auditPages.some((p) => p.status === "approved") && (
+              {hasExportable && (
                 <Button onClick={handleExportCSV} variant="outline" size="sm">
                   <Download className="w-3 h-3 mr-1" /> Export Approved (CSV)
                 </Button>
               )}
             </div>
 
-            {/* Discovered URLs preview */}
             {discoveredUrls.length > 0 && !auditPages.length && (
               <div className="space-y-1.5">
                 {discoverySource && (
@@ -248,7 +305,6 @@ export default function MarketingSEO() {
               </div>
             )}
 
-            {/* Single URL */}
             <div className="flex gap-2 items-end border-t border-border pt-4">
               <div className="flex-1 space-y-1.5">
                 <span className="text-xs font-medium text-foreground">Or audit a single page</span>
@@ -264,7 +320,6 @@ export default function MarketingSEO() {
               </Button>
             </div>
 
-            {/* Progress */}
             {analyzing && analyzeProgress.total > 0 && (
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <Loader2 className="w-3 h-3 animate-spin" />
@@ -274,7 +329,7 @@ export default function MarketingSEO() {
           </CardContent>
         </Card>
 
-        {/* Results Table */}
+        {/* Results */}
         {auditPages.length > 0 && (
           <Card>
             <CardHeader className="pb-3">
@@ -295,124 +350,55 @@ export default function MarketingSEO() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {auditPages.map((page) => (
-                    <Collapsible key={page.url} open={expandedUrl === page.url} onOpenChange={(open) => setExpandedUrl(open ? page.url : null)} asChild>
-                      <>
-                        <CollapsibleTrigger asChild>
-                          <TableRow className="cursor-pointer hover:bg-muted/50">
-                            <TableCell className="font-mono text-xs truncate max-w-[300px]">
-                              <div className="flex items-center gap-1">
-                                {expandedUrl === page.url ? <ChevronUp className="w-3 h-3 shrink-0" /> : <ChevronDown className="w-3 h-3 shrink-0" />}
-                                <span className="truncate">{page.url.replace("https://trumoveinc.com", "")|| "/"}</span>
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              {issueCount(page) > 0 ? (
-                                <Badge variant="destructive" className="text-[10px]">{issueCount(page)} issues</Badge>
-                              ) : (
-                                <Badge variant="default" className="text-[10px]">OK</Badge>
-                              )}
-                            </TableCell>
-                            <TableCell>{charBadge(page.fetchedTitle, 50, 60)}</TableCell>
-                            <TableCell>{charBadge(page.fetchedDescription, 150, 160)}</TableCell>
-                            <TableCell>
-                              <Badge
-                                variant={page.status === "approved" ? "default" : "secondary"}
-                                className="text-[10px]"
-                              >
-                                {page.status}
-                              </Badge>
-                            </TableCell>
-                          </TableRow>
-                        </CollapsibleTrigger>
-                        <CollapsibleContent asChild>
-                          <TableRow>
-                            <TableCell colSpan={5} className="bg-muted/30 p-4">
-                              <div className="space-y-4 max-w-3xl">
-                                {/* Issues */}
-                                {page.issues.length > 0 && (
-                                  <div className="space-y-1">
-                                    <span className="text-xs font-semibold text-destructive">Issues Detected</span>
-                                    <ul className="space-y-1">
-                                      {page.issues.map((issue, i) => (
-                                        <li key={i} className="flex items-start gap-1.5 text-xs text-foreground">
-                                          <AlertCircle className="w-3 h-3 text-destructive mt-0.5 shrink-0" />
-                                          {issue}
-                                        </li>
-                                      ))}
-                                    </ul>
-                                  </div>
-                                )}
-
-                                {/* Current vs Suggested */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                  <div className="space-y-2">
-                                    <span className="text-xs font-semibold text-muted-foreground">Current</span>
-                                    <div className="space-y-1 text-xs">
-                                      <div><span className="font-medium">Title:</span> {page.fetchedTitle || <span className="text-destructive">Missing</span>}</div>
-                                      <div><span className="font-medium">Description:</span> {page.fetchedDescription || <span className="text-destructive">Missing</span>}</div>
-                                      <div><span className="font-medium">H1:</span> {page.fetchedH1 || <span className="text-destructive">Missing</span>}</div>
-                                      <div><span className="font-medium">Canonical:</span> {page.fetchedCanonical || <span className="text-destructive">Missing</span>}</div>
-                                    </div>
-                                  </div>
-                                  {page.suggestedTitle && (
-                                    <div className="space-y-2">
-                                      <span className="text-xs font-semibold text-primary">AI Suggestions</span>
-                                      <div className="space-y-1 text-xs">
-                                        <div className="flex items-start gap-1">
-                                          <span className="font-medium shrink-0">Title:</span>
-                                          <span className="font-mono bg-primary/5 px-1.5 py-0.5 rounded">{page.suggestedTitle}</span>
-                                          {charBadge(page.suggestedTitle, 50, 60)}
-                                        </div>
-                                        <div className="flex items-start gap-1">
-                                          <span className="font-medium shrink-0">Description:</span>
-                                          <span className="font-mono bg-primary/5 px-1.5 py-0.5 rounded">{page.suggestedDescription}</span>
-                                          {charBadge(page.suggestedDescription, 150, 160)}
-                                        </div>
-                                        {page.suggestedH1 && (
-                                          <div><span className="font-medium">H1:</span> <span className="font-mono bg-primary/5 px-1.5 py-0.5 rounded">{page.suggestedH1}</span></div>
-                                        )}
-                                      </div>
-                                    </div>
-                                  )}
+                  {auditPages.map((page) => {
+                    const status = getPageStatus(page.url);
+                    return (
+                      <Collapsible key={page.url} open={expandedUrl === page.url} onOpenChange={(open) => setExpandedUrl(open ? page.url : null)} asChild>
+                        <>
+                          <CollapsibleTrigger asChild>
+                            <TableRow className="cursor-pointer hover:bg-muted/50">
+                              <TableCell className="font-mono text-xs truncate max-w-[300px]">
+                                <div className="flex items-center gap-1">
+                                  {expandedUrl === page.url ? <ChevronUp className="w-3 h-3 shrink-0" /> : <ChevronDown className="w-3 h-3 shrink-0" />}
+                                  <span className="truncate">{page.url.replace("https://trumoveinc.com", "") || "/"}</span>
                                 </div>
-
-                                {/* Checklist */}
-                                {page.aiChecklist.length > 0 && (
-                                  <div className="space-y-1">
-                                    <span className="text-xs font-semibold text-foreground">Fix-First Checklist</span>
-                                    <ul className="space-y-1">
-                                      {page.aiChecklist.map((item, i) => (
-                                        <li key={i} className="flex items-start gap-1.5 text-xs text-foreground">
-                                          <CheckCircle2 className="w-3 h-3 text-primary mt-0.5 shrink-0" />
-                                          {item}
-                                        </li>
-                                      ))}
-                                    </ul>
-                                  </div>
+                              </TableCell>
+                              <TableCell>
+                                {issueCount(page) > 0 ? (
+                                  <Badge variant="destructive" className="text-[10px]">{issueCount(page)}</Badge>
+                                ) : (
+                                  <Badge variant="default" className="text-[10px]">OK</Badge>
                                 )}
-
-                                {/* Approve */}
-                                <div className="flex gap-2 pt-1">
-                                  {page.status !== "approved" && page.suggestedTitle && (
-                                    <Button size="sm" onClick={() => handleApprove(page.url)}>
-                                      <CheckCircle2 className="w-3 h-3 mr-1" /> Approve Suggestions
-                                    </Button>
-                                  )}
-                                  {page.status === "approved" && (
-                                    <div className="flex items-center gap-1.5 text-xs text-primary">
-                                      <CheckCircle2 className="w-3.5 h-3.5" />
-                                      Approved — included in CSV export
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                            </TableCell>
-                          </TableRow>
-                        </CollapsibleContent>
-                      </>
-                    </Collapsible>
-                  ))}
+                              </TableCell>
+                              <TableCell>{charBadge(page.fetchedTitle, 50, 60)}</TableCell>
+                              <TableCell>{charBadge(page.fetchedDescription, 150, 160)}</TableCell>
+                              <TableCell>
+                                <Badge
+                                  variant={status === "actioned" ? "default" : status === "ignored" ? "outline" : "secondary"}
+                                  className="text-[10px]"
+                                >
+                                  {status === "actioned" ? "✓ Reviewed" : status}
+                                </Badge>
+                              </TableCell>
+                            </TableRow>
+                          </CollapsibleTrigger>
+                          <CollapsibleContent asChild>
+                            <TableRow>
+                              <TableCell colSpan={5} className="bg-muted/20 p-5">
+                                <AuditPageDetail
+                                  page={page}
+                                  decisions={decisions[page.url] || defaultDecisions()}
+                                  onDecisionChange={handleDecisionChange}
+                                  onRegenerate={handleRegenerate}
+                                  regenerating={regeneratingUrl === page.url}
+                                />
+                              </TableCell>
+                            </TableRow>
+                          </CollapsibleContent>
+                        </>
+                      </Collapsible>
+                    );
+                  })}
                 </TableBody>
               </Table>
             </CardContent>
@@ -450,16 +436,14 @@ export default function MarketingSEO() {
           </Card>
         </div>
 
-        {/* CMS integration note */}
         <Card className="border-dashed border-primary/20">
           <CardContent className="p-4 flex items-start gap-2">
             <RefreshCw className="w-4 h-4 text-primary mt-0.5 shrink-0" />
             <div>
               <p className="text-xs font-medium text-foreground">CMS Integration</p>
               <p className="text-[11px] text-muted-foreground">
-                Since trumoveinc.com is built with Lovable, approved changes are saved to the database.
-                Use <strong>Export Approved (CSV)</strong> to download and apply them, or a future API integration
-                can push meta tags directly to the site's page configuration.
+                Approved and edited changes are saved to the database.
+                Use <strong>Export Approved (CSV)</strong> to download, or a future API can push meta tags directly.
               </p>
             </div>
           </CardContent>
