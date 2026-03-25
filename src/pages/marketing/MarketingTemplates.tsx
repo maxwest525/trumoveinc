@@ -591,29 +591,6 @@ export default function MarketingTemplates() {
           </TabsContent>
         </Tabs>
 
-        {/* Merge Tags Reference Card */}
-        <div className="bg-card rounded-xl border border-border">
-          <div className="flex items-center gap-2 px-4 py-3 border-b border-border">
-            <Hash className="w-4 h-4 text-primary" />
-            <h2 className="text-xs font-bold text-foreground">Merge Tag Reference</h2>
-            <span className="text-[9px] text-muted-foreground">— these are replaced with real customer data when sending</span>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-px bg-border">
-            {MERGE_TAGS.map((mt) => {
-              const Icon = mt.icon;
-              return (
-                <div key={mt.tag} className="bg-card px-3 py-2.5">
-                  <div className="flex items-center gap-1.5 mb-0.5">
-                    <Icon className="w-3 h-3 text-muted-foreground" />
-                    <span className="text-[11px] font-medium text-foreground">{mt.label}</span>
-                  </div>
-                  <code className="text-[10px] font-mono text-primary bg-primary/5 px-1.5 py-0.5 rounded">{mt.tag}</code>
-                  <p className="text-[9px] text-muted-foreground mt-0.5">{mt.desc}</p>
-                </div>
-              );
-            })}
-          </div>
-        </div>
       </div>
     </MarketingShell>
   );
