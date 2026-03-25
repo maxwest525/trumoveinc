@@ -279,6 +279,16 @@ export default function AgentInventory() {
             <p className="text-xs text-muted-foreground mt-0.5">Add items manually or import from website estimate</p>
           </div>
           <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-1.5"
+              onClick={handleEmailInventory}
+              disabled={isSendingEmail || inventory.length === 0}
+            >
+              {isSendingEmail ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Mail className="w-3.5 h-3.5" />}
+              {isSendingEmail ? "Sending..." : "Email Inventory to Customer"}
+            </Button>
             <Button variant="ghost" size="sm" onClick={handleSkip}>Skip for Now</Button>
             <Button size="sm" className="gap-1.5" onClick={handleSave} disabled={isSaving}>
               {isSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
