@@ -490,6 +490,24 @@ export default function MarketingTemplates() {
 
   // Resolve merge tags for preview
   const previewResolve = (text: string) => {
+    const sampleInventoryTable = `
+<div style="margin: 0 0 12px; border: 1px solid #f0f0f0; border-radius: 8px; overflow: hidden;">
+  <div style="font-size: 12px; font-weight: 600; color: #374151; padding: 10px 14px; background: #f8fafc; border-bottom: 1px solid #f0f0f0;">Living Room</div>
+  <table style="width: 100%; border-collapse: collapse;">
+    <tr><td style="font-size: 10px; font-weight: 600; color: #9ca3af; padding: 8px 14px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #f0f0f0;">Item</td><td style="font-size: 10px; font-weight: 600; color: #9ca3af; padding: 8px 14px; text-align: center; border-bottom: 1px solid #f0f0f0;">Qty</td><td style="font-size: 10px; font-weight: 600; color: #9ca3af; padding: 8px 14px; text-align: right; border-bottom: 1px solid #f0f0f0;">Cu Ft</td><td style="font-size: 10px; font-weight: 600; color: #9ca3af; padding: 8px 14px; text-align: right; border-bottom: 1px solid #f0f0f0;">Lbs</td></tr>
+    <tr><td style="font-size: 13px; color: #374151; padding: 8px 14px;">3-Seat Sofa</td><td style="font-size: 13px; color: #374151; padding: 8px 14px; text-align: center;">1</td><td style="font-size: 13px; color: #374151; padding: 8px 14px; text-align: right;">50</td><td style="font-size: 13px; color: #374151; padding: 8px 14px; text-align: right;">120</td></tr>
+    <tr><td style="font-size: 13px; color: #374151; padding: 8px 14px;">Coffee Table</td><td style="font-size: 13px; color: #374151; padding: 8px 14px; text-align: center;">1</td><td style="font-size: 13px; color: #374151; padding: 8px 14px; text-align: right;">15</td><td style="font-size: 13px; color: #374151; padding: 8px 14px; text-align: right;">40</td></tr>
+  </table>
+</div>
+<div style="margin: 0 0 12px; border: 1px solid #f0f0f0; border-radius: 8px; overflow: hidden;">
+  <div style="font-size: 12px; font-weight: 600; color: #374151; padding: 10px 14px; background: #f8fafc; border-bottom: 1px solid #f0f0f0;">Bedroom</div>
+  <table style="width: 100%; border-collapse: collapse;">
+    <tr><td style="font-size: 10px; font-weight: 600; color: #9ca3af; padding: 8px 14px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #f0f0f0;">Item</td><td style="font-size: 10px; font-weight: 600; color: #9ca3af; padding: 8px 14px; text-align: center; border-bottom: 1px solid #f0f0f0;">Qty</td><td style="font-size: 10px; font-weight: 600; color: #9ca3af; padding: 8px 14px; text-align: right; border-bottom: 1px solid #f0f0f0;">Cu Ft</td><td style="font-size: 10px; font-weight: 600; color: #9ca3af; padding: 8px 14px; text-align: right; border-bottom: 1px solid #f0f0f0;">Lbs</td></tr>
+    <tr><td style="font-size: 13px; color: #374151; padding: 8px 14px;">Queen Bed Frame</td><td style="font-size: 13px; color: #374151; padding: 8px 14px; text-align: center;">1</td><td style="font-size: 13px; color: #374151; padding: 8px 14px; text-align: right;">55</td><td style="font-size: 13px; color: #374151; padding: 8px 14px; text-align: right;">100</td></tr>
+    <tr><td style="font-size: 13px; color: #374151; padding: 8px 14px;">Dresser (Large)</td><td style="font-size: 13px; color: #374151; padding: 8px 14px; text-align: center;">1</td><td style="font-size: 13px; color: #374151; padding: 8px 14px; text-align: right;">35</td><td style="font-size: 13px; color: #374151; padding: 8px 14px; text-align: right;">90</td></tr>
+  </table>
+</div>`;
+
     return text
       .replace(/\{customer_name\}/g, "Jane Smith")
       .replace(/\{first_name\}/g, "Jane")
@@ -504,7 +522,12 @@ export default function MarketingTemplates() {
       .replace(/\{tracking_link\}/g, "https://trumoveinc.com/track/TM-2026-0042")
       .replace(/\{eta\}/g, "2:30 PM")
       .replace(/\{agent_name\}/g, "Mike Wilson")
-      .replace(/\{company_name\}/g, "TruMove Inc");
+      .replace(/\{company_name\}/g, "TruMove Inc")
+      .replace(/\{inventory_table\}/g, sampleInventoryTable)
+      .replace(/\{total_cuft\}/g, "680")
+      .replace(/\{total_weight\}/g, "5,100")
+      .replace(/\{total_items\}/g, "42")
+      .replace(/\{price_per_cuft\}/g, "$7.50");
   };
 
   return (
