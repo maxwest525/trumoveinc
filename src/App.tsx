@@ -39,7 +39,12 @@ import LeadsPerformance from "./pages/LeadsPerformance";
 import KpiDashboard from "./pages/KpiDashboard";
 import ResetPassword from "./pages/ResetPassword";
 import SetPassword from "./pages/SetPassword";
-import GrowthDashboard from "./pages/growth-engine/GrowthDashboard";
+import MarketingDashboard from "./pages/marketing/MarketingDashboard";
+import MarketingSEO from "./pages/marketing/MarketingSEO";
+import MarketingAds from "./pages/marketing/MarketingAds";
+import MarketingWebsite from "./pages/marketing/MarketingWebsite";
+import MarketingTasks from "./pages/marketing/MarketingTasks";
+import MarketingSettings from "./pages/marketing/MarketingSettings";
 import GrowthCampaigns from "./pages/growth-engine/GrowthCampaigns";
 import GrowthIntegrations from "./pages/growth-engine/GrowthIntegrations";
 import GrowthLandingPages from "./pages/growth-engine/GrowthLandingPages";
@@ -138,7 +143,12 @@ const App = () => (
             <Route path="/leaderboard" element={<Leaderboard />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/set-password" element={<SetPassword />} />
-            <Route path="/marketing/dashboard" element={<GrowthDashboard />} />
+            <Route path="/marketing/dashboard" element={<MarketingDashboard />} />
+            <Route path="/marketing/seo" element={<MarketingSEO />} />
+            <Route path="/marketing/ads" element={<MarketingAds />} />
+            <Route path="/marketing/website" element={<MarketingWebsite />} />
+            <Route path="/marketing/tasks" element={<MarketingTasks />} />
+            <Route path="/marketing/settings" element={<MarketingSettings />} />
             <Route path="/marketing/campaigns" element={<GrowthCampaigns />} />
             <Route path="/marketing/integrations" element={<GrowthIntegrations />} />
             <Route path="/marketing/landing-pages" element={<GrowthLandingPages />} />

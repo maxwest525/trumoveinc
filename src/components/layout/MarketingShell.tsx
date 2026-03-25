@@ -1,11 +1,11 @@
 import { useState, useEffect, type ReactNode } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
-  Home, Sun, Moon, Bell, Sparkles, LineChart, LayoutDashboard,
-  Gauge, Menu, X,
+  Home, Bell, Menu, X,
+  LayoutDashboard, Search, Megaphone, Globe, ListTodo, Settings,
+  Bot,
 } from "lucide-react";
 import { toast } from "sonner";
-import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 import { setPortalContext } from "@/hooks/usePortalContext";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -14,8 +14,11 @@ import logoImg from "@/assets/logo.png";
 
 const NAV_ITEMS = [
   { label: "Dashboard", icon: LayoutDashboard, href: "/marketing/dashboard" },
-  { label: "My KPIs", icon: Gauge, href: "/kpi" },
-  { label: "Analytics Setup", icon: LineChart },
+  { label: "SEO & GEO Agent", icon: Search, href: "/marketing/seo" },
+  { label: "Paid Ads Agent", icon: Megaphone, href: "/marketing/ads" },
+  { label: "Website Agent", icon: Globe, href: "/marketing/website" },
+  { label: "Tasks", icon: ListTodo, href: "/marketing/tasks" },
+  { label: "Settings", icon: Settings, href: "/marketing/settings" },
 ];
 
 interface MarketingShellProps {
@@ -24,7 +27,6 @@ interface MarketingShellProps {
 }
 
 export default function MarketingShell({ children, breadcrumb = "" }: MarketingShellProps) {
-  const { theme, setTheme } = useTheme();
   const location = useLocation();
   const isMobile = useIsMobile();
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -40,9 +42,14 @@ export default function MarketingShell({ children, breadcrumb = "" }: MarketingS
 
   const sidebarContent = (
     <>
-      <div className="px-4 py-4 flex items-center gap-2">
-        <img src={logoImg} alt="TruMove" className="h-6" />
-        <span className="text-[10px] text-muted-foreground ml-1">Marketing</span>
+      <div className="px-4 py-4 flex items-center gap-2.5">
+        <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+          <Bot className="w-4 h-4 text-primary" />
+        </div>
+        <div className="flex flex-col">
+          <span className="text-sm font-bold text-foreground tracking-tight leading-none">Mega</span>
+          <span className="text-[9px] text-muted-foreground leading-none mt-0.5">AI Marketing Agents</span>
+        </div>
         {isMobile && (
           <button onClick={() => setSidebarOpen(false)} className="ml-auto p-1 rounded-lg hover:bg-muted">
             <X className="w-4 h-4 text-muted-foreground" />
@@ -53,35 +60,48 @@ export default function MarketingShell({ children, breadcrumb = "" }: MarketingS
       <nav className="flex-1 px-2 py-2 space-y-0.5">
         {NAV_ITEMS.map((item) => {
           const Icon = item.icon;
-          if (item.href) {
-            const active = location.pathname === item.href;
-            return (
-              <Link
-                key={item.label}
-                to={item.href}
-                className={cn(
-                  "flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors",
-                  active ? "bg-foreground text-background" : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                )}
-              >
-                <Icon className="w-4 h-4" />
-                <span>{item.label}</span>
-              </Link>
-            );
-          }
+          const active = location.pathname === item.href;
           return (
-            <button
+            <Link
               key={item.label}
-              onClick={() => toast.info(`${item.label} coming soon`)}
-              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+              to={item.href}
+              className={cn(
+                "flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors",
+                active
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+              )}
             >
               <Icon className="w-4 h-4" />
               <span>{item.label}</span>
-            </button>
+            </Link>
           );
         })}
       </nav>
 
+      {/* Agent status footer */}
+      <div className="px-3 py-3 border-t border-border">
+        <div className="space-y-1.5">
+          {[
+            { label: "SEO Agent", status: "active" },
+            { label: "Ads Agent", status: "active" },
+            { label: "Website Agent", status: "idle" },
+          ].map((a) => (
+            <div key={a.label} className="flex items-center justify-between text-[10px]">
+              <span className="text-muted-foreground">{a.label}</span>
+              <span className="flex items-center gap-1">
+                <span className={cn(
+                  "w-1.5 h-1.5 rounded-full",
+                  a.status === "active" ? "bg-emerald-500" : "bg-muted-foreground/40"
+                )} />
+                <span className={cn(
+                  a.status === "active" ? "text-emerald-600" : "text-muted-foreground"
+                )}>{a.status === "active" ? "Active" : "Idle"}</span>
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
     </>
   );
 
