@@ -19448,6 +19448,11 @@
   animation-delay: calc(var(--stagger-index, 0) * 0.1s);
 }
 
+.tru-trust-compact-badge.instant {
+  opacity: 1 !important;
+  animation: none !important;
+}
+
 /* VALUE CARD CAROUSEL STYLES - Individual Pill Cards (Legacy - keeping for backwards compat) */
 .tru-feature-carousel-fullwidth {
   width: 100%;
