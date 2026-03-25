@@ -19407,6 +19407,11 @@
   animation-delay: calc(var(--stagger-index, 0) * 0.1s);
 }
 
+.tru-trust-compact-stat.instant {
+  opacity: 1 !important;
+  animation: none !important;
+}
+
 .tru-trust-compact-stat svg {
   color: hsl(var(--primary));
 }
