@@ -26,7 +26,7 @@ interface DispatchShellProps {
   breadcrumbs?: BreadcrumbSegment[];
 }
 
-export default function DispatchShell({ children, breadcrumb = "" }: DispatchShellProps) {
+export default function DispatchShell({ children, breadcrumb = "", breadcrumbs }: DispatchShellProps) {
   const { theme, setTheme } = useTheme();
   const location = useLocation();
   const isMobile = useIsMobile();
