@@ -40,6 +40,7 @@ import KpiDashboard from "./pages/KpiDashboard";
 import ResetPassword from "./pages/ResetPassword";
 import SetPassword from "./pages/SetPassword";
 import MarketingTemplates from "./pages/marketing/MarketingTemplates";
+import MarketingSEO from "./pages/marketing/MarketingSEO";
 import AccountingDashboard from "./pages/AccountingDashboard";
 import AgentOperations from "./pages/AgentOperations";
 import AgentNewCustomer from "./pages/AgentNewCustomer";
