@@ -117,24 +117,32 @@ const EMAIL_STARTERS = [
 ];
 
 // ─── Branded blank starter for visual builder ───
-const TRUMOVE_LOGO_URL = "https://3d87f9a0-12f4-4e01-8410-d49a9b30353c.lovableproject.com/lovable-uploads/logo.png";
-
 const BLANK_BRANDED_BLOCKS: EmailBlock[] = [
+  {
+    id: "brand-spacer-top",
+    type: "spacer",
+    props: { height: 8 },
+  },
   {
     id: "brand-logo",
     type: "image",
     props: {
       src: "/images/logo-email.png",
       alt: "TruMove Inc",
-      width: 35,
+      width: 28,
       align: "center",
-      padding: 28,
+      padding: 20,
     },
   },
   {
-    id: "brand-divider-top",
+    id: "brand-accent-bar",
     type: "divider",
-    props: { color: "#16a34a", thickness: 2, padding: 4 },
+    props: { color: "#22c55e", thickness: 3, padding: 2 },
+  },
+  {
+    id: "brand-spacer-after-bar",
+    type: "spacer",
+    props: { height: 24 },
   },
   {
     id: "brand-heading",
@@ -143,19 +151,46 @@ const BLANK_BRANDED_BLOCKS: EmailBlock[] = [
       text: "Your Headline Here",
       bgColor: "#ffffff",
       textColor: "#0a0a0a",
-      fontSize: 26,
-      padding: 28,
+      fontSize: 28,
+      padding: 8,
       align: "center",
     },
+  },
+  {
+    id: "brand-subheading",
+    type: "text",
+    props: {
+      text: "A short supporting line goes here — set the tone for your message.",
+      fontSize: 15,
+      textColor: "#6b7280",
+      lineHeight: 1.5,
+      padding: 12,
+      align: "center",
+    },
+  },
+  {
+    id: "brand-spacer-mid",
+    type: "spacer",
+    props: { height: 12 },
+  },
+  {
+    id: "brand-divider-content",
+    type: "divider",
+    props: { color: "#f0f0f0", thickness: 1, padding: 4 },
+  },
+  {
+    id: "brand-spacer-mid2",
+    type: "spacer",
+    props: { height: 12 },
   },
   {
     id: "brand-body",
     type: "text",
     props: {
-      text: "Hi {first_name},\n\nWrite your message here. This is a clean starting point — customize the blocks, colors, and content to fit your campaign.",
+      text: "Hi {first_name},\n\nThis is your blank canvas. Replace this text with your message — whether it's a booking confirmation, a follow-up, or a special update.\n\nKeep it short, clear, and personal.",
       fontSize: 14,
-      textColor: "#444444",
-      lineHeight: 1.7,
+      textColor: "#374151",
+      lineHeight: 1.75,
       padding: 24,
       align: "left",
     },
@@ -164,35 +199,35 @@ const BLANK_BRANDED_BLOCKS: EmailBlock[] = [
     id: "brand-cta",
     type: "button",
     props: {
-      text: "Call to Action",
+      text: "Your Call to Action →",
       href: "{tracking_link}",
-      bgColor: "#16a34a",
+      bgColor: "#0a0a0a",
       textColor: "#ffffff",
-      borderRadius: 8,
+      borderRadius: 6,
       fontSize: 14,
-      padding: 24,
+      padding: 28,
       align: "center",
     },
   },
   {
-    id: "brand-spacer",
+    id: "brand-spacer-bottom",
     type: "spacer",
-    props: { height: 16 },
+    props: { height: 20 },
   },
   {
-    id: "brand-divider-bottom",
+    id: "brand-divider-footer",
     type: "divider",
-    props: { color: "#e5e7eb", thickness: 1, padding: 8 },
+    props: { color: "#e5e7eb", thickness: 1, padding: 4 },
   },
   {
     id: "brand-footer",
     type: "text",
     props: {
-      text: "TruMove Inc · Questions? Reply to this email or call (800) 555-MOVE",
+      text: "TruMove Inc\nQuestions? Reply to this email or call (800) 555-MOVE\n© 2026 TruMove Inc. All rights reserved.",
       fontSize: 11,
-      textColor: "#999999",
-      lineHeight: 1.5,
-      padding: 16,
+      textColor: "#9ca3af",
+      lineHeight: 1.6,
+      padding: 20,
       align: "center",
     },
   },
