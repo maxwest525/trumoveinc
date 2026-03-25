@@ -1,8 +1,8 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import {
   Type, Image, MousePointerClick, Minus, ArrowUpDown, Heading,
   Trash2, GripVertical, ChevronUp, ChevronDown, Copy, Plus,
-  AlignLeft, AlignCenter, AlignRight,
+  AlignLeft, AlignCenter, AlignRight, Undo2, Redo2, XCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
