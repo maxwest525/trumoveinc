@@ -28,6 +28,7 @@ const ADVANCED_ITEMS: { label: string; icon: typeof Target; badge?: number; href
 interface ManagerShellProps {
   children: ReactNode;
   breadcrumb?: string;
+  breadcrumbs?: BreadcrumbSegment[];
 }
 
 export default function ManagerShell({ children, breadcrumb = "" }: ManagerShellProps) {
