@@ -396,6 +396,43 @@ export default function MarketingSEO() {
     }
   };
 
+  const handlePublishAll = async () => {
+    // Build a merged decisions object with all accepted items set to published
+    let updatedDecisions = { ...decisions };
+    for (const item of acceptedItems) {
+      const d = updatedDecisions[item.url];
+      if (!d) continue;
+      if (item.isIssue) {
+        updatedDecisions[item.url] = { ...d, issues: { ...d.issues, [item.fieldKey]: { ...d.issues[item.fieldKey], status: "published" as const } } };
+      } else {
+        updatedDecisions[item.url] = { ...d, [item.fieldKey]: { ...d[item.fieldKey as "title" | "description" | "h1"], status: "published" as const } };
+      }
+    }
+    setDecisions(updatedDecisions);
+
+    // Now trigger seo_overrides upserts for each URL that has published fields
+    const affectedUrls = [...new Set(acceptedItems.map(i => i.url))];
+    for (const url of affectedUrls) {
+      const d = updatedDecisions[url];
+      const page = auditPages.find(p => p.url === url);
+      if (!d || !page) continue;
+
+      const finalTitle = d.title.status === "published" ? (d.title.editedValue || page.suggestedTitle) : null;
+      const finalDesc = d.description.status === "published" ? (d.description.editedValue || page.suggestedDescription) : null;
+
+      if (finalTitle || finalDesc) {
+        let rawPath = "/";
+        try { rawPath = new URL(url).pathname; } catch {}
+        const urlPath = rawPath === "/" ? "/site" : `/site${rawPath}`;
+        const override: Record<string, any> = { url_path: urlPath, updated_at: new Date().toISOString() };
+        if (finalTitle) override.title = finalTitle;
+        if (finalDesc) override.description = finalDesc;
+        await supabase.from("seo_overrides" as any).upsert(override as any, { onConflict: "url_path" });
+      }
+    }
+    toast.success(`Published ${acceptedItems.length} changes`);
+  };
+
   const handleSidebarRemove = (item: SidebarItem) => {
     const d = decisions[item.url];
     if (!d) return;
@@ -689,7 +726,7 @@ export default function MarketingSEO() {
                   Accepted ({acceptedItems.length})
                 </CardTitle>
                 {acceptedItems.length > 0 && (
-                  <Button variant="default" size="sm" className="h-6 text-[10px] px-2 gap-1" onClick={() => acceptedItems.forEach(handleSidebarPublish)}>
+                  <Button variant="default" size="sm" className="h-6 text-[10px] px-2 gap-1" onClick={handlePublishAll}>
                     <Sparkles className="w-3 h-3" /> Publish All
                   </Button>
                 )}
