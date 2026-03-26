@@ -354,28 +354,55 @@ export default function MarketingSEO() {
       ? pagesOk
       : [...pagesWithIssues, ...pagesOk];
 
-  // Collect published items for the sidebar
-  const publishedItems = auditPages.flatMap((page) => {
+  // Collect sidebar items grouped by status
+  type SidebarItem = { url: string; field: string; fieldKey: "title" | "description" | "h1" | string; value: string; status: FieldStatus; isIssue: boolean };
+  const sidebarItems: SidebarItem[] = auditPages.flatMap((page) => {
     const d = decisions[page.url];
     if (!d) return [];
-    const items: { url: string; field: string; value: string }[] = [];
-    if (d.title.status === "published") {
-      items.push({ url: page.url, field: "Title", value: d.title.editedValue || page.suggestedTitle || "" });
-    }
-    if (d.description.status === "published") {
-      items.push({ url: page.url, field: "Description", value: d.description.editedValue || page.suggestedDescription || "" });
-    }
-    if (d.h1.status === "published") {
-      items.push({ url: page.url, field: "H1", value: d.h1.editedValue || page.suggestedH1 || "" });
-    }
-    Object.entries(d.issues || {}).forEach(([key, fd]) => {
-      if (fd.status === "published") {
-        const matched = page.issueSuggestions?.find(s => s.issue === key);
-        items.push({ url: page.url, field: key, value: fd.editedValue || matched?.suggestion || "" });
+    const items: SidebarItem[] = [];
+    const fields: Array<{ key: "title" | "description" | "h1"; label: string; suggested: string | null }> = [
+      { key: "title", label: "Title", suggested: page.suggestedTitle },
+      { key: "description", label: "Description", suggested: page.suggestedDescription },
+      { key: "h1", label: "H1", suggested: page.suggestedH1 },
+    ];
+    fields.forEach(({ key, label, suggested }) => {
+      const fd = d[key];
+      if (["approved", "edited", "ignored", "published"].includes(fd.status)) {
+        items.push({ url: page.url, field: label, fieldKey: key, value: fd.editedValue || suggested || "", status: fd.status, isIssue: false });
+      }
+    });
+    Object.entries(d.issues || {}).forEach(([issueKey, fd]) => {
+      if (["approved", "edited", "ignored", "published"].includes(fd.status)) {
+        const matched = page.issueSuggestions?.find(s => s.issue === issueKey);
+        items.push({ url: page.url, field: issueKey, fieldKey: issueKey, value: fd.editedValue || matched?.suggestion || "", status: fd.status, isIssue: true });
       }
     });
     return items;
   });
+
+  const acceptedItems = sidebarItems.filter(i => i.status === "approved" || i.status === "edited");
+  const ignoredItems = sidebarItems.filter(i => i.status === "ignored");
+  const publishedSidebarItems = sidebarItems.filter(i => i.status === "published");
+
+  const handleSidebarPublish = (item: SidebarItem) => {
+    const d = decisions[item.url];
+    if (!d) return;
+    if (item.isIssue) {
+      handleDecisionChange(item.url, { ...d, issues: { ...d.issues, [item.fieldKey]: { ...d.issues[item.fieldKey], status: "published" } } });
+    } else {
+      handleDecisionChange(item.url, { ...d, [item.fieldKey]: { ...d[item.fieldKey as "title" | "description" | "h1"], status: "published" } });
+    }
+  };
+
+  const handleSidebarRemove = (item: SidebarItem) => {
+    const d = decisions[item.url];
+    if (!d) return;
+    if (item.isIssue) {
+      handleDecisionChange(item.url, { ...d, issues: { ...d.issues, [item.fieldKey]: { status: "pending" } } });
+    } else {
+      handleDecisionChange(item.url, { ...d, [item.fieldKey]: { status: "pending" } });
+    }
+  };
 
   return (
     <MarketingShell breadcrumbs={[{ label: "SEO Audit" }]}>
