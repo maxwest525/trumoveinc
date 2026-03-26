@@ -89,6 +89,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <ScrollToTop />
+          <SeoOverrideProvider>
           <Routes>
             {/* ── Root = CRM Portal Hub (always) ──────────────────── */}
             <Route path="/" element={<AgentLogin />} />
