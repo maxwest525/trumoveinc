@@ -19,6 +19,10 @@ project_id = "fsxoskcionoobxuepqeg"
     verify_jwt = false
   [functions.get-fmcsa-key]
     verify_jwt = false
+  [functions.gsc-auth]
+    verify_jwt = false
+  [functions.gsc-data]
+    verify_jwt = false
   [functions.handle-email-suppression]
     verify_jwt = false
   [functions.handle-email-unsubscribe]
