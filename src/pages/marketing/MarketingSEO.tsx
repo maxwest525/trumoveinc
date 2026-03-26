@@ -71,7 +71,7 @@ export default function MarketingSEO() {
   const [filterMode, setFilterMode] = useState<FilterMode>("all");
   const [expandedSidebarItem, setExpandedSidebarItem] = useState<SidebarItem | null>(null);
   const [activeTab, setActiveTab] = useState("phase1");
-  const [regeneratingAll, setRegeneratingAll] = useState(false);
+  const [gscConnected, setGscConnected] = useState(false);
   const { settings: complianceSettings, reload: reloadCompliance } = useSeoCompliance();
 
   // Phase statuses
