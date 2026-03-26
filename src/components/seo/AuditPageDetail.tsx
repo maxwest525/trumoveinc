@@ -193,14 +193,16 @@ function IssueSuggestionCard({
 
 /* ─── Meta field row (Title / Description / H1) ─── */
 function FieldRow({
-  label, current, suggested, charMin, charMax, decision, onUpdate, multiline,
+  label, current, suggested, charMin, charMax, decision, onUpdate, multiline, onRegenerateItem,
 }: {
   label: string; current: string | null; suggested: string | null;
   charMin: number; charMax: number; decision: FieldDecision;
   onUpdate: (d: FieldDecision) => void; multiline?: boolean;
+  onRegenerateItem?: () => Promise<void>;
 }) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(decision.editedValue || suggested || "");
+  const [regenerating, setRegenerating] = useState(false);
 
   const currentInfo = charInfo(current, charMin, charMax);
   const finalValue = decision.status === "edited" ? decision.editedValue : suggested;
@@ -210,6 +212,12 @@ function FieldRow({
   const handleIgnore = () => { onUpdate({ status: "ignored" }); setEditing(false); };
   const handleSaveEdit = () => { onUpdate({ status: "edited", editedValue: draft }); setEditing(false); };
   const handleStartEdit = () => { setDraft(decision.editedValue || suggested || current || ""); setEditing(true); };
+  const handleRegenSingle = async () => {
+    if (!onRegenerateItem) return;
+    setRegenerating(true);
+    await onRegenerateItem();
+    setRegenerating(false);
+  };
 
   if (decision.status === "ignored") {
     return (
