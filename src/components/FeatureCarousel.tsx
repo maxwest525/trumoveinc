@@ -53,19 +53,19 @@ const features: Feature[] = [
     title: "Shipment Tracking",
     desc: "Track your shipment in real-time with live updates and notifications.",
     image: previewPropertyLookup,
-    route: "/track",
+    route: "/site/track",
   },
   {
     title: "Smart Carrier Match",
     desc: "Our algorithm finds the best carrier for your route.",
     image: previewCarrierVetting,
-    route: "/vetting",
+    route: "/site/vetting",
   },
   {
     title: "TruMove Specialist",
     desc: "Live video consultation for personalized guidance.",
     image: trudyVideoCall,
-    route: "/book",
+    route: "/site/book",
   },
   {
     title: "FMCSA Verified",
