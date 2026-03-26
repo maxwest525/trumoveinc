@@ -704,9 +704,16 @@ export default function MarketingSEO() {
                                       <TableCell>{charBadge(page.fetchedTitle, 50, 60)}</TableCell>
                                       <TableCell>{charBadge(page.fetchedDescription, 150, 160)}</TableCell>
                                       <TableCell>
-                                        <Badge variant={status === "actioned" ? "default" : status === "ignored" ? "outline" : "secondary"} className="text-[10px]">
-                                          {status === "actioned" ? "✓ Reviewed" : status}
-                                        </Badge>
+                                        <div className="flex items-center gap-1 flex-wrap">
+                                          <Badge variant={status === "actioned" ? "default" : status === "ignored" ? "outline" : "secondary"} className="text-[10px]">
+                                            {status === "actioned" ? "✓ Reviewed" : status}
+                                          </Badge>
+                                          {violations.length > 0 && (
+                                            <Badge variant="destructive" className="text-[9px] h-4 gap-0.5">
+                                              <AlertTriangle className="w-2.5 h-2.5" /> {violations.length} violation{violations.length > 1 ? "s" : ""}
+                                            </Badge>
+                                          )}
+                                        </div>
                                       </TableCell>
                                     </TableRow>
                                   </CollapsibleTrigger>
