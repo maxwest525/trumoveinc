@@ -17,6 +17,12 @@ import {
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import AuditPageDetail, { type PageDecisions } from "@/components/seo/AuditPageDetail";
 
+interface IssueSuggestion {
+  issue: string;
+  suggestion: string;
+  priority: "high" | "medium" | "low";
+}
+
 interface AuditPage {
   url: string;
   fetchedTitle: string | null;
@@ -28,12 +34,14 @@ interface AuditPage {
   suggestedDescription: string | null;
   suggestedH1: string | null;
   aiChecklist: string[];
+  issueSuggestions: IssueSuggestion[];
 }
 
 const defaultDecisions = (): PageDecisions => ({
   title: { status: "pending" },
   description: { status: "pending" },
   h1: { status: "pending" },
+  issues: {},
 });
 
 type FilterMode = "all" | "issues" | "ok";
@@ -72,6 +80,7 @@ export default function MarketingSEO() {
           ...r,
           issues: r.issues || [],
           aiChecklist: r.aiChecklist || [],
+          issueSuggestions: r.issueSuggestions || [],
         }));
         results.forEach((r: AuditPage) => { allDecisions[r.url] = defaultDecisions(); });
         allResults.push(...results);
@@ -85,7 +94,7 @@ export default function MarketingSEO() {
             url: u, fetchedTitle: null, fetchedDescription: null, fetchedH1: null,
             fetchedCanonical: null, issues: [`Analysis failed: ${e.message}`],
             suggestedTitle: null, suggestedDescription: null, suggestedH1: null,
-            aiChecklist: [],
+            aiChecklist: [], issueSuggestions: [],
           });
           allDecisions[u] = defaultDecisions();
         });
@@ -183,7 +192,7 @@ export default function MarketingSEO() {
       const result = data?.results?.[0];
       if (result) {
         setAuditPages((prev) => prev.map((p) =>
-          p.url === url ? { ...p, suggestedTitle: result.suggestedTitle, suggestedDescription: result.suggestedDescription, suggestedH1: result.suggestedH1, aiChecklist: result.aiChecklist || [] } : p
+          p.url === url ? { ...p, suggestedTitle: result.suggestedTitle, suggestedDescription: result.suggestedDescription, suggestedH1: result.suggestedH1, aiChecklist: result.aiChecklist || [], issueSuggestions: result.issueSuggestions || [] } : p
         ));
         setDecisions((prev) => ({ ...prev, [url]: defaultDecisions() }));
         toast.success("New suggestions generated");
@@ -230,7 +239,7 @@ export default function MarketingSEO() {
   const getPageStatus = (url: string) => {
     const d = decisions[url];
     if (!d) return "pending";
-    const statuses = [d.title.status, d.description.status, d.h1.status];
+    const statuses = [d.title.status, d.description.status, d.h1.status, ...Object.values(d.issues || {}).map(v => v.status)];
     if (statuses.every((s) => s === "ignored")) return "ignored";
     if (statuses.some((s) => s === "approved" || s === "edited")) return "actioned";
     return "pending";
