@@ -433,9 +433,40 @@ export default function MarketingSEO() {
     toast.success(`Published ${acceptedItems.length} changes`);
   };
 
-  const handleSidebarRemove = (item: SidebarItem) => {
+  const handleSidebarRemove = async (item: SidebarItem) => {
     const d = decisions[item.url];
     if (!d) return;
+
+    // If unpublishing, delete the seo_override from DB and revert to "approved"
+    if (item.status === "published" && !item.isIssue) {
+      let rawPath = "/";
+      try { rawPath = new URL(item.url).pathname; } catch {}
+      const urlPath = rawPath === "/" ? "/site" : `/site${rawPath}`;
+
+      // Check if other fields for this URL are still published
+      const updatedField = { ...d[item.fieldKey as "title" | "description" | "h1"], status: "approved" as const };
+      const newD = { ...d, [item.fieldKey]: updatedField };
+      
+      // If no fields are published anymore for this URL, delete the override row
+      const stillPublished = ["title", "description", "h1"].some(
+        f => f !== item.fieldKey && newD[f as "title" | "description" | "h1"].status === "published"
+      );
+
+      if (!stillPublished) {
+        await supabase.from("seo_overrides" as any).delete().eq("url_path", urlPath);
+      } else {
+        // Null out just this field in the override
+        const nullUpdate: Record<string, any> = { updated_at: new Date().toISOString() };
+        nullUpdate[item.fieldKey] = null;
+        await supabase.from("seo_overrides" as any).update(nullUpdate as any).eq("url_path", urlPath);
+      }
+
+      handleDecisionChange(item.url, newD);
+      toast.success(`Unpublished ${item.field} — reverted to approved`);
+      return;
+    }
+
+    // For non-published items, just reset to pending
     if (item.isIssue) {
       handleDecisionChange(item.url, { ...d, issues: { ...d.issues, [item.fieldKey]: { status: "pending" } } });
     } else {
