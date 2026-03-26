@@ -324,7 +324,7 @@ function FieldRow({
   );
 }
 
-export default function AuditPageDetail({ page, decisions, onDecisionChange, onRegenerate, regenerating }: Props) {
+export default function AuditPageDetail({ page, decisions, onDecisionChange, onRegenerate }: Props) {
   const updateField = (field: keyof Omit<PageDecisions, "issues">) => (d: FieldDecision) => {
     onDecisionChange(page.url, { ...decisions, [field]: d });
   };
@@ -334,6 +334,48 @@ export default function AuditPageDetail({ page, decisions, onDecisionChange, onR
       ...decisions,
       issues: { ...decisions.issues, [issueKey]: d },
     });
+  };
+
+  const regenAndApplyField = (field: "title" | "description" | "h1") => async () => {
+    const { data, error } = await supabase.functions.invoke("seo-audit", {
+      body: { action: "analyze", urls: [page.url] },
+    });
+    if (error) { toast.error("Regeneration failed"); return; }
+    const r = data?.results?.[0];
+    if (!r) return;
+    const fieldMap: Record<string, string | null> = {
+      title: r.suggestedTitle, description: r.suggestedDescription, h1: r.suggestedH1,
+    };
+    const newVal = fieldMap[field];
+    if (newVal) {
+      // Update just this field's suggestion in parent state
+      onDecisionChange(page.url, { ...decisions, [field]: { status: "pending" } });
+      // We need to update the page data too — emit via onRegenerate
+      onRegenerate(page.url);
+    }
+    toast.success(`New ${field} suggestion generated`);
+  };
+
+  const regenAndApplyIssue = (issueKey: string) => async () => {
+    const { data, error } = await supabase.functions.invoke("seo-audit", {
+      body: { action: "analyze", urls: [page.url] },
+    });
+    if (error) { toast.error("Regeneration failed"); return; }
+    const r = data?.results?.[0];
+    if (!r) return;
+    const newSuggestions: IssueSuggestion[] = r.issueSuggestions || [];
+    const matched = newSuggestions.find((s: IssueSuggestion) => s.issue === issueKey);
+    if (matched) {
+      // Update the page's issueSuggestions
+      page.issueSuggestions = page.issueSuggestions.map((s) =>
+        s.issue === issueKey ? matched : s
+      );
+      onDecisionChange(page.url, {
+        ...decisions,
+        issues: { ...decisions.issues, [issueKey]: { status: "pending" } },
+      });
+    }
+    toast.success("New suggestion generated");
   };
 
   // Map issues to their AI suggestions
@@ -363,6 +405,7 @@ export default function AuditPageDetail({ page, decisions, onDecisionChange, onR
                 issueSuggestion={fallback}
                 decision={issueDecision}
                 onUpdate={updateIssue(issue)}
+                onRegenerateItem={regenAndApplyIssue(issue)}
               />
             );
           })}
@@ -381,9 +424,9 @@ export default function AuditPageDetail({ page, decisions, onDecisionChange, onR
 
       {/* Meta field rows */}
       <div className="space-y-3">
-        <FieldRow label="Title Tag" current={page.fetchedTitle} suggested={page.suggestedTitle} charMin={50} charMax={60} decision={decisions.title} onUpdate={updateField("title")} />
-        <FieldRow label="Meta Description" current={page.fetchedDescription} suggested={page.suggestedDescription} charMin={150} charMax={160} decision={decisions.description} onUpdate={updateField("description")} multiline />
-        <FieldRow label="H1 Heading" current={page.fetchedH1} suggested={page.suggestedH1} charMin={20} charMax={70} decision={decisions.h1} onUpdate={updateField("h1")} />
+        <FieldRow label="Title Tag" current={page.fetchedTitle} suggested={page.suggestedTitle} charMin={50} charMax={60} decision={decisions.title} onUpdate={updateField("title")} onRegenerateItem={regenAndApplyField("title")} />
+        <FieldRow label="Meta Description" current={page.fetchedDescription} suggested={page.suggestedDescription} charMin={150} charMax={160} decision={decisions.description} onUpdate={updateField("description")} multiline onRegenerateItem={regenAndApplyField("description")} />
+        <FieldRow label="H1 Heading" current={page.fetchedH1} suggested={page.suggestedH1} charMin={20} charMax={70} decision={decisions.h1} onUpdate={updateField("h1")} onRegenerateItem={regenAndApplyField("h1")} />
       </div>
 
       {/* Checklist */}
@@ -400,11 +443,6 @@ export default function AuditPageDetail({ page, decisions, onDecisionChange, onR
           </ul>
         </div>
       )}
-
-      {/* Regenerate */}
-      <Button variant="outline" size="sm" className="h-7 text-[10px] gap-1" onClick={() => onRegenerate(page.url)} disabled={regenerating}>
-        <RefreshCw className={`w-3 h-3 ${regenerating ? "animate-spin" : ""}`} /> New AI Suggestions
-      </Button>
     </div>
   );
 }
