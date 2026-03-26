@@ -23,6 +23,7 @@ import SeoOverviewStrip from "@/components/seo/SeoOverviewStrip";
 import SearchConsoleTab from "@/components/seo/SearchConsoleTab";
 import GA4Tab from "@/components/seo/GA4Tab";
 import BacklinksTab from "@/components/seo/BacklinksTab";
+import SeoComplianceSettings, { checkViolations, useSeoCompliance } from "@/components/seo/SeoComplianceSettings";
 import type { PhaseInfo } from "@/components/seo/types";
 
 interface IssueSuggestion {
