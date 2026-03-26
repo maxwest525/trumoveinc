@@ -313,6 +313,11 @@ function FieldRow({
           {decision.status === "approved" && (
             <Button variant="ghost" size="sm" className="h-6 text-[10px] px-2.5 gap-1 text-muted-foreground" onClick={() => onUpdate({ status: "pending" })}>Undo</Button>
           )}
+          {onRegenerateItem && (
+            <Button variant="ghost" size="sm" className="h-6 text-[10px] px-2.5 gap-1 text-muted-foreground ml-auto" onClick={handleRegenSingle} disabled={regenerating}>
+              <RefreshCw className={`w-3 h-3 ${regenerating ? "animate-spin" : ""}`} /> New Suggestion
+            </Button>
+          )}
         </div>
       )}
     </div>
