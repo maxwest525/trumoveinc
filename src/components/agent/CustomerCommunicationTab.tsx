@@ -191,7 +191,7 @@ export function CustomerCommunicationTab({ leadId, customerName, customerEmail, 
     }
   };
 
-  const defaults = mode === "email" ? DEFAULT_EMAIL_TEMPLATES : DEFAULT_SMS_TEMPLATES;
+  const defaults = mode === "email" ? EMAIL_STARTERS : SMS_STARTERS;
 
   // Parse email messages to extract subject
   const parseEmailMessage = (msg: any) => {
