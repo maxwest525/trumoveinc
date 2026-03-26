@@ -5,7 +5,9 @@ import {
   Copy, Loader2, FileText, ChevronDown, Bold, Italic, Link2,
   Image, AlignLeft, List, Type, Hash, User, MapPin, Calendar,
   Phone, Package, Truck, DollarSign, Pencil, CheckCircle2, Blocks,
+  ExternalLink,
 } from "lucide-react";
+import { openInOutlook } from "@/lib/openInOutlook";
 import EmailBlockEditor, { blocksToHtml } from "@/components/email-builder/EmailBlockEditor";
 import { type EmailBlock } from "@/components/email-builder/types";
 import { cn } from "@/lib/utils";
@@ -705,7 +707,7 @@ export default function MarketingTemplates() {
 
                 {/* Actions */}
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3">
                     <Button
                       size="sm"
                       className="gap-1.5 text-xs"
@@ -714,6 +716,19 @@ export default function MarketingTemplates() {
                     >
                       {saveMutation.isPending ? <Loader2 className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />}
                       {editingId ? "Update Template" : "Save Email Template"}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="gap-1.5 text-xs"
+                      disabled={!tplBody}
+                      onClick={() => {
+                        openInOutlook({ to: "", subject: tplSubject || tplName || "Template Preview", body: tplBody });
+                        toast.success("Opening in Outlook...");
+                      }}
+                    >
+                      <ExternalLink className="w-3 h-3" />
+                      Test in Outlook
                     </Button>
                   </div>
                   <p className="text-[9px] text-muted-foreground">
