@@ -183,24 +183,31 @@ export default function MarketingSEO() {
       supabase.from("seo_audit_pages" as any).update(updates as any).eq("url", url).then();
     }
 
-    // ── Apply to live site via seo_overrides ──
+    // ── Apply to live site via seo_overrides only on "published" ──
     const page = auditPages.find(p => p.url === url);
     if (!page) return;
 
-    const titleVal = d.title.status === "approved" ? page.suggestedTitle
-      : d.title.status === "edited" ? d.title.editedValue : null;
-    const descVal = d.description.status === "approved" ? page.suggestedDescription
-      : d.description.status === "edited" ? d.description.editedValue : null;
+    const titleVal = d.title.status === "published" ? (page.suggestedTitle || d.title.editedValue)
+      : null;
+    const descVal = d.description.status === "published" ? (page.suggestedDescription || d.description.editedValue)
+      : null;
 
-    if (titleVal || descVal) {
-      // Convert full URL to /site/* path: https://trumoveinc.com/about → /site/about
+    // Check edited values too for published fields
+    const finalTitle = d.title.status === "published"
+      ? (d.title.editedValue || page.suggestedTitle)
+      : null;
+    const finalDesc = d.description.status === "published"
+      ? (d.description.editedValue || page.suggestedDescription)
+      : null;
+
+    if (finalTitle || finalDesc) {
       let rawPath = "/";
       try { rawPath = new URL(url).pathname; } catch { /* keep / */ }
       const urlPath = rawPath === "/" ? "/site" : `/site${rawPath}`;
 
       const override: Record<string, any> = { url_path: urlPath, updated_at: new Date().toISOString() };
-      if (titleVal) override.title = titleVal;
-      if (descVal) override.description = descVal;
+      if (finalTitle) override.title = finalTitle;
+      if (finalDesc) override.description = finalDesc;
 
       const { error } = await supabase
         .from("seo_overrides" as any)
@@ -209,7 +216,7 @@ export default function MarketingSEO() {
       if (error) {
         console.error("Failed to save SEO override:", error);
       } else {
-        toast.success(`Live SEO updated for ${urlPath}`);
+        toast.success(`Published SEO changes for ${urlPath}`);
       }
     }
   };
