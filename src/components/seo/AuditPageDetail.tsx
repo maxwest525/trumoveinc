@@ -76,6 +76,7 @@ function IssueSuggestionCard({
   issueSuggestion,
   decision,
   onUpdate,
+  onRegenerateItem,
 }: {
   issueSuggestion: IssueSuggestion;
   decision: FieldDecision;
