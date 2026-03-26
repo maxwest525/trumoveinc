@@ -71,7 +71,7 @@ const features: Feature[] = [
     title: "FMCSA Verified",
     desc: "Real-time safety data checks from official databases.",
     image: previewCarrierVetting,
-    route: "/vetting",
+    route: "/site/vetting",
   },
   {
     title: "Trudy AI Assistant",
