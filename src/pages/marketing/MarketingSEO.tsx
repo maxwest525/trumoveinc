@@ -675,34 +675,97 @@ export default function MarketingSEO() {
         </Card>
       </div>
 
-      {/* Published Changes Sidebar */}
+      {/* Changes Sidebar */}
       <div className="w-72 shrink-0 hidden lg:block">
-        <div className="sticky top-6">
+        <div className="sticky top-6 space-y-4">
+          {/* Accepted Changes */}
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-sm flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-primary" />
-                Published Changes
+                Accepted ({acceptedItems.length})
               </CardTitle>
-              <CardDescription className="text-[11px]">
-                Approved & published SEO overrides
-              </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-2 max-h-[70vh] overflow-y-auto">
-              {publishedItems.length === 0 ? (
-                <p className="text-xs text-muted-foreground py-4 text-center">
-                  No published changes yet. Approve a suggestion, then click Publish.
-                </p>
+            <CardContent className="space-y-1.5 max-h-[25vh] overflow-y-auto">
+              {acceptedItems.length === 0 ? (
+                <p className="text-[11px] text-muted-foreground py-2 text-center">No accepted changes yet</p>
               ) : (
-                publishedItems.map((item, i) => (
-                  <div key={`${item.url}-${item.field}-${i}`} className="rounded-lg border border-primary/20 bg-primary/5 p-2.5 space-y-1">
-                    <div className="flex items-center gap-1.5">
-                      <Badge variant="default" className="text-[9px] h-4 px-1.5">{item.field}</Badge>
+                acceptedItems.map((item, i) => (
+                  <div key={`a-${item.url}-${item.fieldKey}-${i}`} className="rounded-lg border border-primary/20 bg-primary/5 p-2 space-y-0.5">
+                    <div className="flex items-center justify-between gap-1">
+                      <Badge variant="default" className="text-[9px] h-4 px-1.5 shrink-0">{item.field}</Badge>
+                      <div className="flex items-center gap-0.5 shrink-0">
+                        <Button variant="default" size="sm" className="h-5 text-[9px] px-1.5" onClick={() => handleSidebarPublish(item)}>
+                          Publish
+                        </Button>
+                        <Button variant="ghost" size="sm" className="h-5 w-5 p-0" onClick={() => handleSidebarRemove(item)}>
+                          <XCircle className="w-3 h-3 text-muted-foreground" />
+                        </Button>
+                      </div>
                     </div>
                     <p className="text-[10px] font-mono text-muted-foreground truncate">
                       {item.url.replace("https://trumoveinc.com", "") || "/"}
                     </p>
-                    <p className="text-xs text-foreground line-clamp-2">{item.value}</p>
+                    <p className="text-[11px] text-foreground line-clamp-2">{item.value}</p>
+                  </div>
+                ))
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Ignored Changes */}
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm flex items-center gap-2">
+                <EyeOff className="w-4 h-4 text-muted-foreground" />
+                Ignored ({ignoredItems.length})
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-1.5 max-h-[20vh] overflow-y-auto">
+              {ignoredItems.length === 0 ? (
+                <p className="text-[11px] text-muted-foreground py-2 text-center">No ignored changes</p>
+              ) : (
+                ignoredItems.map((item, i) => (
+                  <div key={`i-${item.url}-${item.fieldKey}-${i}`} className="rounded-lg border border-border bg-muted/20 p-2 space-y-0.5 opacity-70">
+                    <div className="flex items-center justify-between gap-1">
+                      <Badge variant="secondary" className="text-[9px] h-4 px-1.5 shrink-0">{item.field}</Badge>
+                      <Button variant="ghost" size="sm" className="h-5 w-5 p-0" onClick={() => handleSidebarRemove(item)}>
+                        <XCircle className="w-3 h-3 text-muted-foreground" />
+                      </Button>
+                    </div>
+                    <p className="text-[10px] font-mono text-muted-foreground truncate">
+                      {item.url.replace("https://trumoveinc.com", "") || "/"}
+                    </p>
+                  </div>
+                ))
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Published Changes */}
+          <Card className="border-primary/30">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-primary" />
+                Published ({publishedSidebarItems.length})
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-1.5 max-h-[20vh] overflow-y-auto">
+              {publishedSidebarItems.length === 0 ? (
+                <p className="text-[11px] text-muted-foreground py-2 text-center">No published changes yet</p>
+              ) : (
+                publishedSidebarItems.map((item, i) => (
+                  <div key={`p-${item.url}-${item.fieldKey}-${i}`} className="rounded-lg border border-primary/30 bg-primary/10 p-2 space-y-0.5">
+                    <div className="flex items-center justify-between gap-1">
+                      <Badge variant="default" className="text-[9px] h-4 px-1.5 shrink-0">{item.field}</Badge>
+                      <Button variant="ghost" size="sm" className="h-5 w-5 p-0" onClick={() => handleSidebarRemove(item)}>
+                        <XCircle className="w-3 h-3 text-muted-foreground" />
+                      </Button>
+                    </div>
+                    <p className="text-[10px] font-mono text-muted-foreground truncate">
+                      {item.url.replace("https://trumoveinc.com", "") || "/"}
+                    </p>
+                    <p className="text-[11px] text-foreground line-clamp-2">{item.value}</p>
                   </div>
                 ))
               )}
