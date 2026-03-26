@@ -80,6 +80,7 @@ function IssueSuggestionCard({
   issueSuggestion: IssueSuggestion;
   decision: FieldDecision;
   onUpdate: (d: FieldDecision) => void;
+  onRegenerateItem?: () => Promise<void>;
 }) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(decision.editedValue || issueSuggestion.suggestion);
