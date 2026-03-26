@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import {
   Search, Sparkles, Globe, CheckCircle2, AlertCircle, Loader2,
   Download, ChevronDown, ChevronUp, RefreshCw, ScanSearch, Link2,
-  AlertTriangle, CircleCheck, Filter, XCircle, EyeOff,
+  AlertTriangle, CircleCheck, Filter, XCircle, EyeOff, Expand,
 } from "lucide-react";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
