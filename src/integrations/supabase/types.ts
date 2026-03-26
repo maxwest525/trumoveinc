@@ -1521,6 +1521,30 @@ export type Database = {
         }
         Relationships: []
       }
+      seo_compliance_settings: {
+        Row: {
+          id: string
+          setting_key: string
+          setting_value: Json
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          id?: string
+          setting_key: string
+          setting_value?: Json
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          id?: string
+          setting_key?: string
+          setting_value?: Json
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       seo_overrides: {
         Row: {
           approved_by: string | null
