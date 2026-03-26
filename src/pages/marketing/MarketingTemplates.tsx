@@ -5,7 +5,9 @@ import {
   Copy, Loader2, FileText, ChevronDown, Bold, Italic, Link2,
   Image, AlignLeft, List, Type, Hash, User, MapPin, Calendar,
   Phone, Package, Truck, DollarSign, Pencil, CheckCircle2, Blocks,
+  ExternalLink,
 } from "lucide-react";
+import { openInOutlook } from "@/lib/openInOutlook";
 import EmailBlockEditor, { blocksToHtml } from "@/components/email-builder/EmailBlockEditor";
 import { type EmailBlock } from "@/components/email-builder/types";
 import { cn } from "@/lib/utils";
