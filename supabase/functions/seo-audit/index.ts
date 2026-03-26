@@ -266,6 +266,7 @@ REMINDER: Do NOT use any of these words: ${compliance.forbiddenTerms.join(", ")}
     suggestedH1: result.suggestedH1,
     aiChecklist: result.checklist || [],
     issueSuggestions: result.issueSuggestions || [],
+    suggestedPrimaryKeyword: result.suggestedPrimaryKeyword || null,
     violations,
   };
 }
