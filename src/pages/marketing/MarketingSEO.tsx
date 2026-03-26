@@ -17,6 +17,12 @@ import {
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import AuditPageDetail, { type PageDecisions } from "@/components/seo/AuditPageDetail";
 
+interface IssueSuggestion {
+  issue: string;
+  suggestion: string;
+  priority: "high" | "medium" | "low";
+}
+
 interface AuditPage {
   url: string;
   fetchedTitle: string | null;
@@ -28,6 +34,7 @@ interface AuditPage {
   suggestedDescription: string | null;
   suggestedH1: string | null;
   aiChecklist: string[];
+  issueSuggestions: IssueSuggestion[];
 }
 
 const defaultDecisions = (): PageDecisions => ({
