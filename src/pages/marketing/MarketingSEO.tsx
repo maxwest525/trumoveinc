@@ -549,16 +549,27 @@ export default function MarketingSEO() {
                         <CardDescription className="text-xs mt-1">Full crawl auto-analyzes every page found.</CardDescription>
                       </div>
                       <div className="flex items-center gap-1.5">
-                        <Input
-                          value={singleUrl}
-                          onChange={(e) => setSingleUrl(e.target.value)}
-                          placeholder="Single URL…"
-                          className="h-8 w-48 text-xs"
-                          onKeyDown={(e) => e.key === "Enter" && singleUrl && handleAnalyzeSingle()}
-                        />
+                        <Select value={singleUrl} onValueChange={(v) => setSingleUrl(v)}>
+                          <SelectTrigger className="h-8 w-56 text-xs">
+                            <SelectValue placeholder="Select a page…" />
+                          </SelectTrigger>
+                          <SelectContent className="max-h-64">
+                            {sitemapPages.length === 0 && (
+                              <SelectItem value="__empty" disabled className="text-xs text-muted-foreground">
+                                Run a crawl first to populate pages
+                              </SelectItem>
+                            )}
+                            {sitemapPages.map((u) => (
+                              <SelectItem key={u} value={u} className="text-xs font-mono">
+                                {u.replace("https://trumoveinc.com", "") || "/"}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                         <Button onClick={handleAnalyzeSingle} disabled={analyzing || !singleUrl} variant="secondary" size="sm" className="h-8 shrink-0">
                           {analyzing ? <Loader2 className="w-3 h-3 animate-spin" /> : <Search className="w-3 h-3" />}
                         </Button>
+                      </div>
                       </div>
                     </div>
                   </CardHeader>
