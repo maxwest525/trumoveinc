@@ -354,9 +354,33 @@ export default function MarketingSEO() {
       ? pagesOk
       : [...pagesWithIssues, ...pagesOk];
 
+  // Collect published items for the sidebar
+  const publishedItems = auditPages.flatMap((page) => {
+    const d = decisions[page.url];
+    if (!d) return [];
+    const items: { url: string; field: string; value: string }[] = [];
+    if (d.title.status === "published") {
+      items.push({ url: page.url, field: "Title", value: d.title.editedValue || page.suggestedTitle || "" });
+    }
+    if (d.description.status === "published") {
+      items.push({ url: page.url, field: "Description", value: d.description.editedValue || page.suggestedDescription || "" });
+    }
+    if (d.h1.status === "published") {
+      items.push({ url: page.url, field: "H1", value: d.h1.editedValue || page.suggestedH1 || "" });
+    }
+    Object.entries(d.issues || {}).forEach(([key, fd]) => {
+      if (fd.status === "published") {
+        const matched = page.issueSuggestions?.find(s => s.issue === key);
+        items.push({ url: page.url, field: key, value: fd.editedValue || matched?.suggestion || "" });
+      }
+    });
+    return items;
+  });
+
   return (
     <MarketingShell breadcrumbs={[{ label: "SEO Audit" }]}>
-      <div className="space-y-6 max-w-5xl">
+      <div className="flex gap-6">
+      <div className="space-y-6 flex-1 min-w-0">
         <div>
           <h1 className="text-xl font-bold text-foreground">SEO Audit</h1>
           <p className="text-sm text-muted-foreground mt-1">
