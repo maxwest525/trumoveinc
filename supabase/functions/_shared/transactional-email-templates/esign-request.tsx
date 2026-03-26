@@ -16,7 +16,7 @@ interface ESignRequestProps {
 const ESignRequestEmail = ({ customerName, documentLabel, refNumber, signingUrl }: ESignRequestProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Action Required: Sign Your {documentLabel || 'Document'} – {refNumber || ''}</Preview>
+    <Preview>Please review and sign your document from {SITE_NAME}. It only takes a minute.</Preview>
     <Body style={main}>
       <Container style={container}>
         {/* Logo Header */}
