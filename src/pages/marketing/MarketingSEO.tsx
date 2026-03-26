@@ -93,7 +93,7 @@ export default function MarketingSEO() {
             url: u, fetchedTitle: null, fetchedDescription: null, fetchedH1: null,
             fetchedCanonical: null, issues: [`Analysis failed: ${e.message}`],
             suggestedTitle: null, suggestedDescription: null, suggestedH1: null,
-            aiChecklist: [],
+            aiChecklist: [], issueSuggestions: [],
           });
           allDecisions[u] = defaultDecisions();
         });
