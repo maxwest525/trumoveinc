@@ -13,19 +13,7 @@ import { cn } from "@/lib/utils";
 import { formatPhoneNumber } from "@/lib/phoneFormat";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-
-const DEFAULT_EMAIL_TEMPLATES = [
-  { id: "default-booking", name: "Booking Confirmation", subject: "Your Move is Confirmed - {booking_id}", body: `Dear {customer_name},\n\nThank you for choosing TruMove!\n\nBooking ID: {booking_id}\nMove Date: {move_date}\nPickup: {origin_address}\nDelivery: {dest_address}\n\nBest regards,\nThe TruMove Team` },
-  { id: "default-reminder", name: "Day Before Reminder", subject: "Your Move is Tomorrow! - {booking_id}", body: `Hi {customer_name},\n\nYour move is scheduled for tomorrow!\n\n📅 Date: {move_date}\n📍 Pickup: {origin_address}\n\nSee you tomorrow!\nTruMove Team` },
-  { id: "default-followup", name: "Post-Move Follow-up", subject: "How Was Your Move? - {booking_id}", body: `Dear {customer_name},\n\nWe hope your move went smoothly!\n\nThank you for choosing TruMove!\n\nWarm regards,\nThe TruMove Team` },
-];
-
-const DEFAULT_SMS_TEMPLATES = [
-  { id: "default-sms-confirm", name: "Booking Confirmed", body: `TruMove: Your move is confirmed for {move_date}! Booking #{booking_id}. Reply HELP for assistance.` },
-  { id: "default-sms-otw", name: "On The Way", body: `TruMove: Your crew is on the way! ETA: {eta}. Track live: {tracking_link}` },
-  { id: "default-sms-arrived", name: "Crew Arrived", body: `TruMove: Your crew has arrived at {origin_address}. Please meet them at the entrance.` },
-  { id: "default-sms-complete", name: "Move Complete", body: `TruMove: Your move is complete! Thank you. Questions? Call (800) 555-MOVE` },
-];
+import { EMAIL_STARTERS, SMS_STARTERS } from "@/lib/starterTemplates";
 
 interface Props {
   leadId: string;
@@ -203,7 +191,7 @@ export function CustomerCommunicationTab({ leadId, customerName, customerEmail, 
     }
   };
 
-  const defaults = mode === "email" ? DEFAULT_EMAIL_TEMPLATES : DEFAULT_SMS_TEMPLATES;
+  const defaults = mode === "email" ? EMAIL_STARTERS : SMS_STARTERS;
 
   // Parse email messages to extract subject
   const parseEmailMessage = (msg: any) => {
