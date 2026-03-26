@@ -326,6 +326,7 @@ Deno.serve(async (req) => {
               suggestedDescription: null,
               suggestedH1: null,
               aiChecklist: [],
+              issueSuggestions: [],
             });
           }
         } catch (err) {
