@@ -59,6 +59,7 @@ export default function MarketingSEO() {
   const [analyzeProgress, setAnalyzeProgress] = useState({ done: 0, total: 0 });
   const [regeneratingUrl, setRegeneratingUrl] = useState<string | null>(null);
   const [filterMode, setFilterMode] = useState<FilterMode>("all");
+  const [expandedSidebarItem, setExpandedSidebarItem] = useState<SidebarItem | null>(null);
 
   const analyzeUrls = useCallback(async (urls: string[]) => {
     setAnalyzing(true);
