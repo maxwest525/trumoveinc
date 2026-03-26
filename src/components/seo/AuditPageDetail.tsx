@@ -169,11 +169,12 @@ function IssueSuggestionCard({
         {/* Actions */}
         {!editing && (
           <div className="flex items-center gap-1">
-            {decision.status === "approved" ? (
+            {decision.status === "approved" && (
               <Button variant="default" size="sm" className="h-5 text-[10px] px-2 gap-0.5" onClick={() => onUpdate({ status: "published" })}>
                 <CheckCircle2 className="w-2.5 h-2.5" /> Publish
               </Button>
-            ) : decision.status !== "approved" && (
+            )}
+            {decision.status !== "approved" && (
               <Button variant="default" size="sm" className="h-5 text-[10px] px-2 gap-0.5" onClick={handleApprove}>
                 <CheckCircle2 className="w-2.5 h-2.5" /> Approve
               </Button>
