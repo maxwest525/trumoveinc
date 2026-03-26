@@ -683,10 +683,17 @@ export default function MarketingSEO() {
           {/* Accepted Changes */}
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-primary" />
-                Accepted ({acceptedItems.length})
-              </CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary" />
+                  Accepted ({acceptedItems.length})
+                </CardTitle>
+                {acceptedItems.length > 0 && (
+                  <Button variant="default" size="sm" className="h-6 text-[10px] px-2 gap-1" onClick={() => acceptedItems.forEach(handleSidebarPublish)}>
+                    <Sparkles className="w-3 h-3" /> Publish All
+                  </Button>
+                )}
+              </div>
             </CardHeader>
             <CardContent className="space-y-1.5 max-h-[25vh] overflow-y-auto">
               {acceptedItems.length === 0 ? (
@@ -697,6 +704,9 @@ export default function MarketingSEO() {
                     <div className="flex items-center justify-between gap-1">
                       <Badge variant="default" className="text-[9px] h-4 px-1.5 shrink-0">{item.field}</Badge>
                       <div className="flex items-center gap-0.5 shrink-0">
+                        <Button variant="ghost" size="sm" className="h-5 w-5 p-0" onClick={() => setExpandedSidebarItem(item)}>
+                          <Expand className="w-3 h-3 text-muted-foreground" />
+                        </Button>
                         <Button variant="default" size="sm" className="h-5 text-[9px] px-1.5" onClick={() => handleSidebarPublish(item)}>
                           Publish
                         </Button>
@@ -708,7 +718,9 @@ export default function MarketingSEO() {
                     <p className="text-[10px] font-mono text-muted-foreground truncate">
                       {item.url.replace("https://trumoveinc.com", "") || "/"}
                     </p>
-                    <p className="text-[11px] text-foreground line-clamp-2">{item.value}</p>
+                    <p className="text-[11px] text-foreground line-clamp-2 cursor-pointer hover:text-primary transition-colors" onClick={() => setExpandedSidebarItem(item)}>
+                      {item.value}
+                    </p>
                   </div>
                 ))
               )}
