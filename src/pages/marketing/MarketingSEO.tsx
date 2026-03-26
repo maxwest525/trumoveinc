@@ -193,11 +193,10 @@ export default function MarketingSEO() {
       : d.description.status === "edited" ? d.description.editedValue : null;
 
     if (titleVal || descVal) {
-      // Convert full URL to path: https://trumoveinc.com/about → /about
-      let urlPath = "/";
-      try {
-        urlPath = new URL(url).pathname;
-      } catch { /* keep / */ }
+      // Convert full URL to /site/* path: https://trumoveinc.com/about → /site/about
+      let rawPath = "/";
+      try { rawPath = new URL(url).pathname; } catch { /* keep / */ }
+      const urlPath = rawPath === "/" ? "/site" : `/site${rawPath}`;
 
       const override: Record<string, any> = { url_path: urlPath, updated_at: new Date().toISOString() };
       if (titleVal) override.title = titleVal;
