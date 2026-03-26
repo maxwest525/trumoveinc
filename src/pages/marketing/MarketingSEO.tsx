@@ -268,6 +268,49 @@ export default function MarketingSEO() {
     toast.success("CSV exported");
   };
 
+  const handleApplyToCode = () => {
+    const lines: string[] = ["Apply these approved SEO changes to the source code:\n"];
+    auditPages.forEach((p) => {
+      const d = decisions[p.url];
+      if (!d) return;
+      const titleVal = d.title.status === "edited" ? d.title.editedValue : d.title.status === "approved" ? p.suggestedTitle : null;
+      const descVal = d.description.status === "edited" ? d.description.editedValue : d.description.status === "approved" ? p.suggestedDescription : null;
+      const h1Val = d.h1.status === "edited" ? d.h1.editedValue : d.h1.status === "approved" ? p.suggestedH1 : null;
+      if (!titleVal && !descVal && !h1Val) return;
+
+      lines.push(`## ${p.url}`);
+      if (titleVal) lines.push(`- **Title**: ${titleVal}`);
+      if (descVal) lines.push(`- **Meta Description**: ${descVal}`);
+      if (h1Val) lines.push(`- **H1**: ${h1Val}`);
+
+      // Include approved issue fixes
+      const issueKeys = Object.keys(d.issues || {});
+      issueKeys.forEach((key) => {
+        const id = d.issues[key];
+        if (id.status === "approved" || id.status === "edited") {
+          const matched = p.issueSuggestions?.find(s => s.issue === key);
+          const fix = id.status === "edited" ? id.editedValue : matched?.suggestion;
+          if (fix) lines.push(`- **Fix "${key}"**: ${fix}`);
+        }
+      });
+      lines.push("");
+    });
+
+    if (lines.length <= 1) {
+      toast.error("Approve or edit at least one field first");
+      return;
+    }
+
+    const prompt = lines.join("\n");
+    navigator.clipboard.writeText(prompt).then(() => {
+      toast.success("Copied! Paste this into the Lovable chat to apply changes to your code.");
+    }).catch(() => {
+      // Fallback: show in a prompt
+      const w = window.open("", "_blank");
+      if (w) { w.document.write(`<pre>${prompt}</pre>`); }
+    });
+  };
+
   const getPageStatus = (url: string) => {
     const d = decisions[url];
     if (!d) return "pending";
