@@ -174,9 +174,9 @@ export default function MarketingSEO() {
     if (d.h1.status === "approved") updates.suggested_h1 = auditPages.find(p => p.url === url)?.suggestedH1;
     if (d.h1.status === "edited") updates.suggested_h1 = d.h1.editedValue;
 
-    const anyApproved = ["approved", "edited"].includes(d.title.status) ||
-      ["approved", "edited"].includes(d.description.status) ||
-      ["approved", "edited"].includes(d.h1.status);
+    const anyApproved = ["approved", "edited", "published"].includes(d.title.status) ||
+      ["approved", "edited", "published"].includes(d.description.status) ||
+      ["approved", "edited", "published"].includes(d.h1.status);
     if (anyApproved) updates.status = "approved";
 
     if (Object.keys(updates).length > 0) {
