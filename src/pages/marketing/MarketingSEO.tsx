@@ -732,7 +732,7 @@ export default function MarketingSEO() {
                 )}
               </div>
             </CardHeader>
-            <CardContent className="space-y-1.5 max-h-[25vh] overflow-y-auto">
+            <CardContent className="space-y-1.5 ">
               {acceptedItems.length === 0 ? (
                 <p className="text-[11px] text-muted-foreground py-2 text-center">No accepted changes yet</p>
               ) : (
@@ -772,7 +772,7 @@ export default function MarketingSEO() {
                 Ignored ({ignoredItems.length})
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-1.5 max-h-[20vh] overflow-y-auto">
+            <CardContent className="space-y-1.5 ">
               {ignoredItems.length === 0 ? (
                 <p className="text-[11px] text-muted-foreground py-2 text-center">No ignored changes</p>
               ) : (
@@ -801,7 +801,7 @@ export default function MarketingSEO() {
                 Published ({publishedSidebarItems.length})
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-1.5 max-h-[20vh] overflow-y-auto">
+            <CardContent className="space-y-1.5 ">
               {publishedSidebarItems.length === 0 ? (
                 <p className="text-[11px] text-muted-foreground py-2 text-center">No published changes yet</p>
               ) : (
