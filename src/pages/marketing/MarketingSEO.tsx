@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import MarketingShell from "@/components/layout/MarketingShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,7 +10,7 @@ import { toast } from "sonner";
 import {
   Search, Sparkles, Globe, CheckCircle2, AlertCircle, Loader2,
   Download, ChevronDown, ChevronUp, RefreshCw, ScanSearch, Link2,
-  AlertTriangle, CircleCheck, Filter, XCircle, EyeOff,
+  AlertTriangle, CircleCheck, Filter, XCircle, EyeOff, Expand,
 } from "lucide-react";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -45,6 +46,7 @@ const defaultDecisions = (): PageDecisions => ({
 });
 
 type FilterMode = "all" | "issues" | "ok";
+type SidebarItem = { url: string; field: string; fieldKey: "title" | "description" | "h1" | string; value: string; status: FieldStatus; isIssue: boolean };
 
 export default function MarketingSEO() {
   const [singleUrl, setSingleUrl] = useState("");
@@ -58,6 +60,7 @@ export default function MarketingSEO() {
   const [analyzeProgress, setAnalyzeProgress] = useState({ done: 0, total: 0 });
   const [regeneratingUrl, setRegeneratingUrl] = useState<string | null>(null);
   const [filterMode, setFilterMode] = useState<FilterMode>("all");
+  const [expandedSidebarItem, setExpandedSidebarItem] = useState<SidebarItem | null>(null);
 
   const analyzeUrls = useCallback(async (urls: string[]) => {
     setAnalyzing(true);
@@ -355,7 +358,6 @@ export default function MarketingSEO() {
       : [...pagesWithIssues, ...pagesOk];
 
   // Collect sidebar items grouped by status
-  type SidebarItem = { url: string; field: string; fieldKey: "title" | "description" | "h1" | string; value: string; status: FieldStatus; isIssue: boolean };
   const sidebarItems: SidebarItem[] = auditPages.flatMap((page) => {
     const d = decisions[page.url];
     if (!d) return [];
@@ -681,10 +683,17 @@ export default function MarketingSEO() {
           {/* Accepted Changes */}
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-primary" />
-                Accepted ({acceptedItems.length})
-              </CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary" />
+                  Accepted ({acceptedItems.length})
+                </CardTitle>
+                {acceptedItems.length > 0 && (
+                  <Button variant="default" size="sm" className="h-6 text-[10px] px-2 gap-1" onClick={() => acceptedItems.forEach(handleSidebarPublish)}>
+                    <Sparkles className="w-3 h-3" /> Publish All
+                  </Button>
+                )}
+              </div>
             </CardHeader>
             <CardContent className="space-y-1.5 max-h-[25vh] overflow-y-auto">
               {acceptedItems.length === 0 ? (
@@ -695,6 +704,9 @@ export default function MarketingSEO() {
                     <div className="flex items-center justify-between gap-1">
                       <Badge variant="default" className="text-[9px] h-4 px-1.5 shrink-0">{item.field}</Badge>
                       <div className="flex items-center gap-0.5 shrink-0">
+                        <Button variant="ghost" size="sm" className="h-5 w-5 p-0" onClick={() => setExpandedSidebarItem(item)}>
+                          <Expand className="w-3 h-3 text-muted-foreground" />
+                        </Button>
                         <Button variant="default" size="sm" className="h-5 text-[9px] px-1.5" onClick={() => handleSidebarPublish(item)}>
                           Publish
                         </Button>
@@ -706,7 +718,9 @@ export default function MarketingSEO() {
                     <p className="text-[10px] font-mono text-muted-foreground truncate">
                       {item.url.replace("https://trumoveinc.com", "") || "/"}
                     </p>
-                    <p className="text-[11px] text-foreground line-clamp-2">{item.value}</p>
+                    <p className="text-[11px] text-foreground line-clamp-2 cursor-pointer hover:text-primary transition-colors" onClick={() => setExpandedSidebarItem(item)}>
+                      {item.value}
+                    </p>
                   </div>
                 ))
               )}
@@ -758,14 +772,21 @@ export default function MarketingSEO() {
                   <div key={`p-${item.url}-${item.fieldKey}-${i}`} className="rounded-lg border border-primary/30 bg-primary/10 p-2 space-y-0.5">
                     <div className="flex items-center justify-between gap-1">
                       <Badge variant="default" className="text-[9px] h-4 px-1.5 shrink-0">{item.field}</Badge>
-                      <Button variant="ghost" size="sm" className="h-5 w-5 p-0" onClick={() => handleSidebarRemove(item)}>
-                        <XCircle className="w-3 h-3 text-muted-foreground" />
-                      </Button>
+                      <div className="flex items-center gap-0.5 shrink-0">
+                        <Button variant="ghost" size="sm" className="h-5 w-5 p-0" onClick={() => setExpandedSidebarItem(item)}>
+                          <Expand className="w-3 h-3 text-muted-foreground" />
+                        </Button>
+                        <Button variant="ghost" size="sm" className="h-5 w-5 p-0" onClick={() => handleSidebarRemove(item)}>
+                          <XCircle className="w-3 h-3 text-muted-foreground" />
+                        </Button>
+                      </div>
                     </div>
                     <p className="text-[10px] font-mono text-muted-foreground truncate">
                       {item.url.replace("https://trumoveinc.com", "") || "/"}
                     </p>
-                    <p className="text-[11px] text-foreground line-clamp-2">{item.value}</p>
+                    <p className="text-[11px] text-foreground line-clamp-2 cursor-pointer hover:text-primary transition-colors" onClick={() => setExpandedSidebarItem(item)}>
+                      {item.value}
+                    </p>
                   </div>
                 ))
               )}
@@ -774,6 +795,48 @@ export default function MarketingSEO() {
         </div>
       </div>
       </div>
+
+      {/* Expand Detail Dialog */}
+      <Dialog open={!!expandedSidebarItem} onOpenChange={(open) => !open && setExpandedSidebarItem(null)}>
+        <DialogContent className="max-w-lg">
+          {expandedSidebarItem && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2 text-sm">
+                  <Badge variant={expandedSidebarItem.status === "published" ? "default" : expandedSidebarItem.status === "ignored" ? "secondary" : "default"} className="text-[10px]">
+                    {expandedSidebarItem.status}
+                  </Badge>
+                  {expandedSidebarItem.field}
+                </DialogTitle>
+              </DialogHeader>
+              <div className="space-y-3">
+                <div>
+                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Page</p>
+                  <p className="text-xs font-mono text-foreground bg-muted/40 rounded px-3 py-2 border border-border/50 break-all">
+                    {expandedSidebarItem.url}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Value</p>
+                  <div className="text-sm text-foreground bg-primary/5 rounded px-3 py-3 border border-primary/10 whitespace-pre-wrap break-words">
+                    {expandedSidebarItem.value}
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 pt-2">
+                  {(expandedSidebarItem.status === "approved" || expandedSidebarItem.status === "edited") && (
+                    <Button variant="default" size="sm" className="gap-1" onClick={() => { handleSidebarPublish(expandedSidebarItem); setExpandedSidebarItem(null); }}>
+                      <Sparkles className="w-3 h-3" /> Publish
+                    </Button>
+                  )}
+                  <Button variant="outline" size="sm" className="gap-1" onClick={() => { handleSidebarRemove(expandedSidebarItem); setExpandedSidebarItem(null); }}>
+                    <XCircle className="w-3 h-3" /> Remove
+                  </Button>
+                </div>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </MarketingShell>
   );
 }
