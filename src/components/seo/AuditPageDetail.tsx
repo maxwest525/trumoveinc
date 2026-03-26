@@ -178,6 +178,11 @@ function IssueSuggestionCard({
             {decision.status === "approved" && (
               <Button variant="ghost" size="sm" className="h-5 text-[10px] px-2 text-muted-foreground" onClick={() => onUpdate({ status: "pending" })}>Undo</Button>
             )}
+            {onRegenerateItem && (
+              <Button variant="ghost" size="sm" className="h-5 text-[10px] px-2 gap-0.5 text-muted-foreground ml-auto" onClick={handleRegenSingle} disabled={regenerating}>
+                <RefreshCw className={`w-2.5 h-2.5 ${regenerating ? "animate-spin" : ""}`} /> New Suggestion
+              </Button>
+            )}
           </div>
         )}
       </div>
