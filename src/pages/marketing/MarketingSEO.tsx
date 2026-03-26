@@ -772,14 +772,21 @@ export default function MarketingSEO() {
                   <div key={`p-${item.url}-${item.fieldKey}-${i}`} className="rounded-lg border border-primary/30 bg-primary/10 p-2 space-y-0.5">
                     <div className="flex items-center justify-between gap-1">
                       <Badge variant="default" className="text-[9px] h-4 px-1.5 shrink-0">{item.field}</Badge>
-                      <Button variant="ghost" size="sm" className="h-5 w-5 p-0" onClick={() => handleSidebarRemove(item)}>
-                        <XCircle className="w-3 h-3 text-muted-foreground" />
-                      </Button>
+                      <div className="flex items-center gap-0.5 shrink-0">
+                        <Button variant="ghost" size="sm" className="h-5 w-5 p-0" onClick={() => setExpandedSidebarItem(item)}>
+                          <Expand className="w-3 h-3 text-muted-foreground" />
+                        </Button>
+                        <Button variant="ghost" size="sm" className="h-5 w-5 p-0" onClick={() => handleSidebarRemove(item)}>
+                          <XCircle className="w-3 h-3 text-muted-foreground" />
+                        </Button>
+                      </div>
                     </div>
                     <p className="text-[10px] font-mono text-muted-foreground truncate">
                       {item.url.replace("https://trumoveinc.com", "") || "/"}
                     </p>
-                    <p className="text-[11px] text-foreground line-clamp-2">{item.value}</p>
+                    <p className="text-[11px] text-foreground line-clamp-2 cursor-pointer hover:text-primary transition-colors" onClick={() => setExpandedSidebarItem(item)}>
+                      {item.value}
+                    </p>
                   </div>
                 ))
               )}
