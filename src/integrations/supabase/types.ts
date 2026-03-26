@@ -686,6 +686,81 @@ export type Database = {
           },
         ]
       }
+      gsc_connections: {
+        Row: {
+          access_token: string
+          connected_at: string
+          id: string
+          refresh_token: string
+          selected_property: string | null
+          token_expires_at: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          access_token: string
+          connected_at?: string
+          id?: string
+          refresh_token: string
+          selected_property?: string | null
+          token_expires_at: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          access_token?: string
+          connected_at?: string
+          id?: string
+          refresh_token?: string
+          selected_property?: string | null
+          token_expires_at?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      gsc_page_data: {
+        Row: {
+          clicks: number
+          ctr: number
+          date_range_end: string | null
+          date_range_start: string | null
+          fetched_at: string
+          id: string
+          impressions: number
+          page_url: string
+          position: number
+          property: string
+          query: string
+        }
+        Insert: {
+          clicks?: number
+          ctr?: number
+          date_range_end?: string | null
+          date_range_start?: string | null
+          fetched_at?: string
+          id?: string
+          impressions?: number
+          page_url: string
+          position?: number
+          property: string
+          query: string
+        }
+        Update: {
+          clicks?: number
+          ctr?: number
+          date_range_end?: string | null
+          date_range_start?: string | null
+          fetched_at?: string
+          id?: string
+          impressions?: number
+          page_url?: string
+          position?: number
+          property?: string
+          query?: string
+        }
+        Relationships: []
+      }
       integration_connections: {
         Row: {
           config: Json | null
