@@ -86,7 +86,7 @@ export default function AgentNewCustomer() {
 
   return (
     <AgentShell breadcrumb=" / New Lead">
-      <div className="p-6 max-w-5xl mx-auto space-y-5">
+      <div className="p-3 sm:p-6 max-w-5xl mx-auto space-y-4 sm:space-y-5">
         {/* Workflow breadcrumb */}
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <span className="text-primary font-semibold">New Lead</span>
@@ -98,25 +98,25 @@ export default function AgentNewCustomer() {
 
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-bold flex items-center gap-2">
+            <h1 className="text-lg sm:text-xl font-bold flex items-center gap-2">
               <UserPlus className="w-5 h-5" />
               Create New Lead
             </h1>
-            <p className="text-sm text-muted-foreground mt-0.5">Enter customer details to start the onboarding flow</p>
+            <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">Enter customer details to start the onboarding flow</p>
           </div>
         </div>
 
-        <div className="flex gap-6">
+        <div className="flex flex-col lg:flex-row gap-4 sm:gap-6">
           {/* Form */}
           <div className="flex-1 min-w-0">
             <Card className="border border-border shadow-sm">
-              <CardContent className="p-6 space-y-5">
+              <CardContent className="p-4 sm:p-6 space-y-4 sm:space-y-5">
                 {/* Contact Info */}
                 <div>
                   <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium mb-3 flex items-center gap-1.5">
                     <User className="w-3 h-3" /> Contact Information
                   </p>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div className="space-y-1.5">
                       <Label className="text-xs">First Name <span className="text-destructive">*</span></Label>
                       <Input value={form.firstName} onChange={e => updateField("firstName", e.target.value)} placeholder="John" />
@@ -141,7 +141,7 @@ export default function AgentNewCustomer() {
                   <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium mb-3 flex items-center gap-1.5">
                     <MapPin className="w-3 h-3" /> Move Details
                   </p>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div className="space-y-1.5">
                       <Label className="text-xs">Origin Address</Label>
                       <Input value={form.originAddress} onChange={e => updateField("originAddress", e.target.value)} placeholder="123 Main St, City, ST" />
