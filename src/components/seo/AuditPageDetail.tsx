@@ -104,6 +104,8 @@ function IssueSuggestionCard({
   const finalValue = decision.status === "edited" ? decision.editedValue : issueSuggestion.suggestion;
   const pClass = priorityColors[issueSuggestion.priority] || priorityColors.low;
 
+  if (decision.status === "published") return null;
+
   if (decision.status === "ignored") {
     return (
       <div className="rounded-lg border border-border bg-muted/20 p-3 opacity-50">
@@ -167,21 +169,29 @@ function IssueSuggestionCard({
         {/* Actions */}
         {!editing && (
           <div className="flex items-center gap-1">
-            {decision.status !== "approved" && (
+            {decision.status === "approved" ? (
+              <Button variant="default" size="sm" className="h-5 text-[10px] px-2 gap-0.5" onClick={() => onUpdate({ status: "published" })}>
+                <CheckCircle2 className="w-2.5 h-2.5" /> Publish
+              </Button>
+            ) : decision.status !== "approved" && (
               <Button variant="default" size="sm" className="h-5 text-[10px] px-2 gap-0.5" onClick={handleApprove}>
                 <CheckCircle2 className="w-2.5 h-2.5" /> Approve
               </Button>
             )}
-            <Button variant="outline" size="sm" className="h-5 text-[10px] px-2 gap-0.5" onClick={handleStartEdit}>
-              <Pencil className="w-2.5 h-2.5" /> Edit
-            </Button>
-            <Button variant="ghost" size="sm" className="h-5 text-[10px] px-2 gap-0.5 text-muted-foreground" onClick={handleIgnore}>
-              <XCircle className="w-2.5 h-2.5" /> Ignore
-            </Button>
+            {decision.status !== "approved" && (
+              <Button variant="outline" size="sm" className="h-5 text-[10px] px-2 gap-0.5" onClick={handleStartEdit}>
+                <Pencil className="w-2.5 h-2.5" /> Edit
+              </Button>
+            )}
+            {decision.status !== "approved" && (
+              <Button variant="ghost" size="sm" className="h-5 text-[10px] px-2 gap-0.5 text-muted-foreground" onClick={handleIgnore}>
+                <XCircle className="w-2.5 h-2.5" /> Ignore
+              </Button>
+            )}
             {decision.status === "approved" && (
               <Button variant="ghost" size="sm" className="h-5 text-[10px] px-2 text-muted-foreground" onClick={() => onUpdate({ status: "pending" })}>Undo</Button>
             )}
-            {onRegenerateItem && (
+            {decision.status !== "approved" && onRegenerateItem && (
               <Button variant="ghost" size="sm" className="h-5 text-[10px] px-2 gap-0.5 text-muted-foreground ml-auto" onClick={handleRegenSingle} disabled={regenerating}>
                 <RefreshCw className={`w-2.5 h-2.5 ${regenerating ? "animate-spin" : ""}`} /> New Suggestion
               </Button>
