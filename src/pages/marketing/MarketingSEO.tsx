@@ -671,6 +671,7 @@ export default function MarketingSEO() {
                           {filteredPages.map((page) => {
                             const status = getPageStatus(page.url);
                             const hasIssues = issueCount(page) > 0;
+                            const violations = getViolationsForPage(page);
                             return (
                               <Collapsible key={page.url} open={expandedUrl === page.url} onOpenChange={(open) => setExpandedUrl(open ? page.url : null)} asChild>
                                 <>
