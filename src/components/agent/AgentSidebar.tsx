@@ -24,7 +24,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: "Pipeline", icon: Kanban, href: "/agent/pipeline", beta: true },
   
   { label: "Dialer", icon: Phone, href: "/agent/dialer", beta: true },
-  { label: "Bookings", icon: CalendarCheck, href: "/agent/operations" },
+  
   { label: "Pulse Monitor", icon: Activity, href: "/agent/pulse" },
   { label: "Leaderboard", icon: Trophy, href: "/leaderboard" },
 ];
