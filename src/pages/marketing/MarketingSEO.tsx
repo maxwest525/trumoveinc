@@ -570,7 +570,6 @@ export default function MarketingSEO() {
                           {analyzing ? <Loader2 className="w-3 h-3 animate-spin" /> : <Search className="w-3 h-3" />}
                         </Button>
                       </div>
-                      </div>
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-4">
