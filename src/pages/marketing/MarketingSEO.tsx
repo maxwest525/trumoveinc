@@ -5,18 +5,25 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
   Search, Sparkles, Globe, CheckCircle2, AlertCircle, Loader2,
   Download, ChevronDown, ChevronUp, RefreshCw, ScanSearch, Link2,
   AlertTriangle, CircleCheck, Filter, XCircle, EyeOff, Expand,
+  BarChart3, ExternalLink,
 } from "lucide-react";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import AuditPageDetail, { type PageDecisions, type FieldStatus } from "@/components/seo/AuditPageDetail";
+import SeoOverviewStrip from "@/components/seo/SeoOverviewStrip";
+import SearchConsoleTab from "@/components/seo/SearchConsoleTab";
+import GA4Tab from "@/components/seo/GA4Tab";
+import BacklinksTab from "@/components/seo/BacklinksTab";
+import type { PhaseInfo } from "@/components/seo/types";
 
 interface IssueSuggestion {
   issue: string;
@@ -61,7 +68,19 @@ export default function MarketingSEO() {
   const [regeneratingUrl, setRegeneratingUrl] = useState<string | null>(null);
   const [filterMode, setFilterMode] = useState<FilterMode>("all");
   const [expandedSidebarItem, setExpandedSidebarItem] = useState<SidebarItem | null>(null);
+  const [activeTab, setActiveTab] = useState("phase1");
 
+  // Phase statuses
+  const phases: PhaseInfo[] = [
+    { id: 1, label: "Crawl / Audit", status: auditPages.length > 0 ? "connected" : "not_connected", lastSync: auditPages.length > 0 ? new Date().toISOString() : null },
+    { id: 2, label: "Search Console", status: "not_connected" },
+    { id: 3, label: "GA4", status: "not_connected" },
+    { id: 4, label: "Backlinks", status: "coming_soon" },
+  ];
+
+  const totalIssues = auditPages.reduce((sum, p) => sum + (p.issues?.length || 0), 0);
+
+  // ─── Phase 1 Logic (unchanged) ───
   const analyzeUrls = useCallback(async (urls: string[]) => {
     setAnalyzing(true);
     setAuditPages([]);
@@ -106,7 +125,6 @@ export default function MarketingSEO() {
       }
     }
 
-    // Save to DB
     for (const page of allResults) {
       try {
         await supabase.from("seo_audit_pages" as any).insert({
@@ -130,7 +148,6 @@ export default function MarketingSEO() {
     toast.success(`Audit complete — ${allResults.length} pages analyzed, ${withIssues} need improvement`);
   }, []);
 
-  // Crawl + auto-analyze in one click
   const handleFullCrawl = async () => {
     setDiscovering(true);
     setDiscoveredUrls([]);
@@ -168,7 +185,6 @@ export default function MarketingSEO() {
   const handleDecisionChange = async (url: string, d: PageDecisions) => {
     setDecisions((prev) => ({ ...prev, [url]: d }));
 
-    // Persist to seo_audit_pages (existing behavior)
     const updates: any = {};
     if (d.title.status === "approved") updates.suggested_title = auditPages.find(p => p.url === url)?.suggestedTitle;
     if (d.title.status === "edited") updates.suggested_title = d.title.editedValue;
@@ -186,16 +202,9 @@ export default function MarketingSEO() {
       supabase.from("seo_audit_pages" as any).update(updates as any).eq("url", url).then();
     }
 
-    // ── Apply to live site via seo_overrides only on "published" ──
     const page = auditPages.find(p => p.url === url);
     if (!page) return;
 
-    const titleVal = d.title.status === "published" ? (page.suggestedTitle || d.title.editedValue)
-      : null;
-    const descVal = d.description.status === "published" ? (page.suggestedDescription || d.description.editedValue)
-      : null;
-
-    // Check edited values too for published fields
     const finalTitle = d.title.status === "published"
       ? (d.title.editedValue || page.suggestedTitle)
       : null;
@@ -205,7 +214,7 @@ export default function MarketingSEO() {
 
     if (finalTitle || finalDesc) {
       let rawPath = "/";
-      try { rawPath = new URL(url).pathname; } catch { /* keep / */ }
+      try { rawPath = new URL(url).pathname; } catch {}
       const urlPath = rawPath === "/" ? "/site" : `/site${rawPath}`;
 
       const override: Record<string, any> = { url_path: urlPath, updated_at: new Date().toISOString() };
@@ -293,7 +302,6 @@ export default function MarketingSEO() {
       if (descVal) lines.push(`- **Meta Description**: ${descVal}`);
       if (h1Val) lines.push(`- **H1**: ${h1Val}`);
 
-      // Include approved issue fixes
       const issueKeys = Object.keys(d.issues || {});
       issueKeys.forEach((key) => {
         const id = d.issues[key];
@@ -315,7 +323,6 @@ export default function MarketingSEO() {
     navigator.clipboard.writeText(prompt).then(() => {
       toast.success("Copied! Paste this into the Lovable chat to apply changes to your code.");
     }).catch(() => {
-      // Fallback: show in a prompt
       const w = window.open("", "_blank");
       if (w) { w.document.write(`<pre>${prompt}</pre>`); }
     });
@@ -344,20 +351,16 @@ export default function MarketingSEO() {
   };
 
   const hasExportable = auditPages.some((p) => getPageStatus(p.url) === "actioned");
-
-  // Stats
   const pagesWithIssues = auditPages.filter(p => issueCount(p) > 0);
   const pagesOk = auditPages.filter(p => issueCount(p) === 0);
-  const totalIssues = auditPages.reduce((sum, p) => sum + issueCount(p), 0);
 
-  // Filtered + sorted: pages with issues first
   const filteredPages = filterMode === "issues"
     ? pagesWithIssues
     : filterMode === "ok"
       ? pagesOk
       : [...pagesWithIssues, ...pagesOk];
 
-  // Collect sidebar items grouped by status
+  // Sidebar items
   const sidebarItems: SidebarItem[] = auditPages.flatMap((page) => {
     const d = decisions[page.url];
     if (!d) return [];
@@ -397,7 +400,6 @@ export default function MarketingSEO() {
   };
 
   const handlePublishAll = async () => {
-    // Build a merged decisions object with all accepted items set to published
     let updatedDecisions = { ...decisions };
     for (const item of acceptedItems) {
       const d = updatedDecisions[item.url];
@@ -410,7 +412,6 @@ export default function MarketingSEO() {
     }
     setDecisions(updatedDecisions);
 
-    // Now trigger seo_overrides upserts for each URL that has published fields
     const affectedUrls = [...new Set(acceptedItems.map(i => i.url))];
     for (const url of affectedUrls) {
       const d = updatedDecisions[url];
@@ -437,17 +438,14 @@ export default function MarketingSEO() {
     const d = decisions[item.url];
     if (!d) return;
 
-    // If unpublishing, delete the seo_override from DB and revert to "approved"
     if (item.status === "published" && !item.isIssue) {
       let rawPath = "/";
       try { rawPath = new URL(item.url).pathname; } catch {}
       const urlPath = rawPath === "/" ? "/site" : `/site${rawPath}`;
 
-      // Check if other fields for this URL are still published
       const updatedField = { ...d[item.fieldKey as "title" | "description" | "h1"], status: "approved" as const };
       const newD = { ...d, [item.fieldKey]: updatedField };
-      
-      // If no fields are published anymore for this URL, delete the override row
+
       const stillPublished = ["title", "description", "h1"].some(
         f => f !== item.fieldKey && newD[f as "title" | "description" | "h1"].status === "published"
       );
@@ -455,7 +453,6 @@ export default function MarketingSEO() {
       if (!stillPublished) {
         await supabase.from("seo_overrides" as any).delete().eq("url_path", urlPath);
       } else {
-        // Null out just this field in the override
         const nullUpdate: Record<string, any> = { updated_at: new Date().toISOString() };
         nullUpdate[item.fieldKey] = null;
         await supabase.from("seo_overrides" as any).update(nullUpdate as any).eq("url_path", urlPath);
@@ -466,7 +463,6 @@ export default function MarketingSEO() {
       return;
     }
 
-    // For non-published items, just reset to pending
     if (item.isIssue) {
       handleDecisionChange(item.url, { ...d, issues: { ...d.issues, [item.fieldKey]: { status: "pending" } } });
     } else {
@@ -475,381 +471,369 @@ export default function MarketingSEO() {
   };
 
   return (
-    <MarketingShell breadcrumbs={[{ label: "SEO Audit" }]}>
-      <div className="flex gap-6">
-      <div className="space-y-6 flex-1 min-w-0">
+    <MarketingShell breadcrumbs={[{ label: "SEO Module" }]}>
+      <div className="space-y-6">
         <div>
-          <h1 className="text-xl font-bold text-foreground">SEO Audit</h1>
+          <h1 className="text-xl font-bold text-foreground">SEO Module</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Auto-crawl <span className="font-medium">trumoveinc.com</span>, detect on-page issues, and get AI-written improvements.
+            Full SEO pipeline — crawl, audit, analyze search data, and track backlinks in one place.
           </p>
         </div>
 
-        {/* Controls */}
-        <Card>
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between gap-3 flex-wrap">
-              <div>
-                <CardTitle className="text-base flex items-center gap-2">
-                  <Globe className="w-4 h-4 text-primary" /> Audit Controls
-                </CardTitle>
-                <CardDescription className="text-xs mt-1">Full crawl auto-analyzes every page found.</CardDescription>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <Input
-                  value={singleUrl}
-                  onChange={(e) => setSingleUrl(e.target.value)}
-                  placeholder="Single URL…"
-                  className="h-8 w-48 text-xs"
-                  onKeyDown={(e) => e.key === "Enter" && singleUrl && handleAnalyzeSingle()}
-                />
-                <Button onClick={handleAnalyzeSingle} disabled={analyzing || !singleUrl} variant="secondary" size="sm" className="h-8 shrink-0">
-                  {analyzing ? <Loader2 className="w-3 h-3 animate-spin" /> : <Search className="w-3 h-3" />}
-                </Button>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex flex-wrap gap-2">
-              <Button onClick={handleFullCrawl} disabled={discovering || analyzing} variant="default" size="sm">
-                {(discovering || analyzing) ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <ScanSearch className="w-3 h-3 mr-1" />}
-                {discovering ? "Discovering pages…" : analyzing ? `Analyzing…` : "Crawl & Analyze trumoveinc.com"}
-              </Button>
-              {hasExportable && (
-                <>
-                  <Button onClick={handleApplyToCode} variant="default" size="sm">
-                    <Sparkles className="w-3 h-3 mr-1" /> Apply to Code (Copy Prompt)
-                  </Button>
-                  <Button onClick={handleExportCSV} variant="outline" size="sm">
-                    <Download className="w-3 h-3 mr-1" /> Export CSV
-                  </Button>
-                </>
-              )}
-            </div>
+        {/* Overview Strip */}
+        <SeoOverviewStrip
+          totalUrls={auditPages.length}
+          totalIssues={totalIssues}
+          phases={phases}
+        />
 
-            {analyzing && analyzeProgress.total > 0 && (
-              <div className="space-y-1.5">
-                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <Loader2 className="w-3 h-3 animate-spin" />
-                  Analyzing {analyzeProgress.done}/{analyzeProgress.total} pages…
-                </div>
-                <div className="w-full bg-muted rounded-full h-1.5">
-                  <div
-                    className="bg-primary h-1.5 rounded-full transition-all duration-300"
-                    style={{ width: `${(analyzeProgress.done / analyzeProgress.total) * 100}%` }}
-                  />
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        {/* Phase Tabs */}
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="w-full justify-start bg-muted/50 h-auto p-1 flex-wrap">
+            <TabsTrigger value="phase1" className="gap-1.5 text-xs data-[state=active]:bg-background">
+              <ScanSearch className="w-3.5 h-3.5" /> Phase 1: Crawl / Audit
+            </TabsTrigger>
+            <TabsTrigger value="phase2" className="gap-1.5 text-xs data-[state=active]:bg-background">
+              <Search className="w-3.5 h-3.5" /> Phase 2: Search Console
+            </TabsTrigger>
+            <TabsTrigger value="phase3" className="gap-1.5 text-xs data-[state=active]:bg-background">
+              <BarChart3 className="w-3.5 h-3.5" /> Phase 3: GA4
+            </TabsTrigger>
+            <TabsTrigger value="phase4" className="gap-1.5 text-xs data-[state=active]:bg-background">
+              <ExternalLink className="w-3.5 h-3.5" /> Phase 4: Backlinks
+            </TabsTrigger>
+          </TabsList>
 
-        {/* Summary Strip */}
-        {auditPages.length > 0 && !analyzing && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <Card className="bg-muted/30">
-              <CardContent className="p-4 text-center">
-                <p className="text-2xl font-bold text-foreground">{auditPages.length}</p>
-                <p className="text-[11px] text-muted-foreground">Pages Scanned</p>
-              </CardContent>
-            </Card>
-            <Card className={pagesWithIssues.length > 0 ? "bg-destructive/5 border-destructive/20" : "bg-muted/30"}>
-              <CardContent className="p-4 text-center">
-                <p className="text-2xl font-bold text-destructive">{pagesWithIssues.length}</p>
-                <p className="text-[11px] text-muted-foreground">Pages Need Work</p>
-              </CardContent>
-            </Card>
-            <Card className="bg-muted/30">
-              <CardContent className="p-4 text-center">
-                <p className="text-2xl font-bold text-foreground">{totalIssues}</p>
-                <p className="text-[11px] text-muted-foreground">Total Issues</p>
-              </CardContent>
-            </Card>
-            <Card className="bg-muted/30">
-              <CardContent className="p-4 text-center">
-                <p className="text-2xl font-bold text-primary">{pagesOk.length}</p>
-                <p className="text-[11px] text-muted-foreground">Pages OK</p>
-              </CardContent>
-            </Card>
-          </div>
-        )}
-
-        {/* Results */}
-        {auditPages.length > 0 && (
-          <Card>
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between flex-wrap gap-2">
-                <CardTitle className="text-base flex items-center gap-2">
-                  <ScanSearch className="w-4 h-4 text-primary" /> Audit Results
-                </CardTitle>
-                <div className="flex items-center gap-1.5">
-                  <Filter className="w-3 h-3 text-muted-foreground" />
-                  <Button
-                    variant={filterMode === "all" ? "default" : "ghost"}
-                    size="sm"
-                    className="h-6 text-[11px] px-2"
-                    onClick={() => setFilterMode("all")}
-                  >
-                    All ({auditPages.length})
-                  </Button>
-                  <Button
-                    variant={filterMode === "issues" ? "destructive" : "ghost"}
-                    size="sm"
-                    className="h-6 text-[11px] px-2"
-                    onClick={() => setFilterMode("issues")}
-                  >
-                    <AlertTriangle className="w-3 h-3 mr-1" />
-                    Needs Work ({pagesWithIssues.length})
-                  </Button>
-                  <Button
-                    variant={filterMode === "ok" ? "default" : "ghost"}
-                    size="sm"
-                    className="h-6 text-[11px] px-2"
-                    onClick={() => setFilterMode("ok")}
-                  >
-                    <CircleCheck className="w-3 h-3 mr-1" />
-                    OK ({pagesOk.length})
-                  </Button>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="p-0">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-[35%]">Page</TableHead>
-                    <TableHead className="w-[15%]">Issues</TableHead>
-                    <TableHead className="w-[15%]">Title</TableHead>
-                    <TableHead className="w-[15%]">Description</TableHead>
-                    <TableHead className="w-[20%]">Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredPages.map((page) => {
-                    const status = getPageStatus(page.url);
-                    const hasIssues = issueCount(page) > 0;
-                    return (
-                      <Collapsible key={page.url} open={expandedUrl === page.url} onOpenChange={(open) => setExpandedUrl(open ? page.url : null)} asChild>
+          {/* Phase 1: Crawl / Audit */}
+          <TabsContent value="phase1">
+            <div className="flex gap-6">
+              <div className="space-y-6 flex-1 min-w-0">
+                {/* Controls */}
+                <Card>
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between gap-3 flex-wrap">
+                      <div>
+                        <CardTitle className="text-base flex items-center gap-2">
+                          <Globe className="w-4 h-4 text-primary" /> Audit Controls
+                        </CardTitle>
+                        <CardDescription className="text-xs mt-1">Full crawl auto-analyzes every page found.</CardDescription>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <Input
+                          value={singleUrl}
+                          onChange={(e) => setSingleUrl(e.target.value)}
+                          placeholder="Single URL…"
+                          className="h-8 w-48 text-xs"
+                          onKeyDown={(e) => e.key === "Enter" && singleUrl && handleAnalyzeSingle()}
+                        />
+                        <Button onClick={handleAnalyzeSingle} disabled={analyzing || !singleUrl} variant="secondary" size="sm" className="h-8 shrink-0">
+                          {analyzing ? <Loader2 className="w-3 h-3 animate-spin" /> : <Search className="w-3 h-3" />}
+                        </Button>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex flex-wrap gap-2">
+                      <Button onClick={handleFullCrawl} disabled={discovering || analyzing} variant="default" size="sm">
+                        {(discovering || analyzing) ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <ScanSearch className="w-3 h-3 mr-1" />}
+                        {discovering ? "Discovering pages…" : analyzing ? `Analyzing…` : "Crawl & Analyze trumoveinc.com"}
+                      </Button>
+                      {hasExportable && (
                         <>
-                          <CollapsibleTrigger asChild>
-                            <TableRow className={`cursor-pointer hover:bg-muted/50 ${hasIssues ? "border-l-2 border-l-destructive" : ""}`}>
-                              <TableCell>
-                                <div className="flex items-center gap-1.5">
-                                  {expandedUrl === page.url ? <ChevronUp className="w-3 h-3 shrink-0 text-muted-foreground" /> : <ChevronDown className="w-3 h-3 shrink-0 text-muted-foreground" />}
-                                  <div className="min-w-0">
-                                    <p className="font-mono text-xs truncate">{page.url.replace("https://trumoveinc.com", "") || "/"}</p>
-                                    {hasIssues && (
-                                      <p className="text-[10px] text-destructive mt-0.5 truncate">
-                                        {page.issues.slice(0, 2).join(" · ")}{page.issues.length > 2 ? ` +${page.issues.length - 2} more` : ""}
-                                      </p>
-                                    )}
-                                  </div>
-                                </div>
-                              </TableCell>
-                              <TableCell>
-                                {hasIssues ? (
-                                  <Badge variant="destructive" className="text-[10px]">
-                                    <AlertTriangle className="w-2.5 h-2.5 mr-0.5" />
-                                    {issueCount(page)}
-                                  </Badge>
-                                ) : (
-                                  <Badge variant="default" className="text-[10px]">
-                                    <CircleCheck className="w-2.5 h-2.5 mr-0.5" />
-                                    OK
-                                  </Badge>
-                                )}
-                              </TableCell>
-                              <TableCell>{charBadge(page.fetchedTitle, 50, 60)}</TableCell>
-                              <TableCell>{charBadge(page.fetchedDescription, 150, 160)}</TableCell>
-                              <TableCell>
-                                <Badge
-                                  variant={status === "actioned" ? "default" : status === "ignored" ? "outline" : "secondary"}
-                                  className="text-[10px]"
-                                >
-                                  {status === "actioned" ? "✓ Reviewed" : status}
-                                </Badge>
-                              </TableCell>
-                            </TableRow>
-                          </CollapsibleTrigger>
-                          <CollapsibleContent asChild>
-                            <TableRow>
-                              <TableCell colSpan={5} className="bg-muted/20 p-5">
-                                <AuditPageDetail
-                                  page={page}
-                                  decisions={decisions[page.url] || defaultDecisions()}
-                                  onDecisionChange={handleDecisionChange}
-                                  onRegenerate={handleRegenerate}
-                                  regenerating={regeneratingUrl === page.url}
-                                />
-                              </TableCell>
-                            </TableRow>
-                          </CollapsibleContent>
+                          <Button onClick={handleApplyToCode} variant="default" size="sm">
+                            <Sparkles className="w-3 h-3 mr-1" /> Apply to Code (Copy Prompt)
+                          </Button>
+                          <Button onClick={handleExportCSV} variant="outline" size="sm">
+                            <Download className="w-3 h-3 mr-1" /> Export CSV
+                          </Button>
                         </>
-                      </Collapsible>
-                    );
-                  })}
-                </TableBody>
-              </Table>
+                      )}
+                    </div>
 
-              {filteredPages.length === 0 && (
-                <div className="text-center py-8 text-sm text-muted-foreground">
-                  No pages match this filter.
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        )}
+                    {analyzing && analyzeProgress.total > 0 && (
+                      <div className="space-y-1.5">
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <Loader2 className="w-3 h-3 animate-spin" />
+                          Analyzing {analyzeProgress.done}/{analyzeProgress.total} pages…
+                        </div>
+                        <div className="w-full bg-muted rounded-full h-1.5">
+                          <div
+                            className="bg-primary h-1.5 rounded-full transition-all duration-300"
+                            style={{ width: `${(analyzeProgress.done / analyzeProgress.total) * 100}%` }}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
 
-        {/* Placeholders */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          <Card className="border-dashed border-border">
-            <CardContent className="p-4 flex items-start gap-2">
-              <AlertCircle className="w-4 h-4 text-muted-foreground mt-0.5 shrink-0" />
-              <div>
-                <p className="text-xs font-medium text-muted-foreground">Phase 2: Search Console</p>
-                <p className="text-[11px] text-muted-foreground">Connect GSC to import top queries per URL and match titles to real search demand.</p>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="border-dashed border-border">
-            <CardContent className="p-4 flex items-start gap-2">
-              <AlertCircle className="w-4 h-4 text-muted-foreground mt-0.5 shrink-0" />
-              <div>
-                <p className="text-xs font-medium text-muted-foreground">Phase 3: GA4 Integration</p>
-                <p className="text-[11px] text-muted-foreground">Prioritize SEO fixes by conversion data — focus on pages that drive bookings.</p>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="border-dashed border-border">
-            <CardContent className="p-4 flex items-start gap-2">
-              <AlertCircle className="w-4 h-4 text-muted-foreground mt-0.5 shrink-0" />
-              <div>
-                <p className="text-xs font-medium text-muted-foreground">Authority & Backlinks</p>
-                <p className="text-[11px] text-muted-foreground">Placeholder for Ahrefs/Semrush integration — domain authority and backlink data.</p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+                {/* Summary Strip */}
+                {auditPages.length > 0 && !analyzing && (
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <Card className="bg-muted/30">
+                      <CardContent className="p-4 text-center">
+                        <p className="text-2xl font-bold text-foreground">{auditPages.length}</p>
+                        <p className="text-[11px] text-muted-foreground">Pages Scanned</p>
+                      </CardContent>
+                    </Card>
+                    <Card className={pagesWithIssues.length > 0 ? "bg-destructive/5 border-destructive/20" : "bg-muted/30"}>
+                      <CardContent className="p-4 text-center">
+                        <p className="text-2xl font-bold text-destructive">{pagesWithIssues.length}</p>
+                        <p className="text-[11px] text-muted-foreground">Pages Need Work</p>
+                      </CardContent>
+                    </Card>
+                    <Card className="bg-muted/30">
+                      <CardContent className="p-4 text-center">
+                        <p className="text-2xl font-bold text-foreground">{totalIssues}</p>
+                        <p className="text-[11px] text-muted-foreground">Total Issues</p>
+                      </CardContent>
+                    </Card>
+                    <Card className="bg-muted/30">
+                      <CardContent className="p-4 text-center">
+                        <p className="text-2xl font-bold text-primary">{pagesOk.length}</p>
+                        <p className="text-[11px] text-muted-foreground">Pages OK</p>
+                      </CardContent>
+                    </Card>
+                  </div>
+                )}
 
-      </div>
+                {/* Results Table */}
+                {auditPages.length > 0 && (
+                  <Card>
+                    <CardHeader className="pb-3">
+                      <div className="flex items-center justify-between flex-wrap gap-2">
+                        <CardTitle className="text-base flex items-center gap-2">
+                          <ScanSearch className="w-4 h-4 text-primary" /> Audit Results
+                        </CardTitle>
+                        <div className="flex items-center gap-1.5">
+                          <Filter className="w-3 h-3 text-muted-foreground" />
+                          <Button variant={filterMode === "all" ? "default" : "ghost"} size="sm" className="h-6 text-[11px] px-2" onClick={() => setFilterMode("all")}>
+                            All ({auditPages.length})
+                          </Button>
+                          <Button variant={filterMode === "issues" ? "destructive" : "ghost"} size="sm" className="h-6 text-[11px] px-2" onClick={() => setFilterMode("issues")}>
+                            <AlertTriangle className="w-3 h-3 mr-1" /> Needs Work ({pagesWithIssues.length})
+                          </Button>
+                          <Button variant={filterMode === "ok" ? "default" : "ghost"} size="sm" className="h-6 text-[11px] px-2" onClick={() => setFilterMode("ok")}>
+                            <CircleCheck className="w-3 h-3 mr-1" /> OK ({pagesOk.length})
+                          </Button>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="p-0">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead className="w-[35%]">Page</TableHead>
+                            <TableHead className="w-[15%]">Issues</TableHead>
+                            <TableHead className="w-[15%]">Title</TableHead>
+                            <TableHead className="w-[15%]">Description</TableHead>
+                            <TableHead className="w-[20%]">Status</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {filteredPages.map((page) => {
+                            const status = getPageStatus(page.url);
+                            const hasIssues = issueCount(page) > 0;
+                            return (
+                              <Collapsible key={page.url} open={expandedUrl === page.url} onOpenChange={(open) => setExpandedUrl(open ? page.url : null)} asChild>
+                                <>
+                                  <CollapsibleTrigger asChild>
+                                    <TableRow className={`cursor-pointer hover:bg-muted/50 ${hasIssues ? "border-l-2 border-l-destructive" : ""}`}>
+                                      <TableCell>
+                                        <div className="flex items-center gap-1.5">
+                                          {expandedUrl === page.url ? <ChevronUp className="w-3 h-3 shrink-0 text-muted-foreground" /> : <ChevronDown className="w-3 h-3 shrink-0 text-muted-foreground" />}
+                                          <div className="min-w-0">
+                                            <p className="font-mono text-xs truncate">{page.url.replace("https://trumoveinc.com", "") || "/"}</p>
+                                            {hasIssues && (
+                                              <p className="text-[10px] text-destructive mt-0.5 truncate">
+                                                {page.issues.slice(0, 2).join(" · ")}{page.issues.length > 2 ? ` +${page.issues.length - 2} more` : ""}
+                                              </p>
+                                            )}
+                                          </div>
+                                        </div>
+                                      </TableCell>
+                                      <TableCell>
+                                        {hasIssues ? (
+                                          <Badge variant="destructive" className="text-[10px]">
+                                            <AlertTriangle className="w-2.5 h-2.5 mr-0.5" /> {issueCount(page)}
+                                          </Badge>
+                                        ) : (
+                                          <Badge variant="default" className="text-[10px]">
+                                            <CircleCheck className="w-2.5 h-2.5 mr-0.5" /> OK
+                                          </Badge>
+                                        )}
+                                      </TableCell>
+                                      <TableCell>{charBadge(page.fetchedTitle, 50, 60)}</TableCell>
+                                      <TableCell>{charBadge(page.fetchedDescription, 150, 160)}</TableCell>
+                                      <TableCell>
+                                        <Badge variant={status === "actioned" ? "default" : status === "ignored" ? "outline" : "secondary"} className="text-[10px]">
+                                          {status === "actioned" ? "✓ Reviewed" : status}
+                                        </Badge>
+                                      </TableCell>
+                                    </TableRow>
+                                  </CollapsibleTrigger>
+                                  <CollapsibleContent asChild>
+                                    <TableRow>
+                                      <TableCell colSpan={5} className="bg-muted/20 p-5">
+                                        <AuditPageDetail
+                                          page={page}
+                                          decisions={decisions[page.url] || defaultDecisions()}
+                                          onDecisionChange={handleDecisionChange}
+                                          onRegenerate={handleRegenerate}
+                                          regenerating={regeneratingUrl === page.url}
+                                        />
+                                      </TableCell>
+                                    </TableRow>
+                                  </CollapsibleContent>
+                                </>
+                              </Collapsible>
+                            );
+                          })}
+                        </TableBody>
+                      </Table>
 
-      {/* Changes Sidebar */}
-      <div className="w-72 shrink-0 hidden lg:block">
-        <div className="sticky top-6 space-y-4">
-          {/* Accepted Changes */}
-          <Card>
-            <CardHeader className="pb-2">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-sm flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-primary" />
-                  Accepted ({acceptedItems.length})
-                </CardTitle>
-                {acceptedItems.length > 0 && (
-                  <Button variant="default" size="sm" className="h-6 text-[10px] px-2 gap-1" onClick={handlePublishAll}>
-                    <Sparkles className="w-3 h-3" /> Publish All
-                  </Button>
+                      {filteredPages.length === 0 && (
+                        <div className="text-center py-8 text-sm text-muted-foreground">
+                          No pages match this filter.
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
                 )}
               </div>
-            </CardHeader>
-            <CardContent className="space-y-1.5 ">
-              {acceptedItems.length === 0 ? (
-                <p className="text-[11px] text-muted-foreground py-2 text-center">No accepted changes yet</p>
-              ) : (
-                acceptedItems.map((item, i) => (
-                  <div key={`a-${item.url}-${item.fieldKey}-${i}`} className="rounded-lg border border-primary/20 bg-primary/5 p-2 space-y-0.5">
-                    <div className="flex items-center justify-between gap-1">
-                      <Badge variant="default" className="text-[9px] h-4 px-1.5 shrink-0">{item.field}</Badge>
-                      <div className="flex items-center gap-0.5 shrink-0">
-                        <Button variant="ghost" size="sm" className="h-5 w-5 p-0" onClick={() => setExpandedSidebarItem(item)}>
-                          <Expand className="w-3 h-3 text-muted-foreground" />
-                        </Button>
-                        <Button variant="default" size="sm" className="h-5 text-[9px] px-1.5" onClick={() => handleSidebarPublish(item)}>
-                          Publish
-                        </Button>
-                        <Button variant="ghost" size="sm" className="h-5 w-5 p-0" onClick={() => handleSidebarRemove(item)}>
-                          <XCircle className="w-3 h-3 text-muted-foreground" />
-                        </Button>
-                      </div>
-                    </div>
-                    <p className="text-[10px] font-mono text-muted-foreground truncate">
-                      {item.url.replace("https://trumoveinc.com", "") || "/"}
-                    </p>
-                    <p className="text-[11px] text-foreground line-clamp-2 cursor-pointer hover:text-primary transition-colors" onClick={() => setExpandedSidebarItem(item)}>
-                      {item.value}
-                    </p>
-                  </div>
-                ))
-              )}
-            </CardContent>
-          </Card>
 
-          {/* Ignored Changes */}
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm flex items-center gap-2">
-                <EyeOff className="w-4 h-4 text-muted-foreground" />
-                Ignored ({ignoredItems.length})
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-1.5 ">
-              {ignoredItems.length === 0 ? (
-                <p className="text-[11px] text-muted-foreground py-2 text-center">No ignored changes</p>
-              ) : (
-                ignoredItems.map((item, i) => (
-                  <div key={`i-${item.url}-${item.fieldKey}-${i}`} className="rounded-lg border border-border bg-muted/20 p-2 space-y-0.5 opacity-70">
-                    <div className="flex items-center justify-between gap-1">
-                      <Badge variant="secondary" className="text-[9px] h-4 px-1.5 shrink-0">{item.field}</Badge>
-                      <Button variant="ghost" size="sm" className="h-5 w-5 p-0" onClick={() => handleSidebarRemove(item)}>
-                        <XCircle className="w-3 h-3 text-muted-foreground" />
-                      </Button>
-                    </div>
-                    <p className="text-[10px] font-mono text-muted-foreground truncate">
-                      {item.url.replace("https://trumoveinc.com", "") || "/"}
-                    </p>
-                  </div>
-                ))
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Published Changes */}
-          <Card className="border-primary/30">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-primary" />
-                Published ({publishedSidebarItems.length})
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-1.5 ">
-              {publishedSidebarItems.length === 0 ? (
-                <p className="text-[11px] text-muted-foreground py-2 text-center">No published changes yet</p>
-              ) : (
-                publishedSidebarItems.map((item, i) => (
-                  <div key={`p-${item.url}-${item.fieldKey}-${i}`} className="rounded-lg border border-primary/30 bg-primary/10 p-2 space-y-0.5">
-                    <div className="flex items-center justify-between gap-1">
-                      <Badge variant="default" className="text-[9px] h-4 px-1.5 shrink-0">{item.field}</Badge>
-                      <div className="flex items-center gap-0.5 shrink-0">
-                        <Button variant="ghost" size="sm" className="h-5 w-5 p-0" onClick={() => setExpandedSidebarItem(item)}>
-                          <Expand className="w-3 h-3 text-muted-foreground" />
-                        </Button>
-                        <Button variant="ghost" size="sm" className="h-5 w-5 p-0" onClick={() => handleSidebarRemove(item)}>
-                          <XCircle className="w-3 h-3 text-muted-foreground" />
-                        </Button>
+              {/* Changes Sidebar */}
+              <div className="w-72 shrink-0 hidden lg:block">
+                <div className="sticky top-6 space-y-4">
+                  {/* Accepted Changes */}
+                  <Card>
+                    <CardHeader className="pb-2">
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="text-sm flex items-center gap-2">
+                          <CheckCircle2 className="w-4 h-4 text-primary" /> Accepted ({acceptedItems.length})
+                        </CardTitle>
+                        {acceptedItems.length > 0 && (
+                          <Button variant="default" size="sm" className="h-6 text-[10px] px-2 gap-1" onClick={handlePublishAll}>
+                            <Sparkles className="w-3 h-3" /> Publish All
+                          </Button>
+                        )}
                       </div>
-                    </div>
-                    <p className="text-[10px] font-mono text-muted-foreground truncate">
-                      {item.url.replace("https://trumoveinc.com", "") || "/"}
-                    </p>
-                    <p className="text-[11px] text-foreground line-clamp-2 cursor-pointer hover:text-primary transition-colors" onClick={() => setExpandedSidebarItem(item)}>
-                      {item.value}
-                    </p>
-                  </div>
-                ))
-              )}
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+                    </CardHeader>
+                    <CardContent className="space-y-1.5">
+                      {acceptedItems.length === 0 ? (
+                        <p className="text-[11px] text-muted-foreground py-2 text-center">No accepted changes yet</p>
+                      ) : (
+                        acceptedItems.map((item, i) => (
+                          <div key={`a-${item.url}-${item.fieldKey}-${i}`} className="rounded-lg border border-primary/20 bg-primary/5 p-2 space-y-0.5">
+                            <div className="flex items-center justify-between gap-1">
+                              <Badge variant="default" className="text-[9px] h-4 px-1.5 shrink-0">{item.field}</Badge>
+                              <div className="flex items-center gap-0.5 shrink-0">
+                                <Button variant="ghost" size="sm" className="h-5 w-5 p-0" onClick={() => setExpandedSidebarItem(item)}>
+                                  <Expand className="w-3 h-3 text-muted-foreground" />
+                                </Button>
+                                <Button variant="default" size="sm" className="h-5 text-[9px] px-1.5" onClick={() => handleSidebarPublish(item)}>
+                                  Publish
+                                </Button>
+                                <Button variant="ghost" size="sm" className="h-5 w-5 p-0" onClick={() => handleSidebarRemove(item)}>
+                                  <XCircle className="w-3 h-3 text-muted-foreground" />
+                                </Button>
+                              </div>
+                            </div>
+                            <p className="text-[10px] font-mono text-muted-foreground truncate">
+                              {item.url.replace("https://trumoveinc.com", "") || "/"}
+                            </p>
+                            <p className="text-[11px] text-foreground line-clamp-2 cursor-pointer hover:text-primary transition-colors" onClick={() => setExpandedSidebarItem(item)}>
+                              {item.value}
+                            </p>
+                          </div>
+                        ))
+                      )}
+                    </CardContent>
+                  </Card>
+
+                  {/* Ignored Changes */}
+                  <Card>
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm flex items-center gap-2">
+                        <EyeOff className="w-4 h-4 text-muted-foreground" /> Ignored ({ignoredItems.length})
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-1.5">
+                      {ignoredItems.length === 0 ? (
+                        <p className="text-[11px] text-muted-foreground py-2 text-center">No ignored changes</p>
+                      ) : (
+                        ignoredItems.map((item, i) => (
+                          <div key={`i-${item.url}-${item.fieldKey}-${i}`} className="rounded-lg border border-border bg-muted/20 p-2 space-y-0.5 opacity-70">
+                            <div className="flex items-center justify-between gap-1">
+                              <Badge variant="secondary" className="text-[9px] h-4 px-1.5 shrink-0">{item.field}</Badge>
+                              <Button variant="ghost" size="sm" className="h-5 w-5 p-0" onClick={() => handleSidebarRemove(item)}>
+                                <XCircle className="w-3 h-3 text-muted-foreground" />
+                              </Button>
+                            </div>
+                            <p className="text-[10px] font-mono text-muted-foreground truncate">
+                              {item.url.replace("https://trumoveinc.com", "") || "/"}
+                            </p>
+                          </div>
+                        ))
+                      )}
+                    </CardContent>
+                  </Card>
+
+                  {/* Published Changes */}
+                  <Card className="border-primary/30">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm flex items-center gap-2">
+                        <Sparkles className="w-4 h-4 text-primary" /> Published ({publishedSidebarItems.length})
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-1.5">
+                      {publishedSidebarItems.length === 0 ? (
+                        <p className="text-[11px] text-muted-foreground py-2 text-center">No published changes yet</p>
+                      ) : (
+                        publishedSidebarItems.map((item, i) => (
+                          <div key={`p-${item.url}-${item.fieldKey}-${i}`} className="rounded-lg border border-primary/30 bg-primary/10 p-2 space-y-0.5">
+                            <div className="flex items-center justify-between gap-1">
+                              <Badge variant="default" className="text-[9px] h-4 px-1.5 shrink-0">{item.field}</Badge>
+                              <div className="flex items-center gap-0.5 shrink-0">
+                                <Button variant="ghost" size="sm" className="h-5 w-5 p-0" onClick={() => setExpandedSidebarItem(item)}>
+                                  <Expand className="w-3 h-3 text-muted-foreground" />
+                                </Button>
+                                <Button variant="ghost" size="sm" className="h-5 w-5 p-0" onClick={() => handleSidebarRemove(item)}>
+                                  <XCircle className="w-3 h-3 text-muted-foreground" />
+                                </Button>
+                              </div>
+                            </div>
+                            <p className="text-[10px] font-mono text-muted-foreground truncate">
+                              {item.url.replace("https://trumoveinc.com", "") || "/"}
+                            </p>
+                            <p className="text-[11px] text-foreground line-clamp-2 cursor-pointer hover:text-primary transition-colors" onClick={() => setExpandedSidebarItem(item)}>
+                              {item.value}
+                            </p>
+                          </div>
+                        ))
+                      )}
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* Phase 2: Search Console */}
+          <TabsContent value="phase2">
+            <SearchConsoleTab status="not_connected" auditUrls={auditPages.map(p => p.url)} />
+          </TabsContent>
+
+          {/* Phase 3: GA4 */}
+          <TabsContent value="phase3">
+            <GA4Tab status="not_connected" />
+          </TabsContent>
+
+          {/* Phase 4: Backlinks */}
+          <TabsContent value="phase4">
+            <BacklinksTab />
+          </TabsContent>
+        </Tabs>
       </div>
 
       {/* Expand Detail Dialog */}
