@@ -10,7 +10,7 @@ import {
   AlertTriangle, Sparkles,
 } from "lucide-react";
 
-type FieldStatus = "pending" | "approved" | "edited" | "ignored";
+type FieldStatus = "pending" | "approved" | "edited" | "ignored" | "published";
 
 interface FieldDecision {
   status: FieldStatus;
