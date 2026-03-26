@@ -15,7 +15,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import AuditPageDetail, { type PageDecisions } from "@/components/seo/AuditPageDetail";
+import AuditPageDetail, { type PageDecisions, type FieldStatus } from "@/components/seo/AuditPageDetail";
 
 interface IssueSuggestion {
   issue: string;
