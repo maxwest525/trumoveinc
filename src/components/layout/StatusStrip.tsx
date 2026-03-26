@@ -2,19 +2,19 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const STATUS = [
-  { text: "Instant AI quotes", key: "online-estimate", href: "/online-estimate" },
-  { text: "Vetted mover network", key: "vetting", href: "/vetting" },
-  { text: "Real time updates", key: "home", href: "/" },
-  { text: "Virtual video consults", key: "book", href: "/book" },
-  { text: "Live review and claims monitoring", key: "home", href: "/" },
-  { text: "Load tracking", key: "home", href: "/" },
+  { text: "Instant AI quotes", key: "online-estimate", href: "/site/online-estimate" },
+  { text: "Vetted mover network", key: "vetting", href: "/site/vetting" },
+  { text: "Real time updates", key: "home", href: "/site" },
+  { text: "Virtual video consults", key: "book", href: "/site/book" },
+  { text: "Live review and claims monitoring", key: "home", href: "/site" },
+  { text: "Load tracking", key: "home", href: "/site" },
 ];
 
 function getRouteKey(path: string): string {
   const route = (path || "/").toLowerCase();
-  if (route.startsWith("/online-estimate")) return "online-estimate";
-  if (route.startsWith("/vetting")) return "vetting";
-  if (route.startsWith("/book")) return "book";
+  if (route.startsWith("/site/online-estimate")) return "online-estimate";
+  if (route.startsWith("/site/vetting")) return "vetting";
+  if (route.startsWith("/site/book")) return "book";
   return "home";
 }
 
