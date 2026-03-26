@@ -358,7 +358,6 @@ export default function MarketingSEO() {
       : [...pagesWithIssues, ...pagesOk];
 
   // Collect sidebar items grouped by status
-  type SidebarItem = { url: string; field: string; fieldKey: "title" | "description" | "h1" | string; value: string; status: FieldStatus; isIssue: boolean };
   const sidebarItems: SidebarItem[] = auditPages.flatMap((page) => {
     const d = decisions[page.url];
     if (!d) return [];
