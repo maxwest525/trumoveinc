@@ -966,7 +966,7 @@ export default function Index() {
       setLeadCaptureOpen(true);
     } else {
       // Already have contact info, proceed directly
-      navigate(flow === "ai" ? "/scan-room" : "/online-estimate");
+      navigate(flow === "ai" ? "/site/scan-room" : "/site/online-estimate");
     }
   };
 
@@ -986,7 +986,7 @@ export default function Index() {
     }));
 
     // Navigate to the selected flow
-    navigate(leadCaptureTarget === "ai" ? "/scan-room" : "/online-estimate");
+    navigate(leadCaptureTarget === "ai" ? "/site/scan-room" : "/site/online-estimate");
   };
 
   // Step validation - Updated flow:
