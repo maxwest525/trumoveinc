@@ -69,6 +69,11 @@ export default function MarketingSEO() {
   const [expandedUrl, setExpandedUrl] = useState<string | null>(null);
   const [analyzeProgress, setAnalyzeProgress] = useState({ done: 0, total: 0 });
   const [complianceOpen, setComplianceOpen] = useState(false);
+
+  const sitemapPages = useMemo(() => {
+    const all = new Set([...discoveredUrls, ...auditPages.map(p => p.url)]);
+    return Array.from(all).sort();
+  }, [discoveredUrls, auditPages]);
   const [regeneratingUrl, setRegeneratingUrl] = useState<string | null>(null);
   const [filterMode, setFilterMode] = useState<FilterMode>("all");
   const [expandedSidebarItem, setExpandedSidebarItem] = useState<SidebarItem | null>(null);
