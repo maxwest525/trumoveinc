@@ -67,6 +67,7 @@ export default function MarketingSEO() {
   const [analyzing, setAnalyzing] = useState(false);
   const [expandedUrl, setExpandedUrl] = useState<string | null>(null);
   const [analyzeProgress, setAnalyzeProgress] = useState({ done: 0, total: 0 });
+  const [complianceOpen, setComplianceOpen] = useState(false);
   const [regeneratingUrl, setRegeneratingUrl] = useState<string | null>(null);
   const [filterMode, setFilterMode] = useState<FilterMode>("all");
   const [expandedSidebarItem, setExpandedSidebarItem] = useState<SidebarItem | null>(null);
