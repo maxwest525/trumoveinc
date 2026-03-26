@@ -41,6 +41,7 @@ const defaultDecisions = (): PageDecisions => ({
   title: { status: "pending" },
   description: { status: "pending" },
   h1: { status: "pending" },
+  issues: {},
 });
 
 type FilterMode = "all" | "issues" | "ok";
