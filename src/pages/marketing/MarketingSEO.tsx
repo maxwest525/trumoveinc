@@ -354,9 +354,33 @@ export default function MarketingSEO() {
       ? pagesOk
       : [...pagesWithIssues, ...pagesOk];
 
+  // Collect published items for the sidebar
+  const publishedItems = auditPages.flatMap((page) => {
+    const d = decisions[page.url];
+    if (!d) return [];
+    const items: { url: string; field: string; value: string }[] = [];
+    if (d.title.status === "published") {
+      items.push({ url: page.url, field: "Title", value: d.title.editedValue || page.suggestedTitle || "" });
+    }
+    if (d.description.status === "published") {
+      items.push({ url: page.url, field: "Description", value: d.description.editedValue || page.suggestedDescription || "" });
+    }
+    if (d.h1.status === "published") {
+      items.push({ url: page.url, field: "H1", value: d.h1.editedValue || page.suggestedH1 || "" });
+    }
+    Object.entries(d.issues || {}).forEach(([key, fd]) => {
+      if (fd.status === "published") {
+        const matched = page.issueSuggestions?.find(s => s.issue === key);
+        items.push({ url: page.url, field: key, value: fd.editedValue || matched?.suggestion || "" });
+      }
+    });
+    return items;
+  });
+
   return (
     <MarketingShell breadcrumbs={[{ label: "SEO Audit" }]}>
-      <div className="space-y-6 max-w-5xl">
+      <div className="flex gap-6">
+      <div className="space-y-6 flex-1 min-w-0">
         <div>
           <h1 className="text-xl font-bold text-foreground">SEO Audit</h1>
           <p className="text-sm text-muted-foreground mt-1">
@@ -622,6 +646,43 @@ export default function MarketingSEO() {
             </div>
           </CardContent>
         </Card>
+      </div>
+
+      {/* Published Changes Sidebar */}
+      <div className="w-72 shrink-0 hidden lg:block">
+        <div className="sticky top-6">
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-primary" />
+                Published Changes
+              </CardTitle>
+              <CardDescription className="text-[11px]">
+                Approved & published SEO overrides
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-2 max-h-[70vh] overflow-y-auto">
+              {publishedItems.length === 0 ? (
+                <p className="text-xs text-muted-foreground py-4 text-center">
+                  No published changes yet. Approve a suggestion, then click Publish.
+                </p>
+              ) : (
+                publishedItems.map((item, i) => (
+                  <div key={`${item.url}-${item.field}-${i}`} className="rounded-lg border border-primary/20 bg-primary/5 p-2.5 space-y-1">
+                    <div className="flex items-center gap-1.5">
+                      <Badge variant="default" className="text-[9px] h-4 px-1.5">{item.field}</Badge>
+                    </div>
+                    <p className="text-[10px] font-mono text-muted-foreground truncate">
+                      {item.url.replace("https://trumoveinc.com", "") || "/"}
+                    </p>
+                    <p className="text-xs text-foreground line-clamp-2">{item.value}</p>
+                  </div>
+                ))
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      </div>
       </div>
     </MarketingShell>
   );
