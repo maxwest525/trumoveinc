@@ -79,6 +79,7 @@ export default function MarketingSEO() {
           ...r,
           issues: r.issues || [],
           aiChecklist: r.aiChecklist || [],
+          issueSuggestions: r.issueSuggestions || [],
         }));
         results.forEach((r: AuditPage) => { allDecisions[r.url] = defaultDecisions(); });
         allResults.push(...results);
