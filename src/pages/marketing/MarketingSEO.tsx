@@ -583,6 +583,9 @@ export default function MarketingSEO() {
                           {regeneratingAll ? "Regenerating…" : "Regenerate All (New Constraints)"}
                         </Button>
                       )}
+                      <Button variant="outline" size="sm" onClick={() => setComplianceOpen(true)}>
+                        <Shield className="w-3 h-3 mr-1" /> Allowed & Forbidden Terms
+                      </Button>
                     </div>
 
                     {analyzing && analyzeProgress.total > 0 && (
@@ -602,8 +605,8 @@ export default function MarketingSEO() {
                   </CardContent>
                 </Card>
 
-                {/* Compliance Settings */}
-                <SeoComplianceSettings onSettingsChange={() => reloadCompliance()} />
+                {/* Compliance Settings Modal */}
+                <SeoComplianceSettings open={complianceOpen} onOpenChange={setComplianceOpen} onSettingsChange={() => reloadCompliance()} />
 
                 {/* Summary Strip */}
                 {auditPages.length > 0 && !analyzing && (
