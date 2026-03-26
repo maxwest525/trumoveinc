@@ -46,6 +46,7 @@ const defaultDecisions = (): PageDecisions => ({
 });
 
 type FilterMode = "all" | "issues" | "ok";
+type SidebarItem = { url: string; field: string; fieldKey: "title" | "description" | "h1" | string; value: string; status: FieldStatus; isIssue: boolean };
 
 export default function MarketingSEO() {
   const [singleUrl, setSingleUrl] = useState("");
