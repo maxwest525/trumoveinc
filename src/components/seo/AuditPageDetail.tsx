@@ -10,7 +10,7 @@ import {
   AlertTriangle, Sparkles,
 } from "lucide-react";
 
-type FieldStatus = "pending" | "approved" | "edited" | "ignored";
+type FieldStatus = "pending" | "approved" | "edited" | "ignored" | "published";
 
 interface FieldDecision {
   status: FieldStatus;
@@ -104,6 +104,8 @@ function IssueSuggestionCard({
   const finalValue = decision.status === "edited" ? decision.editedValue : issueSuggestion.suggestion;
   const pClass = priorityColors[issueSuggestion.priority] || priorityColors.low;
 
+  if (decision.status === "published") return null;
+
   if (decision.status === "ignored") {
     return (
       <div className="rounded-lg border border-border bg-muted/20 p-3 opacity-50">
@@ -167,21 +169,30 @@ function IssueSuggestionCard({
         {/* Actions */}
         {!editing && (
           <div className="flex items-center gap-1">
+            {decision.status === "approved" && (
+              <Button variant="default" size="sm" className="h-5 text-[10px] px-2 gap-0.5" onClick={() => onUpdate({ status: "published" })}>
+                <CheckCircle2 className="w-2.5 h-2.5" /> Publish
+              </Button>
+            )}
             {decision.status !== "approved" && (
               <Button variant="default" size="sm" className="h-5 text-[10px] px-2 gap-0.5" onClick={handleApprove}>
                 <CheckCircle2 className="w-2.5 h-2.5" /> Approve
               </Button>
             )}
-            <Button variant="outline" size="sm" className="h-5 text-[10px] px-2 gap-0.5" onClick={handleStartEdit}>
-              <Pencil className="w-2.5 h-2.5" /> Edit
-            </Button>
-            <Button variant="ghost" size="sm" className="h-5 text-[10px] px-2 gap-0.5 text-muted-foreground" onClick={handleIgnore}>
-              <XCircle className="w-2.5 h-2.5" /> Ignore
-            </Button>
+            {decision.status !== "approved" && (
+              <Button variant="outline" size="sm" className="h-5 text-[10px] px-2 gap-0.5" onClick={handleStartEdit}>
+                <Pencil className="w-2.5 h-2.5" /> Edit
+              </Button>
+            )}
+            {decision.status !== "approved" && (
+              <Button variant="ghost" size="sm" className="h-5 text-[10px] px-2 gap-0.5 text-muted-foreground" onClick={handleIgnore}>
+                <XCircle className="w-2.5 h-2.5" /> Ignore
+              </Button>
+            )}
             {decision.status === "approved" && (
               <Button variant="ghost" size="sm" className="h-5 text-[10px] px-2 text-muted-foreground" onClick={() => onUpdate({ status: "pending" })}>Undo</Button>
             )}
-            {onRegenerateItem && (
+            {decision.status !== "approved" && onRegenerateItem && (
               <Button variant="ghost" size="sm" className="h-5 text-[10px] px-2 gap-0.5 text-muted-foreground ml-auto" onClick={handleRegenSingle} disabled={regenerating}>
                 <RefreshCw className={`w-2.5 h-2.5 ${regenerating ? "animate-spin" : ""}`} /> New Suggestion
               </Button>
@@ -220,6 +231,8 @@ function FieldRow({
     await onRegenerateItem();
     setRegenerating(false);
   };
+
+  if (decision.status === "published") return null;
 
   if (decision.status === "ignored") {
     return (
@@ -301,21 +314,30 @@ function FieldRow({
 
       {!editing && suggested && (
         <div className="flex items-center gap-1.5 pt-0.5">
+          {decision.status === "approved" && (
+            <Button variant="default" size="sm" className="h-6 text-[10px] px-2.5 gap-1" onClick={() => onUpdate({ status: "published" })}>
+              <CheckCircle2 className="w-3 h-3" /> Publish
+            </Button>
+          )}
           {decision.status !== "approved" && (
             <Button variant="default" size="sm" className="h-6 text-[10px] px-2.5 gap-1" onClick={handleApprove}>
               <CheckCircle2 className="w-3 h-3" /> Approve
             </Button>
           )}
-          <Button variant="outline" size="sm" className="h-6 text-[10px] px-2.5 gap-1" onClick={handleStartEdit}>
-            <Pencil className="w-3 h-3" /> Edit
-          </Button>
-          <Button variant="ghost" size="sm" className="h-6 text-[10px] px-2.5 gap-1 text-muted-foreground" onClick={handleIgnore}>
-            <XCircle className="w-3 h-3" /> Ignore
-          </Button>
+          {decision.status !== "approved" && (
+            <Button variant="outline" size="sm" className="h-6 text-[10px] px-2.5 gap-1" onClick={handleStartEdit}>
+              <Pencil className="w-3 h-3" /> Edit
+            </Button>
+          )}
+          {decision.status !== "approved" && (
+            <Button variant="ghost" size="sm" className="h-6 text-[10px] px-2.5 gap-1 text-muted-foreground" onClick={handleIgnore}>
+              <XCircle className="w-3 h-3" /> Ignore
+            </Button>
+          )}
           {decision.status === "approved" && (
             <Button variant="ghost" size="sm" className="h-6 text-[10px] px-2.5 gap-1 text-muted-foreground" onClick={() => onUpdate({ status: "pending" })}>Undo</Button>
           )}
-          {onRegenerateItem && (
+          {decision.status !== "approved" && onRegenerateItem && (
             <Button variant="ghost" size="sm" className="h-6 text-[10px] px-2.5 gap-1 text-muted-foreground ml-auto" onClick={handleRegenSingle} disabled={regenerating}>
               <RefreshCw className={`w-3 h-3 ${regenerating ? "animate-spin" : ""}`} /> New Suggestion
             </Button>
