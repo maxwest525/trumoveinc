@@ -83,7 +83,7 @@ Deno.serve(async (req) => {
         response_type: "code",
         scope: "https://www.googleapis.com/auth/webmasters.readonly",
         access_type: "offline",
-        prompt: "consent",
+        prompt: "consent select_account",
       });
       const url = `https://accounts.google.com/o/oauth2/v2/auth?${params}`;
       return new Response(JSON.stringify({ url }), {
