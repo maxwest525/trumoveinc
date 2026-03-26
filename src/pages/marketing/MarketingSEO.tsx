@@ -259,7 +259,30 @@ export default function MarketingSEO() {
     }
   };
 
-  const handleExportCSV = () => {
+  const handleRegenerateAll = async () => {
+    if (auditPages.length === 0) return;
+    setRegeneratingAll(true);
+    const allUrls = auditPages.map(p => p.url);
+    toast.info(`Regenerating suggestions for ${allUrls.length} pages with updated compliance rules...`);
+    await analyzeUrls(allUrls);
+    setRegeneratingAll(false);
+    toast.success("All suggestions regenerated with compliance constraints");
+  };
+
+  const getViolationsForPage = (page: AuditPage): string[] => {
+    if (!complianceSettings) return page.violations || [];
+    const textsToCheck = [
+      page.suggestedTitle, page.suggestedDescription, page.suggestedH1,
+      ...page.aiChecklist,
+      ...(page.issueSuggestions || []).map(s => s.suggestion),
+    ].filter(Boolean) as string[];
+    const allViolations: string[] = [];
+    textsToCheck.forEach(text => {
+      allViolations.push(...checkViolations(text, complianceSettings.forbiddenTerms));
+    });
+    return [...new Set(allViolations)];
+  };
+
     const rows: string[] = [];
     auditPages.forEach((p) => {
       const d = decisions[p.url];
