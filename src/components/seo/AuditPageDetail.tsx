@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -76,18 +78,28 @@ function IssueSuggestionCard({
   issueSuggestion,
   decision,
   onUpdate,
+  onRegenerateItem,
 }: {
   issueSuggestion: IssueSuggestion;
   decision: FieldDecision;
   onUpdate: (d: FieldDecision) => void;
+  onRegenerateItem?: () => Promise<void>;
 }) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(decision.editedValue || issueSuggestion.suggestion);
+
+  const [regenerating, setRegenerating] = useState(false);
 
   const handleApprove = () => { onUpdate({ status: "approved" }); setEditing(false); };
   const handleIgnore = () => { onUpdate({ status: "ignored" }); setEditing(false); };
   const handleSaveEdit = () => { onUpdate({ status: "edited", editedValue: draft }); setEditing(false); };
   const handleStartEdit = () => { setDraft(decision.editedValue || issueSuggestion.suggestion); setEditing(true); };
+  const handleRegenSingle = async () => {
+    if (!onRegenerateItem) return;
+    setRegenerating(true);
+    await onRegenerateItem();
+    setRegenerating(false);
+  };
 
   const finalValue = decision.status === "edited" ? decision.editedValue : issueSuggestion.suggestion;
   const pClass = priorityColors[issueSuggestion.priority] || priorityColors.low;
@@ -169,6 +181,11 @@ function IssueSuggestionCard({
             {decision.status === "approved" && (
               <Button variant="ghost" size="sm" className="h-5 text-[10px] px-2 text-muted-foreground" onClick={() => onUpdate({ status: "pending" })}>Undo</Button>
             )}
+            {onRegenerateItem && (
+              <Button variant="ghost" size="sm" className="h-5 text-[10px] px-2 gap-0.5 text-muted-foreground ml-auto" onClick={handleRegenSingle} disabled={regenerating}>
+                <RefreshCw className={`w-2.5 h-2.5 ${regenerating ? "animate-spin" : ""}`} /> New Suggestion
+              </Button>
+            )}
           </div>
         )}
       </div>
@@ -178,14 +195,16 @@ function IssueSuggestionCard({
 
 /* ─── Meta field row (Title / Description / H1) ─── */
 function FieldRow({
-  label, current, suggested, charMin, charMax, decision, onUpdate, multiline,
+  label, current, suggested, charMin, charMax, decision, onUpdate, multiline, onRegenerateItem,
 }: {
   label: string; current: string | null; suggested: string | null;
   charMin: number; charMax: number; decision: FieldDecision;
   onUpdate: (d: FieldDecision) => void; multiline?: boolean;
+  onRegenerateItem?: () => Promise<void>;
 }) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(decision.editedValue || suggested || "");
+  const [regenerating, setRegenerating] = useState(false);
 
   const currentInfo = charInfo(current, charMin, charMax);
   const finalValue = decision.status === "edited" ? decision.editedValue : suggested;
@@ -195,6 +214,12 @@ function FieldRow({
   const handleIgnore = () => { onUpdate({ status: "ignored" }); setEditing(false); };
   const handleSaveEdit = () => { onUpdate({ status: "edited", editedValue: draft }); setEditing(false); };
   const handleStartEdit = () => { setDraft(decision.editedValue || suggested || current || ""); setEditing(true); };
+  const handleRegenSingle = async () => {
+    if (!onRegenerateItem) return;
+    setRegenerating(true);
+    await onRegenerateItem();
+    setRegenerating(false);
+  };
 
   if (decision.status === "ignored") {
     return (
@@ -290,13 +315,18 @@ function FieldRow({
           {decision.status === "approved" && (
             <Button variant="ghost" size="sm" className="h-6 text-[10px] px-2.5 gap-1 text-muted-foreground" onClick={() => onUpdate({ status: "pending" })}>Undo</Button>
           )}
+          {onRegenerateItem && (
+            <Button variant="ghost" size="sm" className="h-6 text-[10px] px-2.5 gap-1 text-muted-foreground ml-auto" onClick={handleRegenSingle} disabled={regenerating}>
+              <RefreshCw className={`w-3 h-3 ${regenerating ? "animate-spin" : ""}`} /> New Suggestion
+            </Button>
+          )}
         </div>
       )}
     </div>
   );
 }
 
-export default function AuditPageDetail({ page, decisions, onDecisionChange, onRegenerate, regenerating }: Props) {
+export default function AuditPageDetail({ page, decisions, onDecisionChange, onRegenerate }: Props) {
   const updateField = (field: keyof Omit<PageDecisions, "issues">) => (d: FieldDecision) => {
     onDecisionChange(page.url, { ...decisions, [field]: d });
   };
@@ -306,6 +336,48 @@ export default function AuditPageDetail({ page, decisions, onDecisionChange, onR
       ...decisions,
       issues: { ...decisions.issues, [issueKey]: d },
     });
+  };
+
+  const regenAndApplyField = (field: "title" | "description" | "h1") => async () => {
+    const { data, error } = await supabase.functions.invoke("seo-audit", {
+      body: { action: "analyze", urls: [page.url] },
+    });
+    if (error) { toast.error("Regeneration failed"); return; }
+    const r = data?.results?.[0];
+    if (!r) return;
+    const fieldMap: Record<string, string | null> = {
+      title: r.suggestedTitle, description: r.suggestedDescription, h1: r.suggestedH1,
+    };
+    const newVal = fieldMap[field];
+    if (newVal) {
+      // Update just this field's suggestion in parent state
+      onDecisionChange(page.url, { ...decisions, [field]: { status: "pending" } });
+      // We need to update the page data too — emit via onRegenerate
+      onRegenerate(page.url);
+    }
+    toast.success(`New ${field} suggestion generated`);
+  };
+
+  const regenAndApplyIssue = (issueKey: string) => async () => {
+    const { data, error } = await supabase.functions.invoke("seo-audit", {
+      body: { action: "analyze", urls: [page.url] },
+    });
+    if (error) { toast.error("Regeneration failed"); return; }
+    const r = data?.results?.[0];
+    if (!r) return;
+    const newSuggestions: IssueSuggestion[] = r.issueSuggestions || [];
+    const matched = newSuggestions.find((s: IssueSuggestion) => s.issue === issueKey);
+    if (matched) {
+      // Update the page's issueSuggestions
+      page.issueSuggestions = page.issueSuggestions.map((s) =>
+        s.issue === issueKey ? matched : s
+      );
+      onDecisionChange(page.url, {
+        ...decisions,
+        issues: { ...decisions.issues, [issueKey]: { status: "pending" } },
+      });
+    }
+    toast.success("New suggestion generated");
   };
 
   // Map issues to their AI suggestions
@@ -335,6 +407,7 @@ export default function AuditPageDetail({ page, decisions, onDecisionChange, onR
                 issueSuggestion={fallback}
                 decision={issueDecision}
                 onUpdate={updateIssue(issue)}
+                onRegenerateItem={regenAndApplyIssue(issue)}
               />
             );
           })}
@@ -353,9 +426,9 @@ export default function AuditPageDetail({ page, decisions, onDecisionChange, onR
 
       {/* Meta field rows */}
       <div className="space-y-3">
-        <FieldRow label="Title Tag" current={page.fetchedTitle} suggested={page.suggestedTitle} charMin={50} charMax={60} decision={decisions.title} onUpdate={updateField("title")} />
-        <FieldRow label="Meta Description" current={page.fetchedDescription} suggested={page.suggestedDescription} charMin={150} charMax={160} decision={decisions.description} onUpdate={updateField("description")} multiline />
-        <FieldRow label="H1 Heading" current={page.fetchedH1} suggested={page.suggestedH1} charMin={20} charMax={70} decision={decisions.h1} onUpdate={updateField("h1")} />
+        <FieldRow label="Title Tag" current={page.fetchedTitle} suggested={page.suggestedTitle} charMin={50} charMax={60} decision={decisions.title} onUpdate={updateField("title")} onRegenerateItem={regenAndApplyField("title")} />
+        <FieldRow label="Meta Description" current={page.fetchedDescription} suggested={page.suggestedDescription} charMin={150} charMax={160} decision={decisions.description} onUpdate={updateField("description")} multiline onRegenerateItem={regenAndApplyField("description")} />
+        <FieldRow label="H1 Heading" current={page.fetchedH1} suggested={page.suggestedH1} charMin={20} charMax={70} decision={decisions.h1} onUpdate={updateField("h1")} onRegenerateItem={regenAndApplyField("h1")} />
       </div>
 
       {/* Checklist */}
@@ -372,11 +445,6 @@ export default function AuditPageDetail({ page, decisions, onDecisionChange, onR
           </ul>
         </div>
       )}
-
-      {/* Regenerate */}
-      <Button variant="outline" size="sm" className="h-7 text-[10px] gap-1" onClick={() => onRegenerate(page.url)} disabled={regenerating}>
-        <RefreshCw className={`w-3 h-3 ${regenerating ? "animate-spin" : ""}`} /> New AI Suggestions
-      </Button>
     </div>
   );
 }
