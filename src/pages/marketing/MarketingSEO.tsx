@@ -795,6 +795,48 @@ export default function MarketingSEO() {
         </div>
       </div>
       </div>
+
+      {/* Expand Detail Dialog */}
+      <Dialog open={!!expandedSidebarItem} onOpenChange={(open) => !open && setExpandedSidebarItem(null)}>
+        <DialogContent className="max-w-lg">
+          {expandedSidebarItem && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2 text-sm">
+                  <Badge variant={expandedSidebarItem.status === "published" ? "default" : expandedSidebarItem.status === "ignored" ? "secondary" : "default"} className="text-[10px]">
+                    {expandedSidebarItem.status}
+                  </Badge>
+                  {expandedSidebarItem.field}
+                </DialogTitle>
+              </DialogHeader>
+              <div className="space-y-3">
+                <div>
+                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Page</p>
+                  <p className="text-xs font-mono text-foreground bg-muted/40 rounded px-3 py-2 border border-border/50 break-all">
+                    {expandedSidebarItem.url}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Value</p>
+                  <div className="text-sm text-foreground bg-primary/5 rounded px-3 py-3 border border-primary/10 whitespace-pre-wrap break-words">
+                    {expandedSidebarItem.value}
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 pt-2">
+                  {(expandedSidebarItem.status === "approved" || expandedSidebarItem.status === "edited") && (
+                    <Button variant="default" size="sm" className="gap-1" onClick={() => { handleSidebarPublish(expandedSidebarItem); setExpandedSidebarItem(null); }}>
+                      <Sparkles className="w-3 h-3" /> Publish
+                    </Button>
+                  )}
+                  <Button variant="outline" size="sm" className="gap-1" onClick={() => { handleSidebarRemove(expandedSidebarItem); setExpandedSidebarItem(null); }}>
+                    <XCircle className="w-3 h-3" /> Remove
+                  </Button>
+                </div>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </MarketingShell>
   );
 }
