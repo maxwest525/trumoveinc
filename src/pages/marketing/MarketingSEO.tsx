@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import MarketingShell from "@/components/layout/MarketingShell";
 import { Button } from "@/components/ui/button";
@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
@@ -68,6 +69,11 @@ export default function MarketingSEO() {
   const [expandedUrl, setExpandedUrl] = useState<string | null>(null);
   const [analyzeProgress, setAnalyzeProgress] = useState({ done: 0, total: 0 });
   const [complianceOpen, setComplianceOpen] = useState(false);
+
+  const sitemapPages = useMemo(() => {
+    const all = new Set([...discoveredUrls, ...auditPages.map(p => p.url)]);
+    return Array.from(all).sort();
+  }, [discoveredUrls, auditPages]);
   const [regeneratingUrl, setRegeneratingUrl] = useState<string | null>(null);
   const [filterMode, setFilterMode] = useState<FilterMode>("all");
   const [expandedSidebarItem, setExpandedSidebarItem] = useState<SidebarItem | null>(null);
@@ -549,13 +555,23 @@ export default function MarketingSEO() {
                         <CardDescription className="text-xs mt-1">Full crawl auto-analyzes every page found.</CardDescription>
                       </div>
                       <div className="flex items-center gap-1.5">
-                        <Input
-                          value={singleUrl}
-                          onChange={(e) => setSingleUrl(e.target.value)}
-                          placeholder="Single URL…"
-                          className="h-8 w-48 text-xs"
-                          onKeyDown={(e) => e.key === "Enter" && singleUrl && handleAnalyzeSingle()}
-                        />
+                        <Select value={singleUrl} onValueChange={(v) => setSingleUrl(v)}>
+                          <SelectTrigger className="h-8 w-56 text-xs">
+                            <SelectValue placeholder="Select a page…" />
+                          </SelectTrigger>
+                          <SelectContent className="max-h-64">
+                            {sitemapPages.length === 0 && (
+                              <SelectItem value="__empty" disabled className="text-xs text-muted-foreground">
+                                Run a crawl first to populate pages
+                              </SelectItem>
+                            )}
+                            {sitemapPages.map((u) => (
+                              <SelectItem key={u} value={u} className="text-xs font-mono">
+                                {u.replace("https://trumoveinc.com", "") || "/"}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                         <Button onClick={handleAnalyzeSingle} disabled={analyzing || !singleUrl} variant="secondary" size="sm" className="h-8 shrink-0">
                           {analyzing ? <Loader2 className="w-3 h-3 animate-spin" /> : <Search className="w-3 h-3" />}
                         </Button>
