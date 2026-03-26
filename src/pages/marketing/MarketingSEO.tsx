@@ -576,6 +576,12 @@ export default function MarketingSEO() {
                           </Button>
                         </>
                       )}
+                      {auditPages.length > 0 && (
+                        <Button onClick={handleRegenerateAll} disabled={regeneratingAll || analyzing} variant="outline" size="sm">
+                          {regeneratingAll ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <RefreshCw className="w-3 h-3 mr-1" />}
+                          {regeneratingAll ? "Regenerating…" : "Regenerate All (New Constraints)"}
+                        </Button>
+                      )}
                     </div>
 
                     {analyzing && analyzeProgress.total > 0 && (
