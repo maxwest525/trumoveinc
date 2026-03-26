@@ -1,9 +1,30 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
+
+async function loadComplianceSettings() {
+  const defaults = {
+    forbiddenTerms: ["local", "local movers", "near me", "same-day local", "local moving"],
+    allowedTerms: ["long distance", "interstate", "cross-country", "nationwide"],
+    tone: "professional",
+  };
+  try {
+    const sb = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+    const { data } = await sb.from("seo_compliance_settings").select("setting_key, setting_value");
+    if (!data || data.length === 0) return defaults;
+    const map: Record<string, any> = {};
+    data.forEach((r: any) => { map[r.setting_key] = r.setting_value; });
+    return {
+      forbiddenTerms: map.forbidden_terms || defaults.forbiddenTerms,
+      allowedTerms: map.allowed_service_terms || defaults.allowedTerms,
+      tone: map.tone || "professional",
+    };
+  } catch { return defaults; }
+}
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -15,10 +36,25 @@ serve(async (req) => {
     if (!LOVABLE_API_KEY) throw new Error("AI service not configured");
 
     const { url, currentTitle, currentDescription, currentH1, keyword } = await req.json();
+    const compliance = await loadComplianceSettings();
+
+    const toneDescriptions: Record<string, string> = {
+      professional: "Clean, authoritative corporate tone.",
+      premium: "Premium, luxury, high-end service tone.",
+      budget: "Value-focused, affordable messaging.",
+      trust: "Trust-focused tone emphasizing safety and reliability.",
+    };
 
     const systemPrompt = `You are an expert SEO consultant for a moving company website (trumoveinc.com).
 
-RULES:
+TONE: ${toneDescriptions[compliance.tone] || toneDescriptions.professional}
+
+CRITICAL COMPLIANCE RULES:
+- TruMove Inc. is a LONG DISTANCE / INTERSTATE moving broker. They do NOT offer local moving.
+- NEVER use these forbidden terms: ${compliance.forbiddenTerms.map((t: string) => `"${t}"`).join(", ")}
+- PREFERRED terms: ${compliance.allowedTerms.map((t: string) => `"${t}"`).join(", ")}
+
+SEO RULES:
 - Meta keywords are useless for Google. Never recommend them.
 - Focus ONLY on: title tag, meta description, H1 heading, and clear human-readable copy.
 - Title tags should be 50-60 characters, include the primary keyword near the front, and include the brand name.
@@ -36,6 +72,8 @@ Current Title Tag: ${currentTitle || "(empty)"}
 Current Meta Description: ${currentDescription || "(empty)"}
 Current H1: ${currentH1 || "(empty)"}
 Target Keyword: ${keyword || "(none specified)"}
+
+REMINDER: Do NOT use forbidden terms like ${compliance.forbiddenTerms.slice(0, 3).join(", ")}.
 
 Return your recommendations.`;
 
