@@ -3,9 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
 import {
   CheckCircle2, AlertCircle, XCircle, Pencil, RefreshCw, Eye, EyeOff,
+  AlertTriangle, Sparkles,
 } from "lucide-react";
 
 type FieldStatus = "pending" | "approved" | "edited" | "ignored";
@@ -15,10 +15,17 @@ interface FieldDecision {
   editedValue?: string;
 }
 
+interface IssueSuggestion {
+  issue: string;
+  suggestion: string;
+  priority: "high" | "medium" | "low";
+}
+
 export interface PageDecisions {
   title: FieldDecision;
   description: FieldDecision;
   h1: FieldDecision;
+  issues: Record<string, FieldDecision>; // keyed by issue text
 }
 
 interface AuditPage {
@@ -32,6 +39,7 @@ interface AuditPage {
   suggestedDescription: string | null;
   suggestedH1: string | null;
   aiChecklist: string[];
+  issueSuggestions: IssueSuggestion[];
 }
 
 interface Props {
@@ -57,49 +65,136 @@ function StatusIcon({ status }: { status: FieldStatus }) {
   }
 }
 
-function FieldRow({
-  label,
-  current,
-  suggested,
-  charMin,
-  charMax,
+const priorityColors: Record<string, string> = {
+  high: "text-destructive bg-destructive/10 border-destructive/20",
+  medium: "text-amber-600 bg-amber-500/10 border-amber-500/20",
+  low: "text-muted-foreground bg-muted/30 border-border",
+};
+
+/* ─── Per-issue suggestion card ─── */
+function IssueSuggestionCard({
+  issueSuggestion,
   decision,
   onUpdate,
-  multiline,
 }: {
-  label: string;
-  current: string | null;
-  suggested: string | null;
-  charMin: number;
-  charMax: number;
+  issueSuggestion: IssueSuggestion;
   decision: FieldDecision;
   onUpdate: (d: FieldDecision) => void;
-  multiline?: boolean;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(decision.editedValue || issueSuggestion.suggestion);
+
+  const handleApprove = () => { onUpdate({ status: "approved" }); setEditing(false); };
+  const handleIgnore = () => { onUpdate({ status: "ignored" }); setEditing(false); };
+  const handleSaveEdit = () => { onUpdate({ status: "edited", editedValue: draft }); setEditing(false); };
+  const handleStartEdit = () => { setDraft(decision.editedValue || issueSuggestion.suggestion); setEditing(true); };
+
+  const finalValue = decision.status === "edited" ? decision.editedValue : issueSuggestion.suggestion;
+  const pClass = priorityColors[issueSuggestion.priority] || priorityColors.low;
+
+  if (decision.status === "ignored") {
+    return (
+      <div className="rounded-lg border border-border bg-muted/20 p-3 opacity-50">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 min-w-0">
+            <EyeOff className="w-3 h-3 shrink-0 text-muted-foreground" />
+            <span className="text-xs text-muted-foreground line-through truncate">{issueSuggestion.issue}</span>
+          </div>
+          <Button variant="ghost" size="sm" className="h-5 text-[10px] px-2 shrink-0" onClick={() => onUpdate({ status: "pending" })}>Undo</Button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={`rounded-lg border p-3 space-y-2 ${
+      decision.status === "approved" ? "border-primary/30 bg-primary/5" :
+      decision.status === "edited" ? "border-amber-500/30 bg-amber-500/5" :
+      "border-border bg-background"
+    }`}>
+      {/* Issue header */}
+      <div className="flex items-start gap-2">
+        <AlertTriangle className={`w-3.5 h-3.5 mt-0.5 shrink-0 ${issueSuggestion.priority === "high" ? "text-destructive" : issueSuggestion.priority === "medium" ? "text-amber-500" : "text-muted-foreground"}`} />
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <span className="text-xs font-semibold text-foreground">{issueSuggestion.issue}</span>
+            <Badge variant="outline" className={`text-[9px] h-4 px-1.5 ${pClass}`}>
+              {issueSuggestion.priority}
+            </Badge>
+            {decision.status !== "pending" && (
+              <Badge variant={decision.status === "approved" ? "default" : "secondary"} className="text-[9px] h-4 px-1.5">
+                {decision.status === "approved" ? "Approved" : "Edited"}
+              </Badge>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* AI Suggestion */}
+      <div className="ml-5 space-y-1.5">
+        <div className="flex items-center gap-1">
+          <Sparkles className="w-3 h-3 text-primary" />
+          <span className="text-[10px] font-medium text-primary uppercase tracking-wide">
+            {decision.status === "edited" ? "Your Fix" : "AI Fix"}
+          </span>
+        </div>
+        {editing ? (
+          <div className="space-y-1.5">
+            <Textarea value={draft} onChange={(e) => setDraft(e.target.value)} rows={2} className="text-xs" />
+            <div className="flex gap-1 justify-end">
+              <Button variant="ghost" size="sm" className="h-5 text-[10px] px-2" onClick={() => setEditing(false)}>Cancel</Button>
+              <Button size="sm" className="h-5 text-[10px] px-2" onClick={handleSaveEdit}>Save</Button>
+            </div>
+          </div>
+        ) : (
+          <div className="text-xs text-foreground bg-primary/5 rounded px-2.5 py-1.5 border border-primary/10">
+            {finalValue}
+          </div>
+        )}
+
+        {/* Actions */}
+        {!editing && (
+          <div className="flex items-center gap-1">
+            {decision.status !== "approved" && (
+              <Button variant="default" size="sm" className="h-5 text-[10px] px-2 gap-0.5" onClick={handleApprove}>
+                <CheckCircle2 className="w-2.5 h-2.5" /> Approve
+              </Button>
+            )}
+            <Button variant="outline" size="sm" className="h-5 text-[10px] px-2 gap-0.5" onClick={handleStartEdit}>
+              <Pencil className="w-2.5 h-2.5" /> Edit
+            </Button>
+            <Button variant="ghost" size="sm" className="h-5 text-[10px] px-2 gap-0.5 text-muted-foreground" onClick={handleIgnore}>
+              <XCircle className="w-2.5 h-2.5" /> Ignore
+            </Button>
+            {decision.status === "approved" && (
+              <Button variant="ghost" size="sm" className="h-5 text-[10px] px-2 text-muted-foreground" onClick={() => onUpdate({ status: "pending" })}>Undo</Button>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ─── Meta field row (Title / Description / H1) ─── */
+function FieldRow({
+  label, current, suggested, charMin, charMax, decision, onUpdate, multiline,
+}: {
+  label: string; current: string | null; suggested: string | null;
+  charMin: number; charMax: number; decision: FieldDecision;
+  onUpdate: (d: FieldDecision) => void; multiline?: boolean;
 }) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(decision.editedValue || suggested || "");
 
   const currentInfo = charInfo(current, charMin, charMax);
-  const suggestedInfo = charInfo(suggested, charMin, charMax);
   const finalValue = decision.status === "edited" ? decision.editedValue : suggested;
   const finalInfo = charInfo(finalValue || null, charMin, charMax);
 
-  const handleApprove = () => {
-    onUpdate({ status: "approved", editedValue: undefined });
-    setEditing(false);
-  };
-  const handleIgnore = () => {
-    onUpdate({ status: "ignored", editedValue: undefined });
-    setEditing(false);
-  };
-  const handleSaveEdit = () => {
-    onUpdate({ status: "edited", editedValue: draft });
-    setEditing(false);
-  };
-  const handleStartEdit = () => {
-    setDraft(decision.editedValue || suggested || current || "");
-    setEditing(true);
-  };
+  const handleApprove = () => { onUpdate({ status: "approved" }); setEditing(false); };
+  const handleIgnore = () => { onUpdate({ status: "ignored" }); setEditing(false); };
+  const handleSaveEdit = () => { onUpdate({ status: "edited", editedValue: draft }); setEditing(false); };
+  const handleStartEdit = () => { setDraft(decision.editedValue || suggested || current || ""); setEditing(true); };
 
   if (decision.status === "ignored") {
     return (
@@ -110,9 +205,7 @@ function FieldRow({
             <span className="text-xs font-semibold text-muted-foreground">{label}</span>
             <Badge variant="secondary" className="text-[10px]">Ignored</Badge>
           </div>
-          <Button variant="ghost" size="sm" className="h-6 text-[10px] px-2" onClick={() => onUpdate({ status: "pending" })}>
-            Undo
-          </Button>
+          <Button variant="ghost" size="sm" className="h-6 text-[10px] px-2" onClick={() => onUpdate({ status: "pending" })}>Undo</Button>
         </div>
       </div>
     );
@@ -124,23 +217,18 @@ function FieldRow({
       decision.status === "edited" ? "border-amber-500/30 bg-amber-500/5" :
       "border-border bg-background"
     }`}>
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <StatusIcon status={decision.status} />
           <span className="text-xs font-semibold text-foreground">{label}</span>
           {decision.status !== "pending" && (
-            <Badge
-              variant={decision.status === "approved" ? "default" : "secondary"}
-              className="text-[10px]"
-            >
+            <Badge variant={decision.status === "approved" ? "default" : "secondary"} className="text-[10px]">
               {decision.status === "approved" ? "Approved" : "Edited"}
             </Badge>
           )}
         </div>
       </div>
 
-      {/* Current value */}
       <div className="space-y-1">
         <div className="flex items-center gap-1.5">
           <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">Current</span>
@@ -153,7 +241,6 @@ function FieldRow({
         </div>
       </div>
 
-      {/* Suggested / Edited value */}
       {suggested && (
         <div className="space-y-1">
           <div className="flex items-center gap-1.5">
@@ -167,18 +254,9 @@ function FieldRow({
           {editing ? (
             <div className="space-y-1.5">
               {multiline ? (
-                <Textarea
-                  value={draft}
-                  onChange={(e) => setDraft(e.target.value)}
-                  rows={2}
-                  className="text-xs font-mono"
-                />
+                <Textarea value={draft} onChange={(e) => setDraft(e.target.value)} rows={2} className="text-xs font-mono" />
               ) : (
-                <Input
-                  value={draft}
-                  onChange={(e) => setDraft(e.target.value)}
-                  className="text-xs font-mono h-8"
-                />
+                <Input value={draft} onChange={(e) => setDraft(e.target.value)} className="text-xs font-mono h-8" />
               )}
               <div className="flex items-center gap-1.5">
                 <Badge variant="secondary" className="text-[9px]">{draft.length} chars</Badge>
@@ -196,7 +274,6 @@ function FieldRow({
         </div>
       )}
 
-      {/* Action buttons */}
       {!editing && suggested && (
         <div className="flex items-center gap-1.5 pt-0.5">
           {decision.status !== "approved" && (
@@ -211,9 +288,7 @@ function FieldRow({
             <XCircle className="w-3 h-3" /> Ignore
           </Button>
           {decision.status === "approved" && (
-            <Button variant="ghost" size="sm" className="h-6 text-[10px] px-2.5 gap-1 text-muted-foreground" onClick={() => onUpdate({ status: "pending" })}>
-              Undo
-            </Button>
+            <Button variant="ghost" size="sm" className="h-6 text-[10px] px-2.5 gap-1 text-muted-foreground" onClick={() => onUpdate({ status: "pending" })}>Undo</Button>
           )}
         </div>
       )}
@@ -222,27 +297,47 @@ function FieldRow({
 }
 
 export default function AuditPageDetail({ page, decisions, onDecisionChange, onRegenerate, regenerating }: Props) {
-  const updateField = (field: keyof PageDecisions) => (d: FieldDecision) => {
+  const updateField = (field: keyof Omit<PageDecisions, "issues">) => (d: FieldDecision) => {
     onDecisionChange(page.url, { ...decisions, [field]: d });
   };
 
+  const updateIssue = (issueKey: string) => (d: FieldDecision) => {
+    onDecisionChange(page.url, {
+      ...decisions,
+      issues: { ...decisions.issues, [issueKey]: d },
+    });
+  };
+
+  // Map issues to their AI suggestions
+  const issueMap = new Map<string, IssueSuggestion>();
+  (page.issueSuggestions || []).forEach((is) => issueMap.set(is.issue, is));
+
   return (
     <div className="space-y-4">
-      {/* Issues banner */}
+      {/* Per-issue suggestions */}
       {page.issues.length > 0 && (
-        <div className="rounded-lg border border-destructive/20 bg-destructive/5 p-3 space-y-1.5">
+        <div className="space-y-2">
           <span className="text-xs font-semibold text-destructive flex items-center gap-1.5">
             <AlertCircle className="w-3.5 h-3.5" />
-            {page.issues.length} Issue{page.issues.length > 1 ? "s" : ""} Detected
+            {page.issues.length} Issue{page.issues.length > 1 ? "s" : ""} — AI Fix for Each
           </span>
-          <ul className="grid grid-cols-1 md:grid-cols-2 gap-1">
-            {page.issues.map((issue, i) => (
-              <li key={i} className="flex items-start gap-1.5 text-xs text-foreground">
-                <span className="text-destructive mt-0.5">•</span>
-                {issue}
-              </li>
-            ))}
-          </ul>
+          {page.issues.map((issue) => {
+            const matched = issueMap.get(issue);
+            const fallback: IssueSuggestion = matched || {
+              issue,
+              suggestion: "Re-run analysis to get a specific fix for this issue.",
+              priority: "medium",
+            };
+            const issueDecision = decisions.issues?.[issue] || { status: "pending" as FieldStatus };
+            return (
+              <IssueSuggestionCard
+                key={issue}
+                issueSuggestion={fallback}
+                decision={issueDecision}
+                onUpdate={updateIssue(issue)}
+              />
+            );
+          })}
         </div>
       )}
 
@@ -256,42 +351,17 @@ export default function AuditPageDetail({ page, decisions, onDecisionChange, onR
         )}
       </div>
 
-      {/* Per-field rows */}
+      {/* Meta field rows */}
       <div className="space-y-3">
-        <FieldRow
-          label="Title Tag"
-          current={page.fetchedTitle}
-          suggested={page.suggestedTitle}
-          charMin={50}
-          charMax={60}
-          decision={decisions.title}
-          onUpdate={updateField("title")}
-        />
-        <FieldRow
-          label="Meta Description"
-          current={page.fetchedDescription}
-          suggested={page.suggestedDescription}
-          charMin={150}
-          charMax={160}
-          decision={decisions.description}
-          onUpdate={updateField("description")}
-          multiline
-        />
-        <FieldRow
-          label="H1 Heading"
-          current={page.fetchedH1}
-          suggested={page.suggestedH1}
-          charMin={20}
-          charMax={70}
-          decision={decisions.h1}
-          onUpdate={updateField("h1")}
-        />
+        <FieldRow label="Title Tag" current={page.fetchedTitle} suggested={page.suggestedTitle} charMin={50} charMax={60} decision={decisions.title} onUpdate={updateField("title")} />
+        <FieldRow label="Meta Description" current={page.fetchedDescription} suggested={page.suggestedDescription} charMin={150} charMax={160} decision={decisions.description} onUpdate={updateField("description")} multiline />
+        <FieldRow label="H1 Heading" current={page.fetchedH1} suggested={page.suggestedH1} charMin={20} charMax={70} decision={decisions.h1} onUpdate={updateField("h1")} />
       </div>
 
       {/* Checklist */}
       {page.aiChecklist.length > 0 && (
         <div className="rounded-lg border border-border bg-muted/20 p-3 space-y-1.5">
-          <span className="text-xs font-semibold text-foreground">Fix-First Checklist</span>
+          <span className="text-xs font-semibold text-foreground">Additional Recommendations</span>
           <ul className="space-y-1">
             {page.aiChecklist.map((item, i) => (
               <li key={i} className="flex items-start gap-1.5 text-xs text-foreground">
