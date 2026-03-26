@@ -4,7 +4,12 @@
  */
 export function getEsignBaseUrl(): string {
   if (typeof window !== "undefined") {
-    return window.location.origin;
+    const origin = window.location.origin;
+    // Always use published URL for customer-facing links, never preview URLs
+    if (origin.includes("id-preview--")) {
+      return "https://trumoveinc.lovable.app";
+    }
+    return origin;
   }
   return "https://trumoveinc.lovable.app";
 }
