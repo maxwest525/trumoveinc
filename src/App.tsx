@@ -26,6 +26,7 @@ import Classic from "./pages/Classic";
 import LiveTracking from "./pages/LiveTracking";
 import ElevenLabsTrudyWidget from "./components/ElevenLabsTrudyWidget";
 import ScrollToTop from "./components/ScrollToTop";
+import { SeoOverrideProvider } from "./components/SeoOverrideProvider";
 import CustomerService from "./pages/CustomerService";
 import AdminSupportTickets from "./pages/AdminSupportTickets";
 import AgentPipeline from "./pages/AgentPipeline";
@@ -88,6 +89,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <ScrollToTop />
+          <SeoOverrideProvider>
           <Routes>
             {/* ── Root = CRM Portal Hub (always) ──────────────────── */}
             <Route path="/" element={<AgentLogin />} />
@@ -177,6 +179,7 @@ const App = () => (
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
+          </SeoOverrideProvider>
           {/* <ElevenLabsTrudyWidget /> */}
         </BrowserRouter>
       </TooltipProvider>

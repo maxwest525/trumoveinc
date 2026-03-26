@@ -1521,6 +1521,36 @@ export type Database = {
         }
         Relationships: []
       }
+      seo_overrides: {
+        Row: {
+          approved_by: string | null
+          created_at: string
+          description: string | null
+          id: string
+          title: string | null
+          updated_at: string
+          url_path: string
+        }
+        Insert: {
+          approved_by?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          title?: string | null
+          updated_at?: string
+          url_path: string
+        }
+        Update: {
+          approved_by?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          title?: string | null
+          updated_at?: string
+          url_path?: string
+        }
+        Relationships: []
+      }
       support_tickets: {
         Row: {
           created_at: string

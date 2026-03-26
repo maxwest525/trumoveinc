@@ -162,8 +162,10 @@ export default function MarketingSEO() {
     await analyzeUrls([u]);
   };
 
-  const handleDecisionChange = (url: string, d: PageDecisions) => {
+  const handleDecisionChange = async (url: string, d: PageDecisions) => {
     setDecisions((prev) => ({ ...prev, [url]: d }));
+
+    // Persist to seo_audit_pages (existing behavior)
     const updates: any = {};
     if (d.title.status === "approved") updates.suggested_title = auditPages.find(p => p.url === url)?.suggestedTitle;
     if (d.title.status === "edited") updates.suggested_title = d.title.editedValue;
@@ -179,6 +181,37 @@ export default function MarketingSEO() {
 
     if (Object.keys(updates).length > 0) {
       supabase.from("seo_audit_pages" as any).update(updates as any).eq("url", url).then();
+    }
+
+    // ── Apply to live site via seo_overrides ──
+    const page = auditPages.find(p => p.url === url);
+    if (!page) return;
+
+    const titleVal = d.title.status === "approved" ? page.suggestedTitle
+      : d.title.status === "edited" ? d.title.editedValue : null;
+    const descVal = d.description.status === "approved" ? page.suggestedDescription
+      : d.description.status === "edited" ? d.description.editedValue : null;
+
+    if (titleVal || descVal) {
+      // Convert full URL to path: https://trumoveinc.com/about → /about
+      let urlPath = "/";
+      try {
+        urlPath = new URL(url).pathname;
+      } catch { /* keep / */ }
+
+      const override: Record<string, any> = { url_path: urlPath, updated_at: new Date().toISOString() };
+      if (titleVal) override.title = titleVal;
+      if (descVal) override.description = descVal;
+
+      const { error } = await supabase
+        .from("seo_overrides" as any)
+        .upsert(override as any, { onConflict: "url_path" });
+
+      if (error) {
+        console.error("Failed to save SEO override:", error);
+      } else {
+        toast.success(`Live SEO updated for ${urlPath}`);
+      }
     }
   };
 
