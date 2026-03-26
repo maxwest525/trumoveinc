@@ -38,6 +38,21 @@ serve(async (req) => {
     const { url, currentTitle, currentDescription, currentH1, keyword } = await req.json();
     const compliance = await loadComplianceSettings();
 
+    // Try to fetch GSC data for context
+    let gscContext = "";
+    try {
+      const sb = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+      const { data: gscData } = await sb
+        .from("gsc_page_data")
+        .select("query, clicks, impressions, position")
+        .eq("page_url", url)
+        .order("impressions", { ascending: false })
+        .limit(10);
+      if (gscData && gscData.length > 0) {
+        gscContext = `\n\nGOOGLE SEARCH CONSOLE DATA (real queries, last 28 days):\n${gscData.map((r: any) => `"${r.query}" (${r.impressions} impr, ${r.clicks} clicks, pos ${r.position})`).join("\n")}\n\nAlign suggestions with high-performing queries. Derive the primary keyword from this data.`;
+      }
+    } catch {}
+
     const toneDescriptions: Record<string, string> = {
       professional: "Clean, authoritative corporate tone.",
       premium: "Premium, luxury, high-end service tone.",
@@ -72,6 +87,7 @@ Current Title Tag: ${currentTitle || "(empty)"}
 Current Meta Description: ${currentDescription || "(empty)"}
 Current H1: ${currentH1 || "(empty)"}
 Target Keyword: ${keyword || "(none specified)"}
+${gscContext}
 
 REMINDER: Do NOT use forbidden terms like ${compliance.forbiddenTerms.slice(0, 3).join(", ")}.
 

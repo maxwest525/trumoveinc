@@ -23,6 +23,7 @@ interface PageAnalysis {
   suggestedH1: string | null;
   aiChecklist: string[];
   issueSuggestions: IssueSuggestion[];
+  suggestedPrimaryKeyword?: string | null;
   violations?: string[];
 }
 
@@ -139,13 +140,33 @@ SEO RULES:
 - Never output raw HTML tags. Provide plain-English suggestions only.`;
 }
 
+async function getGscQueriesForUrl(pageUrl: string): Promise<string[]> {
+  try {
+    const sb = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+    const { data } = await sb
+      .from("gsc_page_data")
+      .select("query, clicks, impressions, position")
+      .eq("page_url", pageUrl)
+      .order("impressions", { ascending: false })
+      .limit(10);
+    if (!data || data.length === 0) return [];
+    return data.map((r: any) => `"${r.query}" (${r.impressions} impr, ${r.clicks} clicks, pos ${r.position})`);
+  } catch { return []; }
+}
+
 async function getAiSuggestions(
   page: Omit<PageAnalysis, "suggestedTitle" | "suggestedDescription" | "suggestedH1" | "aiChecklist" | "issueSuggestions">,
   apiKey: string,
   compliance: ComplianceSettings,
   attempt = 1,
-): Promise<{ suggestedTitle: string; suggestedDescription: string; suggestedH1: string | null; aiChecklist: string[]; issueSuggestions: IssueSuggestion[]; violations: string[] }> {
+): Promise<{ suggestedTitle: string; suggestedDescription: string; suggestedH1: string | null; aiChecklist: string[]; issueSuggestions: IssueSuggestion[]; violations: string[]; suggestedPrimaryKeyword: string | null }> {
   const maxAttempts = 3;
+
+  // Fetch GSC queries for context
+  const gscQueries = await getGscQueriesForUrl(page.url);
+  const gscContext = gscQueries.length > 0
+    ? `\n\nGOOGLE SEARCH CONSOLE DATA (real queries for this page, last 28 days):\n${gscQueries.join("\n")}\n\nIMPORTANT: Align your title/description suggestions with the highest-performing queries above. Derive the "suggestedPrimaryKeyword" from these real queries, NOT from guesswork.`
+    : "\n\nNo Google Search Console data available for this page. Suggest a primary keyword based on the page content and URL.";
 
   const prompt = `Analyse this page and give SEO recommendations:
 URL: ${page.url}
@@ -154,10 +175,12 @@ Current Meta Description: ${page.fetchedDescription || "(empty)"}
 Current H1: ${page.fetchedH1 || "(empty)"}
 Canonical: ${page.fetchedCanonical || "(missing)"}
 Issues detected: ${page.issues.join("; ") || "none"}
+${gscContext}
 
 For EACH issue listed above, provide a specific, actionable suggestion to fix it. Also provide overall title/description/H1 recommendations.
 
 REMINDER: Do NOT use any of these words: ${compliance.forbiddenTerms.join(", ")}. Use terms like: ${compliance.allowedTerms.slice(0, 5).join(", ")} instead.`;
+
 
   const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
     method: "POST",
@@ -184,6 +207,7 @@ REMINDER: Do NOT use any of these words: ${compliance.forbiddenTerms.join(", ")}
                 suggestedDescription: { type: "string", description: "Suggested meta description (150-160 chars)" },
                 suggestedH1: { type: "string", description: "Suggested H1 or null if current is fine", nullable: true },
                 checklist: { type: "array", items: { type: "string" }, description: "3-6 actionable items" },
+                suggestedPrimaryKeyword: { type: "string", description: "The single best primary keyword for this page, derived from GSC data if available", nullable: true },
                 issueSuggestions: {
                   type: "array",
                   description: "One specific suggestion for EACH issue detected.",
@@ -199,7 +223,7 @@ REMINDER: Do NOT use any of these words: ${compliance.forbiddenTerms.join(", ")}
                   },
                 },
               },
-              required: ["suggestedTitle", "suggestedDescription", "suggestedH1", "checklist", "issueSuggestions"],
+              required: ["suggestedTitle", "suggestedDescription", "suggestedH1", "checklist", "suggestedPrimaryKeyword", "issueSuggestions"],
               additionalProperties: false,
             },
           },
@@ -243,6 +267,7 @@ REMINDER: Do NOT use any of these words: ${compliance.forbiddenTerms.join(", ")}
     suggestedH1: result.suggestedH1,
     aiChecklist: result.checklist || [],
     issueSuggestions: result.issueSuggestions || [],
+    suggestedPrimaryKeyword: result.suggestedPrimaryKeyword || null,
     violations,
   };
 }

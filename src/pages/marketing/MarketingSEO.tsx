@@ -72,12 +72,13 @@ export default function MarketingSEO() {
   const [expandedSidebarItem, setExpandedSidebarItem] = useState<SidebarItem | null>(null);
   const [activeTab, setActiveTab] = useState("phase1");
   const [regeneratingAll, setRegeneratingAll] = useState(false);
+  const [gscConnected, setGscConnected] = useState(false);
   const { settings: complianceSettings, reload: reloadCompliance } = useSeoCompliance();
 
   // Phase statuses
   const phases: PhaseInfo[] = [
     { id: 1, label: "Crawl / Audit", status: auditPages.length > 0 ? "connected" : "not_connected", lastSync: auditPages.length > 0 ? new Date().toISOString() : null },
-    { id: 2, label: "Search Console", status: "not_connected" },
+    { id: 2, label: "Search Console", status: gscConnected ? "connected" : "not_connected" },
     { id: 3, label: "GA4", status: "not_connected" },
     { id: 4, label: "Backlinks", status: "coming_soon" },
   ];
@@ -866,7 +867,7 @@ export default function MarketingSEO() {
 
           {/* Phase 2: Search Console */}
           <TabsContent value="phase2">
-            <SearchConsoleTab status="not_connected" auditUrls={auditPages.map(p => p.url)} />
+            <SearchConsoleTab status={gscConnected ? "connected" : "not_connected"} auditUrls={auditPages.map(p => p.url)} onGscStatusChange={setGscConnected} />
           </TabsContent>
 
           {/* Phase 3: GA4 */}
