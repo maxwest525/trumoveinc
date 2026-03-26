@@ -404,10 +404,25 @@ export function CustomerCommunicationTab({ leadId, customerName, customerEmail, 
                   <Button variant="ghost" size="sm" className="text-xs" onClick={() => setComposing(false)}>
                     Cancel
                   </Button>
-                  <Button onClick={handleSend} disabled={isSending || !messageBody.trim()} size="sm" className="gap-1.5 text-xs">
-                    {isSending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
-                    Send Email
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="gap-1.5 text-xs"
+                      disabled={!recipient || !messageBody.trim()}
+                      onClick={() => {
+                        openInOutlook({ to: recipient, subject: emailSubject || "Message from TruMove", body: messageBody });
+                        toast.success("Opening in Outlook...");
+                      }}
+                    >
+                      <ExternalLink className="w-3.5 h-3.5" />
+                      Open in Outlook
+                    </Button>
+                    <Button onClick={handleSend} disabled={isSending || !messageBody.trim()} size="sm" className="gap-1.5 text-xs">
+                      {isSending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
+                      Send Direct
+                    </Button>
+                  </div>
                 </div>
               </div>
             ) : selectedMessage ? (

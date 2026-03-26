@@ -481,10 +481,22 @@ export function ClientMessaging() {
                     className="font-mono text-sm"
                   />
                 </div>
-                <div className="flex justify-end">
+                <div className="flex justify-end gap-2">
+                   <Button
+                     variant="outline"
+                     className="gap-2"
+                     disabled={!recipient || !messageBody.trim()}
+                     onClick={() => {
+                       openInOutlook({ to: recipient, subject: emailSubject || "Message from TruMove", body: messageBody });
+                       toast.success("Opening in Outlook...");
+                     }}
+                   >
+                     <ExternalLink className="w-4 h-4" />
+                     Open in Outlook
+                   </Button>
                    <Button onClick={handleSend} disabled={isSending} variant="outline" className="gap-2 border-foreground/20 hover:bg-foreground hover:text-background">
                      {isSending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-                     {isSending ? "Sending…" : "Send Email"}
+                     {isSending ? "Sending…" : "Send Direct"}
                    </Button>
                 </div>
               </CardContent>

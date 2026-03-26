@@ -172,9 +172,22 @@ export function DealEmailComposer({ deal, activities }: DealEmailComposerProps) 
             {drafting ? <Loader2 className="h-3 w-3 animate-spin" /> : <Sparkles className="h-3 w-3" />}
             AI Draft
           </Button>
-          <Button size="sm" className="gap-1 text-xs ml-auto" onClick={sendEmail} disabled={sending || !to || !body}>
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-1 text-xs ml-auto"
+            disabled={!to || !body}
+            onClick={() => {
+              openInOutlook({ to, subject: subject || "Follow-up", body });
+              toast({ title: "Opening in Outlook..." });
+            }}
+          >
+            <ExternalLink className="h-3 w-3" />
+            Outlook
+          </Button>
+          <Button size="sm" className="gap-1 text-xs" onClick={sendEmail} disabled={sending || !to || !body}>
             {sending ? <Loader2 className="h-3 w-3 animate-spin" /> : <Send className="h-3 w-3" />}
-            Send
+            Send Direct
           </Button>
         </div>
       </CardContent>
