@@ -283,6 +283,7 @@ export default function MarketingSEO() {
     return [...new Set(allViolations)];
   };
 
+  const handleExportCSV = () => {
     const rows: string[] = [];
     auditPages.forEach((p) => {
       const d = decisions[p.url];
