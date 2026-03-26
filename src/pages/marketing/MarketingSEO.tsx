@@ -77,7 +77,7 @@ export default function MarketingSEO() {
   // Phase statuses
   const phases: PhaseInfo[] = [
     { id: 1, label: "Crawl / Audit", status: auditPages.length > 0 ? "connected" : "not_connected", lastSync: auditPages.length > 0 ? new Date().toISOString() : null },
-    { id: 2, label: "Search Console", status: "not_connected" },
+    { id: 2, label: "Search Console", status: gscConnected ? "connected" : "not_connected" },
     { id: 3, label: "GA4", status: "not_connected" },
     { id: 4, label: "Backlinks", status: "coming_soon" },
   ];
