@@ -84,10 +84,18 @@ function IssueSuggestionCard({
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(decision.editedValue || issueSuggestion.suggestion);
 
+  const [regenerating, setRegenerating] = useState(false);
+
   const handleApprove = () => { onUpdate({ status: "approved" }); setEditing(false); };
   const handleIgnore = () => { onUpdate({ status: "ignored" }); setEditing(false); };
   const handleSaveEdit = () => { onUpdate({ status: "edited", editedValue: draft }); setEditing(false); };
   const handleStartEdit = () => { setDraft(decision.editedValue || issueSuggestion.suggestion); setEditing(true); };
+  const handleRegenSingle = async () => {
+    if (!onRegenerateItem) return;
+    setRegenerating(true);
+    await onRegenerateItem();
+    setRegenerating(false);
+  };
 
   const finalValue = decision.status === "edited" ? decision.editedValue : issueSuggestion.suggestion;
   const pClass = priorityColors[issueSuggestion.priority] || priorityColors.low;
