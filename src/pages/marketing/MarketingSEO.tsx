@@ -12,7 +12,7 @@ import {
   Search, Sparkles, Globe, CheckCircle2, AlertCircle, Loader2,
   Download, ChevronDown, ChevronUp, RefreshCw, ScanSearch, Link2,
   AlertTriangle, CircleCheck, Filter, XCircle, EyeOff, Expand,
-  BarChart3, ExternalLink,
+  BarChart3, ExternalLink, Shield,
 } from "lucide-react";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -67,6 +67,7 @@ export default function MarketingSEO() {
   const [analyzing, setAnalyzing] = useState(false);
   const [expandedUrl, setExpandedUrl] = useState<string | null>(null);
   const [analyzeProgress, setAnalyzeProgress] = useState({ done: 0, total: 0 });
+  const [complianceOpen, setComplianceOpen] = useState(false);
   const [regeneratingUrl, setRegeneratingUrl] = useState<string | null>(null);
   const [filterMode, setFilterMode] = useState<FilterMode>("all");
   const [expandedSidebarItem, setExpandedSidebarItem] = useState<SidebarItem | null>(null);
@@ -583,6 +584,9 @@ export default function MarketingSEO() {
                           {regeneratingAll ? "Regenerating…" : "Regenerate All (New Constraints)"}
                         </Button>
                       )}
+                      <Button variant="outline" size="sm" onClick={() => setComplianceOpen(true)}>
+                        <Shield className="w-3 h-3 mr-1" /> Allowed & Forbidden Terms
+                      </Button>
                     </div>
 
                     {analyzing && analyzeProgress.total > 0 && (
@@ -602,8 +606,8 @@ export default function MarketingSEO() {
                   </CardContent>
                 </Card>
 
-                {/* Compliance Settings */}
-                <SeoComplianceSettings onSettingsChange={() => reloadCompliance()} />
+                {/* Compliance Settings Modal */}
+                <SeoComplianceSettings open={complianceOpen} onOpenChange={setComplianceOpen} onSettingsChange={() => reloadCompliance()} />
 
                 {/* Summary Strip */}
                 {auditPages.length > 0 && !analyzing && (
