@@ -206,6 +206,7 @@ REMINDER: Do NOT use any of these words: ${compliance.forbiddenTerms.join(", ")}
                 suggestedDescription: { type: "string", description: "Suggested meta description (150-160 chars)" },
                 suggestedH1: { type: "string", description: "Suggested H1 or null if current is fine", nullable: true },
                 checklist: { type: "array", items: { type: "string" }, description: "3-6 actionable items" },
+                suggestedPrimaryKeyword: { type: "string", description: "The single best primary keyword for this page, derived from GSC data if available", nullable: true },
                 issueSuggestions: {
                   type: "array",
                   description: "One specific suggestion for EACH issue detected.",
@@ -221,7 +222,7 @@ REMINDER: Do NOT use any of these words: ${compliance.forbiddenTerms.join(", ")}
                   },
                 },
               },
-              required: ["suggestedTitle", "suggestedDescription", "suggestedH1", "checklist", "issueSuggestions"],
+              required: ["suggestedTitle", "suggestedDescription", "suggestedH1", "checklist", "suggestedPrimaryKeyword", "issueSuggestions"],
               additionalProperties: false,
             },
           },
