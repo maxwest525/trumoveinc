@@ -986,7 +986,7 @@ export default function Index() {
     }));
 
     // Navigate to the selected flow
-    navigate(leadCaptureTarget === "ai" ? "/scan-room" : "/online-estimate");
+    navigate(leadCaptureTarget === "ai" ? "/site/scan-room" : "/site/online-estimate");
   };
 
   // Step validation - Updated flow:

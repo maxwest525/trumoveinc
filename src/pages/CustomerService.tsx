@@ -26,14 +26,14 @@ const TRUDY_TRUST_ITEMS = [
 const TRUDY_AGENT_ID = 'agent_0501khwa2t2pfj0s3echetmjhx4n';
 
 const capabilities = [
-  { icon: Calculator, label: 'Instant Quotes', desc: 'AI-powered estimates in seconds', tag: 'Most used', href: '/online-estimate' },
-  { icon: MapPin, label: 'Live Tracking', desc: 'Real-time GPS location & ETA', href: '/track' },
-  { icon: Calendar, label: 'Scheduling', desc: 'Book or reschedule moves', href: '/book' },
-  { icon: Shield, label: 'Carrier Vetting', desc: 'FMCSA safety verified', href: '/carrier-vetting' },
-  { icon: ScanLine, label: 'Room Scanner', desc: 'Photo-based inventory', href: '/scan-room' },
-  { icon: Package, label: 'Packing Help', desc: 'Tips & checklists', href: '/faq' },
-  { icon: Video, label: 'Video Consult', desc: 'Live virtual walk-through', href: '/book' },
-  { icon: HelpCircle, label: 'General Support', desc: 'Insurance, claims, storage', href: '/faq' },
+  { icon: Calculator, label: 'Instant Quotes', desc: 'AI-powered estimates in seconds', tag: 'Most used', href: '/site/online-estimate' },
+  { icon: MapPin, label: 'Live Tracking', desc: 'Real-time GPS location & ETA', href: '/site/track' },
+  { icon: Calendar, label: 'Scheduling', desc: 'Book or reschedule moves', href: '/site/book' },
+  { icon: Shield, label: 'Carrier Vetting', desc: 'FMCSA safety verified', href: '/site/carrier-vetting' },
+  { icon: ScanLine, label: 'Room Scanner', desc: 'Photo-based inventory', href: '/site/scan-room' },
+  { icon: Package, label: 'Packing Help', desc: 'Tips & checklists', href: '/site/faq' },
+  { icon: Video, label: 'Video Consult', desc: 'Live virtual walk-through', href: '/site/book' },
+  { icon: HelpCircle, label: 'General Support', desc: 'Insurance, claims, storage', href: '/site/faq' },
 ];
 
 const faqItems = [
