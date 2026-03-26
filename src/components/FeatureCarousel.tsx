@@ -41,13 +41,13 @@ const features: Feature[] = [
     title: "Inventory Builder",
     desc: "Build your item list room by room for accurate pricing estimates.",
     image: sampleRoomLiving,
-    route: "/online-estimate",
+    route: "/site/online-estimate",
   },
   {
     title: "AI Room Scanner",
     desc: "Point your camera and AI detects furniture instantly.",
     image: scanRoomPreview,
-    route: "/scan-room",
+    route: "/site/scan-room",
   },
   {
     title: "Shipment Tracking",

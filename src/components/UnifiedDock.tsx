@@ -45,11 +45,11 @@ interface UnifiedDockProps {
 }
 
 const navItems = [
-  { icon: Video, label: "Video Consult", href: "/book" },
-  { icon: Shield, label: "Carrier Vetting", href: "/vetting" },
+  { icon: Video, label: "Video Consult", href: "/site/book" },
+  { icon: Shield, label: "Carrier Vetting", href: "/site/vetting" },
   { icon: MessageSquare, label: "AI Chat", href: null, action: "chat" },
-  { icon: MapPin, label: "Shipment Tracking", href: "/track" },
-  { icon: Sparkles, label: "AI Estimator", href: "/online-estimate" },
+  { icon: MapPin, label: "Shipment Tracking", href: "/site/track" },
+  { icon: Sparkles, label: "AI Estimator", href: "/site/online-estimate" },
   { icon: Headphones, label: "Call Us", href: "tel:+16097277647" },
 ];
 
