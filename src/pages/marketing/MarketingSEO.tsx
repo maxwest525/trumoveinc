@@ -867,7 +867,7 @@ export default function MarketingSEO() {
 
           {/* Phase 2: Search Console */}
           <TabsContent value="phase2">
-            <SearchConsoleTab status={gscConnected ? "connected" : "not_connected"} auditUrls={auditUrls.length > 0 ? auditUrls : auditPages.map(p => p.url)} onGscStatusChange={setGscConnected} />
+            <SearchConsoleTab status={gscConnected ? "connected" : "not_connected"} auditUrls={auditPages.map(p => p.url)} onGscStatusChange={setGscConnected} />
           </TabsContent>
 
           {/* Phase 3: GA4 */}
