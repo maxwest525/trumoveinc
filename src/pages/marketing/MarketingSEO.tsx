@@ -700,18 +700,6 @@ export default function MarketingSEO() {
           </Card>
         </div>
 
-        <Card className="border-dashed border-primary/20">
-          <CardContent className="p-4 flex items-start gap-2">
-            <RefreshCw className="w-4 h-4 text-primary mt-0.5 shrink-0" />
-            <div>
-              <p className="text-xs font-medium text-foreground">CMS Integration</p>
-              <p className="text-[11px] text-muted-foreground">
-                Approved and edited changes are saved to the database.
-                Use <strong>Export Approved (CSV)</strong> to download, or a future API can push meta tags directly.
-              </p>
-            </div>
-          </CardContent>
-        </Card>
       </div>
 
       {/* Changes Sidebar */}
