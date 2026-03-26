@@ -232,6 +232,8 @@ function FieldRow({
     setRegenerating(false);
   };
 
+  if (decision.status === "published") return null;
+
   if (decision.status === "ignored") {
     return (
       <div className="rounded-lg border border-border bg-muted/20 p-3 opacity-60">
@@ -312,21 +314,30 @@ function FieldRow({
 
       {!editing && suggested && (
         <div className="flex items-center gap-1.5 pt-0.5">
+          {decision.status === "approved" && (
+            <Button variant="default" size="sm" className="h-6 text-[10px] px-2.5 gap-1" onClick={() => onUpdate({ status: "published" })}>
+              <CheckCircle2 className="w-3 h-3" /> Publish
+            </Button>
+          )}
           {decision.status !== "approved" && (
             <Button variant="default" size="sm" className="h-6 text-[10px] px-2.5 gap-1" onClick={handleApprove}>
               <CheckCircle2 className="w-3 h-3" /> Approve
             </Button>
           )}
-          <Button variant="outline" size="sm" className="h-6 text-[10px] px-2.5 gap-1" onClick={handleStartEdit}>
-            <Pencil className="w-3 h-3" /> Edit
-          </Button>
-          <Button variant="ghost" size="sm" className="h-6 text-[10px] px-2.5 gap-1 text-muted-foreground" onClick={handleIgnore}>
-            <XCircle className="w-3 h-3" /> Ignore
-          </Button>
+          {decision.status !== "approved" && (
+            <Button variant="outline" size="sm" className="h-6 text-[10px] px-2.5 gap-1" onClick={handleStartEdit}>
+              <Pencil className="w-3 h-3" /> Edit
+            </Button>
+          )}
+          {decision.status !== "approved" && (
+            <Button variant="ghost" size="sm" className="h-6 text-[10px] px-2.5 gap-1 text-muted-foreground" onClick={handleIgnore}>
+              <XCircle className="w-3 h-3" /> Ignore
+            </Button>
+          )}
           {decision.status === "approved" && (
             <Button variant="ghost" size="sm" className="h-6 text-[10px] px-2.5 gap-1 text-muted-foreground" onClick={() => onUpdate({ status: "pending" })}>Undo</Button>
           )}
-          {onRegenerateItem && (
+          {decision.status !== "approved" && onRegenerateItem && (
             <Button variant="ghost" size="sm" className="h-6 text-[10px] px-2.5 gap-1 text-muted-foreground ml-auto" onClick={handleRegenSingle} disabled={regenerating}>
               <RefreshCw className={`w-3 h-3 ${regenerating ? "animate-spin" : ""}`} /> New Suggestion
             </Button>
