@@ -23,6 +23,14 @@ interface PageAnalysis {
   suggestedH1: string | null;
   aiChecklist: string[];
   issueSuggestions: IssueSuggestion[];
+  violations?: string[];
+}
+
+interface ComplianceSettings {
+  allowedTerms: string[];
+  forbiddenTerms: string[];
+  disclaimer: string;
+  tone: string;
 }
 
 function parseHtml(html: string, url: string): Omit<PageAnalysis, "suggestedTitle" | "suggestedDescription" | "suggestedH1" | "aiChecklist"> {
@@ -39,44 +47,106 @@ function parseHtml(html: string, url: string): Omit<PageAnalysis, "suggestedTitl
   const fetchedCanonical = canonicalMatch?.[1]?.trim() || null;
 
   const issues: string[] = [];
-
-  // Title checks
   if (!fetchedTitle) {
     issues.push("Missing title tag");
   } else {
     if (fetchedTitle.length < 30) issues.push(`Title too short (${fetchedTitle.length} chars, aim 50–60)`);
     if (fetchedTitle.length > 70) issues.push(`Title too long (${fetchedTitle.length} chars, aim 50–60)`);
   }
-
-  // Description checks
   if (!fetchedDescription) {
     issues.push("Missing meta description");
   } else {
     if (fetchedDescription.length < 100) issues.push(`Meta description too short (${fetchedDescription.length} chars, aim 150–160)`);
     if (fetchedDescription.length > 170) issues.push(`Meta description too long (${fetchedDescription.length} chars, aim 150–160)`);
   }
-
-  // H1 checks
-  if (!fetchedH1) {
-    issues.push("Missing H1 heading");
-  }
+  if (!fetchedH1) issues.push("Missing H1 heading");
   const h1All = html.match(/<h1[^>]*>/gi);
-  if (h1All && h1All.length > 1) {
-    issues.push(`Multiple H1 tags found (${h1All.length})`);
-  }
-
-  // Canonical check
-  if (!fetchedCanonical) {
-    issues.push("Missing canonical tag");
-  }
+  if (h1All && h1All.length > 1) issues.push(`Multiple H1 tags found (${h1All.length})`);
+  if (!fetchedCanonical) issues.push("Missing canonical tag");
 
   return { url, fetchedTitle, fetchedDescription, fetchedH1, fetchedCanonical, issues };
 }
 
+async function loadComplianceSettings(): Promise<ComplianceSettings> {
+  const defaults: ComplianceSettings = {
+    allowedTerms: ["long distance", "interstate", "cross-country", "nationwide", "residential relocation", "commercial relocation", "auto transport", "vehicle shipping", "moving broker", "household goods shipping"],
+    forbiddenTerms: ["local", "local movers", "near me", "same-day local", "local moving", "local service", "local mover"],
+    disclaimer: "",
+    tone: "professional",
+  };
+
+  try {
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    if (!supabaseUrl || !serviceKey) return defaults;
+
+    const sb = createClient(supabaseUrl, serviceKey);
+    const { data } = await sb.from("seo_compliance_settings").select("setting_key, setting_value");
+    if (!data || data.length === 0) return defaults;
+
+    const map: Record<string, any> = {};
+    data.forEach((r: any) => { map[r.setting_key] = r.setting_value; });
+
+    return {
+      allowedTerms: map.allowed_service_terms || defaults.allowedTerms,
+      forbiddenTerms: map.forbidden_terms || defaults.forbiddenTerms,
+      disclaimer: map.required_disclaimer || "",
+      tone: map.tone || "professional",
+    };
+  } catch (e) {
+    console.error("Failed to load compliance settings, using defaults:", e);
+    return defaults;
+  }
+}
+
+function containsForbiddenTerm(text: string, forbiddenTerms: string[]): string[] {
+  const lower = text.toLowerCase();
+  return forbiddenTerms.filter(term => {
+    const regex = new RegExp(`\\b${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, "i");
+    return regex.test(lower);
+  });
+}
+
+function buildSystemPrompt(compliance: ComplianceSettings): string {
+  const toneDescriptions: Record<string, string> = {
+    professional: "Write in a clean, authoritative, professional corporate tone.",
+    premium: "Write in a premium, luxury, high-end service tone emphasizing exclusivity and quality.",
+    budget: "Write in a value-focused, affordable tone emphasizing cost savings and practical benefits.",
+    trust: "Write in a trust-focused tone emphasizing safety, compliance, reliability, and customer protection.",
+  };
+
+  const toneInstruction = toneDescriptions[compliance.tone] || toneDescriptions.professional;
+
+  return `You are an SEO expert for trumoveinc.com, a long distance moving brokerage.
+
+TONE: ${toneInstruction}
+
+CRITICAL COMPLIANCE RULES — THESE ARE LEGALLY BINDING:
+1. TruMove Inc. is a LONG DISTANCE / INTERSTATE moving broker. They do NOT offer local moving.
+2. NEVER use ANY of these forbidden terms in your suggestions: ${compliance.forbiddenTerms.map(t => `"${t}"`).join(", ")}
+3. PREFERRED service terms to use: ${compliance.allowedTerms.map(t => `"${t}"`).join(", ")}
+4. If the page is about a specific state/region, you may include that location but NEVER imply local-only service.
+5. For homepage recommendations, default toward "Long Distance" and "Interstate" language.
+${compliance.disclaimer ? `6. Required disclaimer context: ${compliance.disclaimer}` : ""}
+
+SEO RULES:
+- Title tags: 50-60 characters, include primary keyword near front, include brand name.
+- Meta descriptions: 150-160 characters, compelling, include call-to-action.
+- H1: Clear, include keyword naturally, different from title tag.
+- Never recommend meta keywords (useless for Google).
+- Write for humans first, search engines second.
+- Be specific and actionable.
+- Never output raw HTML tags. Provide plain-English suggestions only.`;
+}
+
 async function getAiSuggestions(
   page: Omit<PageAnalysis, "suggestedTitle" | "suggestedDescription" | "suggestedH1" | "aiChecklist" | "issueSuggestions">,
-  apiKey: string
-): Promise<{ suggestedTitle: string; suggestedDescription: string; suggestedH1: string | null; aiChecklist: string[]; issueSuggestions: IssueSuggestion[] }> {
+  apiKey: string,
+  compliance: ComplianceSettings,
+  attempt = 1,
+): Promise<{ suggestedTitle: string; suggestedDescription: string; suggestedH1: string | null; aiChecklist: string[]; issueSuggestions: IssueSuggestion[]; violations: string[] }> {
+  const maxAttempts = 3;
+
   const prompt = `Analyse this page and give SEO recommendations:
 URL: ${page.url}
 Current Title: ${page.fetchedTitle || "(empty)"}
@@ -85,7 +155,9 @@ Current H1: ${page.fetchedH1 || "(empty)"}
 Canonical: ${page.fetchedCanonical || "(missing)"}
 Issues detected: ${page.issues.join("; ") || "none"}
 
-For EACH issue listed above, provide a specific, actionable suggestion to fix it. Also provide overall title/description/H1 recommendations.`;
+For EACH issue listed above, provide a specific, actionable suggestion to fix it. Also provide overall title/description/H1 recommendations.
+
+REMINDER: Do NOT use any of these words: ${compliance.forbiddenTerms.join(", ")}. Use terms like: ${compliance.allowedTerms.slice(0, 5).join(", ")} instead.`;
 
   const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
     method: "POST",
@@ -96,12 +168,7 @@ For EACH issue listed above, provide a specific, actionable suggestion to fix it
     body: JSON.stringify({
       model: "google/gemini-3-flash-preview",
       messages: [
-        {
-          role: "system",
-          content: `You are an SEO expert for trumoveinc.com, a long distance moving brokerage. Focus on title tag (50-60 chars), meta description (150-160 chars), H1, and actionable fixes. Never recommend meta keywords. Write for humans first. Be specific and actionable.
-
-CRITICAL RULE — TruMove Inc. is a LONG DISTANCE / INTERSTATE moving broker. They do NOT offer local moving services. NEVER use the word "local" in any suggestion. Allowed terms: long distance movers, interstate moving, cross-country moving, nationwide moving, residential relocation, commercial relocation, auto transport, vehicle shipping, moving broker, household goods shipping. Never describe TruMove as a "local mover", "local moving company", or suggest local SEO strategies (city pages, local service area, etc.) unless specifically about long-distance service availability FROM that city.`,
-        },
+        { role: "system", content: buildSystemPrompt(compliance) },
         { role: "user", content: prompt },
       ],
       tools: [
@@ -119,13 +186,13 @@ CRITICAL RULE — TruMove Inc. is a LONG DISTANCE / INTERSTATE moving broker. Th
                 checklist: { type: "array", items: { type: "string" }, description: "3-6 actionable items" },
                 issueSuggestions: {
                   type: "array",
-                  description: "One specific suggestion for EACH issue detected. Must match issues 1:1.",
+                  description: "One specific suggestion for EACH issue detected.",
                   items: {
                     type: "object",
                     properties: {
                       issue: { type: "string", description: "The exact issue text from the detected issues list" },
-                      suggestion: { type: "string", description: "Specific, actionable fix for this issue. Include exact copy/code when possible." },
-                      priority: { type: "string", enum: ["high", "medium", "low"], description: "Impact priority" },
+                      suggestion: { type: "string", description: "Specific, actionable fix. Include exact copy when possible." },
+                      priority: { type: "string", enum: ["high", "medium", "low"] },
                     },
                     required: ["issue", "suggestion", "priority"],
                     additionalProperties: false,
@@ -153,12 +220,30 @@ CRITICAL RULE — TruMove Inc. is a LONG DISTANCE / INTERSTATE moving broker. Th
   if (!toolCall) throw new Error("No recommendations returned");
 
   const result = JSON.parse(toolCall.function.arguments);
+
+  // Check all output fields for forbidden terms
+  const allText = [
+    result.suggestedTitle || "",
+    result.suggestedDescription || "",
+    result.suggestedH1 || "",
+    ...(result.checklist || []),
+    ...(result.issueSuggestions || []).map((s: any) => s.suggestion),
+  ].join(" ");
+
+  const violations = containsForbiddenTerm(allText, compliance.forbiddenTerms);
+
+  if (violations.length > 0 && attempt < maxAttempts) {
+    console.log(`Attempt ${attempt}: Found forbidden terms [${violations.join(", ")}], regenerating...`);
+    return getAiSuggestions(page, apiKey, compliance, attempt + 1);
+  }
+
   return {
     suggestedTitle: result.suggestedTitle,
     suggestedDescription: result.suggestedDescription,
     suggestedH1: result.suggestedH1,
     aiChecklist: result.checklist || [],
     issueSuggestions: result.issueSuggestions || [],
+    violations,
   };
 }
 
@@ -176,12 +261,13 @@ Deno.serve(async (req) => {
 
     const { action, url, urls, batchId } = await req.json();
 
-    // ACTION: discover - get list of URLs from sitemap/crawl
+    // Load compliance settings for all actions that need AI
+    const compliance = await loadComplianceSettings();
+
     if (action === "discover") {
       const baseUrl = url || "https://trumoveinc.com";
       console.log("Discovering URLs for:", baseUrl);
 
-      // Known pages for trumoveinc.com (ensures we always audit these)
       const knownPages: string[] = [
         "https://trumoveinc.com",
         "https://trumoveinc.com/online-estimate",
@@ -201,7 +287,6 @@ Deno.serve(async (req) => {
 
       let discoveredUrls: string[] = [...knownPages];
 
-      // Step 1: Try sitemap.xml first (direct fetch, no Firecrawl credits)
       const sitemapCandidates = [
         `${baseUrl}/sitemap.xml`,
         `${baseUrl}/sitemap_index.xml`,
@@ -210,17 +295,11 @@ Deno.serve(async (req) => {
 
       for (const sitemapUrl of sitemapCandidates) {
         try {
-          console.log("Trying sitemap:", sitemapUrl);
-          const sitemapRes = await fetch(sitemapUrl, {
-            headers: { "User-Agent": "TruMoveSEOAudit/1.0" },
-          });
+          const sitemapRes = await fetch(sitemapUrl, { headers: { "User-Agent": "TruMoveSEOAudit/1.0" } });
           if (sitemapRes.ok) {
             const xml = await sitemapRes.text();
-            // Check if it's a sitemap index (contains other sitemaps)
             const sitemapRefs = [...xml.matchAll(/<sitemap>\s*<loc>([\s\S]*?)<\/loc>/gi)].map(m => m[1].trim());
             if (sitemapRefs.length > 0) {
-              console.log(`Found sitemap index with ${sitemapRefs.length} child sitemaps`);
-              // Fetch each child sitemap
               for (const childUrl of sitemapRefs.slice(0, 5)) {
                 try {
                   const childRes = await fetch(childUrl, { headers: { "User-Agent": "TruMoveSEOAudit/1.0" } });
@@ -229,27 +308,16 @@ Deno.serve(async (req) => {
                     const childUrls = [...childXml.matchAll(/<url>\s*<loc>([\s\S]*?)<\/loc>/gi)].map(m => m[1].trim());
                     discoveredUrls.push(...childUrls);
                   }
-                } catch (e) {
-                  console.error("Child sitemap fetch error:", e);
-                }
+                } catch (e) { console.error("Child sitemap error:", e); }
               }
             }
-            // Also parse direct <url><loc> entries
             const directUrls = [...xml.matchAll(/<url>\s*<loc>([\s\S]*?)<\/loc>/gi)].map(m => m[1].trim());
             discoveredUrls.push(...directUrls);
-
-            if (discoveredUrls.length > 0) {
-              console.log(`Sitemap yielded ${discoveredUrls.length} URLs`);
-              break;
-            }
+            if (discoveredUrls.length > 0) break;
           }
-        } catch (e) {
-          console.log("Sitemap not found at", sitemapUrl);
-        }
+        } catch (e) { console.log("Sitemap not found at", sitemapUrl); }
       }
 
-      // Step 2: ALWAYS use Firecrawl map to supplement — sitemaps are often incomplete
-      console.log(`Sitemap found ${discoveredUrls.length} URLs, supplementing with Firecrawl link discovery`);
       try {
         const mapRes = await fetch("https://api.firecrawl.dev/v1/map", {
           method: "POST",
@@ -257,26 +325,19 @@ Deno.serve(async (req) => {
           body: JSON.stringify({ url: baseUrl, limit: 100, includeSubdomains: false }),
         });
         const mapData = await mapRes.json();
-        const crawledUrls = mapData?.links || [];
-        console.log(`Firecrawl map found ${crawledUrls.length} additional URLs`);
-        discoveredUrls.push(...crawledUrls);
-      } catch (e) {
-        console.error("Firecrawl map error:", e);
-      }
+        discoveredUrls.push(...(mapData?.links || []));
+      } catch (e) { console.error("Firecrawl map error:", e); }
 
-      // Deduplicate, filter to same domain, limit to 50
       const domain = new URL(baseUrl).hostname;
       const unique = [...new Set(discoveredUrls)]
         .filter(u => { try { return new URL(u).hostname === domain; } catch { return false; } })
         .slice(0, 50);
 
-      const source = unique.length > 0 && discoveredUrls.length > 0 ? "sitemap" : "crawl";
-      return new Response(JSON.stringify({ success: true, urls: unique, source, total: unique.length }), {
+      return new Response(JSON.stringify({ success: true, urls: unique, source: "sitemap", total: unique.length }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    // ACTION: analyze - fetch and analyze a single URL or batch
     if (action === "analyze") {
       const urlsToAnalyze: string[] = urls || (url ? [url] : []);
       if (!urlsToAnalyze.length) throw new Error("No URLs provided");
@@ -285,64 +346,43 @@ Deno.serve(async (req) => {
 
       for (const pageUrl of urlsToAnalyze.slice(0, 10)) {
         try {
-          console.log("Fetching:", pageUrl);
           const scrapeRes = await fetch("https://api.firecrawl.dev/v1/scrape", {
             method: "POST",
             headers: { Authorization: `Bearer ${FIRECRAWL_API_KEY}`, "Content-Type": "application/json" },
             body: JSON.stringify({ url: pageUrl, formats: ["html"], onlyMainContent: false }),
           });
-
           const scrapeData = await scrapeRes.json();
           const html = scrapeData?.data?.html || scrapeData?.html || "";
 
           if (!html) {
             results.push({
-              url: pageUrl,
-              fetchedTitle: null,
-              fetchedDescription: null,
-              fetchedH1: null,
-              fetchedCanonical: null,
-              issues: ["Failed to fetch page content"],
-              suggestedTitle: null,
-              suggestedDescription: null,
-              suggestedH1: null,
-              aiChecklist: [],
-              issueSuggestions: [],
+              url: pageUrl, fetchedTitle: null, fetchedDescription: null, fetchedH1: null,
+              fetchedCanonical: null, issues: ["Failed to fetch page content"],
+              suggestedTitle: null, suggestedDescription: null, suggestedH1: null,
+              aiChecklist: [], issueSuggestions: [], violations: [],
             });
             continue;
           }
 
           const parsed = parseHtml(html, pageUrl);
 
-          // Get AI suggestions
           try {
-            const ai = await getAiSuggestions(parsed, LOVABLE_API_KEY);
+            const ai = await getAiSuggestions(parsed, LOVABLE_API_KEY, compliance);
             results.push({ ...parsed, ...ai });
           } catch (aiErr) {
             console.error("AI error for", pageUrl, aiErr);
             results.push({
-              ...parsed,
-              suggestedTitle: null,
-              suggestedDescription: null,
-              suggestedH1: null,
-              aiChecklist: [],
-              issueSuggestions: [],
+              ...parsed, suggestedTitle: null, suggestedDescription: null,
+              suggestedH1: null, aiChecklist: [], issueSuggestions: [], violations: [],
             });
           }
         } catch (err) {
           console.error("Error processing", pageUrl, err);
           results.push({
-            url: pageUrl,
-            fetchedTitle: null,
-            fetchedDescription: null,
-            fetchedH1: null,
-            fetchedCanonical: null,
-            issues: [`Fetch failed: ${err instanceof Error ? err.message : "Unknown error"}`],
-            suggestedTitle: null,
-            suggestedDescription: null,
-            suggestedH1: null,
-            aiChecklist: [],
-            issueSuggestions: [],
+            url: pageUrl, fetchedTitle: null, fetchedDescription: null, fetchedH1: null,
+            fetchedCanonical: null, issues: [`Fetch failed: ${err instanceof Error ? err.message : "Unknown error"}`],
+            suggestedTitle: null, suggestedDescription: null, suggestedH1: null,
+            aiChecklist: [], issueSuggestions: [], violations: [],
           });
         }
       }
@@ -352,7 +392,14 @@ Deno.serve(async (req) => {
       });
     }
 
-    throw new Error("Invalid action. Use 'discover' or 'analyze'.");
+    // ACTION: get-compliance — return current compliance settings to frontend
+    if (action === "get-compliance") {
+      return new Response(JSON.stringify({ success: true, compliance }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    throw new Error("Invalid action. Use 'discover', 'analyze', or 'get-compliance'.");
   } catch (error) {
     console.error("seo-audit error:", error);
     return new Response(
