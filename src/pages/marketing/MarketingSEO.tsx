@@ -23,6 +23,7 @@ import SeoOverviewStrip from "@/components/seo/SeoOverviewStrip";
 import SearchConsoleTab from "@/components/seo/SearchConsoleTab";
 import GA4Tab from "@/components/seo/GA4Tab";
 import BacklinksTab from "@/components/seo/BacklinksTab";
+import SeoComplianceSettings, { checkViolations, useSeoCompliance } from "@/components/seo/SeoComplianceSettings";
 import type { PhaseInfo } from "@/components/seo/types";
 
 interface IssueSuggestion {
@@ -43,6 +44,7 @@ interface AuditPage {
   suggestedH1: string | null;
   aiChecklist: string[];
   issueSuggestions: IssueSuggestion[];
+  violations?: string[];
 }
 
 const defaultDecisions = (): PageDecisions => ({
@@ -69,6 +71,8 @@ export default function MarketingSEO() {
   const [filterMode, setFilterMode] = useState<FilterMode>("all");
   const [expandedSidebarItem, setExpandedSidebarItem] = useState<SidebarItem | null>(null);
   const [activeTab, setActiveTab] = useState("phase1");
+  const [regeneratingAll, setRegeneratingAll] = useState(false);
+  const { settings: complianceSettings, reload: reloadCompliance } = useSeoCompliance();
 
   // Phase statuses
   const phases: PhaseInfo[] = [
@@ -253,6 +257,30 @@ export default function MarketingSEO() {
     } finally {
       setRegeneratingUrl(null);
     }
+  };
+
+  const handleRegenerateAll = async () => {
+    if (auditPages.length === 0) return;
+    setRegeneratingAll(true);
+    const allUrls = auditPages.map(p => p.url);
+    toast.info(`Regenerating suggestions for ${allUrls.length} pages with updated compliance rules...`);
+    await analyzeUrls(allUrls);
+    setRegeneratingAll(false);
+    toast.success("All suggestions regenerated with compliance constraints");
+  };
+
+  const getViolationsForPage = (page: AuditPage): string[] => {
+    if (!complianceSettings) return page.violations || [];
+    const textsToCheck = [
+      page.suggestedTitle, page.suggestedDescription, page.suggestedH1,
+      ...page.aiChecklist,
+      ...(page.issueSuggestions || []).map(s => s.suggestion),
+    ].filter(Boolean) as string[];
+    const allViolations: string[] = [];
+    textsToCheck.forEach(text => {
+      allViolations.push(...checkViolations(text, complianceSettings.forbiddenTerms));
+    });
+    return [...new Set(allViolations)];
   };
 
   const handleExportCSV = () => {
@@ -548,6 +576,12 @@ export default function MarketingSEO() {
                           </Button>
                         </>
                       )}
+                      {auditPages.length > 0 && (
+                        <Button onClick={handleRegenerateAll} disabled={regeneratingAll || analyzing} variant="outline" size="sm">
+                          {regeneratingAll ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <RefreshCw className="w-3 h-3 mr-1" />}
+                          {regeneratingAll ? "Regenerating…" : "Regenerate All (New Constraints)"}
+                        </Button>
+                      )}
                     </div>
 
                     {analyzing && analyzeProgress.total > 0 && (
@@ -566,6 +600,9 @@ export default function MarketingSEO() {
                     )}
                   </CardContent>
                 </Card>
+
+                {/* Compliance Settings */}
+                <SeoComplianceSettings onSettingsChange={() => reloadCompliance()} />
 
                 {/* Summary Strip */}
                 {auditPages.length > 0 && !analyzing && (
@@ -634,6 +671,7 @@ export default function MarketingSEO() {
                           {filteredPages.map((page) => {
                             const status = getPageStatus(page.url);
                             const hasIssues = issueCount(page) > 0;
+                            const violations = getViolationsForPage(page);
                             return (
                               <Collapsible key={page.url} open={expandedUrl === page.url} onOpenChange={(open) => setExpandedUrl(open ? page.url : null)} asChild>
                                 <>
@@ -666,9 +704,16 @@ export default function MarketingSEO() {
                                       <TableCell>{charBadge(page.fetchedTitle, 50, 60)}</TableCell>
                                       <TableCell>{charBadge(page.fetchedDescription, 150, 160)}</TableCell>
                                       <TableCell>
-                                        <Badge variant={status === "actioned" ? "default" : status === "ignored" ? "outline" : "secondary"} className="text-[10px]">
-                                          {status === "actioned" ? "✓ Reviewed" : status}
-                                        </Badge>
+                                        <div className="flex items-center gap-1 flex-wrap">
+                                          <Badge variant={status === "actioned" ? "default" : status === "ignored" ? "outline" : "secondary"} className="text-[10px]">
+                                            {status === "actioned" ? "✓ Reviewed" : status}
+                                          </Badge>
+                                          {violations.length > 0 && (
+                                            <Badge variant="destructive" className="text-[9px] h-4 gap-0.5">
+                                              <AlertTriangle className="w-2.5 h-2.5" /> {violations.length} violation{violations.length > 1 ? "s" : ""}
+                                            </Badge>
+                                          )}
+                                        </div>
                                       </TableCell>
                                     </TableRow>
                                   </CollapsibleTrigger>
