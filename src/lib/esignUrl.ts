@@ -1,7 +1,10 @@
 /**
  * Returns the public e-sign base URL.
- * Always uses the branded custom domain so customer links never show Lovable preview/published hosts.
+ * Uses the current origin in dev/preview, and the published domain in production.
  */
 export function getEsignBaseUrl(): string {
-  return "https://trumoveinc.com";
+  if (typeof window !== "undefined") {
+    return window.location.origin;
+  }
+  return "https://trumoveinc.lovable.app";
 }
