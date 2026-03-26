@@ -387,9 +387,14 @@ export default function MarketingSEO() {
                 {discovering ? "Discovering pages…" : analyzing ? `Analyzing…` : "Crawl & Analyze trumoveinc.com"}
               </Button>
               {hasExportable && (
-                <Button onClick={handleExportCSV} variant="outline" size="sm">
-                  <Download className="w-3 h-3 mr-1" /> Export Approved (CSV)
-                </Button>
+                <>
+                  <Button onClick={handleApplyToCode} variant="default" size="sm">
+                    <Sparkles className="w-3 h-3 mr-1" /> Apply to Code (Copy Prompt)
+                  </Button>
+                  <Button onClick={handleExportCSV} variant="outline" size="sm">
+                    <Download className="w-3 h-3 mr-1" /> Export CSV
+                  </Button>
+                </>
               )}
             </div>
 
