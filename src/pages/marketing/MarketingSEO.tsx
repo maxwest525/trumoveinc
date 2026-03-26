@@ -322,8 +322,9 @@ export default function MarketingSEO() {
     const d = decisions[url];
     if (!d) return "pending";
     const statuses = [d.title.status, d.description.status, d.h1.status, ...Object.values(d.issues || {}).map(v => v.status)];
-    if (statuses.every((s) => s === "ignored")) return "ignored";
+    if (statuses.every((s) => s === "ignored" || s === "published")) return "ignored";
     if (statuses.some((s) => s === "approved" || s === "edited")) return "actioned";
+    if (statuses.some((s) => s === "published")) return "actioned";
     return "pending";
   };
 
