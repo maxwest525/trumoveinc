@@ -726,7 +726,7 @@ export default function MarketingSEO() {
                   Accepted ({acceptedItems.length})
                 </CardTitle>
                 {acceptedItems.length > 0 && (
-                  <Button variant="default" size="sm" className="h-6 text-[10px] px-2 gap-1" onClick={() => acceptedItems.forEach(handleSidebarPublish)}>
+                  <Button variant="default" size="sm" className="h-6 text-[10px] px-2 gap-1" onClick={handlePublishAll}>
                     <Sparkles className="w-3 h-3" /> Publish All
                   </Button>
                 )}
