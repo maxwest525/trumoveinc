@@ -44,6 +44,7 @@ interface AuditPage {
   suggestedH1: string | null;
   aiChecklist: string[];
   issueSuggestions: IssueSuggestion[];
+  violations?: string[];
 }
 
 const defaultDecisions = (): PageDecisions => ({
