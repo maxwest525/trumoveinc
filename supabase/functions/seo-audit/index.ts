@@ -23,6 +23,7 @@ interface PageAnalysis {
   suggestedH1: string | null;
   aiChecklist: string[];
   issueSuggestions: IssueSuggestion[];
+  suggestedPrimaryKeyword?: string | null;
   violations?: string[];
 }
 
