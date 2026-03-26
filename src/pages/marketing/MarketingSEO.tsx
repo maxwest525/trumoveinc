@@ -601,6 +601,9 @@ export default function MarketingSEO() {
                   </CardContent>
                 </Card>
 
+                {/* Compliance Settings */}
+                <SeoComplianceSettings onSettingsChange={() => reloadCompliance()} />
+
                 {/* Summary Strip */}
                 {auditPages.length > 0 && !analyzing && (
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
