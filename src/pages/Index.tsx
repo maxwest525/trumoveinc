@@ -966,7 +966,7 @@ export default function Index() {
       setLeadCaptureOpen(true);
     } else {
       // Already have contact info, proceed directly
-      navigate(flow === "ai" ? "/scan-room" : "/online-estimate");
+      navigate(flow === "ai" ? "/site/scan-room" : "/site/online-estimate");
     }
   };
 
