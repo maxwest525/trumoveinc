@@ -192,7 +192,7 @@ export default function MarketingSEO() {
       const result = data?.results?.[0];
       if (result) {
         setAuditPages((prev) => prev.map((p) =>
-          p.url === url ? { ...p, suggestedTitle: result.suggestedTitle, suggestedDescription: result.suggestedDescription, suggestedH1: result.suggestedH1, aiChecklist: result.aiChecklist || [] } : p
+          p.url === url ? { ...p, suggestedTitle: result.suggestedTitle, suggestedDescription: result.suggestedDescription, suggestedH1: result.suggestedH1, aiChecklist: result.aiChecklist || [], issueSuggestions: result.issueSuggestions || [] } : p
         ));
         setDecisions((prev) => ({ ...prev, [url]: defaultDecisions() }));
         toast.success("New suggestions generated");
