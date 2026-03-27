@@ -92,7 +92,7 @@ export default function MarketingSEO() {
 
   const totalIssues = auditPages.reduce((sum, p) => sum + (p.issues?.length || 0), 0);
 
-  const connectorCards = useMemo(() => [
+  const connectorCards = useMemo<Array<{ id: string; name: string; detail: string; status: PhaseInfo["status"] }>>(() => [
     {
       id: "gsc",
       name: "Google Search Console",
