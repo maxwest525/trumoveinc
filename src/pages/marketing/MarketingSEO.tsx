@@ -566,38 +566,18 @@ export default function MarketingSEO() {
           phases={phases}
         />
 
-        <Card>
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between gap-3 flex-wrap">
-              <div>
-                <CardTitle className="text-base flex items-center gap-2">
-                  <Link2 className="w-4 h-4 text-primary" /> External Connectors
-                </CardTitle>
-                <CardDescription className="text-xs mt-1">
-                  See which outside data sources are live before you run each phase.
-                </CardDescription>
-              </div>
-              <Badge variant="outline" className="text-[10px]">
-                {connectorCards.filter((connector) => connector.status === "connected").length} connected
+        <div className="flex flex-wrap items-center gap-3 text-xs">
+          <span className="text-muted-foreground font-medium">Connectors:</span>
+          {connectorCards.map((c) => (
+            <div key={c.id} className="flex items-center gap-1.5 border rounded-md px-2.5 py-1.5 bg-muted/20">
+              <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${c.status === "connected" ? "bg-emerald-500" : c.status === "coming_soon" ? "bg-muted-foreground/40" : "bg-amber-500"}`} />
+              <span className="text-foreground font-medium">{c.name}</span>
+              <Badge variant={phaseStatusBadgeVariant(c.status)} className="text-[9px] ml-1">
+                {phaseStatusLabel(c.status)}
               </Badge>
             </div>
-          </CardHeader>
-          <CardContent className="grid gap-3 md:grid-cols-3">
-            {connectorCards.map((connector) => (
-              <div key={connector.id} className="rounded-xl border bg-muted/20 p-4">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="space-y-1 min-w-0">
-                    <p className="text-sm font-medium text-foreground">{connector.name}</p>
-                    <p className="text-xs text-muted-foreground">{connector.detail}</p>
-                  </div>
-                  <Badge variant={phaseStatusBadgeVariant(connector.status)} className="text-[10px] shrink-0">
-                    {phaseStatusLabel(connector.status)}
-                  </Badge>
-                </div>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
+          ))}
+        </div>
 
         {/* Phase Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
