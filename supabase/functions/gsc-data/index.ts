@@ -152,8 +152,6 @@ Deno.serve(async (req) => {
               expression: absolutePageUrl,
             }],
           }],
-            }],
-          }],
           rowLimit: 20,
           dataState: "final",
         }),
