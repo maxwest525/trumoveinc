@@ -21,6 +21,7 @@ interface PageAnalysis {
   suggestedTitle: string | null;
   suggestedDescription: string | null;
   suggestedH1: string | null;
+  suggestedCanonical: string | null;
   aiChecklist: string[];
   issueSuggestions: IssueSuggestion[];
   suggestedPrimaryKeyword?: string | null;
