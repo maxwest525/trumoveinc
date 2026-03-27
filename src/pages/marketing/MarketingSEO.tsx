@@ -106,11 +106,13 @@ export default function MarketingSEO() {
     setRefreshingStatus(false);
   }, [checkConnections]);
 
-  // Phase statuses — Crawl/Audit is always active (built-in)
+  // Phase statuses — Phase 1 is a pizza tracker (not_started → in_progress → completed)
+  const phase1Status = analyzing || discovering ? "in_progress" : auditPages.length > 0 ? "completed" : "not_started";
+
   const phases: PhaseInfo[] = [
-    { id: 1, label: "Crawl / Audit", status: "connected", lastSync: auditPages.length > 0 ? new Date().toISOString() : null },
-    { id: 2, label: "Search Console", status: gscConnected ? "connected" : "not_connected" },
-    { id: 3, label: "GA4", status: ga4Connected ? "connected" : "not_connected" },
+    { id: 1, label: "Crawl / Audit", status: phase1Status, lastSync: auditPages.length > 0 ? new Date().toISOString() : null },
+    { id: 2, label: "Search Console", status: gscConnected ? "connected" : "not_connected", integrationName: "Google Search Console", helpUrl: "https://search.google.com/search-console/about" },
+    { id: 3, label: "GA4", status: ga4Connected ? "connected" : "not_connected", integrationName: "Google Analytics 4", helpUrl: "https://analytics.google.com" },
     { id: 4, label: "Backlinks", status: "coming_soon" },
   ];
 
