@@ -1,25 +1,30 @@
 
 
-## Testing Google Search Console Integration
+## Plan: Unify Phases, Connectors & Integration Status
 
-Everything is already built and deployed. You just need to test the flow end-to-end.
+### Problem
+1. **Redundant UI**: The "Connectors" row and the "Phase Status" card in the overview strip show the same information as the phase tabs — three separate places displaying connection status.
+2. **GSC/GA4 shown as disconnected**: The `gscConnected` state starts as `false` and only updates when the SearchConsoleTab checks the database. GA4 is hardcoded to `"not_connected"`. Both should check `gsc_connections` and `integration_connections` tables on page load.
 
-### What to test (step by step)
+### Changes
 
-1. **Navigate to** `/marketing/seo` and click the **Phase 2: Search Console** tab
-2. **Click "Connect Google Search Console"** — this calls the `gsc-auth` edge function to generate an OAuth URL and redirects you to Google
-3. **Sign in with Google** and grant the `webmasters.readonly` scope
-4. **Google redirects back** to `/marketing/seo?code=...` — the component picks up the `code` param, exchanges it for tokens via the edge function, and stores them in `gsc_connections`
-5. **Property selection** — after connect, your GSC properties should appear. Select `https://trumoveinc.com` (or the sc-domain variant)
-6. **Fetch data** — once a property is selected, click "Fetch GSC Data" to pull per-URL metrics (clicks, impressions, CTR, position) and see Fix Priority scores
+**1. Remove redundant connector row and merge status into phase tabs** (`MarketingSEO.tsx`)
+- Delete the "Connectors:" row (lines 569-580) entirely.
+- Remove the `connectorCards` useMemo since it duplicates `phases`.
+- The phase tab cards already show status badges — these become the single source of truth.
 
-### Common issues to watch for
+**2. Remove "Phase Status" card from overview strip** (`SeoOverviewStrip.tsx`)
+- Replace the 4th card (Phase Status listing) with a simpler "Last Audit" or keep only 3 KPI cards (URLs Crawled, Total Issues, Integrations count). The phase tabs themselves now carry all status info.
 
-- **Redirect URI mismatch**: The redirect URI sent to Google must exactly match what you configured in Google Cloud Console. The code uses `${window.location.origin}/marketing/seo`. Make sure `https://trumoveinc.lovable.app/marketing/seo` (or whatever domain you're testing from) is in your Google OAuth client's authorized redirect URIs.
-- **OAuth consent screen**: If still in "Testing" mode in Google Cloud, only test users you've added can authorize. Add your Google account as a test user if needed.
-- **Missing refresh token**: Google only sends `refresh_token` on the first consent. If you re-authorize, you may not get one. The code uses `prompt: "consent"` which forces it, so this should be fine.
+**3. Auto-detect GSC connection on mount** (`MarketingSEO.tsx`)
+- Add a `useEffect` that queries `gsc_connections` for the current user on page load. If a row exists with a `refresh_token`, set `gscConnected = true` immediately, so the phase tab shows "Connected" without needing to click into Phase 2 first.
 
-### No code changes needed
+**4. Auto-detect GA4 connection on mount** (`MarketingSEO.tsx`)
+- Add a `useEffect` that queries `integration_connections` where `integration_id = 'ga4'` and `connected = true`. If found, update Phase 3 status to "connected".
+- Update GA4Tab to also check this on mount rather than always showing "not connected".
 
-The integration is complete. This is purely a testing step.
+### Result
+- One place for status: the phase tab cards (Phase 1-4), each with a badge.
+- No duplicate connector row or overview strip phase listing.
+- GSC and GA4 correctly show as connected based on database state.
 
