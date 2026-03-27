@@ -851,7 +851,7 @@ export default function MarketingSEO() {
                                   </CollapsibleTrigger>
                                   <CollapsibleContent asChild>
                                     <TableRow>
-                                      <TableCell colSpan={5} className="bg-muted/20 p-5">
+                                      <TableCell colSpan={6} className="bg-muted/20 p-5">
                                         <AuditPageDetail
                                           page={page}
                                           decisions={decisions[page.url] || defaultDecisions()}
