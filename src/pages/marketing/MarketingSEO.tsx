@@ -135,17 +135,22 @@ export default function MarketingSEO() {
   };
 
   const phaseStatusBadgeVariant = (status: PhaseInfo["status"]) => {
-    if (status === "connected" || status === "syncing") return "default";
+    if (status === "completed" || status === "connected") return "default";
+    if (status === "in_progress" || status === "syncing") return "default";
     if (status === "error") return "destructive";
     if (status === "coming_soon") return "outline";
+    if (status === "not_started") return "secondary";
     return "secondary";
   };
 
-  const phaseStatusLabel = (status: PhaseInfo["status"]) => {
-    if (status === "connected") return "Connected";
-    if (status === "syncing") return "Syncing";
-    if (status === "error") return "Error";
-    if (status === "coming_soon") return "Coming Soon";
+  const phaseStatusLabel = (phase: PhaseInfo) => {
+    if (phase.status === "completed") return "✓ Completed";
+    if (phase.status === "in_progress") return "In Progress…";
+    if (phase.status === "not_started") return "Not Started";
+    if (phase.status === "connected") return `Connected`;
+    if (phase.status === "syncing") return "Syncing";
+    if (phase.status === "error") return "Error";
+    if (phase.status === "coming_soon") return "Coming Soon";
     return "Not Connected";
   };
 
