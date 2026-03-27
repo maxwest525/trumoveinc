@@ -462,7 +462,7 @@ export default function MarketingSEO() {
   const getPageStatus = (url: string) => {
     const d = decisions[url];
     if (!d) return "pending";
-    const statuses = [d.title.status, d.description.status, d.h1.status, ...Object.values(d.issues || {}).map(v => v.status)];
+    const statuses = [d.title.status, d.description.status, d.h1.status, d.canonical.status, ...Object.values(d.issues || {}).map(v => v.status)];
     if (statuses.every((s) => s === "ignored" || s === "published")) return "ignored";
     if (statuses.some((s) => s === "approved" || s === "edited")) return "actioned";
     if (statuses.some((s) => s === "published")) return "actioned";
