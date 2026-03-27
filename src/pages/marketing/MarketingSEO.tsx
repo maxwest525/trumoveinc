@@ -106,14 +106,23 @@ export default function MarketingSEO() {
     setRefreshingStatus(false);
   }, [checkConnections]);
 
-  // Phase statuses — Phase 1 is a pizza tracker (not_started → in_progress → completed)
+  // Phase statuses — purely audit progress (pizza tracker)
   const phase1Status = analyzing || discovering ? "in_progress" : auditPages.length > 0 ? "completed" : "not_started";
+  // Phase 2: has GSC data been pulled for any page?
+  const [phase2Done, setPhase2Done] = useState(false);
+  const phase2Status = phase2Done ? "completed" : "not_started";
 
   const phases: PhaseInfo[] = [
     { id: 1, label: "Crawl / Audit", status: phase1Status, lastSync: auditPages.length > 0 ? new Date().toISOString() : null },
-    { id: 2, label: "Search Console", status: gscConnected ? "connected" : "not_connected", integrationName: "Google Search Console", helpUrl: "https://search.google.com/search-console/about" },
-    { id: 3, label: "GA4", status: ga4Connected ? "connected" : "not_connected", integrationName: "Google Analytics 4", helpUrl: "https://analytics.google.com" },
+    { id: 2, label: "Search Console Review", status: phase2Status },
+    { id: 3, label: "GA4 Review", status: "not_started" },
     { id: 4, label: "Backlinks", status: "coming_soon" },
+  ];
+
+  // Integration connection info (separate from phases)
+  const integrations = [
+    { name: "Google Search Console", connected: gscConnected, helpUrl: "https://search.google.com/search-console/about" },
+    { name: "Google Analytics 4", connected: ga4Connected, helpUrl: "https://analytics.google.com" },
   ];
 
   // Compute weighted scores for all pages
@@ -586,6 +595,7 @@ export default function MarketingSEO() {
           totalUrls={auditPages.length}
           totalIssues={totalIssues}
           phases={phases}
+          integrations={integrations}
           onRefresh={handleRefreshStatus}
           refreshing={refreshingStatus}
         />
@@ -612,29 +622,11 @@ export default function MarketingSEO() {
                       <div>
                         <p className="text-sm font-semibold text-foreground">{meta.title}</p>
                         <p className="text-xs text-muted-foreground">{meta.description}</p>
-                        {/* Show integration name when connected */}
-                        {phase.status === "connected" && phase.integrationName && (
-                          <p className="text-[10px] text-primary mt-0.5">{phase.integrationName}</p>
-                        )}
                       </div>
                     </div>
-                    <div className="flex flex-col items-end gap-1 shrink-0">
-                      <Badge variant={phaseStatusBadgeVariant(phase.status)} className="text-[10px]">
-                        {phaseStatusLabel(phase)}
-                      </Badge>
-                      {/* Help link for disconnected integrations */}
-                      {phase.status === "not_connected" && phase.helpUrl && (
-                        <a
-                          href={phase.helpUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-[10px] text-primary hover:underline flex items-center gap-0.5"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <HelpCircle className="w-3 h-3" /> Setup Guide
-                        </a>
-                      )}
-                    </div>
+                    <Badge variant={phaseStatusBadgeVariant(phase.status)} className="text-[10px] shrink-0">
+                      {phaseStatusLabel(phase)}
+                    </Badge>
                   </div>
                 </TabsTrigger>
               );
