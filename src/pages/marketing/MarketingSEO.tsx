@@ -48,6 +48,12 @@ interface AuditPage {
   aiChecklist: string[];
   issueSuggestions: IssueSuggestion[];
   violations?: string[];
+  // Two-pass debug fields
+  rawTitle?: string | null;
+  renderedTitle?: string | null;
+  rawDescription?: string | null;
+  renderedDescription?: string | null;
+  sourceUsed?: "raw" | "rendered";
 }
 
 const defaultDecisions = (): PageDecisions => ({
