@@ -622,29 +622,11 @@ export default function MarketingSEO() {
                       <div>
                         <p className="text-sm font-semibold text-foreground">{meta.title}</p>
                         <p className="text-xs text-muted-foreground">{meta.description}</p>
-                        {/* Show integration name when connected */}
-                        {phase.status === "connected" && phase.integrationName && (
-                          <p className="text-[10px] text-primary mt-0.5">{phase.integrationName}</p>
-                        )}
                       </div>
                     </div>
-                    <div className="flex flex-col items-end gap-1 shrink-0">
-                      <Badge variant={phaseStatusBadgeVariant(phase.status)} className="text-[10px]">
-                        {phaseStatusLabel(phase)}
-                      </Badge>
-                      {/* Help link for disconnected integrations */}
-                      {phase.status === "not_connected" && phase.helpUrl && (
-                        <a
-                          href={phase.helpUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-[10px] text-primary hover:underline flex items-center gap-0.5"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <HelpCircle className="w-3 h-3" /> Setup Guide
-                        </a>
-                      )}
-                    </div>
+                    <Badge variant={phaseStatusBadgeVariant(phase.status)} className="text-[10px] shrink-0">
+                      {phaseStatusLabel(phase)}
+                    </Badge>
                   </div>
                 </TabsTrigger>
               );
