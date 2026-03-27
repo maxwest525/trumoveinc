@@ -92,6 +92,49 @@ export default function MarketingSEO() {
 
   const totalIssues = auditPages.reduce((sum, p) => sum + (p.issues?.length || 0), 0);
 
+  const connectorCards = useMemo<Array<{ id: string; name: string; detail: string; status: PhaseInfo["status"] }>>(() => [
+    {
+      id: "gsc",
+      name: "Google Search Console",
+      detail: gscConnected ? "Connected and ready for Phase 2" : "Not connected yet",
+      status: gscConnected ? "connected" : "not_connected",
+    },
+    {
+      id: "ga4",
+      name: "Google Analytics 4",
+      detail: "Available in Phase 3",
+      status: "not_connected",
+    },
+    {
+      id: "backlinks",
+      name: "Backlink Source",
+      detail: "Planned for a later phase",
+      status: "coming_soon",
+    },
+  ], [gscConnected]);
+
+  const phaseMeta: Record<string, { icon: typeof ScanSearch; title: string; description: string; status: PhaseInfo["status"] }> = {
+    phase1: { icon: ScanSearch, title: "Crawl / Audit", description: "Discover pages and audit metadata.", status: phases[0].status },
+    phase2: { icon: Search, title: "Search Console", description: "Pull query and ranking data.", status: phases[1].status },
+    phase3: { icon: BarChart3, title: "GA4", description: "Review sessions and conversions.", status: phases[2].status },
+    phase4: { icon: ExternalLink, title: "Backlinks", description: "Track authority and referring domains.", status: phases[3].status },
+  };
+
+  const phaseStatusBadgeVariant = (status: PhaseInfo["status"]) => {
+    if (status === "connected" || status === "syncing") return "default";
+    if (status === "error") return "destructive";
+    if (status === "coming_soon") return "outline";
+    return "secondary";
+  };
+
+  const phaseStatusLabel = (status: PhaseInfo["status"]) => {
+    if (status === "connected") return "Connected";
+    if (status === "syncing") return "Syncing";
+    if (status === "error") return "Error";
+    if (status === "coming_soon") return "Coming Soon";
+    return "Not Connected";
+  };
+
   // ─── Phase 1 Logic (unchanged) ───
   const analyzeUrls = useCallback(async (urls: string[]) => {
     setAnalyzing(true);
@@ -523,25 +566,72 @@ export default function MarketingSEO() {
           phases={phases}
         />
 
+        <Card>
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              <div>
+                <CardTitle className="text-base flex items-center gap-2">
+                  <Link2 className="w-4 h-4 text-primary" /> External Connectors
+                </CardTitle>
+                <CardDescription className="text-xs mt-1">
+                  See which outside data sources are live before you run each phase.
+                </CardDescription>
+              </div>
+              <Badge variant="outline" className="text-[10px]">
+                {connectorCards.filter((connector) => connector.status === "connected").length} connected
+              </Badge>
+            </div>
+          </CardHeader>
+          <CardContent className="grid gap-3 md:grid-cols-3">
+            {connectorCards.map((connector) => (
+              <div key={connector.id} className="rounded-xl border bg-muted/20 p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="space-y-1 min-w-0">
+                    <p className="text-sm font-medium text-foreground">{connector.name}</p>
+                    <p className="text-xs text-muted-foreground">{connector.detail}</p>
+                  </div>
+                  <Badge variant={phaseStatusBadgeVariant(connector.status)} className="text-[10px] shrink-0">
+                    {phaseStatusLabel(connector.status)}
+                  </Badge>
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+
         {/* Phase Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="w-full justify-start bg-muted/50 h-auto p-1 flex-wrap">
-            <TabsTrigger value="phase1" className="gap-1.5 text-xs data-[state=active]:bg-background">
-              <ScanSearch className="w-3.5 h-3.5" /> Phase 1: Crawl / Audit
-            </TabsTrigger>
-            <TabsTrigger value="phase2" className="gap-1.5 text-xs data-[state=active]:bg-background">
-              <Search className="w-3.5 h-3.5" /> Phase 2: Search Console
-            </TabsTrigger>
-            <TabsTrigger value="phase3" className="gap-1.5 text-xs data-[state=active]:bg-background">
-              <BarChart3 className="w-3.5 h-3.5" /> Phase 3: GA4
-            </TabsTrigger>
-            <TabsTrigger value="phase4" className="gap-1.5 text-xs data-[state=active]:bg-background">
-              <ExternalLink className="w-3.5 h-3.5" /> Phase 4: Backlinks
-            </TabsTrigger>
+          <TabsList className="grid h-auto w-full grid-cols-1 gap-2 bg-transparent p-0 md:grid-cols-2 xl:grid-cols-4">
+            {Object.entries(phaseMeta).map(([value, meta], index) => {
+              const Icon = meta.icon;
+              return (
+                <TabsTrigger
+                  key={value}
+                  value={value}
+                  className="h-auto items-start justify-start rounded-xl border bg-muted/20 p-4 text-left data-[state=active]:border-primary data-[state=active]:bg-background"
+                >
+                  <div className="flex w-full items-start justify-between gap-3">
+                    <div className="space-y-2 min-w-0">
+                      <div className="flex items-center gap-2 text-foreground">
+                        <Icon className="w-4 h-4 shrink-0" />
+                        <span className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Phase {index + 1}</span>
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-foreground">{meta.title}</p>
+                        <p className="text-xs text-muted-foreground">{meta.description}</p>
+                      </div>
+                    </div>
+                    <Badge variant={phaseStatusBadgeVariant(meta.status)} className="text-[10px] shrink-0">
+                      {phaseStatusLabel(meta.status)}
+                    </Badge>
+                  </div>
+                </TabsTrigger>
+              );
+            })}
           </TabsList>
 
           {/* Phase 1: Crawl / Audit */}
-          <TabsContent value="phase1">
+          <TabsContent value="phase1" className="mt-4">
             <div className="flex gap-6">
               <div className="space-y-6 flex-1 min-w-0">
                 {/* Controls */}
@@ -886,17 +976,17 @@ export default function MarketingSEO() {
           </TabsContent>
 
           {/* Phase 2: Search Console */}
-          <TabsContent value="phase2">
+          <TabsContent value="phase2" className="mt-4">
             <SearchConsoleTab status={gscConnected ? "connected" : "not_connected"} auditUrls={auditPages.map(p => p.url)} onGscStatusChange={setGscConnected} />
           </TabsContent>
 
           {/* Phase 3: GA4 */}
-          <TabsContent value="phase3">
+          <TabsContent value="phase3" className="mt-4">
             <GA4Tab status="not_connected" />
           </TabsContent>
 
           {/* Phase 4: Backlinks */}
-          <TabsContent value="phase4">
+          <TabsContent value="phase4" className="mt-4">
             <BacklinksTab />
           </TabsContent>
         </Tabs>

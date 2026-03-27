@@ -61,12 +61,12 @@ export default function SeoOverviewStrip({ totalUrls, totalIssues, phases }: Seo
         <CardContent className="p-4 space-y-1">
           <div className="flex items-center gap-1.5">
             <Clock className="w-3.5 h-3.5 text-muted-foreground" />
-            <p className="text-[11px] font-medium text-muted-foreground">Last Sync</p>
+            <p className="text-[11px] font-medium text-muted-foreground">Phase Status</p>
           </div>
-          <div className="space-y-0.5">
+          <div className="space-y-1.5">
             {phases.map(p => (
               <div key={p.id} className="flex items-center justify-between gap-2">
-                <span className="text-[10px] text-muted-foreground truncate">Phase {p.id}</span>
+                <span className="text-[10px] text-muted-foreground truncate">{p.label}</span>
                 <Badge variant={statusColor[p.status] as any} className="text-[9px] h-4 px-1.5">
                   {p.lastSync ? new Date(p.lastSync).toLocaleDateString() : statusLabel[p.status]}
                 </Badge>
