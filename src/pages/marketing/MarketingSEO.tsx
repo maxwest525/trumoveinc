@@ -106,14 +106,23 @@ export default function MarketingSEO() {
     setRefreshingStatus(false);
   }, [checkConnections]);
 
-  // Phase statuses — Phase 1 is a pizza tracker (not_started → in_progress → completed)
+  // Phase statuses — purely audit progress (pizza tracker)
   const phase1Status = analyzing || discovering ? "in_progress" : auditPages.length > 0 ? "completed" : "not_started";
+  // Phase 2: has GSC data been pulled for any page?
+  const [phase2Done, setPhase2Done] = useState(false);
+  const phase2Status = phase2Done ? "completed" : "not_started";
 
   const phases: PhaseInfo[] = [
     { id: 1, label: "Crawl / Audit", status: phase1Status, lastSync: auditPages.length > 0 ? new Date().toISOString() : null },
-    { id: 2, label: "Search Console", status: gscConnected ? "connected" : "not_connected", integrationName: "Google Search Console", helpUrl: "https://search.google.com/search-console/about" },
-    { id: 3, label: "GA4", status: ga4Connected ? "connected" : "not_connected", integrationName: "Google Analytics 4", helpUrl: "https://analytics.google.com" },
+    { id: 2, label: "Search Console Review", status: phase2Status },
+    { id: 3, label: "GA4 Review", status: "not_started" },
     { id: 4, label: "Backlinks", status: "coming_soon" },
+  ];
+
+  // Integration connection info (separate from phases)
+  const integrations = [
+    { name: "Google Search Console", connected: gscConnected, helpUrl: "https://search.google.com/search-console/about" },
+    { name: "Google Analytics 4", connected: ga4Connected, helpUrl: "https://analytics.google.com" },
   ];
 
   // Compute weighted scores for all pages
