@@ -42,6 +42,7 @@ import ResetPassword from "./pages/ResetPassword";
 import SetPassword from "./pages/SetPassword";
 import MarketingTemplates from "./pages/marketing/MarketingTemplates";
 import MarketingSEO from "./pages/marketing/MarketingSEO";
+import MarketingDashboard from "./pages/marketing/MarketingDashboard";
 import AccountingDashboard from "./pages/AccountingDashboard";
 import AgentOperations from "./pages/AgentOperations";
 import AgentNewCustomer from "./pages/AgentNewCustomer";
@@ -137,7 +138,7 @@ const App = () => (
             <Route path="/leaderboard" element={<Leaderboard />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/set-password" element={<SetPassword />} />
-            <Route path="/marketing/dashboard" element={<Navigate to="/marketing/templates" replace />} />
+            <Route path="/marketing/dashboard" element={<MarketingDashboard />} />
             <Route path="/marketing/templates" element={<MarketingTemplates />} />
             <Route path="/marketing/seo" element={<MarketingSEO />} />
             <Route path="/accounting/dashboard" element={<AccountingDashboard />} />
