@@ -488,7 +488,7 @@ Deno.serve(async (req) => {
             console.error("AI error for", pageUrl, aiErr);
             results.push({
               ...finalParsed, suggestedTitle: null, suggestedDescription: null,
-              suggestedH1: null, aiChecklist: [], issueSuggestions: [], violations: [],
+              suggestedH1: null, suggestedCanonical: null, aiChecklist: [], issueSuggestions: [], violations: [],
               ...debugFields,
             });
           }
