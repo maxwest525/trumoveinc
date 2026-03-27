@@ -25,6 +25,12 @@ interface PageAnalysis {
   issueSuggestions: IssueSuggestion[];
   suggestedPrimaryKeyword?: string | null;
   violations?: string[];
+  // Two-pass debug fields
+  rawTitle?: string | null;
+  renderedTitle?: string | null;
+  rawDescription?: string | null;
+  renderedDescription?: string | null;
+  sourceUsed?: "raw" | "rendered";
 }
 
 interface ComplianceSettings {
