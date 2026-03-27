@@ -14,7 +14,7 @@ import logoImg from "@/assets/logo.png";
 
 const NAV_ITEMS = [
   { label: "Email & SMS Templates", icon: FileText, href: "/marketing/templates" },
-  { label: "SEO Helper", icon: Search, href: "/marketing/seo" },
+  { label: "SEO Module", icon: Search, href: "/marketing/seo" },
 ];
 
 interface MarketingShellProps {
