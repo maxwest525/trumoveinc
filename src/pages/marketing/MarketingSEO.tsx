@@ -756,11 +756,12 @@ export default function MarketingSEO() {
                       <Table>
                         <TableHeader>
                           <TableRow>
-                            <TableHead className="w-[35%]">Page</TableHead>
-                            <TableHead className="w-[15%]">Issues</TableHead>
-                            <TableHead className="w-[15%]">Title</TableHead>
-                            <TableHead className="w-[15%]">Description</TableHead>
-                            <TableHead className="w-[20%]">Status</TableHead>
+                            <TableHead className="w-[30%]">Page</TableHead>
+                            <TableHead className="w-[10%]">Score</TableHead>
+                            <TableHead className="w-[20%]">Top Issues</TableHead>
+                            <TableHead className="w-[12%]">Title</TableHead>
+                            <TableHead className="w-[12%]">Description</TableHead>
+                            <TableHead className="w-[16%]">Status</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
