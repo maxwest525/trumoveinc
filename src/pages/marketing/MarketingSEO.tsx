@@ -429,7 +429,7 @@ export default function MarketingSEO() {
     return "pending";
   };
 
-  const issueCount = (p: AuditPage) => p.issues?.length || 0;
+  const issueCount = (p: AuditPage) => pageScores[p.url]?.issue_count || 0;
   const charBadge = (text: string | null, min: number, max: number) => {
     if (!text) return <Badge variant="destructive" className="text-[10px] font-normal">Missing</Badge>;
     const len = text.length;
