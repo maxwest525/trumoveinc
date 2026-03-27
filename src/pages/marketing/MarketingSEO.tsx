@@ -767,8 +767,10 @@ export default function MarketingSEO() {
                         <TableBody>
                           {filteredPages.map((page) => {
                             const status = getPageStatus(page.url);
-                            const hasIssues = issueCount(page) > 0;
+                            const score = pageScores[page.url];
+                            const hasIssues = (score?.issue_count || 0) > 0;
                             const violations = getViolationsForPage(page);
+                            const topIssues = score?.issues.slice(0, 2) || [];
                             return (
                               <Collapsible key={page.url} open={expandedUrl === page.url} onOpenChange={(open) => setExpandedUrl(open ? page.url : null)} asChild>
                                 <>
@@ -777,26 +779,59 @@ export default function MarketingSEO() {
                                       <TableCell>
                                         <div className="flex items-center gap-1.5">
                                           {expandedUrl === page.url ? <ChevronUp className="w-3 h-3 shrink-0 text-muted-foreground" /> : <ChevronDown className="w-3 h-3 shrink-0 text-muted-foreground" />}
-                                          <div className="min-w-0">
-                                            <p className="font-mono text-xs truncate">{page.url.replace("https://trumoveinc.com", "") || "/"}</p>
-                                            {hasIssues && (
-                                              <p className="text-[10px] text-destructive mt-0.5 truncate">
-                                                {page.issues.slice(0, 2).join(" · ")}{page.issues.length > 2 ? ` +${page.issues.length - 2} more` : ""}
-                                              </p>
-                                            )}
-                                          </div>
+                                          <p className="font-mono text-xs truncate min-w-0">{page.url.replace("https://trumoveinc.com", "") || "/"}</p>
                                         </div>
                                       </TableCell>
                                       <TableCell>
-                                        {hasIssues ? (
-                                          <Badge variant="destructive" className="text-[10px]">
-                                            <AlertTriangle className="w-2.5 h-2.5 mr-0.5" /> {issueCount(page)}
-                                          </Badge>
-                                        ) : (
-                                          <Badge variant="default" className="text-[10px]">
-                                            <CircleCheck className="w-2.5 h-2.5 mr-0.5" /> OK
-                                          </Badge>
-                                        )}
+                                        <TooltipProvider delayDuration={200}>
+                                          <Tooltip>
+                                            <TooltipTrigger asChild>
+                                              <div>
+                                                {hasIssues ? (
+                                                  <Badge variant={score.weighted_score >= 40 ? "destructive" : "secondary"} className="text-[10px] cursor-help">
+                                                    {score.weighted_score} pts
+                                                  </Badge>
+                                                ) : (
+                                                  <Badge variant="default" className="text-[10px]">
+                                                    <CircleCheck className="w-2.5 h-2.5 mr-0.5" /> 0
+                                                  </Badge>
+                                                )}
+                                              </div>
+                                            </TooltipTrigger>
+                                            <TooltipContent side="right" className="max-w-xs">
+                                              <p className="font-semibold text-xs mb-1">Why this score? ({score?.issue_count || 0} issues)</p>
+                                              {score?.issues.length ? (
+                                                <ul className="space-y-0.5">
+                                                  {score.issues.map((iss, idx) => (
+                                                    <li key={idx} className="text-[11px] flex items-center gap-1">
+                                                      <Badge variant={severityColor(iss.severity)} className="text-[9px] h-3.5 px-1 shrink-0">
+                                                        {iss.severity} +{iss.points}
+                                                      </Badge>
+                                                      <span className="truncate">{iss.label}</span>
+                                                    </li>
+                                                  ))}
+                                                </ul>
+                                              ) : (
+                                                <p className="text-[11px] text-muted-foreground">No issues detected</p>
+                                              )}
+                                              {score?.opportunity_bonus > 0 && (
+                                                <p className="text-[11px] mt-1 text-primary">+{score.opportunity_bonus} opportunity bonus (GSC data)</p>
+                                              )}
+                                            </TooltipContent>
+                                          </Tooltip>
+                                        </TooltipProvider>
+                                      </TableCell>
+                                      <TableCell>
+                                        <div className="space-y-0.5">
+                                          {topIssues.length > 0 ? topIssues.map((iss, i) => (
+                                            <p key={i} className="text-[10px] text-muted-foreground truncate">{iss.label}</p>
+                                          )) : (
+                                            <p className="text-[10px] text-muted-foreground">—</p>
+                                          )}
+                                          {(score?.issue_count || 0) > 2 && (
+                                            <p className="text-[9px] text-muted-foreground/60">+{score.issue_count - 2} more</p>
+                                          )}
+                                        </div>
                                       </TableCell>
                                       <TableCell>{charBadge(page.fetchedTitle, 50, 60)}</TableCell>
                                       <TableCell>{charBadge(page.fetchedDescription, 150, 160)}</TableCell>
