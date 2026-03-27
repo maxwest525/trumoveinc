@@ -595,6 +595,7 @@ export default function MarketingSEO() {
           totalUrls={auditPages.length}
           totalIssues={totalIssues}
           phases={phases}
+          integrations={integrations}
           onRefresh={handleRefreshStatus}
           refreshing={refreshingStatus}
         />
