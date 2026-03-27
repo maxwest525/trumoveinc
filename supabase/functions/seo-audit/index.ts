@@ -402,10 +402,24 @@ Deno.serve(async (req) => {
           const rawHtml = scrapeData?.data?.rawHtml || scrapeData?.rawHtml || "";
           const renderedHtml = scrapeData?.data?.html || scrapeData?.html || "";
 
+          // Also check HTTP Link header for canonical (Cloudflare Worker approach)
+          let headerCanonical: string | null = null;
+          try {
+            const headRes = await fetch(pageUrl, { method: "HEAD", redirect: "follow" });
+            const linkHeader = headRes.headers.get("Link") || headRes.headers.get("link") || "";
+            const linkCanonicalMatch = linkHeader.match(/<([^>]+)>;\s*rel="canonical"/i);
+            if (linkCanonicalMatch) {
+              headerCanonical = linkCanonicalMatch[1].trim();
+            }
+          } catch (e) {
+            console.log("HEAD request for Link header failed:", e);
+          }
+
           if (!rawHtml && !renderedHtml) {
+            // Even with no HTML, if we got a header canonical, note it
             results.push({
               url: pageUrl, fetchedTitle: null, fetchedDescription: null, fetchedH1: null,
-              fetchedCanonical: null, issues: ["Failed to fetch page content"],
+              fetchedCanonical: headerCanonical, issues: headerCanonical ? ["Failed to fetch page content (canonical found via HTTP header)"] : ["Failed to fetch page content"],
               suggestedTitle: null, suggestedDescription: null, suggestedH1: null, suggestedCanonical: null,
               aiChecklist: [], issueSuggestions: [], violations: [],
               rawTitle: null, renderedTitle: null, rawDescription: null, renderedDescription: null, sourceUsed: "raw",
@@ -445,6 +459,11 @@ Deno.serve(async (req) => {
             if (!rawParsed.fetchedCanonical && renderedParsed.fetchedCanonical) {
               finalParsed = { ...finalParsed, fetchedCanonical: renderedParsed.fetchedCanonical };
             }
+          }
+
+          // Final fallback: if no canonical found in HTML at all, use HTTP Link header
+          if (!finalParsed.fetchedCanonical && headerCanonical) {
+            finalParsed = { ...finalParsed, fetchedCanonical: headerCanonical };
           }
 
           // Re-compute issues based on the final merged data
