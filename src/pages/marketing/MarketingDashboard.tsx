@@ -9,9 +9,15 @@ import {
   Eye, ArrowUpRight, ArrowDownRight, Target, Percent, Mail, MessageSquare,
 } from "lucide-react";
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
-import { format, subMonths, subDays, startOfMonth, endOfMonth } from "date-fns";
+import { format, subMonths, subDays, startOfMonth, endOfMonth, differenceInDays } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { Button } from "@/components/ui/button";
+import { CalendarIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
+import type { DateRange } from "react-day-picker";
 
 interface KpiCardProps {
   title: string;
@@ -53,24 +59,36 @@ function KpiCard({ title, value, change, icon: Icon, prefix }: KpiCardProps) {
 }
 
 export default function MarketingDashboard() {
-  const [range, setRange] = useState<"7d" | "30d" | "90d" | "mtd">("30d");
+  const [range, setRange] = useState<"7d" | "30d" | "90d" | "mtd" | "custom">("30d");
+  const [customRange, setCustomRange] = useState<DateRange | undefined>();
   const now = new Date();
 
   const rangeStart = useMemo(() => {
+    if (range === "custom" && customRange?.from) return customRange.from;
     if (range === "7d") return subDays(now, 7);
     if (range === "30d") return subDays(now, 30);
     if (range === "90d") return subDays(now, 90);
     return startOfMonth(now);
-  }, [range]);
+  }, [range, customRange]);
 
   const prevRangeStart = useMemo(() => {
+    if (range === "custom" && customRange?.from && customRange?.to) {
+      const span = differenceInDays(customRange.to, customRange.from) || 1;
+      return subDays(customRange.from, span);
+    }
     if (range === "7d") return subDays(now, 14);
     if (range === "30d") return subDays(now, 60);
     if (range === "90d") return subDays(now, 180);
     return startOfMonth(subMonths(now, 1));
-  }, [range]);
+  }, [range, customRange]);
+
+  const rangeEnd = useMemo(() => {
+    if (range === "custom" && customRange?.to) return customRange.to;
+    return now;
+  }, [range, customRange]);
 
   const rangeStartIso = rangeStart.toISOString();
+  const rangeEndIso = rangeEnd.toISOString();
   const prevRangeStartIso = prevRangeStart.toISOString();
   const prevRangeEndIso = rangeStart.toISOString();
 
@@ -206,12 +224,40 @@ export default function MarketingDashboard() {
               High-level KPIs across all channels — updated daily.
             </p>
           </div>
-          <ToggleGroup type="single" value={range} onValueChange={(v) => v && setRange(v as typeof range)} className="bg-muted rounded-lg p-0.5">
-            <ToggleGroupItem value="7d" className="text-xs px-3 h-7 data-[state=on]:bg-background data-[state=on]:shadow-sm rounded-md">7D</ToggleGroupItem>
-            <ToggleGroupItem value="30d" className="text-xs px-3 h-7 data-[state=on]:bg-background data-[state=on]:shadow-sm rounded-md">30D</ToggleGroupItem>
-            <ToggleGroupItem value="90d" className="text-xs px-3 h-7 data-[state=on]:bg-background data-[state=on]:shadow-sm rounded-md">90D</ToggleGroupItem>
-            <ToggleGroupItem value="mtd" className="text-xs px-3 h-7 data-[state=on]:bg-background data-[state=on]:shadow-sm rounded-md">MTD</ToggleGroupItem>
-          </ToggleGroup>
+          <div className="flex items-center gap-2">
+            <ToggleGroup type="single" value={range} onValueChange={(v) => v && setRange(v as typeof range)} className="bg-muted rounded-lg p-0.5">
+              <ToggleGroupItem value="7d" className="text-xs px-3 h-7 data-[state=on]:bg-background data-[state=on]:shadow-sm rounded-md">7D</ToggleGroupItem>
+              <ToggleGroupItem value="30d" className="text-xs px-3 h-7 data-[state=on]:bg-background data-[state=on]:shadow-sm rounded-md">30D</ToggleGroupItem>
+              <ToggleGroupItem value="90d" className="text-xs px-3 h-7 data-[state=on]:bg-background data-[state=on]:shadow-sm rounded-md">90D</ToggleGroupItem>
+              <ToggleGroupItem value="mtd" className="text-xs px-3 h-7 data-[state=on]:bg-background data-[state=on]:shadow-sm rounded-md">MTD</ToggleGroupItem>
+            </ToggleGroup>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant={range === "custom" ? "default" : "outline"}
+                  size="sm"
+                  className={cn("h-7 text-xs gap-1.5 px-3", range === "custom" && "shadow-sm")}
+                  onClick={() => setRange("custom")}
+                >
+                  <CalendarIcon className="w-3 h-3" />
+                  {range === "custom" && customRange?.from
+                    ? `${format(customRange.from, "MMM d")}${customRange.to ? ` – ${format(customRange.to, "MMM d")}` : ""}`
+                    : "Custom"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="end">
+                <Calendar
+                  mode="range"
+                  selected={customRange}
+                  onSelect={(r) => { setCustomRange(r); setRange("custom"); }}
+                  numberOfMonths={2}
+                  disabled={(date) => date > new Date()}
+                  initialFocus
+                  className={cn("p-3 pointer-events-auto")}
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
         </div>
 
         {/* KPI Strip */}
