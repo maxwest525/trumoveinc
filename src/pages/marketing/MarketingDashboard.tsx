@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import MarketingShell from "@/components/layout/MarketingShell";
@@ -9,8 +9,9 @@ import {
   Eye, ArrowUpRight, ArrowDownRight, Target, Percent, Mail, MessageSquare,
 } from "lucide-react";
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
-import { format, subMonths, startOfMonth, endOfMonth } from "date-fns";
+import { format, subMonths, subDays, startOfMonth, endOfMonth } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 interface KpiCardProps {
   title: string;
@@ -44,6 +45,7 @@ function KpiCard({ title, value, change, icon: Icon, prefix }: KpiCardProps) {
             {positive ? "+" : ""}{change}%
           </span>
           <span className="text-xs text-muted-foreground">vs last month</span>
+
         </div>
       </CardContent>
     </Card>
@@ -51,10 +53,26 @@ function KpiCard({ title, value, change, icon: Icon, prefix }: KpiCardProps) {
 }
 
 export default function MarketingDashboard() {
+  const [range, setRange] = useState<"7d" | "30d" | "90d" | "mtd">("30d");
   const now = new Date();
-  const thisMonthStart = startOfMonth(now).toISOString();
-  const lastMonthStart = startOfMonth(subMonths(now, 1)).toISOString();
-  const lastMonthEnd = endOfMonth(subMonths(now, 1)).toISOString();
+
+  const rangeStart = useMemo(() => {
+    if (range === "7d") return subDays(now, 7);
+    if (range === "30d") return subDays(now, 30);
+    if (range === "90d") return subDays(now, 90);
+    return startOfMonth(now);
+  }, [range]);
+
+  const prevRangeStart = useMemo(() => {
+    if (range === "7d") return subDays(now, 14);
+    if (range === "30d") return subDays(now, 60);
+    if (range === "90d") return subDays(now, 180);
+    return startOfMonth(subMonths(now, 1));
+  }, [range]);
+
+  const rangeStartIso = rangeStart.toISOString();
+  const prevRangeStartIso = prevRangeStart.toISOString();
+  const prevRangeEndIso = rangeStart.toISOString();
 
   // Fetch leads
   const { data: allLeads = [], isLoading: leadsLoading } = useQuery({
@@ -87,10 +105,10 @@ export default function MarketingDashboard() {
 
   // Computed KPIs
   const kpis = useMemo(() => {
-    const thisMonthLeads = allLeads.filter((l) => l.created_at >= thisMonthStart);
-    const lastMonthLeads = allLeads.filter((l) => l.created_at >= lastMonthStart && l.created_at <= lastMonthEnd);
-    const thisMonthDeals = allDeals.filter((d) => d.created_at >= thisMonthStart);
-    const lastMonthDeals = allDeals.filter((d) => d.created_at >= lastMonthStart && d.created_at <= lastMonthEnd);
+    const thisMonthLeads = allLeads.filter((l) => l.created_at >= rangeStartIso);
+    const lastMonthLeads = allLeads.filter((l) => l.created_at >= prevRangeStartIso && l.created_at < prevRangeEndIso);
+    const thisMonthDeals = allDeals.filter((d) => d.created_at >= rangeStartIso);
+    const lastMonthDeals = allDeals.filter((d) => d.created_at >= prevRangeStartIso && d.created_at < prevRangeEndIso);
 
     const booked = thisMonthDeals.filter((d) => ["booked", "dispatched", "in_transit", "delivered", "closed_won"].includes(d.stage));
     const lastBooked = lastMonthDeals.filter((d) => ["booked", "dispatched", "in_transit", "delivered", "closed_won"].includes(d.stage));
@@ -108,7 +126,7 @@ export default function MarketingDashboard() {
       : 0;
 
     return { totalLeads, leadChange, convRate, convChange, avgCpl, booked: booked.length };
-  }, [allLeads, allDeals, vendors, thisMonthStart, lastMonthStart, lastMonthEnd]);
+  }, [allLeads, allDeals, vendors, rangeStartIso, prevRangeStartIso, prevRangeEndIso]);
 
   // Monthly trend data (last 6 months)
   const conversionData = useMemo(() => {
@@ -126,7 +144,7 @@ export default function MarketingDashboard() {
 
   // Channel breakdown from lead source
   const channelBreakdown = useMemo(() => {
-    const thisMonthLeads = allLeads.filter((l) => l.created_at >= thisMonthStart);
+    const thisMonthLeads = allLeads.filter((l) => l.created_at >= rangeStartIso);
     const total = thisMonthLeads.length || 1;
     const sourceMap: Record<string, { label: string; color: string }> = {
       ppc: { label: "PPC / Google Ads", color: "hsl(var(--primary))" },
@@ -145,7 +163,7 @@ export default function MarketingDashboard() {
         color: sourceMap[src]?.color ?? "hsl(var(--muted-foreground))",
       }))
       .sort((a, b) => b.value - a.value);
-  }, [allLeads, thisMonthStart]);
+  }, [allLeads, rangeStartIso]);
 
   // Lead source trend (last 6 months)
   const trafficData = useMemo(() => {
@@ -181,11 +199,19 @@ export default function MarketingDashboard() {
   return (
     <MarketingShell breadcrumbs={[{ label: "Dashboard" }]}>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-xl font-bold text-foreground">Marketing Dashboard</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            High-level KPIs across all channels — updated daily.
-          </p>
+        <div className="flex items-center justify-between flex-wrap gap-3">
+          <div>
+            <h1 className="text-xl font-bold text-foreground">Marketing Dashboard</h1>
+            <p className="text-sm text-muted-foreground mt-1">
+              High-level KPIs across all channels — updated daily.
+            </p>
+          </div>
+          <ToggleGroup type="single" value={range} onValueChange={(v) => v && setRange(v as typeof range)} className="bg-muted rounded-lg p-0.5">
+            <ToggleGroupItem value="7d" className="text-xs px-3 h-7 data-[state=on]:bg-background data-[state=on]:shadow-sm rounded-md">7D</ToggleGroupItem>
+            <ToggleGroupItem value="30d" className="text-xs px-3 h-7 data-[state=on]:bg-background data-[state=on]:shadow-sm rounded-md">30D</ToggleGroupItem>
+            <ToggleGroupItem value="90d" className="text-xs px-3 h-7 data-[state=on]:bg-background data-[state=on]:shadow-sm rounded-md">90D</ToggleGroupItem>
+            <ToggleGroupItem value="mtd" className="text-xs px-3 h-7 data-[state=on]:bg-background data-[state=on]:shadow-sm rounded-md">MTD</ToggleGroupItem>
+          </ToggleGroup>
         </div>
 
         {/* KPI Strip */}
@@ -196,9 +222,9 @@ export default function MarketingDashboard() {
             </>
           ) : (
             <>
-              <KpiCard title="Total Leads (MTD)" value={kpis.totalLeads.toString()} change={Math.round(kpis.leadChange * 10) / 10} icon={Users} />
+              <KpiCard title={`Total Leads (${range.toUpperCase()})`} value={kpis.totalLeads.toString()} change={Math.round(kpis.leadChange * 10) / 10} icon={Users} />
               <KpiCard title="Avg Cost per Lead" value={kpis.avgCpl.toFixed(2)} change={0} icon={DollarSign} prefix="$" />
-              <KpiCard title="Booked Deals (MTD)" value={kpis.booked.toString()} change={0} icon={Target} />
+              <KpiCard title={`Booked Deals (${range.toUpperCase()})`} value={kpis.booked.toString()} change={0} icon={Target} />
               <KpiCard title="Conversion Rate" value={`${kpis.convRate.toFixed(1)}%`} change={Math.round(kpis.convChange * 10) / 10} icon={Percent} />
             </>
           )}
@@ -330,8 +356,8 @@ export default function MarketingDashboard() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           <KpiCard title="Total Leads (All Time)" value={allLeads.length.toString()} change={0} icon={Users} />
           <KpiCard title="Total Deals" value={allDeals.length.toString()} change={0} icon={Target} />
-          <KpiCard title="PPC Leads (MTD)" value={allLeads.filter(l => l.source === "ppc" && l.created_at >= thisMonthStart).length.toString()} change={0} icon={MousePointerClick} />
-          <KpiCard title="Referral Leads (MTD)" value={allLeads.filter(l => l.source === "referral" && l.created_at >= thisMonthStart).length.toString()} change={0} icon={TrendingUp} />
+          <KpiCard title={`PPC Leads (${range.toUpperCase()})`} value={allLeads.filter(l => l.source === "ppc" && l.created_at >= rangeStartIso).length.toString()} change={0} icon={MousePointerClick} />
+          <KpiCard title={`Referral (${range.toUpperCase()})`} value={allLeads.filter(l => l.source === "referral" && l.created_at >= rangeStartIso).length.toString()} change={0} icon={TrendingUp} />
         </div>
       </div>
     </MarketingShell>
