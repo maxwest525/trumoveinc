@@ -81,41 +81,32 @@ export default function MarketingSEO() {
   const [regeneratingAll, setRegeneratingAll] = useState(false);
   const [gscConnected, setGscConnected] = useState(false);
   const [ga4Connected, setGa4Connected] = useState(false);
+  const [refreshingStatus, setRefreshingStatus] = useState(false);
   const { settings: complianceSettings, reload: reloadCompliance } = useSeoCompliance();
 
-  // Auto-detect GSC connection on mount
-  useEffect(() => {
-    (async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-      const { data } = await supabase
-        .from("gsc_connections")
-        .select("id")
-        .eq("user_id", user.id)
-        .limit(1);
-      if (data && data.length > 0) setGscConnected(true);
-    })();
+  const checkConnections = useCallback(async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    const [gscRes, ga4Res] = await Promise.all([
+      supabase.from("gsc_connections").select("id").eq("user_id", user.id).limit(1),
+      supabase.from("integration_connections").select("id").eq("user_id", user.id).eq("integration_id", "ga4").eq("connected", true).limit(1),
+    ]);
+    setGscConnected(!!(gscRes.data && gscRes.data.length > 0));
+    setGa4Connected(!!(ga4Res.data && ga4Res.data.length > 0));
   }, []);
 
-  // Auto-detect GA4 connection on mount
-  useEffect(() => {
-    (async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-      const { data } = await supabase
-        .from("integration_connections")
-        .select("id")
-        .eq("user_id", user.id)
-        .eq("integration_id", "ga4")
-        .eq("connected", true)
-        .limit(1);
-      if (data && data.length > 0) setGa4Connected(true);
-    })();
-  }, []);
+  // Auto-detect connections on mount
+  useEffect(() => { checkConnections(); }, [checkConnections]);
 
-  // Phase statuses
+  const handleRefreshStatus = useCallback(async () => {
+    setRefreshingStatus(true);
+    await checkConnections();
+    setRefreshingStatus(false);
+  }, [checkConnections]);
+
+  // Phase statuses — Crawl/Audit is always active (built-in)
   const phases: PhaseInfo[] = [
-    { id: 1, label: "Crawl / Audit", status: auditPages.length > 0 ? "connected" : "not_connected", lastSync: auditPages.length > 0 ? new Date().toISOString() : null },
+    { id: 1, label: "Crawl / Audit", status: "connected", lastSync: auditPages.length > 0 ? new Date().toISOString() : null },
     { id: 2, label: "Search Console", status: gscConnected ? "connected" : "not_connected" },
     { id: 3, label: "GA4", status: ga4Connected ? "connected" : "not_connected" },
     { id: 4, label: "Backlinks", status: "coming_soon" },
