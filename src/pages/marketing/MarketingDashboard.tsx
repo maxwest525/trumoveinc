@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import {
   BarChart3, TrendingUp, Users, DollarSign, MousePointerClick,
-  Eye, ArrowUpRight, ArrowDownRight, Target, Percent, Mail, MessageSquare,
+  Eye, ArrowUpRight, ArrowDownRight, Target, Percent, Mail, MessageSquare, Settings2,
 } from "lucide-react";
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import { format, subMonths, subDays, startOfMonth, endOfMonth, differenceInDays } from "date-fns";
