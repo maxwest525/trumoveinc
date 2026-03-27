@@ -406,7 +406,7 @@ Deno.serve(async (req) => {
             results.push({
               url: pageUrl, fetchedTitle: null, fetchedDescription: null, fetchedH1: null,
               fetchedCanonical: null, issues: ["Failed to fetch page content"],
-              suggestedTitle: null, suggestedDescription: null, suggestedH1: null,
+              suggestedTitle: null, suggestedDescription: null, suggestedH1: null, suggestedCanonical: null,
               aiChecklist: [], issueSuggestions: [], violations: [],
               rawTitle: null, renderedTitle: null, rawDescription: null, renderedDescription: null, sourceUsed: "raw",
             });
