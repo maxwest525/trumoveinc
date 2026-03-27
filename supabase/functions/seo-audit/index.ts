@@ -166,7 +166,7 @@ async function getAiSuggestions(
   apiKey: string,
   compliance: ComplianceSettings,
   attempt = 1,
-): Promise<{ suggestedTitle: string; suggestedDescription: string; suggestedH1: string | null; aiChecklist: string[]; issueSuggestions: IssueSuggestion[]; violations: string[]; suggestedPrimaryKeyword: string | null }> {
+): Promise<{ suggestedTitle: string; suggestedDescription: string; suggestedH1: string | null; suggestedCanonical: string | null; aiChecklist: string[]; issueSuggestions: IssueSuggestion[]; violations: string[]; suggestedPrimaryKeyword: string | null }> {
   const maxAttempts = 3;
 
   // Fetch GSC queries for context
