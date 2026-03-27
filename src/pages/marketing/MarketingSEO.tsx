@@ -542,7 +542,7 @@ export default function MarketingSEO() {
       if (item.isIssue) {
         updatedDecisions[item.url] = { ...d, issues: { ...d.issues, [item.fieldKey]: { ...d.issues[item.fieldKey], status: "published" as const } } };
       } else {
-        updatedDecisions[item.url] = { ...d, [item.fieldKey]: { ...d[item.fieldKey as "title" | "description" | "h1"], status: "published" as const } };
+        updatedDecisions[item.url] = { ...d, [item.fieldKey]: { ...d[item.fieldKey as "title" | "description" | "h1" | "canonical"], status: "published" as const } };
       }
     }
     setDecisions(updatedDecisions);
