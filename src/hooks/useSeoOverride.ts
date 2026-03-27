@@ -35,13 +35,17 @@ export function useSeoOverride() {
         meta.content = row.description;
       }
       if (row.canonical_url) {
-        let link = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
-        if (!link) {
-          link = document.createElement("link");
-          link.rel = "canonical";
-          document.head.appendChild(link);
+        // Only inject if no Helmet-managed canonical already present
+        const existingHelmet = document.querySelector('link[rel="canonical"][data-rh="true"]');
+        if (!existingHelmet) {
+          let link = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
+          if (!link) {
+            link = document.createElement("link");
+            link.rel = "canonical";
+            document.head.appendChild(link);
+          }
+          link.href = row.canonical_url;
         }
-        link.href = row.canonical_url;
       }
     }
 
