@@ -116,6 +116,19 @@ Deno.serve(async (req) => {
 
       const { accessToken, property } = await getValidToken(user_id);
 
+      // Derive property origin for path→absolute conversion
+      let propertyOrigin = property;
+      try {
+        const pu = new URL(property.startsWith("sc-domain:") ? `https://${property.replace("sc-domain:", "")}` : property);
+        propertyOrigin = pu.origin;
+      } catch { /* keep as-is */ }
+
+      // Convert path-only page_url to absolute
+      let absolutePageUrl = page_url;
+      if (page_url.startsWith("/")) {
+        absolutePageUrl = propertyOrigin.replace(/\/$/, "") + page_url;
+      }
+
       const endDate = new Date();
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - 28);
@@ -136,7 +149,9 @@ Deno.serve(async (req) => {
             filters: [{
               dimension: "page",
               operator: "equals",
-              expression: page_url,
+              expression: absolutePageUrl,
+            }],
+          }],
             }],
           }],
           rowLimit: 20,
