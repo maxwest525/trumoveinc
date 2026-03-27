@@ -61,6 +61,7 @@ const defaultDecisions = (): PageDecisions => ({
   title: { status: "pending" },
   description: { status: "pending" },
   h1: { status: "pending" },
+  canonical: { status: "pending" },
   issues: {},
 });
 
