@@ -59,12 +59,56 @@ function KpiCard({ title, value, change, icon: Icon, prefix }: KpiCardProps) {
   );
 }
 
+const STORAGE_KEY = "marketing-dashboard-widgets";
+
+interface WidgetVisibility {
+  kpiStrip: boolean;
+  trafficChart: boolean;
+  conversionChart: boolean;
+  channelMix: boolean;
+  vendorTable: boolean;
+  quickStats: boolean;
+}
+
+const defaultVisibility: WidgetVisibility = {
+  kpiStrip: true,
+  trafficChart: true,
+  conversionChart: true,
+  channelMix: true,
+  vendorTable: true,
+  quickStats: true,
+};
+
+const widgetLabels: Record<keyof WidgetVisibility, string> = {
+  kpiStrip: "KPI Cards",
+  trafficChart: "Traffic by Source",
+  conversionChart: "Leads → Booked",
+  channelMix: "Lead Channel Mix",
+  vendorTable: "Lead Vendors",
+  quickStats: "Quick Stats",
+};
+
 export default function MarketingDashboard() {
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: subDays(new Date(), 30),
     to: new Date(),
   });
   const now = new Date();
+
+  const [widgets, setWidgets] = useState<WidgetVisibility>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      return saved ? { ...defaultVisibility, ...JSON.parse(saved) } : defaultVisibility;
+    } catch { return defaultVisibility; }
+  });
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(widgets));
+  }, [widgets]);
+
+  const toggleWidget = (key: keyof WidgetVisibility) => {
+    setWidgets(prev => ({ ...prev, [key]: !prev[key] }));
+  };
 
   const rangeStart = useMemo(() => dateRange?.from ?? subDays(now, 30), [dateRange]);
   const rangeEnd = useMemo(() => dateRange?.to ?? now, [dateRange]);
