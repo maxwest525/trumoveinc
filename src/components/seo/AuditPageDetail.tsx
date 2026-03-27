@@ -7,8 +7,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import {
   CheckCircle2, AlertCircle, XCircle, Pencil, RefreshCw, Eye, EyeOff,
-  AlertTriangle, Sparkles,
+  AlertTriangle, Sparkles, ExternalLink, Info, Globe,
 } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export type FieldStatus = "pending" | "approved" | "edited" | "ignored" | "published";
 
