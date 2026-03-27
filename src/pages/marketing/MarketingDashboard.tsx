@@ -123,9 +123,9 @@ export default function MarketingDashboard() {
 
   // Computed KPIs
   const kpis = useMemo(() => {
-    const thisMonthLeads = allLeads.filter((l) => l.created_at >= rangeStartIso);
+    const thisMonthLeads = allLeads.filter((l) => l.created_at >= rangeStartIso && l.created_at <= rangeEndIso);
     const lastMonthLeads = allLeads.filter((l) => l.created_at >= prevRangeStartIso && l.created_at < prevRangeEndIso);
-    const thisMonthDeals = allDeals.filter((d) => d.created_at >= rangeStartIso);
+    const thisMonthDeals = allDeals.filter((d) => d.created_at >= rangeStartIso && d.created_at <= rangeEndIso);
     const lastMonthDeals = allDeals.filter((d) => d.created_at >= prevRangeStartIso && d.created_at < prevRangeEndIso);
 
     const booked = thisMonthDeals.filter((d) => ["booked", "dispatched", "in_transit", "delivered", "closed_won"].includes(d.stage));
@@ -144,7 +144,7 @@ export default function MarketingDashboard() {
       : 0;
 
     return { totalLeads, leadChange, convRate, convChange, avgCpl, booked: booked.length };
-  }, [allLeads, allDeals, vendors, rangeStartIso, prevRangeStartIso, prevRangeEndIso]);
+  }, [allLeads, allDeals, vendors, rangeStartIso, rangeEndIso, prevRangeStartIso, prevRangeEndIso]);
 
   // Monthly trend data (last 6 months)
   const conversionData = useMemo(() => {
@@ -162,7 +162,7 @@ export default function MarketingDashboard() {
 
   // Channel breakdown from lead source
   const channelBreakdown = useMemo(() => {
-    const thisMonthLeads = allLeads.filter((l) => l.created_at >= rangeStartIso);
+    const thisMonthLeads = allLeads.filter((l) => l.created_at >= rangeStartIso && l.created_at <= rangeEndIso);
     const total = thisMonthLeads.length || 1;
     const sourceMap: Record<string, { label: string; color: string }> = {
       ppc: { label: "PPC / Google Ads", color: "hsl(var(--primary))" },
@@ -181,7 +181,7 @@ export default function MarketingDashboard() {
         color: sourceMap[src]?.color ?? "hsl(var(--muted-foreground))",
       }))
       .sort((a, b) => b.value - a.value);
-  }, [allLeads, rangeStartIso]);
+  }, [allLeads, rangeStartIso, rangeEndIso]);
 
   // Lead source trend (last 6 months)
   const trafficData = useMemo(() => {
