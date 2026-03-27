@@ -1,11 +1,15 @@
 /** Shared SEO module types across all phases */
 
-export type PhaseStatus = "not_connected" | "connected" | "syncing" | "error" | "coming_soon";
+export type PhaseStatus = "not_started" | "in_progress" | "completed" | "not_connected" | "connected" | "syncing" | "error" | "coming_soon";
 
 export interface PhaseInfo {
   id: number;
   label: string;
   status: PhaseStatus;
+  /** Integration name shown when connected, e.g. "Google Search Console" */
+  integrationName?: string;
+  /** Help link for how to connect */
+  helpUrl?: string;
   lastSync?: string | null;
 }
 
