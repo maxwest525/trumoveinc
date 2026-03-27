@@ -209,40 +209,27 @@ export default function MarketingDashboard() {
               High-level KPIs across all channels — updated daily.
             </p>
           </div>
-          <div className="flex items-center gap-2">
-            <ToggleGroup type="single" value={range} onValueChange={(v) => v && setRange(v as typeof range)} className="bg-muted rounded-lg p-0.5">
-              <ToggleGroupItem value="7d" className="text-xs px-3 h-7 data-[state=on]:bg-background data-[state=on]:shadow-sm rounded-md">7D</ToggleGroupItem>
-              <ToggleGroupItem value="30d" className="text-xs px-3 h-7 data-[state=on]:bg-background data-[state=on]:shadow-sm rounded-md">30D</ToggleGroupItem>
-              <ToggleGroupItem value="90d" className="text-xs px-3 h-7 data-[state=on]:bg-background data-[state=on]:shadow-sm rounded-md">90D</ToggleGroupItem>
-              <ToggleGroupItem value="mtd" className="text-xs px-3 h-7 data-[state=on]:bg-background data-[state=on]:shadow-sm rounded-md">MTD</ToggleGroupItem>
-            </ToggleGroup>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant={range === "custom" ? "default" : "outline"}
-                  size="sm"
-                  className={cn("h-7 text-xs gap-1.5 px-3", range === "custom" && "shadow-sm")}
-                  onClick={() => setRange("custom")}
-                >
-                  <CalendarIcon className="w-3 h-3" />
-                  {range === "custom" && customRange?.from
-                    ? `${format(customRange.from, "MMM d")}${customRange.to ? ` – ${format(customRange.to, "MMM d")}` : ""}`
-                    : "Custom"}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="end">
-                <Calendar
-                  mode="range"
-                  selected={customRange}
-                  onSelect={(r) => { setCustomRange(r); setRange("custom"); }}
-                  numberOfMonths={2}
-                  disabled={(date) => date > new Date()}
-                  initialFocus
-                  className={cn("p-3 pointer-events-auto")}
-                />
-              </PopoverContent>
-            </Popover>
-          </div>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" size="sm" className={cn("h-8 text-xs gap-1.5 px-3")}>
+                <CalendarIcon className="w-3.5 h-3.5" />
+                {dateRange?.from
+                  ? `${format(dateRange.from, "MMM d, yyyy")}${dateRange.to ? ` – ${format(dateRange.to, "MMM d, yyyy")}` : ""}`
+                  : "Select dates"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="end">
+              <Calendar
+                mode="range"
+                selected={dateRange}
+                onSelect={setDateRange}
+                numberOfMonths={2}
+                disabled={(date) => date > new Date()}
+                initialFocus
+                className={cn("p-3 pointer-events-auto")}
+              />
+            </PopoverContent>
+          </Popover>
         </div>
 
         {/* KPI Strip */}
