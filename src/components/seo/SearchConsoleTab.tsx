@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -49,6 +49,7 @@ export default function SearchConsoleTab({ status, auditUrls, onGscStatusChange 
   const [sortBy, setSortBy] = useState<"priority" | "impressions" | "ctr" | "position">("priority");
   const [userId, setUserId] = useState<string | null>(null);
   const [showSetup, setShowSetup] = useState(false);
+  const handledOauthResult = useRef<string | null>(null);
 
   // Get user ID
   useEffect(() => {
@@ -105,7 +106,22 @@ export default function SearchConsoleTab({ status, auditUrls, onGscStatusChange 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const code = params.get("code");
+    const oauthError = params.get("error");
+
+    if (oauthError) {
+      const errorKey = `error:${oauthError}`;
+      if (handledOauthResult.current === errorKey) return;
+      handledOauthResult.current = errorKey;
+      window.history.replaceState({}, "", window.location.pathname);
+      toast.error(oauthError === "access_denied" ? "Google authorization was canceled" : "Google authorization failed");
+      return;
+    }
+
     if (code && userId) {
+      const codeKey = `code:${code}`;
+      if (handledOauthResult.current === codeKey) return;
+      handledOauthResult.current = codeKey;
+
       const redirectUri = sessionStorage.getItem("gsc_redirect") || `${window.location.origin}/marketing/seo`;
       sessionStorage.removeItem("gsc_redirect");
 
