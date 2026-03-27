@@ -302,7 +302,34 @@ export default function MarketingSEO() {
       ? (d.description.editedValue || page.suggestedDescription)
       : null;
 
-    if (finalTitle || finalDesc) {
+    // Resolve canonical: check if a canonical issue was approved/published
+    let finalCanonical: string | null = null;
+    const canonicalIssueKey = Object.keys(d.issues || {}).find(k => k.toLowerCase().includes("canonical"));
+    if (canonicalIssueKey) {
+      const canonicalDecision = d.issues[canonicalIssueKey];
+      if (canonicalDecision.status === "published" || canonicalDecision.status === "approved") {
+        const rawVal = canonicalDecision.editedValue || page.issueSuggestions?.find(s => s.issue === canonicalIssueKey)?.suggestion || page.suggestedCanonical;
+        // Validate it's a URL, not prose
+        if (rawVal) {
+          try {
+            const parsed = new URL(rawVal);
+            if (parsed.protocol === "https:" || parsed.protocol === "http:") finalCanonical = parsed.href;
+          } catch {
+            // Not a URL — use suggestedCanonical from AI
+            if (page.suggestedCanonical) finalCanonical = page.suggestedCanonical;
+          }
+        }
+      }
+    }
+    // Also check if suggestedCanonical was set and page had missing canonical
+    if (!finalCanonical && page.suggestedCanonical && page.issues.some(i => i.toLowerCase().includes("canonical"))) {
+      // Auto-use suggestedCanonical if any canonical issue was approved
+      if (canonicalIssueKey && ["approved", "published"].includes(d.issues[canonicalIssueKey]?.status)) {
+        finalCanonical = page.suggestedCanonical;
+      }
+    }
+
+    if (finalTitle || finalDesc || finalCanonical) {
       let rawPath = "/";
       try { rawPath = new URL(url).pathname; } catch {}
       const urlPath = rawPath === "/" ? "/site" : `/site${rawPath}`;
@@ -310,6 +337,7 @@ export default function MarketingSEO() {
       const override: Record<string, any> = { url_path: urlPath, updated_at: new Date().toISOString() };
       if (finalTitle) override.title = finalTitle;
       if (finalDesc) override.description = finalDesc;
+      if (finalCanonical) override.canonical_url = finalCanonical;
 
       const { error } = await supabase
         .from("seo_overrides" as any)

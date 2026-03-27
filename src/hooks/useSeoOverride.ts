@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 /**
  * Reads SEO overrides from the database for the current page path
- * and applies document.title + meta description dynamically.
+ * and applies document.title + meta description + canonical link dynamically.
  */
 export function useSeoOverride() {
   const { pathname } = useLocation();
@@ -15,7 +15,7 @@ export function useSeoOverride() {
     async function apply() {
       const { data } = await supabase
         .from("seo_overrides" as any)
-        .select("title, description")
+        .select("title, description, canonical_url")
         .eq("url_path", pathname)
         .maybeSingle();
 
@@ -33,6 +33,15 @@ export function useSeoOverride() {
           document.head.appendChild(meta);
         }
         meta.content = row.description;
+      }
+      if (row.canonical_url) {
+        let link = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
+        if (!link) {
+          link = document.createElement("link");
+          link.rel = "canonical";
+          document.head.appendChild(link);
+        }
+        link.href = row.canonical_url;
       }
     }
 
