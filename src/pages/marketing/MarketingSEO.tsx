@@ -1,4 +1,6 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
+import { scorePage, applyOpportunityBonus, severityColor, type PageScore } from "@/components/seo/seoScoring";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import MarketingShell from "@/components/layout/MarketingShell";
 import { Button } from "@/components/ui/button";
@@ -112,7 +114,16 @@ export default function MarketingSEO() {
     { id: 4, label: "Backlinks", status: "coming_soon" },
   ];
 
-  const totalIssues = auditPages.reduce((sum, p) => sum + (p.issues?.length || 0), 0);
+  // Compute weighted scores for all pages
+  const pageScores = useMemo(() => {
+    const scoreMap: Record<string, PageScore> = {};
+    auditPages.forEach((page) => {
+      scoreMap[page.url] = scorePage(page, auditPages);
+    });
+    return scoreMap;
+  }, [auditPages]);
+
+  const totalIssues = Object.values(pageScores).reduce((sum, s) => sum + s.issue_count, 0);
 
   const phaseMeta: Record<string, { icon: typeof ScanSearch; title: string; description: string; status: PhaseInfo["status"] }> = {
     phase1: { icon: ScanSearch, title: "Crawl / Audit", description: "Discover pages and audit metadata.", status: phases[0].status },
@@ -418,7 +429,7 @@ export default function MarketingSEO() {
     return "pending";
   };
 
-  const issueCount = (p: AuditPage) => p.issues?.length || 0;
+  const issueCount = (p: AuditPage) => pageScores[p.url]?.issue_count || 0;
   const charBadge = (text: string | null, min: number, max: number) => {
     if (!text) return <Badge variant="destructive" className="text-[10px] font-normal">Missing</Badge>;
     const len = text.length;
@@ -434,11 +445,14 @@ export default function MarketingSEO() {
   const pagesWithIssues = auditPages.filter(p => issueCount(p) > 0);
   const pagesOk = auditPages.filter(p => issueCount(p) === 0);
 
-  const filteredPages = filterMode === "issues"
-    ? pagesWithIssues
-    : filterMode === "ok"
-      ? pagesOk
-      : [...pagesWithIssues, ...pagesOk];
+  const filteredPages = useMemo(() => {
+    const base = filterMode === "issues"
+      ? pagesWithIssues
+      : filterMode === "ok"
+        ? pagesOk
+        : [...pagesWithIssues, ...pagesOk];
+    return base.sort((a, b) => (pageScores[b.url]?.weighted_score || 0) - (pageScores[a.url]?.weighted_score || 0));
+  }, [filterMode, pagesWithIssues, pagesOk, pageScores]);
 
   // Sidebar items
   const sidebarItems: SidebarItem[] = auditPages.flatMap((page) => {
@@ -742,18 +756,21 @@ export default function MarketingSEO() {
                       <Table>
                         <TableHeader>
                           <TableRow>
-                            <TableHead className="w-[35%]">Page</TableHead>
-                            <TableHead className="w-[15%]">Issues</TableHead>
-                            <TableHead className="w-[15%]">Title</TableHead>
-                            <TableHead className="w-[15%]">Description</TableHead>
-                            <TableHead className="w-[20%]">Status</TableHead>
+                            <TableHead className="w-[30%]">Page</TableHead>
+                            <TableHead className="w-[10%]">Score</TableHead>
+                            <TableHead className="w-[20%]">Top Issues</TableHead>
+                            <TableHead className="w-[12%]">Title</TableHead>
+                            <TableHead className="w-[12%]">Description</TableHead>
+                            <TableHead className="w-[16%]">Status</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
                           {filteredPages.map((page) => {
                             const status = getPageStatus(page.url);
-                            const hasIssues = issueCount(page) > 0;
+                            const score = pageScores[page.url];
+                            const hasIssues = (score?.issue_count || 0) > 0;
                             const violations = getViolationsForPage(page);
+                            const topIssues = score?.issues.slice(0, 2) || [];
                             return (
                               <Collapsible key={page.url} open={expandedUrl === page.url} onOpenChange={(open) => setExpandedUrl(open ? page.url : null)} asChild>
                                 <>
@@ -762,26 +779,59 @@ export default function MarketingSEO() {
                                       <TableCell>
                                         <div className="flex items-center gap-1.5">
                                           {expandedUrl === page.url ? <ChevronUp className="w-3 h-3 shrink-0 text-muted-foreground" /> : <ChevronDown className="w-3 h-3 shrink-0 text-muted-foreground" />}
-                                          <div className="min-w-0">
-                                            <p className="font-mono text-xs truncate">{page.url.replace("https://trumoveinc.com", "") || "/"}</p>
-                                            {hasIssues && (
-                                              <p className="text-[10px] text-destructive mt-0.5 truncate">
-                                                {page.issues.slice(0, 2).join(" · ")}{page.issues.length > 2 ? ` +${page.issues.length - 2} more` : ""}
-                                              </p>
-                                            )}
-                                          </div>
+                                          <p className="font-mono text-xs truncate min-w-0">{page.url.replace("https://trumoveinc.com", "") || "/"}</p>
                                         </div>
                                       </TableCell>
                                       <TableCell>
-                                        {hasIssues ? (
-                                          <Badge variant="destructive" className="text-[10px]">
-                                            <AlertTriangle className="w-2.5 h-2.5 mr-0.5" /> {issueCount(page)}
-                                          </Badge>
-                                        ) : (
-                                          <Badge variant="default" className="text-[10px]">
-                                            <CircleCheck className="w-2.5 h-2.5 mr-0.5" /> OK
-                                          </Badge>
-                                        )}
+                                        <TooltipProvider delayDuration={200}>
+                                          <Tooltip>
+                                            <TooltipTrigger asChild>
+                                              <div>
+                                                {hasIssues ? (
+                                                  <Badge variant={score.weighted_score >= 40 ? "destructive" : "secondary"} className="text-[10px] cursor-help">
+                                                    {score.weighted_score} pts
+                                                  </Badge>
+                                                ) : (
+                                                  <Badge variant="default" className="text-[10px]">
+                                                    <CircleCheck className="w-2.5 h-2.5 mr-0.5" /> 0
+                                                  </Badge>
+                                                )}
+                                              </div>
+                                            </TooltipTrigger>
+                                            <TooltipContent side="right" className="max-w-xs">
+                                              <p className="font-semibold text-xs mb-1">Why this score? ({score?.issue_count || 0} issues)</p>
+                                              {score?.issues.length ? (
+                                                <ul className="space-y-0.5">
+                                                  {score.issues.map((iss, idx) => (
+                                                    <li key={idx} className="text-[11px] flex items-center gap-1">
+                                                      <Badge variant={severityColor(iss.severity)} className="text-[9px] h-3.5 px-1 shrink-0">
+                                                        {iss.severity} +{iss.points}
+                                                      </Badge>
+                                                      <span className="truncate">{iss.label}</span>
+                                                    </li>
+                                                  ))}
+                                                </ul>
+                                              ) : (
+                                                <p className="text-[11px] text-muted-foreground">No issues detected</p>
+                                              )}
+                                              {score?.opportunity_bonus > 0 && (
+                                                <p className="text-[11px] mt-1 text-primary">+{score.opportunity_bonus} opportunity bonus (GSC data)</p>
+                                              )}
+                                            </TooltipContent>
+                                          </Tooltip>
+                                        </TooltipProvider>
+                                      </TableCell>
+                                      <TableCell>
+                                        <div className="space-y-0.5">
+                                          {topIssues.length > 0 ? topIssues.map((iss, i) => (
+                                            <p key={i} className="text-[10px] text-muted-foreground truncate">{iss.label}</p>
+                                          )) : (
+                                            <p className="text-[10px] text-muted-foreground">—</p>
+                                          )}
+                                          {(score?.issue_count || 0) > 2 && (
+                                            <p className="text-[9px] text-muted-foreground/60">+{score.issue_count - 2} more</p>
+                                          )}
+                                        </div>
                                       </TableCell>
                                       <TableCell>{charBadge(page.fetchedTitle, 50, 60)}</TableCell>
                                       <TableCell>{charBadge(page.fetchedDescription, 150, 160)}</TableCell>
@@ -801,7 +851,7 @@ export default function MarketingSEO() {
                                   </CollapsibleTrigger>
                                   <CollapsibleContent asChild>
                                     <TableRow>
-                                      <TableCell colSpan={5} className="bg-muted/20 p-5">
+                                      <TableCell colSpan={6} className="bg-muted/20 p-5">
                                         <AuditPageDetail
                                           page={page}
                                           decisions={decisions[page.url] || defaultDecisions()}
