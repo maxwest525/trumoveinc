@@ -66,6 +66,42 @@ interface QueryRow {
   position: number;
 }
 
+/** Normalize a URL to a canonical key for matching */
+function normalizeUrl(raw: string, propertyOrigin?: string): string {
+  let url = raw.trim();
+
+  // If path-only (starts with /), convert to absolute using property origin
+  if (url.startsWith("/") && propertyOrigin) {
+    url = propertyOrigin.replace(/\/$/, "") + url;
+  }
+
+  try {
+    const parsed = new URL(url);
+    // Lowercase host
+    parsed.hostname = parsed.hostname.toLowerCase();
+    // Remove www
+    parsed.hostname = parsed.hostname.replace(/^www\./, "");
+    // Remove hash
+    parsed.hash = "";
+    // Remove tracking params
+    const trackingParams = ["utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content", "gclid", "fbclid"];
+    trackingParams.forEach(p => parsed.searchParams.delete(p));
+    // Normalize protocol to https
+    parsed.protocol = "https:";
+    // Build path: remove trailing slash except for root
+    let path = parsed.pathname;
+    if (path !== "/" && path.endsWith("/")) {
+      path = path.slice(0, -1);
+    }
+    // Reconstruct: origin + path + sorted search params
+    const search = parsed.searchParams.toString();
+    return `https://${parsed.hostname}${path}${search ? "?" + search : ""}`;
+  } catch {
+    // If URL parsing fails, just lowercase and trim slashes
+    return url.toLowerCase().replace(/\/+$/, "") || "/";
+  }
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
