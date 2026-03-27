@@ -1,4 +1,6 @@
 import { useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import MarketingShell from "@/components/layout/MarketingShell";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -7,39 +9,8 @@ import {
   Eye, ArrowUpRight, ArrowDownRight, Target, Percent, Mail, MessageSquare,
 } from "lucide-react";
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
-
-const trafficData = [
-  { month: "Oct", organic: 1240, paid: 890, referral: 320 },
-  { month: "Nov", organic: 1480, paid: 1120, referral: 410 },
-  { month: "Dec", organic: 1320, paid: 960, referral: 380 },
-  { month: "Jan", organic: 1690, paid: 1340, referral: 520 },
-  { month: "Feb", organic: 1850, paid: 1580, referral: 610 },
-  { month: "Mar", organic: 2120, paid: 1720, referral: 690 },
-];
-
-const conversionData = [
-  { month: "Oct", leads: 84, booked: 31 },
-  { month: "Nov", leads: 112, booked: 42 },
-  { month: "Dec", leads: 96, booked: 38 },
-  { month: "Jan", leads: 134, booked: 56 },
-  { month: "Feb", leads: 148, booked: 61 },
-  { month: "Mar", leads: 172, booked: 74 },
-];
-
-const channelBreakdown = [
-  { name: "PPC / Google Ads", value: 42, color: "hsl(var(--primary))" },
-  { name: "Organic / SEO", value: 28, color: "hsl(var(--accent-foreground))" },
-  { name: "Referral", value: 15, color: "hsl(var(--muted-foreground))" },
-  { name: "Direct", value: 10, color: "hsl(var(--secondary-foreground))" },
-  { name: "Social / Meta", value: 5, color: "hsl(var(--destructive))" },
-];
-
-const campaignRows = [
-  { name: "Google — Long Distance Moving", spend: 4200, clicks: 1840, leads: 62, cpl: 67.74, conv: 3.37 },
-  { name: "Google — Cross Country Movers", spend: 3100, clicks: 1320, leads: 41, cpl: 75.61, conv: 3.11 },
-  { name: "Meta — Interstate Retarget", spend: 1800, clicks: 920, leads: 28, cpl: 64.29, conv: 3.04 },
-  { name: "Google — Brand", spend: 600, clicks: 480, leads: 18, cpl: 33.33, conv: 3.75 },
-];
+import { format, subMonths, startOfMonth, endOfMonth } from "date-fns";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface KpiCardProps {
   title: string;
@@ -80,6 +51,133 @@ function KpiCard({ title, value, change, icon: Icon, prefix }: KpiCardProps) {
 }
 
 export default function MarketingDashboard() {
+  const now = new Date();
+  const thisMonthStart = startOfMonth(now).toISOString();
+  const lastMonthStart = startOfMonth(subMonths(now, 1)).toISOString();
+  const lastMonthEnd = endOfMonth(subMonths(now, 1)).toISOString();
+
+  // Fetch leads
+  const { data: allLeads = [], isLoading: leadsLoading } = useQuery({
+    queryKey: ["marketing-leads"],
+    queryFn: async () => {
+      const { data } = await supabase.from("leads").select("id, created_at, source, status");
+      return data ?? [];
+    },
+  });
+
+  // Fetch deals
+  const { data: allDeals = [], isLoading: dealsLoading } = useQuery({
+    queryKey: ["marketing-deals"],
+    queryFn: async () => {
+      const { data } = await supabase.from("deals").select("id, created_at, stage, deal_value, lead_id");
+      return data ?? [];
+    },
+  });
+
+  // Fetch vendors for CPL
+  const { data: vendors = [] } = useQuery({
+    queryKey: ["marketing-vendors"],
+    queryFn: async () => {
+      const { data } = await supabase.from("lead_vendors").select("id, name, cost_per_lead, monthly_budget");
+      return data ?? [];
+    },
+  });
+
+  const isLoading = leadsLoading || dealsLoading;
+
+  // Computed KPIs
+  const kpis = useMemo(() => {
+    const thisMonthLeads = allLeads.filter((l) => l.created_at >= thisMonthStart);
+    const lastMonthLeads = allLeads.filter((l) => l.created_at >= lastMonthStart && l.created_at <= lastMonthEnd);
+    const thisMonthDeals = allDeals.filter((d) => d.created_at >= thisMonthStart);
+    const lastMonthDeals = allDeals.filter((d) => d.created_at >= lastMonthStart && d.created_at <= lastMonthEnd);
+
+    const booked = thisMonthDeals.filter((d) => ["booked", "dispatched", "in_transit", "delivered", "closed_won"].includes(d.stage));
+    const lastBooked = lastMonthDeals.filter((d) => ["booked", "dispatched", "in_transit", "delivered", "closed_won"].includes(d.stage));
+
+    const totalLeads = thisMonthLeads.length;
+    const lastTotalLeads = lastMonthLeads.length;
+    const leadChange = lastTotalLeads > 0 ? ((totalLeads - lastTotalLeads) / lastTotalLeads) * 100 : 0;
+
+    const convRate = totalLeads > 0 ? (booked.length / totalLeads) * 100 : 0;
+    const lastConvRate = lastTotalLeads > 0 ? (lastBooked.length / lastTotalLeads) * 100 : 0;
+    const convChange = lastConvRate > 0 ? ((convRate - lastConvRate) / lastConvRate) * 100 : 0;
+
+    const avgCpl = vendors.length > 0
+      ? vendors.reduce((s, v) => s + (v.cost_per_lead ?? 0), 0) / vendors.filter((v) => (v.cost_per_lead ?? 0) > 0).length || 0
+      : 0;
+
+    return { totalLeads, leadChange, convRate, convChange, avgCpl, booked: booked.length };
+  }, [allLeads, allDeals, vendors, thisMonthStart, lastMonthStart, lastMonthEnd]);
+
+  // Monthly trend data (last 6 months)
+  const conversionData = useMemo(() => {
+    const months: { month: string; start: string; end: string }[] = [];
+    for (let i = 5; i >= 0; i--) {
+      const d = subMonths(now, i);
+      months.push({ month: format(d, "MMM"), start: startOfMonth(d).toISOString(), end: endOfMonth(d).toISOString() });
+    }
+    return months.map((m) => {
+      const leads = allLeads.filter((l) => l.created_at >= m.start && l.created_at <= m.end).length;
+      const booked = allDeals.filter((d) => d.created_at >= m.start && d.created_at <= m.end && ["booked", "dispatched", "in_transit", "delivered", "closed_won"].includes(d.stage)).length;
+      return { month: m.month, leads, booked };
+    });
+  }, [allLeads, allDeals]);
+
+  // Channel breakdown from lead source
+  const channelBreakdown = useMemo(() => {
+    const thisMonthLeads = allLeads.filter((l) => l.created_at >= thisMonthStart);
+    const total = thisMonthLeads.length || 1;
+    const sourceMap: Record<string, { label: string; color: string }> = {
+      ppc: { label: "PPC / Google Ads", color: "hsl(var(--primary))" },
+      website: { label: "Organic / Website", color: "hsl(var(--accent-foreground))" },
+      referral: { label: "Referral", color: "hsl(var(--muted-foreground))" },
+      phone: { label: "Phone / Direct", color: "hsl(var(--secondary-foreground))" },
+      walk_in: { label: "Walk-in", color: "hsl(var(--destructive))" },
+      other: { label: "Other", color: "hsl(var(--muted-foreground) / 0.6)" },
+    };
+    const counts: Record<string, number> = {};
+    thisMonthLeads.forEach((l) => { counts[l.source] = (counts[l.source] || 0) + 1; });
+    return Object.entries(counts)
+      .map(([src, count]) => ({
+        name: sourceMap[src]?.label ?? src,
+        value: Math.round((count / total) * 100),
+        color: sourceMap[src]?.color ?? "hsl(var(--muted-foreground))",
+      }))
+      .sort((a, b) => b.value - a.value);
+  }, [allLeads, thisMonthStart]);
+
+  // Lead source trend (last 6 months)
+  const trafficData = useMemo(() => {
+    const months: { month: string; start: string; end: string }[] = [];
+    for (let i = 5; i >= 0; i--) {
+      const d = subMonths(now, i);
+      months.push({ month: format(d, "MMM"), start: startOfMonth(d).toISOString(), end: endOfMonth(d).toISOString() });
+    }
+    return months.map((m) => {
+      const ml = allLeads.filter((l) => l.created_at >= m.start && l.created_at <= m.end);
+      return {
+        month: m.month,
+        organic: ml.filter((l) => l.source === "website").length,
+        paid: ml.filter((l) => l.source === "ppc").length,
+        referral: ml.filter((l) => ["referral", "phone", "walk_in", "other"].includes(l.source)).length,
+      };
+    });
+  }, [allLeads]);
+
+  // Vendor table as "campaigns"
+  const campaignRows = useMemo(() => {
+    return vendors.map((v) => {
+      const vendorLeads = allLeads.filter((l) => l.source === "ppc").length; // approximate
+      return {
+        name: v.name,
+        spend: v.monthly_budget ?? 0,
+        leads: vendorLeads,
+        cpl: v.cost_per_lead ?? 0,
+      };
+    });
+  }, [vendors, allLeads]);
+
   return (
     <MarketingShell breadcrumbs={[{ label: "Dashboard" }]}>
       <div className="space-y-6">
@@ -92,10 +190,18 @@ export default function MarketingDashboard() {
 
         {/* KPI Strip */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-          <KpiCard title="Total Leads" value="172" change={16.2} icon={Users} />
-          <KpiCard title="Cost per Lead" value="68.40" change={-4.8} icon={DollarSign} prefix="$" />
-          <KpiCard title="Website Sessions" value="4,530" change={14.6} icon={Eye} />
-          <KpiCard title="Conversion Rate" value="3.8%" change={8.1} icon={Percent} />
+          {isLoading ? (
+            <>
+              {[1,2,3,4].map(i => <Skeleton key={i} className="h-24 rounded-lg" />)}
+            </>
+          ) : (
+            <>
+              <KpiCard title="Total Leads (MTD)" value={kpis.totalLeads.toString()} change={Math.round(kpis.leadChange * 10) / 10} icon={Users} />
+              <KpiCard title="Avg Cost per Lead" value={kpis.avgCpl.toFixed(2)} change={0} icon={DollarSign} prefix="$" />
+              <KpiCard title="Booked Deals (MTD)" value={kpis.booked.toString()} change={0} icon={Target} />
+              <KpiCard title="Conversion Rate" value={`${kpis.convRate.toFixed(1)}%`} change={Math.round(kpis.convChange * 10) / 10} icon={Percent} />
+            </>
+          )}
         </div>
 
         {/* Charts Row */}
@@ -188,36 +294,29 @@ export default function MarketingDashboard() {
           <Card className="lg:col-span-2">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm flex items-center gap-2">
-                <BarChart3 className="w-4 h-4 text-primary" /> Active Campaigns
+                <BarChart3 className="w-4 h-4 text-primary" /> Lead Vendors
               </CardTitle>
-              <CardDescription className="text-xs">Current month performance</CardDescription>
+              <CardDescription className="text-xs">Vendor spend & lead cost</CardDescription>
             </CardHeader>
             <CardContent className="p-0">
               <div className="overflow-x-auto">
                 <table className="w-full text-xs">
                   <thead>
                     <tr className="border-b text-muted-foreground">
-                      <th className="text-left font-medium px-5 py-2.5">Campaign</th>
+                      <th className="text-left font-medium px-5 py-2.5">Vendor</th>
                       <th className="text-right font-medium px-3 py-2.5">Spend</th>
-                      <th className="text-right font-medium px-3 py-2.5">Clicks</th>
-                      <th className="text-right font-medium px-3 py-2.5">Leads</th>
-                      <th className="text-right font-medium px-3 py-2.5">CPL</th>
-                      <th className="text-right font-medium px-5 py-2.5">Conv %</th>
+                      <th className="text-right font-medium px-5 py-2.5">CPL</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {campaignRows.map((c) => (
-                      <tr key={c.name} className="border-b last:border-0 hover:bg-muted/40">
+                    {campaignRows.length === 0 && (
+                      <tr><td colSpan={3} className="text-center text-muted-foreground py-6">No vendors configured</td></tr>
+                    )}
+                    {campaignRows.map((c, i) => (
+                      <tr key={i} className="border-b last:border-0 hover:bg-muted/40">
                         <td className="px-5 py-2.5 font-medium text-foreground">{c.name}</td>
                         <td className="text-right px-3 py-2.5">${c.spend.toLocaleString()}</td>
-                        <td className="text-right px-3 py-2.5">{c.clicks.toLocaleString()}</td>
-                        <td className="text-right px-3 py-2.5">{c.leads}</td>
-                        <td className="text-right px-3 py-2.5">${c.cpl.toFixed(2)}</td>
-                        <td className="text-right px-5 py-2.5">
-                          <Badge variant={c.conv >= 3.5 ? "default" : "secondary"} className="text-[10px]">
-                            {c.conv.toFixed(2)}%
-                          </Badge>
-                        </td>
+                        <td className="text-right px-5 py-2.5">${c.cpl.toFixed(2)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -229,10 +328,10 @@ export default function MarketingDashboard() {
 
         {/* Quick Stats Row */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-          <KpiCard title="Email Open Rate" value="24.3%" change={2.1} icon={Mail} />
-          <KpiCard title="SMS Response Rate" value="18.7%" change={5.4} icon={MessageSquare} />
-          <KpiCard title="Ad Spend (MTD)" value="9,700" change={12.3} icon={DollarSign} prefix="$" />
-          <KpiCard title="ROAS" value="4.2x" change={6.8} icon={TrendingUp} />
+          <KpiCard title="Total Leads (All Time)" value={allLeads.length.toString()} change={0} icon={Users} />
+          <KpiCard title="Total Deals" value={allDeals.length.toString()} change={0} icon={Target} />
+          <KpiCard title="PPC Leads (MTD)" value={allLeads.filter(l => l.source === "ppc" && l.created_at >= thisMonthStart).length.toString()} change={0} icon={MousePointerClick} />
+          <KpiCard title="Referral Leads (MTD)" value={allLeads.filter(l => l.source === "referral" && l.created_at >= thisMonthStart).length.toString()} change={0} icon={TrendingUp} />
         </div>
       </div>
     </MarketingShell>
