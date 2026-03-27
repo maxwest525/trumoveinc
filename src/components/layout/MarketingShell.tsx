@@ -2,7 +2,7 @@ import { useState, useEffect, type ReactNode } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   Home, Bell, Menu, X,
-  FileText, Search,
+  FileText, Search, Swords,
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -16,6 +16,7 @@ const NAV_ITEMS = [
   { label: "Dashboard", icon: Home, href: "/marketing/dashboard" },
   { label: "Email & SMS Templates", icon: FileText, href: "/marketing/templates" },
   { label: "SEO Module", icon: Search, href: "/marketing/seo" },
+  { label: "Competitor SEO Analysis", icon: Swords, href: "/marketing/competitor-seo", beta: true },
 ];
 
 interface MarketingShellProps {
