@@ -21,6 +21,7 @@ interface PageAnalysis {
   suggestedTitle: string | null;
   suggestedDescription: string | null;
   suggestedH1: string | null;
+  suggestedCanonical: string | null;
   aiChecklist: string[];
   issueSuggestions: IssueSuggestion[];
   suggestedPrimaryKeyword?: string | null;
@@ -165,7 +166,7 @@ async function getAiSuggestions(
   apiKey: string,
   compliance: ComplianceSettings,
   attempt = 1,
-): Promise<{ suggestedTitle: string; suggestedDescription: string; suggestedH1: string | null; aiChecklist: string[]; issueSuggestions: IssueSuggestion[]; violations: string[]; suggestedPrimaryKeyword: string | null }> {
+): Promise<{ suggestedTitle: string; suggestedDescription: string; suggestedH1: string | null; suggestedCanonical: string | null; aiChecklist: string[]; issueSuggestions: IssueSuggestion[]; violations: string[]; suggestedPrimaryKeyword: string | null }> {
   const maxAttempts = 3;
 
   // Fetch GSC queries for context
@@ -212,16 +213,17 @@ REMINDER: Do NOT use any of these words: ${compliance.forbiddenTerms.join(", ")}
                 suggestedTitle: { type: "string", description: "Suggested title tag (50-60 chars)" },
                 suggestedDescription: { type: "string", description: "Suggested meta description (150-160 chars)" },
                 suggestedH1: { type: "string", description: "Suggested H1 or null if current is fine", nullable: true },
+                suggestedCanonical: { type: "string", description: "The absolute canonical URL for this page (e.g. https://trumoveinc.com/online-estimate). Must be a valid absolute https URL. Do NOT return prose or instructions — only the URL string.", nullable: true },
                 checklist: { type: "array", items: { type: "string" }, description: "3-6 actionable items" },
                 suggestedPrimaryKeyword: { type: "string", description: "The single best primary keyword for this page, derived from GSC data if available", nullable: true },
                 issueSuggestions: {
                   type: "array",
-                  description: "One specific suggestion for EACH issue detected.",
+                  description: "One specific suggestion for EACH issue detected. For 'Missing canonical tag' issues, the suggestion MUST be just the absolute canonical URL (e.g. https://trumoveinc.com/page), NOT prose or instructions.",
                   items: {
                     type: "object",
                     properties: {
                       issue: { type: "string", description: "The exact issue text from the detected issues list" },
-                      suggestion: { type: "string", description: "Specific, actionable fix. Include exact copy when possible." },
+                      suggestion: { type: "string", description: "Specific, actionable fix. For canonical issues, return ONLY the URL. For other issues, include exact copy when possible." },
                       priority: { type: "string", enum: ["high", "medium", "low"] },
                     },
                     required: ["issue", "suggestion", "priority"],
@@ -229,7 +231,7 @@ REMINDER: Do NOT use any of these words: ${compliance.forbiddenTerms.join(", ")}
                   },
                 },
               },
-              required: ["suggestedTitle", "suggestedDescription", "suggestedH1", "checklist", "suggestedPrimaryKeyword", "issueSuggestions"],
+              required: ["suggestedTitle", "suggestedDescription", "suggestedH1", "suggestedCanonical", "checklist", "suggestedPrimaryKeyword", "issueSuggestions"],
               additionalProperties: false,
             },
           },
@@ -267,10 +269,23 @@ REMINDER: Do NOT use any of these words: ${compliance.forbiddenTerms.join(", ")}
     return getAiSuggestions(page, apiKey, compliance, attempt + 1);
   }
 
+  // Validate suggestedCanonical is actually a URL, not prose
+  let suggestedCanonical: string | null = result.suggestedCanonical || null;
+  if (suggestedCanonical) {
+    try {
+      const parsed = new URL(suggestedCanonical);
+      if (parsed.protocol !== "https:" && parsed.protocol !== "http:") suggestedCanonical = null;
+    } catch {
+      // It's prose, not a URL — derive from the page URL instead
+      try { suggestedCanonical = new URL(page.url).href.replace(/\/$/, ""); } catch { suggestedCanonical = null; }
+    }
+  }
+
   return {
     suggestedTitle: result.suggestedTitle,
     suggestedDescription: result.suggestedDescription,
     suggestedH1: result.suggestedH1,
+    suggestedCanonical,
     aiChecklist: result.checklist || [],
     issueSuggestions: result.issueSuggestions || [],
     suggestedPrimaryKeyword: result.suggestedPrimaryKeyword || null,
@@ -391,7 +406,7 @@ Deno.serve(async (req) => {
             results.push({
               url: pageUrl, fetchedTitle: null, fetchedDescription: null, fetchedH1: null,
               fetchedCanonical: null, issues: ["Failed to fetch page content"],
-              suggestedTitle: null, suggestedDescription: null, suggestedH1: null,
+              suggestedTitle: null, suggestedDescription: null, suggestedH1: null, suggestedCanonical: null,
               aiChecklist: [], issueSuggestions: [], violations: [],
               rawTitle: null, renderedTitle: null, rawDescription: null, renderedDescription: null, sourceUsed: "raw",
             });
@@ -473,7 +488,7 @@ Deno.serve(async (req) => {
             console.error("AI error for", pageUrl, aiErr);
             results.push({
               ...finalParsed, suggestedTitle: null, suggestedDescription: null,
-              suggestedH1: null, aiChecklist: [], issueSuggestions: [], violations: [],
+              suggestedH1: null, suggestedCanonical: null, aiChecklist: [], issueSuggestions: [], violations: [],
               ...debugFields,
             });
           }
@@ -482,7 +497,7 @@ Deno.serve(async (req) => {
           results.push({
             url: pageUrl, fetchedTitle: null, fetchedDescription: null, fetchedH1: null,
             fetchedCanonical: null, issues: [`Fetch failed: ${err instanceof Error ? err.message : "Unknown error"}`],
-            suggestedTitle: null, suggestedDescription: null, suggestedH1: null,
+            suggestedTitle: null, suggestedDescription: null, suggestedH1: null, suggestedCanonical: null,
             aiChecklist: [], issueSuggestions: [], violations: [],
             rawTitle: null, renderedTitle: null, rawDescription: null, renderedDescription: null, sourceUsed: "raw" as const,
           });

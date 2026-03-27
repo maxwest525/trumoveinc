@@ -40,6 +40,7 @@ interface AuditPage {
   suggestedTitle: string | null;
   suggestedDescription: string | null;
   suggestedH1: string | null;
+  suggestedCanonical: string | null;
   aiChecklist: string[];
   issueSuggestions: IssueSuggestion[];
   rawTitle?: string | null;
@@ -442,13 +443,46 @@ export default function AuditPageDetail({ page, decisions, onDecisionChange, onR
       )}
 
       {/* Canonical info */}
-      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-        <span className="font-medium">Canonical:</span>
-        {page.fetchedCanonical ? (
-          <span className="font-mono truncate">{page.fetchedCanonical}</span>
-        ) : (
-          <Badge variant="destructive" className="text-[9px]">Missing</Badge>
-        )}
+      <div className="rounded-lg border border-border bg-muted/20 p-3 space-y-2">
+        <span className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+          Canonical Tag
+        </span>
+        <div className="space-y-1.5">
+          <div className="flex items-center gap-2 text-xs">
+            <span className="text-muted-foreground font-medium">Current:</span>
+            {page.fetchedCanonical ? (
+              <span className="font-mono truncate text-foreground">{page.fetchedCanonical}</span>
+            ) : (
+              <Badge variant="destructive" className="text-[9px]">Missing</Badge>
+            )}
+          </div>
+          {page.suggestedCanonical && (
+            <div className="flex items-center gap-2 text-xs">
+              <span className="text-primary font-medium">AI Suggested:</span>
+              <code className="font-mono text-foreground bg-primary/5 px-2 py-0.5 rounded border border-primary/10 truncate">
+                {page.suggestedCanonical}
+              </code>
+              {(() => {
+                try {
+                  const parsed = new URL(page.suggestedCanonical);
+                  const pageHost = new URL(page.url).hostname;
+                  const isValid = parsed.protocol === "https:" && parsed.hostname === pageHost;
+                  return isValid
+                    ? <Badge variant="default" className="text-[9px] shrink-0">Valid</Badge>
+                    : <Badge variant="destructive" className="text-[9px] shrink-0">Domain mismatch</Badge>;
+                } catch {
+                  return <Badge variant="destructive" className="text-[9px] shrink-0">Invalid URL</Badge>;
+                }
+              })()}
+            </div>
+          )}
+          {page.fetchedCanonical && !page.suggestedCanonical && (
+            <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
+              <CheckCircle2 className="w-3 h-3 text-primary" />
+              Canonical tag looks good
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Meta field rows */}

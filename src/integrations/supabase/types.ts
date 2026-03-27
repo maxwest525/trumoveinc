@@ -1623,6 +1623,7 @@ export type Database = {
       seo_overrides: {
         Row: {
           approved_by: string | null
+          canonical_url: string | null
           created_at: string
           description: string | null
           id: string
@@ -1632,6 +1633,7 @@ export type Database = {
         }
         Insert: {
           approved_by?: string | null
+          canonical_url?: string | null
           created_at?: string
           description?: string | null
           id?: string
@@ -1641,6 +1643,7 @@ export type Database = {
         }
         Update: {
           approved_by?: string | null
+          canonical_url?: string | null
           created_at?: string
           description?: string | null
           id?: string
