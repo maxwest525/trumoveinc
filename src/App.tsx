@@ -3,6 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { HelmetProvider } from "react-helmet-async";
 import { ThemeProvider } from "next-themes";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
@@ -27,6 +28,7 @@ import LiveTracking from "./pages/LiveTracking";
 import ElevenLabsTrudyWidget from "./components/ElevenLabsTrudyWidget";
 import ScrollToTop from "./components/ScrollToTop";
 import { SeoOverrideProvider } from "./components/SeoOverrideProvider";
+import SiteCanonicalLayout from "./components/SiteCanonicalLayout";
 import CustomerService from "./pages/CustomerService";
 import AdminSupportTickets from "./pages/AdminSupportTickets";
 import AgentPipeline from "./pages/AgentPipeline";
@@ -83,6 +85,7 @@ import AgentIncomingLeads from "./pages/AgentIncomingLeads";
 const queryClient = new QueryClient();
 
 const App = () => (
+  <HelmetProvider>
   <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
@@ -100,22 +103,22 @@ const App = () => (
             <Route path="/agent-login" element={<Navigate to="/" replace />} />
 
             {/* ── Customer-facing website under /site ─────────────── */}
-            <Route path="/site" element={<Index />} />
-            <Route path="/site/online-estimate" element={<OnlineEstimate />} />
-            <Route path="/site/book" element={<Book />} />
-            <Route path="/site/vetting" element={<CarrierVetting />} />
-            <Route path="/site/vetting-dashboard" element={<VettingDashboard />} />
-            <Route path="/site/carrier-vetting" element={<CarrierVetting />} />
-            <Route path="/site/faq" element={<FAQ />} />
-            <Route path="/site/about" element={<About />} />
-            <Route path="/site/privacy" element={<Privacy />} />
-            <Route path="/site/terms" element={<Terms />} />
-            <Route path="/site/property-lookup" element={<PropertyLookup />} />
-            <Route path="/site/auth" element={<Auth />} />
-            <Route path="/site/scan-room" element={<ScanRoom />} />
-            <Route path="/site/classic" element={<Classic />} />
-            <Route path="/site/track" element={<LiveTracking />} />
-            <Route path="/site/customer-service" element={<CustomerService />} />
+            <Route path="/site" element={<SiteCanonicalLayout><Index /></SiteCanonicalLayout>} />
+            <Route path="/site/online-estimate" element={<SiteCanonicalLayout><OnlineEstimate /></SiteCanonicalLayout>} />
+            <Route path="/site/book" element={<SiteCanonicalLayout><Book /></SiteCanonicalLayout>} />
+            <Route path="/site/vetting" element={<SiteCanonicalLayout><CarrierVetting /></SiteCanonicalLayout>} />
+            <Route path="/site/vetting-dashboard" element={<SiteCanonicalLayout><VettingDashboard /></SiteCanonicalLayout>} />
+            <Route path="/site/carrier-vetting" element={<SiteCanonicalLayout><CarrierVetting /></SiteCanonicalLayout>} />
+            <Route path="/site/faq" element={<SiteCanonicalLayout><FAQ /></SiteCanonicalLayout>} />
+            <Route path="/site/about" element={<SiteCanonicalLayout><About /></SiteCanonicalLayout>} />
+            <Route path="/site/privacy" element={<SiteCanonicalLayout><Privacy /></SiteCanonicalLayout>} />
+            <Route path="/site/terms" element={<SiteCanonicalLayout><Terms /></SiteCanonicalLayout>} />
+            <Route path="/site/property-lookup" element={<SiteCanonicalLayout><PropertyLookup /></SiteCanonicalLayout>} />
+            <Route path="/site/auth" element={<SiteCanonicalLayout><Auth /></SiteCanonicalLayout>} />
+            <Route path="/site/scan-room" element={<SiteCanonicalLayout><ScanRoom /></SiteCanonicalLayout>} />
+            <Route path="/site/classic" element={<SiteCanonicalLayout><Classic /></SiteCanonicalLayout>} />
+            <Route path="/site/track" element={<SiteCanonicalLayout><LiveTracking /></SiteCanonicalLayout>} />
+            <Route path="/site/customer-service" element={<SiteCanonicalLayout><CustomerService /></SiteCanonicalLayout>} />
 
             {/* ── Public e-sign route (customer clicks from email) ── */}
             <Route path="/esign/:refNumber" element={<PublicESign />} />
@@ -186,6 +189,7 @@ const App = () => (
       </TooltipProvider>
     </QueryClientProvider>
   </ThemeProvider>
+  </HelmetProvider>
 );
 
 export default App;
