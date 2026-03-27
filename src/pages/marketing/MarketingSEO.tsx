@@ -584,11 +584,11 @@ export default function MarketingSEO() {
       try { rawPath = new URL(item.url).pathname; } catch {}
       const urlPath = rawPath === "/" ? "/site" : `/site${rawPath}`;
 
-      const updatedField = { ...d[item.fieldKey as "title" | "description" | "h1"], status: "approved" as const };
+      const updatedField = { ...d[item.fieldKey as "title" | "description" | "h1" | "canonical"], status: "approved" as const };
       const newD = { ...d, [item.fieldKey]: updatedField };
 
-      const stillPublished = ["title", "description", "h1"].some(
-        f => f !== item.fieldKey && newD[f as "title" | "description" | "h1"].status === "published"
+      const stillPublished = ["title", "description", "h1", "canonical"].some(
+        f => f !== item.fieldKey && newD[f as "title" | "description" | "h1" | "canonical"].status === "published"
       );
 
       if (!stillPublished) {
