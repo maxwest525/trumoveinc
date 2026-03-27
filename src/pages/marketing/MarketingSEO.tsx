@@ -499,10 +499,11 @@ export default function MarketingSEO() {
     const d = decisions[page.url];
     if (!d) return [];
     const items: SidebarItem[] = [];
-    const fields: Array<{ key: "title" | "description" | "h1"; label: string; suggested: string | null }> = [
+    const fields: Array<{ key: "title" | "description" | "h1" | "canonical"; label: string; suggested: string | null }> = [
       { key: "title", label: "Title", suggested: page.suggestedTitle },
       { key: "description", label: "Description", suggested: page.suggestedDescription },
       { key: "h1", label: "H1", suggested: page.suggestedH1 },
+      { key: "canonical", label: "Canonical", suggested: page.suggestedCanonical },
     ];
     fields.forEach(({ key, label, suggested }) => {
       const fd = d[key];
