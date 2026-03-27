@@ -205,7 +205,7 @@ export default function MarketingSEO() {
           allResults.push({
             url: u, fetchedTitle: null, fetchedDescription: null, fetchedH1: null,
             fetchedCanonical: null, issues: [`Analysis failed: ${e.message}`],
-            suggestedTitle: null, suggestedDescription: null, suggestedH1: null,
+            suggestedTitle: null, suggestedDescription: null, suggestedH1: null, suggestedCanonical: null,
             aiChecklist: [], issueSuggestions: [],
           });
           allDecisions[u] = defaultDecisions();
