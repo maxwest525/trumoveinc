@@ -80,38 +80,48 @@ export default function MarketingSEO() {
   const [activeTab, setActiveTab] = useState("phase1");
   const [regeneratingAll, setRegeneratingAll] = useState(false);
   const [gscConnected, setGscConnected] = useState(false);
+  const [ga4Connected, setGa4Connected] = useState(false);
   const { settings: complianceSettings, reload: reloadCompliance } = useSeoCompliance();
+
+  // Auto-detect GSC connection on mount
+  useEffect(() => {
+    (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data } = await supabase
+        .from("gsc_connections")
+        .select("id")
+        .eq("user_id", user.id)
+        .limit(1);
+      if (data && data.length > 0) setGscConnected(true);
+    })();
+  }, []);
+
+  // Auto-detect GA4 connection on mount
+  useEffect(() => {
+    (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data } = await supabase
+        .from("integration_connections")
+        .select("id")
+        .eq("user_id", user.id)
+        .eq("integration_id", "ga4")
+        .eq("connected", true)
+        .limit(1);
+      if (data && data.length > 0) setGa4Connected(true);
+    })();
+  }, []);
 
   // Phase statuses
   const phases: PhaseInfo[] = [
     { id: 1, label: "Crawl / Audit", status: auditPages.length > 0 ? "connected" : "not_connected", lastSync: auditPages.length > 0 ? new Date().toISOString() : null },
     { id: 2, label: "Search Console", status: gscConnected ? "connected" : "not_connected" },
-    { id: 3, label: "GA4", status: "not_connected" },
+    { id: 3, label: "GA4", status: ga4Connected ? "connected" : "not_connected" },
     { id: 4, label: "Backlinks", status: "coming_soon" },
   ];
 
   const totalIssues = auditPages.reduce((sum, p) => sum + (p.issues?.length || 0), 0);
-
-  const connectorCards = useMemo<Array<{ id: string; name: string; detail: string; status: PhaseInfo["status"] }>>(() => [
-    {
-      id: "gsc",
-      name: "Google Search Console",
-      detail: gscConnected ? "Connected and ready for Phase 2" : "Not connected yet",
-      status: gscConnected ? "connected" : "not_connected",
-    },
-    {
-      id: "ga4",
-      name: "Google Analytics 4",
-      detail: "Available in Phase 3",
-      status: "not_connected",
-    },
-    {
-      id: "backlinks",
-      name: "Backlink Source",
-      detail: "Planned for a later phase",
-      status: "coming_soon",
-    },
-  ], [gscConnected]);
 
   const phaseMeta: Record<string, { icon: typeof ScanSearch; title: string; description: string; status: PhaseInfo["status"] }> = {
     phase1: { icon: ScanSearch, title: "Crawl / Audit", description: "Discover pages and audit metadata.", status: phases[0].status },
