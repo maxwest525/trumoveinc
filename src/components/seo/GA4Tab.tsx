@@ -8,7 +8,7 @@ interface GA4TabProps {
 
 export default function GA4Tab({ status }: GA4TabProps) {
   const connected = status === "connected";
-  const [sortBy, setSortBy] = useState<"sessions" | "conversions" | "conversionRate">("conversionRate");
+  
 
   if (!connected) {
     return (
