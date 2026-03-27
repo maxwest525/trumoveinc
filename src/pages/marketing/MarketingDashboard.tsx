@@ -9,7 +9,7 @@ import {
   Eye, ArrowUpRight, ArrowDownRight, Target, Percent, Mail, MessageSquare,
 } from "lucide-react";
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
-import { format, subDays, differenceInDays } from "date-fns";
+import { format, subMonths, subDays, startOfMonth, endOfMonth, differenceInDays } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
