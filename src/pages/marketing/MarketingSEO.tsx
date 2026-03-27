@@ -576,18 +576,6 @@ export default function MarketingSEO() {
           phases={phases}
         />
 
-        <div className="flex flex-wrap items-center gap-3 text-xs">
-          <span className="text-muted-foreground font-medium">Connectors:</span>
-          {connectorCards.map((c) => (
-            <div key={c.id} className="flex items-center gap-1.5 border rounded-md px-2.5 py-1.5 bg-muted/20">
-              <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${c.status === "connected" ? "bg-emerald-500" : c.status === "coming_soon" ? "bg-muted-foreground/40" : "bg-amber-500"}`} />
-              <span className="text-foreground font-medium">{c.name}</span>
-              <Badge variant={phaseStatusBadgeVariant(c.status)} className="text-[9px] ml-1">
-                {phaseStatusLabel(c.status)}
-              </Badge>
-            </div>
-          ))}
-        </div>
 
         {/* Phase Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
