@@ -219,7 +219,14 @@ export default function SearchConsoleTab({ status, auditUrls, onGscStatusChange 
         body: { action: "fetch-all-pages", user_id: userId, urls: auditUrls },
       });
       if (error) throw error;
-      setPageData(data.results || []);
+      const results = data.results || [];
+      // Debug: log URL matching info
+      results.forEach((r: any) => {
+        if (r._debug) {
+          console.debug("[GSC match]", r._debug);
+        }
+      });
+      setPageData(results);
       toast.success(`Fetched GSC data for ${auditUrls.length} pages`);
     } catch (e: any) {
       toast.error(e.message || "Failed to fetch page data");

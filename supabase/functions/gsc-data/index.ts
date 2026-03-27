@@ -66,6 +66,42 @@ interface QueryRow {
   position: number;
 }
 
+/** Normalize a URL to a canonical key for matching */
+function normalizeUrl(raw: string, propertyOrigin?: string): string {
+  let url = raw.trim();
+
+  // If path-only (starts with /), convert to absolute using property origin
+  if (url.startsWith("/") && propertyOrigin) {
+    url = propertyOrigin.replace(/\/$/, "") + url;
+  }
+
+  try {
+    const parsed = new URL(url);
+    // Lowercase host
+    parsed.hostname = parsed.hostname.toLowerCase();
+    // Remove www
+    parsed.hostname = parsed.hostname.replace(/^www\./, "");
+    // Remove hash
+    parsed.hash = "";
+    // Remove tracking params
+    const trackingParams = ["utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content", "gclid", "fbclid"];
+    trackingParams.forEach(p => parsed.searchParams.delete(p));
+    // Normalize protocol to https
+    parsed.protocol = "https:";
+    // Build path: remove trailing slash except for root
+    let path = parsed.pathname;
+    if (path !== "/" && path.endsWith("/")) {
+      path = path.slice(0, -1);
+    }
+    // Reconstruct: origin + path + sorted search params
+    const search = parsed.searchParams.toString();
+    return `https://${parsed.hostname}${path}${search ? "?" + search : ""}`;
+  } catch {
+    // If URL parsing fails, just lowercase and trim slashes
+    return url.toLowerCase().replace(/\/+$/, "") || "/";
+  }
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -79,6 +115,19 @@ Deno.serve(async (req) => {
       if (!user_id || !page_url) throw new Error("user_id and page_url required");
 
       const { accessToken, property } = await getValidToken(user_id);
+
+      // Derive property origin for path→absolute conversion
+      let propertyOrigin = property;
+      try {
+        const pu = new URL(property.startsWith("sc-domain:") ? `https://${property.replace("sc-domain:", "")}` : property);
+        propertyOrigin = pu.origin;
+      } catch { /* keep as-is */ }
+
+      // Convert path-only page_url to absolute
+      let absolutePageUrl = page_url;
+      if (page_url.startsWith("/")) {
+        absolutePageUrl = propertyOrigin.replace(/\/$/, "") + page_url;
+      }
 
       const endDate = new Date();
       const startDate = new Date();
@@ -100,7 +149,9 @@ Deno.serve(async (req) => {
             filters: [{
               dimension: "page",
               operator: "equals",
-              expression: page_url,
+              expression: absolutePageUrl,
+            }],
+          }],
             }],
           }],
           rowLimit: 20,
@@ -184,34 +235,58 @@ Deno.serve(async (req) => {
       }
 
       const data = await res.json();
-      const pageData: Record<string, { clicks: number; impressions: number; ctr: number; position: number }> = {};
+
+      // Derive property origin for path→absolute conversion
+      let propertyOrigin = property;
+      try {
+        const pu = new URL(property.startsWith("sc-domain:") ? `https://${property.replace("sc-domain:", "")}` : property);
+        propertyOrigin = pu.origin;
+      } catch { /* keep as-is */ }
+
+      // Build normalized lookup from GSC response
+      const gscNormMap: Record<string, { clicks: number; impressions: number; ctr: number; position: number; gsc_url_raw: string }> = {};
 
       (data.rows || []).forEach((r: QueryRow) => {
-        const pageUrl = r.keys[0];
-        pageData[pageUrl] = {
+        const gscUrl = r.keys[0];
+        const normKey = normalizeUrl(gscUrl);
+        gscNormMap[normKey] = {
           clicks: r.clicks,
           impressions: r.impressions,
           ctr: Math.round(r.ctr * 10000) / 100,
           position: Math.round(r.position * 10) / 10,
+          gsc_url_raw: gscUrl,
         };
       });
 
-      // Calculate fix priority for each URL
+      // Calculate fix priority for each audit URL
       const results = urls.map((u: string) => {
-        const d = pageData[u];
-        if (!d) return { url: u, clicks: 0, impressions: 0, ctr: 0, position: 0, fixPriority: 0 };
+        const normKey = normalizeUrl(u, propertyOrigin);
+        const d = gscNormMap[normKey];
+
+        const debug = {
+          audit_url_raw: u,
+          gsc_url_raw: d?.gsc_url_raw || null,
+          normalized_key: normKey,
+          matched: !!d,
+        };
+
+        if (!d) return { url: u, clicks: 0, impressions: 0, ctr: 0, position: 0, fixPriority: 0, _debug: debug };
 
         // Priority scoring: high impressions + low CTR + position 5-20
         let priority = 0;
-        if (d.impressions > 100) priority += Math.min(d.impressions / 500, 30); // up to 30 points for impressions
-        if (d.ctr < 5 && d.impressions > 50) priority += (5 - d.ctr) * 5; // low CTR penalty
-        if (d.position >= 5 && d.position <= 20) priority += (20 - d.position) * 2; // near page 1/2 opportunity
-        if (d.position > 20) priority += 5; // still has some priority but lower
+        if (d.impressions > 100) priority += Math.min(d.impressions / 500, 30);
+        if (d.ctr < 5 && d.impressions > 50) priority += (5 - d.ctr) * 5;
+        if (d.position >= 5 && d.position <= 20) priority += (20 - d.position) * 2;
+        if (d.position > 20) priority += 5;
 
         return {
           url: u,
-          ...d,
+          clicks: d.clicks,
+          impressions: d.impressions,
+          ctr: d.ctr,
+          position: d.position,
           fixPriority: Math.round(priority),
+          _debug: debug,
         };
       });
 
