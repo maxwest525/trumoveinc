@@ -75,9 +75,6 @@ export default function MarketingShell({ children, breadcrumb = "", breadcrumbs 
         })}
       </nav>
 
-      <div className="px-3 py-3 border-t border-border">
-        <span className="text-[10px] text-muted-foreground">Email Templates</span>
-      </div>
     </>
   );
 
