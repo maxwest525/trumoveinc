@@ -213,16 +213,17 @@ REMINDER: Do NOT use any of these words: ${compliance.forbiddenTerms.join(", ")}
                 suggestedTitle: { type: "string", description: "Suggested title tag (50-60 chars)" },
                 suggestedDescription: { type: "string", description: "Suggested meta description (150-160 chars)" },
                 suggestedH1: { type: "string", description: "Suggested H1 or null if current is fine", nullable: true },
+                suggestedCanonical: { type: "string", description: "The absolute canonical URL for this page (e.g. https://trumoveinc.com/online-estimate). Must be a valid absolute https URL. Do NOT return prose or instructions — only the URL string.", nullable: true },
                 checklist: { type: "array", items: { type: "string" }, description: "3-6 actionable items" },
                 suggestedPrimaryKeyword: { type: "string", description: "The single best primary keyword for this page, derived from GSC data if available", nullable: true },
                 issueSuggestions: {
                   type: "array",
-                  description: "One specific suggestion for EACH issue detected.",
+                  description: "One specific suggestion for EACH issue detected. For 'Missing canonical tag' issues, the suggestion MUST be just the absolute canonical URL (e.g. https://trumoveinc.com/page), NOT prose or instructions.",
                   items: {
                     type: "object",
                     properties: {
                       issue: { type: "string", description: "The exact issue text from the detected issues list" },
-                      suggestion: { type: "string", description: "Specific, actionable fix. Include exact copy when possible." },
+                      suggestion: { type: "string", description: "Specific, actionable fix. For canonical issues, return ONLY the URL. For other issues, include exact copy when possible." },
                       priority: { type: "string", enum: ["high", "medium", "low"] },
                     },
                     required: ["issue", "suggestion", "priority"],
@@ -230,7 +231,7 @@ REMINDER: Do NOT use any of these words: ${compliance.forbiddenTerms.join(", ")}
                   },
                 },
               },
-              required: ["suggestedTitle", "suggestedDescription", "suggestedH1", "checklist", "suggestedPrimaryKeyword", "issueSuggestions"],
+              required: ["suggestedTitle", "suggestedDescription", "suggestedH1", "suggestedCanonical", "checklist", "suggestedPrimaryKeyword", "issueSuggestions"],
               additionalProperties: false,
             },
           },
