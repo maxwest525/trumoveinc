@@ -240,9 +240,9 @@ export default function MarketingDashboard() {
             </>
           ) : (
             <>
-              <KpiCard title={`Total Leads (${range.toUpperCase()})`} value={kpis.totalLeads.toString()} change={Math.round(kpis.leadChange * 10) / 10} icon={Users} />
+              <KpiCard title="Total Leads" value={kpis.totalLeads.toString()} change={Math.round(kpis.leadChange * 10) / 10} icon={Users} />
               <KpiCard title="Avg Cost per Lead" value={kpis.avgCpl.toFixed(2)} change={0} icon={DollarSign} prefix="$" />
-              <KpiCard title={`Booked Deals (${range.toUpperCase()})`} value={kpis.booked.toString()} change={0} icon={Target} />
+              <KpiCard title="Booked Deals" value={kpis.booked.toString()} change={0} icon={Target} />
               <KpiCard title="Conversion Rate" value={`${kpis.convRate.toFixed(1)}%`} change={Math.round(kpis.convChange * 10) / 10} icon={Percent} />
             </>
           )}
