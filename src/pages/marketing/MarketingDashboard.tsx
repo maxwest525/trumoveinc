@@ -374,8 +374,8 @@ export default function MarketingDashboard() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           <KpiCard title="Total Leads (All Time)" value={allLeads.length.toString()} change={0} icon={Users} />
           <KpiCard title="Total Deals" value={allDeals.length.toString()} change={0} icon={Target} />
-          <KpiCard title={`PPC Leads (${range.toUpperCase()})`} value={allLeads.filter(l => l.source === "ppc" && l.created_at >= rangeStartIso).length.toString()} change={0} icon={MousePointerClick} />
-          <KpiCard title={`Referral (${range.toUpperCase()})`} value={allLeads.filter(l => l.source === "referral" && l.created_at >= rangeStartIso).length.toString()} change={0} icon={TrendingUp} />
+          <KpiCard title="PPC Leads" value={allLeads.filter(l => l.source === "ppc" && l.created_at >= rangeStartIso).length.toString()} change={0} icon={MousePointerClick} />
+          <KpiCard title="Referral" value={allLeads.filter(l => l.source === "referral" && l.created_at >= rangeStartIso).length.toString()} change={0} icon={TrendingUp} />
         </div>
       </div>
     </MarketingShell>
