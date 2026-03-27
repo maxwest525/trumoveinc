@@ -7,8 +7,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import {
   CheckCircle2, AlertCircle, XCircle, Pencil, RefreshCw, Eye, EyeOff,
-  AlertTriangle, Sparkles,
+  AlertTriangle, Sparkles, ExternalLink, Info, Globe,
 } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export type FieldStatus = "pending" | "approved" | "edited" | "ignored" | "published";
 
@@ -355,7 +356,7 @@ function FieldRow({
   );
 }
 
-/* ─── Canonical field row (URL-specific validation) ─── */
+/* ─── Canonical field row (URL-specific validation + verify live) ─── */
 function CanonicalFieldRow({
   current, suggested, pageUrl, decision, onUpdate, onRegenerateItem,
 }: {
@@ -366,6 +367,8 @@ function CanonicalFieldRow({
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(decision.editedValue || suggested || "");
   const [regenerating, setRegenerating] = useState(false);
+  const [verifying, setVerifying] = useState(false);
+  const [verifyResult, setVerifyResult] = useState<{ found: boolean; value?: string } | null>(null);
 
   const finalValue = decision.status === "edited" ? decision.editedValue : suggested;
 
@@ -383,6 +386,13 @@ function CanonicalFieldRow({
   const currentValid = validate(current);
   const suggestedValid = validate(finalValue);
 
+  // Check if suggestion matches current (already optimal)
+  const isAlreadyOptimal = current && suggested && (() => {
+    try {
+      return new URL(current).href === new URL(suggested).href;
+    } catch { return current === suggested; }
+  })();
+
   const handleApprove = () => { onUpdate({ status: "approved" }); setEditing(false); };
   const handleIgnore = () => { onUpdate({ status: "ignored" }); setEditing(false); };
   const handleSaveEdit = () => { onUpdate({ status: "edited", editedValue: draft }); setEditing(false); };
@@ -394,7 +404,84 @@ function CanonicalFieldRow({
     setRegenerating(false);
   };
 
-  if (decision.status === "published") return null;
+  const handleVerifyLive = async () => {
+    setVerifying(true);
+    setVerifyResult(null);
+    try {
+      // Try to fetch the page and check for canonical tag
+      const { data, error } = await supabase.functions.invoke("seo-audit", {
+        body: { action: "analyze", urls: [pageUrl] },
+      });
+      if (error) throw error;
+      const result = data?.results?.[0];
+      const liveCanonical = result?.fetchedCanonical || null;
+      setVerifyResult({ found: !!liveCanonical, value: liveCanonical });
+      if (liveCanonical) {
+        toast.success("Canonical tag found on live page");
+      } else {
+        toast.info("No canonical tag detected on live page");
+      }
+    } catch {
+      toast.error("Could not verify — page may not be accessible");
+      setVerifyResult({ found: false });
+    }
+    setVerifying(false);
+  };
+
+  // Published state — show stored value + verify
+  if (decision.status === "published") {
+    const publishedValue = decision.editedValue || suggested;
+    return (
+      <div className="rounded-lg border border-primary/30 bg-primary/5 p-3 space-y-2.5">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="w-3.5 h-3.5 text-primary" />
+            <span className="text-xs font-semibold text-foreground">Canonical Tag</span>
+            <Badge variant="default" className="text-[10px]">Published</Badge>
+          </div>
+          <Button variant="ghost" size="sm" className="h-6 text-[10px] px-2" onClick={() => onUpdate({ status: "approved" })}>Unpublish</Button>
+        </div>
+
+        <div className="space-y-1">
+          <span className="text-[10px] font-medium text-primary uppercase tracking-wide">Stored Canonical URL</span>
+          <div className="text-xs text-foreground font-mono bg-primary/5 rounded px-2.5 py-1.5 border border-primary/10">
+            {publishedValue}
+          </div>
+        </div>
+
+        {/* CRM deployment note */}
+        <div className="flex items-start gap-2 rounded-md border border-amber-500/20 bg-amber-500/5 px-2.5 py-2">
+          <Info className="w-3.5 h-3.5 text-amber-500 mt-0.5 shrink-0" />
+          <div className="text-[10px] text-foreground space-y-0.5">
+            <p className="font-semibold">Canonical is injected dynamically via the SEO override system.</p>
+            <p className="text-muted-foreground">
+              The tag is applied at runtime when users visit your site. It will appear in the rendered DOM but not in static HTML source.
+              If your site is hosted externally, you may need to apply canonical tags directly in your hosting platform.
+            </p>
+          </div>
+        </div>
+
+        {/* Verify live */}
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" className="h-6 text-[10px] px-2.5 gap-1" onClick={handleVerifyLive} disabled={verifying}>
+            <Globe className={`w-3 h-3 ${verifying ? "animate-spin" : ""}`} />
+            {verifying ? "Checking…" : "Verify Live"}
+          </Button>
+          {verifyResult && (
+            verifyResult.found ? (
+              <span className="text-[10px] text-primary flex items-center gap-1">
+                <CheckCircle2 className="w-3 h-3" /> Found: <code className="font-mono">{verifyResult.value}</code>
+              </span>
+            ) : (
+              <span className="text-[10px] text-destructive flex items-center gap-1">
+                <XCircle className="w-3 h-3" /> Not detected in crawl
+              </span>
+            )
+          )}
+        </div>
+      </div>
+    );
+  }
 
   if (decision.status === "ignored") {
     return (
@@ -441,7 +528,7 @@ function CanonicalFieldRow({
         </div>
       </div>
 
-      {suggested && (
+      {suggested && !isAlreadyOptimal && (
         <div className="space-y-1">
           <div className="flex items-center gap-1.5">
             <span className="text-[10px] font-medium text-primary uppercase tracking-wide">
@@ -467,7 +554,20 @@ function CanonicalFieldRow({
         </div>
       )}
 
-      {!editing && suggested && (
+      {/* Already optimal message */}
+      {isAlreadyOptimal && (
+        <div className="flex items-start gap-2 rounded-md border border-primary/20 bg-primary/5 px-2.5 py-2">
+          <CheckCircle2 className="w-3.5 h-3.5 text-primary mt-0.5 shrink-0" />
+          <div className="text-[10px] text-foreground">
+            <span className="font-semibold">Canonical is already optimal.</span>
+            <span className="text-muted-foreground ml-1">
+              The current tag matches the recommended self-referencing URL. No change needed.
+            </span>
+          </div>
+        </div>
+      )}
+
+      {!editing && suggested && !isAlreadyOptimal && (
         <div className="flex items-center gap-1.5 pt-0.5">
           {decision.status === "approved" && (
             <Button variant="default" size="sm" className="h-6 text-[10px] px-2.5 gap-1" onClick={() => onUpdate({ status: "published" })}>
@@ -493,9 +593,18 @@ function CanonicalFieldRow({
             <Button variant="ghost" size="sm" className="h-6 text-[10px] px-2.5 gap-1 text-muted-foreground" onClick={() => onUpdate({ status: "pending" })}>Undo</Button>
           )}
           {decision.status !== "approved" && onRegenerateItem && (
-            <Button variant="ghost" size="sm" className="h-6 text-[10px] px-2.5 gap-1 text-muted-foreground ml-auto" onClick={handleRegenSingle} disabled={regenerating}>
-              <RefreshCw className={`w-3 h-3 ${regenerating ? "animate-spin" : ""}`} /> New Suggestion
-            </Button>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="ghost" size="sm" className="h-6 text-[10px] px-2.5 gap-1 text-muted-foreground ml-auto" onClick={handleRegenSingle} disabled={regenerating}>
+                    <RefreshCw className={`w-3 h-3 ${regenerating ? "animate-spin" : ""}`} /> New Suggestion
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="top" className="max-w-[200px] text-xs">
+                  Re-analyzes the page. If canonical is already correct, the same URL will be suggested.
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           )}
         </div>
       )}
@@ -503,9 +612,28 @@ function CanonicalFieldRow({
       {!suggested && current && (
         <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
           <CheckCircle2 className="w-3 h-3 text-primary" />
-          Canonical tag looks good
+          Canonical tag looks good — no changes recommended
         </div>
       )}
+
+      {/* Verify live button for any state */}
+      <div className="flex items-center gap-2 pt-1">
+        <Button variant="outline" size="sm" className="h-6 text-[10px] px-2.5 gap-1" onClick={handleVerifyLive} disabled={verifying}>
+          <Globe className={`w-3 h-3 ${verifying ? "animate-spin" : ""}`} />
+          {verifying ? "Checking…" : "Verify Live"}
+        </Button>
+        {verifyResult && (
+          verifyResult.found ? (
+            <span className="text-[10px] text-primary flex items-center gap-1">
+              <CheckCircle2 className="w-3 h-3" /> Found: <code className="font-mono truncate max-w-[200px]">{verifyResult.value}</code>
+            </span>
+          ) : (
+            <span className="text-[10px] text-destructive flex items-center gap-1">
+              <XCircle className="w-3 h-3" /> Not detected
+            </span>
+          )
+        )}
+      </div>
     </div>
   );
 }
