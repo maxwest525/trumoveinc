@@ -15,7 +15,7 @@ import {
   Search, Sparkles, Globe, CheckCircle2, AlertCircle, Loader2,
   Download, ChevronDown, ChevronUp, RefreshCw, ScanSearch, Link2,
   AlertTriangle, CircleCheck, Filter, XCircle, EyeOff, Expand,
-  BarChart3, ExternalLink, Shield,
+  BarChart3, ExternalLink, Shield, HelpCircle,
 } from "lucide-react";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -106,11 +106,13 @@ export default function MarketingSEO() {
     setRefreshingStatus(false);
   }, [checkConnections]);
 
-  // Phase statuses — Crawl/Audit is always active (built-in)
+  // Phase statuses — Phase 1 is a pizza tracker (not_started → in_progress → completed)
+  const phase1Status = analyzing || discovering ? "in_progress" : auditPages.length > 0 ? "completed" : "not_started";
+
   const phases: PhaseInfo[] = [
-    { id: 1, label: "Crawl / Audit", status: "connected", lastSync: auditPages.length > 0 ? new Date().toISOString() : null },
-    { id: 2, label: "Search Console", status: gscConnected ? "connected" : "not_connected" },
-    { id: 3, label: "GA4", status: ga4Connected ? "connected" : "not_connected" },
+    { id: 1, label: "Crawl / Audit", status: phase1Status, lastSync: auditPages.length > 0 ? new Date().toISOString() : null },
+    { id: 2, label: "Search Console", status: gscConnected ? "connected" : "not_connected", integrationName: "Google Search Console", helpUrl: "https://search.google.com/search-console/about" },
+    { id: 3, label: "GA4", status: ga4Connected ? "connected" : "not_connected", integrationName: "Google Analytics 4", helpUrl: "https://analytics.google.com" },
     { id: 4, label: "Backlinks", status: "coming_soon" },
   ];
 
@@ -133,17 +135,22 @@ export default function MarketingSEO() {
   };
 
   const phaseStatusBadgeVariant = (status: PhaseInfo["status"]) => {
-    if (status === "connected" || status === "syncing") return "default";
+    if (status === "completed" || status === "connected") return "default";
+    if (status === "in_progress" || status === "syncing") return "default";
     if (status === "error") return "destructive";
     if (status === "coming_soon") return "outline";
+    if (status === "not_started") return "secondary";
     return "secondary";
   };
 
-  const phaseStatusLabel = (status: PhaseInfo["status"]) => {
-    if (status === "connected") return "Connected";
-    if (status === "syncing") return "Syncing";
-    if (status === "error") return "Error";
-    if (status === "coming_soon") return "Coming Soon";
+  const phaseStatusLabel = (phase: PhaseInfo) => {
+    if (phase.status === "completed") return "✓ Completed";
+    if (phase.status === "in_progress") return "In Progress…";
+    if (phase.status === "not_started") return "Not Started";
+    if (phase.status === "connected") return `Connected`;
+    if (phase.status === "syncing") return "Syncing";
+    if (phase.status === "error") return "Error";
+    if (phase.status === "coming_soon") return "Coming Soon";
     return "Not Connected";
   };
 
@@ -589,6 +596,7 @@ export default function MarketingSEO() {
           <TabsList className="grid h-auto w-full grid-cols-1 gap-2 bg-transparent p-0 md:grid-cols-2 xl:grid-cols-4">
             {Object.entries(phaseMeta).map(([value, meta], index) => {
               const Icon = meta.icon;
+              const phase = phases[index];
               return (
                 <TabsTrigger
                   key={value}
@@ -604,11 +612,29 @@ export default function MarketingSEO() {
                       <div>
                         <p className="text-sm font-semibold text-foreground">{meta.title}</p>
                         <p className="text-xs text-muted-foreground">{meta.description}</p>
+                        {/* Show integration name when connected */}
+                        {phase.status === "connected" && phase.integrationName && (
+                          <p className="text-[10px] text-primary mt-0.5">{phase.integrationName}</p>
+                        )}
                       </div>
                     </div>
-                    <Badge variant={phaseStatusBadgeVariant(meta.status)} className="text-[10px] shrink-0">
-                      {phaseStatusLabel(meta.status)}
-                    </Badge>
+                    <div className="flex flex-col items-end gap-1 shrink-0">
+                      <Badge variant={phaseStatusBadgeVariant(phase.status)} className="text-[10px]">
+                        {phaseStatusLabel(phase)}
+                      </Badge>
+                      {/* Help link for disconnected integrations */}
+                      {phase.status === "not_connected" && phase.helpUrl && (
+                        <a
+                          href={phase.helpUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-[10px] text-primary hover:underline flex items-center gap-0.5"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <HelpCircle className="w-3 h-3" /> Setup Guide
+                        </a>
+                      )}
+                    </div>
                   </div>
                 </TabsTrigger>
               );

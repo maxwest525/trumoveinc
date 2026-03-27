@@ -12,7 +12,9 @@ interface SeoOverviewStripProps {
 }
 
 export default function SeoOverviewStrip({ totalUrls, totalIssues, phases, onRefresh, refreshing }: SeoOverviewStripProps) {
-  const connectedCount = phases.filter(p => p.status === "connected" || p.status === "syncing").length;
+  // Count integrations (phases 2+) that are connected
+  const integrationPhases = phases.filter(p => p.integrationName);
+  const connectedIntegrations = integrationPhases.filter(p => p.status === "connected" || p.status === "syncing").length;
 
   return (
     <div className="grid grid-cols-3 gap-3">
@@ -38,8 +40,8 @@ export default function SeoOverviewStrip({ totalUrls, totalIssues, phases, onRef
         <CardContent className="p-4 flex items-center gap-3">
           <Link2 className="w-5 h-5 text-primary shrink-0" />
           <div className="flex-1 min-w-0">
-            <p className="text-2xl font-bold text-foreground">{connectedCount}/{phases.length}</p>
-            <p className="text-[11px] text-muted-foreground">Integrations Active</p>
+            <p className="text-2xl font-bold text-foreground">{connectedIntegrations}/{integrationPhases.length}</p>
+            <p className="text-[11px] text-muted-foreground">Integrations Connected</p>
           </div>
           {onRefresh && (
             <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0" onClick={onRefresh} disabled={refreshing}>
