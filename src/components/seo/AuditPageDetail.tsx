@@ -27,6 +27,7 @@ export interface PageDecisions {
   title: FieldDecision;
   description: FieldDecision;
   h1: FieldDecision;
+  canonical: FieldDecision;
   issues: Record<string, FieldDecision>; // keyed by issue text
 }
 
