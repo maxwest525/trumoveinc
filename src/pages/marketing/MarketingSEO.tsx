@@ -568,6 +568,7 @@ export default function MarketingSEO() {
         const override: Record<string, any> = { url_path: urlPath, updated_at: new Date().toISOString() };
         if (finalTitle) override.title = finalTitle;
         if (finalDesc) override.description = finalDesc;
+        if (finalCanonical) override.canonical_url = finalCanonical;
         await supabase.from("seo_overrides" as any).upsert(override as any, { onConflict: "url_path" });
       }
     }
