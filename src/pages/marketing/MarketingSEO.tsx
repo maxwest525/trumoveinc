@@ -530,7 +530,7 @@ export default function MarketingSEO() {
     if (item.isIssue) {
       handleDecisionChange(item.url, { ...d, issues: { ...d.issues, [item.fieldKey]: { ...d.issues[item.fieldKey], status: "published" } } });
     } else {
-      handleDecisionChange(item.url, { ...d, [item.fieldKey]: { ...d[item.fieldKey as "title" | "description" | "h1"], status: "published" } });
+      handleDecisionChange(item.url, { ...d, [item.fieldKey]: { ...d[item.fieldKey as "title" | "description" | "h1" | "canonical"], status: "published" } });
     }
   };
 
