@@ -25,6 +25,12 @@ interface PageAnalysis {
   issueSuggestions: IssueSuggestion[];
   suggestedPrimaryKeyword?: string | null;
   violations?: string[];
+  // Two-pass debug fields
+  rawTitle?: string | null;
+  renderedTitle?: string | null;
+  rawDescription?: string | null;
+  renderedDescription?: string | null;
+  sourceUsed?: "raw" | "rendered";
 }
 
 interface ComplianceSettings {
@@ -371,34 +377,104 @@ Deno.serve(async (req) => {
 
       for (const pageUrl of urlsToAnalyze.slice(0, 10)) {
         try {
+          // Two-pass fetch: rawHtml (Pass A) + rendered html (Pass B) with waitFor
           const scrapeRes = await fetch("https://api.firecrawl.dev/v1/scrape", {
             method: "POST",
             headers: { Authorization: `Bearer ${FIRECRAWL_API_KEY}`, "Content-Type": "application/json" },
-            body: JSON.stringify({ url: pageUrl, formats: ["html"], onlyMainContent: false }),
+            body: JSON.stringify({ url: pageUrl, formats: ["rawHtml", "html"], onlyMainContent: false, waitFor: 3000 }),
           });
           const scrapeData = await scrapeRes.json();
-          const html = scrapeData?.data?.html || scrapeData?.html || "";
+          const rawHtml = scrapeData?.data?.rawHtml || scrapeData?.rawHtml || "";
+          const renderedHtml = scrapeData?.data?.html || scrapeData?.html || "";
 
-          if (!html) {
+          if (!rawHtml && !renderedHtml) {
             results.push({
               url: pageUrl, fetchedTitle: null, fetchedDescription: null, fetchedH1: null,
               fetchedCanonical: null, issues: ["Failed to fetch page content"],
               suggestedTitle: null, suggestedDescription: null, suggestedH1: null,
               aiChecklist: [], issueSuggestions: [], violations: [],
+              rawTitle: null, renderedTitle: null, rawDescription: null, renderedDescription: null, sourceUsed: "raw",
             });
             continue;
           }
 
-          const parsed = parseHtml(html, pageUrl);
+          // Parse both passes
+          const rawParsed = rawHtml ? parseHtml(rawHtml, pageUrl) : null;
+          const renderedParsed = renderedHtml ? parseHtml(renderedHtml, pageUrl) : null;
+
+          // Decide source: use rendered when raw is missing critical tags
+          const rawHasCritical = !!(rawParsed?.fetchedTitle || rawParsed?.fetchedDescription);
+          const renderedHasCritical = !!(renderedParsed?.fetchedTitle || renderedParsed?.fetchedDescription);
+
+          let sourceUsed: "raw" | "rendered" = "raw";
+          let finalParsed = rawParsed || renderedParsed!;
+
+          if (!rawHasCritical && renderedHasCritical) {
+            // Raw is empty but rendered has data — use rendered
+            sourceUsed = "rendered";
+            finalParsed = renderedParsed!;
+          } else if (rawParsed && renderedParsed) {
+            // Merge: fill in any raw gaps with rendered values
+            if (!rawParsed.fetchedTitle && renderedParsed.fetchedTitle) {
+              finalParsed = { ...finalParsed, fetchedTitle: renderedParsed.fetchedTitle };
+              sourceUsed = "rendered";
+            }
+            if (!rawParsed.fetchedDescription && renderedParsed.fetchedDescription) {
+              finalParsed = { ...finalParsed, fetchedDescription: renderedParsed.fetchedDescription };
+              sourceUsed = "rendered";
+            }
+            if (!rawParsed.fetchedH1 && renderedParsed.fetchedH1) {
+              finalParsed = { ...finalParsed, fetchedH1: renderedParsed.fetchedH1 };
+              sourceUsed = "rendered";
+            }
+            if (!rawParsed.fetchedCanonical && renderedParsed.fetchedCanonical) {
+              finalParsed = { ...finalParsed, fetchedCanonical: renderedParsed.fetchedCanonical };
+            }
+          }
+
+          // Re-compute issues based on the final merged data
+          const recomputedIssues: string[] = [];
+          if (!finalParsed.fetchedTitle) {
+            recomputedIssues.push("Missing title tag");
+          } else {
+            if (finalParsed.fetchedTitle.length < 30) recomputedIssues.push(`Title too short (${finalParsed.fetchedTitle.length} chars, aim 50–60)`);
+            if (finalParsed.fetchedTitle.length > 70) recomputedIssues.push(`Title too long (${finalParsed.fetchedTitle.length} chars, aim 50–60)`);
+          }
+          if (!finalParsed.fetchedDescription) {
+            recomputedIssues.push("Missing meta description");
+          } else {
+            if (finalParsed.fetchedDescription.length < 100) recomputedIssues.push(`Meta description too short (${finalParsed.fetchedDescription.length} chars, aim 150–160)`);
+            if (finalParsed.fetchedDescription.length > 170) recomputedIssues.push(`Meta description too long (${finalParsed.fetchedDescription.length} chars, aim 150–160)`);
+          }
+          if (!finalParsed.fetchedH1) recomputedIssues.push("Missing H1 heading");
+          // Check multiple H1s in the source that was used
+          const sourceHtml = sourceUsed === "rendered" ? renderedHtml : rawHtml;
+          const h1All = sourceHtml.match(/<h1[^>]*>/gi);
+          if (h1All && h1All.length > 1) recomputedIssues.push(`Multiple H1 tags found (${h1All.length})`);
+          if (!finalParsed.fetchedCanonical) recomputedIssues.push("Missing canonical tag");
+
+          finalParsed.issues = recomputedIssues;
+
+          // Add debug fields
+          const debugFields = {
+            rawTitle: rawParsed?.fetchedTitle || null,
+            renderedTitle: renderedParsed?.fetchedTitle || null,
+            rawDescription: rawParsed?.fetchedDescription || null,
+            renderedDescription: renderedParsed?.fetchedDescription || null,
+            sourceUsed,
+          };
+
+          console.log(`[${pageUrl}] source=${sourceUsed} rawTitle=${debugFields.rawTitle} renderedTitle=${debugFields.renderedTitle}`);
 
           try {
-            const ai = await getAiSuggestions(parsed, LOVABLE_API_KEY, compliance);
-            results.push({ ...parsed, ...ai });
+            const ai = await getAiSuggestions(finalParsed, LOVABLE_API_KEY, compliance);
+            results.push({ ...finalParsed, ...ai, ...debugFields });
           } catch (aiErr) {
             console.error("AI error for", pageUrl, aiErr);
             results.push({
-              ...parsed, suggestedTitle: null, suggestedDescription: null,
+              ...finalParsed, suggestedTitle: null, suggestedDescription: null,
               suggestedH1: null, aiChecklist: [], issueSuggestions: [], violations: [],
+              ...debugFields,
             });
           }
         } catch (err) {
@@ -408,6 +484,7 @@ Deno.serve(async (req) => {
             fetchedCanonical: null, issues: [`Fetch failed: ${err instanceof Error ? err.message : "Unknown error"}`],
             suggestedTitle: null, suggestedDescription: null, suggestedH1: null,
             aiChecklist: [], issueSuggestions: [], violations: [],
+            rawTitle: null, renderedTitle: null, rawDescription: null, renderedDescription: null, sourceUsed: "raw" as const,
           });
         }
       }

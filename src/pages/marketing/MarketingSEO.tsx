@@ -48,6 +48,12 @@ interface AuditPage {
   aiChecklist: string[];
   issueSuggestions: IssueSuggestion[];
   violations?: string[];
+  // Two-pass debug fields
+  rawTitle?: string | null;
+  renderedTitle?: string | null;
+  rawDescription?: string | null;
+  renderedDescription?: string | null;
+  sourceUsed?: "raw" | "rendered";
 }
 
 const defaultDecisions = (): PageDecisions => ({
@@ -798,6 +804,9 @@ export default function MarketingSEO() {
                                         <div className="flex items-center gap-1.5">
                                           {expandedUrl === page.url ? <ChevronUp className="w-3 h-3 shrink-0 text-muted-foreground" /> : <ChevronDown className="w-3 h-3 shrink-0 text-muted-foreground" />}
                                           <p className="font-mono text-xs truncate min-w-0">{page.url.replace("https://trumoveinc.com", "") || "/"}</p>
+                                          {page.sourceUsed === "rendered" && (
+                                            <Badge variant="outline" className="text-[9px] bg-blue-500/10 text-blue-600 border-blue-300 shrink-0">Rendered</Badge>
+                                          )}
                                         </div>
                                       </TableCell>
                                       <TableCell>

@@ -42,6 +42,11 @@ interface AuditPage {
   suggestedH1: string | null;
   aiChecklist: string[];
   issueSuggestions: IssueSuggestion[];
+  rawTitle?: string | null;
+  renderedTitle?: string | null;
+  rawDescription?: string | null;
+  renderedDescription?: string | null;
+  sourceUsed?: "raw" | "rendered";
 }
 
 interface Props {
