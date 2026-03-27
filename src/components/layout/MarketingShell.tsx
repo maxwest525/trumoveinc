@@ -13,6 +13,7 @@ import ShellBreadcrumbs, { type BreadcrumbSegment } from "@/components/layout/Sh
 import logoImg from "@/assets/logo.png";
 
 const NAV_ITEMS = [
+  { label: "Dashboard", icon: Home, href: "/marketing/dashboard" },
   { label: "Email & SMS Templates", icon: FileText, href: "/marketing/templates" },
   { label: "SEO Module", icon: Search, href: "/marketing/seo" },
 ];
