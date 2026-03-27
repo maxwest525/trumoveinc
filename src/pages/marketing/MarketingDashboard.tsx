@@ -58,33 +58,19 @@ function KpiCard({ title, value, change, icon: Icon, prefix }: KpiCardProps) {
 }
 
 export default function MarketingDashboard() {
-  const [range, setRange] = useState<"7d" | "30d" | "90d" | "mtd" | "custom">("30d");
-  const [customRange, setCustomRange] = useState<DateRange | undefined>();
+  const [dateRange, setDateRange] = useState<DateRange | undefined>({
+    from: subDays(new Date(), 30),
+    to: new Date(),
+  });
   const now = new Date();
 
-  const rangeStart = useMemo(() => {
-    if (range === "custom" && customRange?.from) return customRange.from;
-    if (range === "7d") return subDays(now, 7);
-    if (range === "30d") return subDays(now, 30);
-    if (range === "90d") return subDays(now, 90);
-    return startOfMonth(now);
-  }, [range, customRange]);
+  const rangeStart = useMemo(() => dateRange?.from ?? subDays(now, 30), [dateRange]);
+  const rangeEnd = useMemo(() => dateRange?.to ?? now, [dateRange]);
 
   const prevRangeStart = useMemo(() => {
-    if (range === "custom" && customRange?.from && customRange?.to) {
-      const span = differenceInDays(customRange.to, customRange.from) || 1;
-      return subDays(customRange.from, span);
-    }
-    if (range === "7d") return subDays(now, 14);
-    if (range === "30d") return subDays(now, 60);
-    if (range === "90d") return subDays(now, 180);
-    return startOfMonth(subMonths(now, 1));
-  }, [range, customRange]);
-
-  const rangeEnd = useMemo(() => {
-    if (range === "custom" && customRange?.to) return customRange.to;
-    return now;
-  }, [range, customRange]);
+    const span = differenceInDays(rangeEnd, rangeStart) || 1;
+    return subDays(rangeStart, span);
+  }, [rangeStart, rangeEnd]);
 
   const rangeStartIso = rangeStart.toISOString();
   const rangeEndIso = rangeEnd.toISOString();
