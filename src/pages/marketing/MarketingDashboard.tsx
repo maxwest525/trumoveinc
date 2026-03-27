@@ -255,27 +255,48 @@ export default function MarketingDashboard() {
               High-level KPIs across all channels — updated daily.
             </p>
           </div>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline" size="sm" className={cn("h-8 text-xs gap-1.5 px-3")}>
-                <CalendarIcon className="w-3.5 h-3.5" />
-                {dateRange?.from
-                  ? `${format(dateRange.from, "MMM d, yyyy")}${dateRange.to ? ` – ${format(dateRange.to, "MMM d, yyyy")}` : ""}`
-                  : "Select dates"}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="end">
-              <Calendar
-                mode="range"
-                selected={dateRange}
-                onSelect={setDateRange}
-                numberOfMonths={2}
-                disabled={(date) => date > new Date()}
-                initialFocus
-                className={cn("p-3 pointer-events-auto")}
-              />
-            </PopoverContent>
-          </Popover>
+          <div className="flex items-center gap-2">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" size="sm" className="h-8 text-xs gap-1.5 px-3">
+                  <Settings2 className="w-3.5 h-3.5" />
+                  Customize
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-56 p-3" align="end">
+                <p className="text-xs font-semibold text-foreground mb-3">Show / Hide Widgets</p>
+                <div className="space-y-2.5">
+                  {(Object.keys(widgetLabels) as (keyof WidgetVisibility)[]).map((key) => (
+                    <div key={key} className="flex items-center justify-between">
+                      <Label htmlFor={`w-${key}`} className="text-xs text-muted-foreground cursor-pointer">{widgetLabels[key]}</Label>
+                      <Switch id={`w-${key}`} checked={widgets[key]} onCheckedChange={() => toggleWidget(key)} className="scale-75" />
+                    </div>
+                  ))}
+                </div>
+              </PopoverContent>
+            </Popover>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" size="sm" className={cn("h-8 text-xs gap-1.5 px-3")}>
+                  <CalendarIcon className="w-3.5 h-3.5" />
+                  {dateRange?.from
+                    ? `${format(dateRange.from, "MMM d, yyyy")}${dateRange.to ? ` – ${format(dateRange.to, "MMM d, yyyy")}` : ""}`
+                    : "Select dates"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="end">
+                <Calendar
+                  mode="range"
+                  selected={dateRange}
+                  onSelect={setDateRange}
+                  numberOfMonths={2}
+                  disabled={(date) => date > new Date()}
+                  initialFocus
+                  className={cn("p-3 pointer-events-auto")}
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
         </div>
 
         {/* KPI Strip */}
