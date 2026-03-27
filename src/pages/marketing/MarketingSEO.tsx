@@ -286,7 +286,8 @@ export default function MarketingSEO() {
 
     const anyApproved = ["approved", "edited", "published"].includes(d.title.status) ||
       ["approved", "edited", "published"].includes(d.description.status) ||
-      ["approved", "edited", "published"].includes(d.h1.status);
+      ["approved", "edited", "published"].includes(d.h1.status) ||
+      ["approved", "edited", "published"].includes(d.canonical.status);
     if (anyApproved) updates.status = "approved";
 
     if (Object.keys(updates).length > 0) {
@@ -303,30 +304,17 @@ export default function MarketingSEO() {
       ? (d.description.editedValue || page.suggestedDescription)
       : null;
 
-    // Resolve canonical: check if a canonical issue was approved/published
+    // Resolve canonical from the canonical field decision
     let finalCanonical: string | null = null;
-    const canonicalIssueKey = Object.keys(d.issues || {}).find(k => k.toLowerCase().includes("canonical"));
-    if (canonicalIssueKey) {
-      const canonicalDecision = d.issues[canonicalIssueKey];
-      if (canonicalDecision.status === "published" || canonicalDecision.status === "approved") {
-        const rawVal = canonicalDecision.editedValue || page.issueSuggestions?.find(s => s.issue === canonicalIssueKey)?.suggestion || page.suggestedCanonical;
-        // Validate it's a URL, not prose
-        if (rawVal) {
-          try {
-            const parsed = new URL(rawVal);
-            if (parsed.protocol === "https:" || parsed.protocol === "http:") finalCanonical = parsed.href;
-          } catch {
-            // Not a URL — use suggestedCanonical from AI
-            if (page.suggestedCanonical) finalCanonical = page.suggestedCanonical;
-          }
+    if (d.canonical.status === "published") {
+      const rawVal = d.canonical.editedValue || page.suggestedCanonical;
+      if (rawVal) {
+        try {
+          const parsed = new URL(rawVal);
+          if (parsed.protocol === "https:" || parsed.protocol === "http:") finalCanonical = parsed.href;
+        } catch {
+          if (page.suggestedCanonical) finalCanonical = page.suggestedCanonical;
         }
-      }
-    }
-    // Also check if suggestedCanonical was set and page had missing canonical
-    if (!finalCanonical && page.suggestedCanonical && page.issues.some(i => i.toLowerCase().includes("canonical"))) {
-      // Auto-use suggestedCanonical if any canonical issue was approved
-      if (canonicalIssueKey && ["approved", "published"].includes(d.issues[canonicalIssueKey]?.status)) {
-        finalCanonical = page.suggestedCanonical;
       }
     }
 
