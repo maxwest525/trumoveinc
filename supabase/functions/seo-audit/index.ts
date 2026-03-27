@@ -269,10 +269,23 @@ REMINDER: Do NOT use any of these words: ${compliance.forbiddenTerms.join(", ")}
     return getAiSuggestions(page, apiKey, compliance, attempt + 1);
   }
 
+  // Validate suggestedCanonical is actually a URL, not prose
+  let suggestedCanonical: string | null = result.suggestedCanonical || null;
+  if (suggestedCanonical) {
+    try {
+      const parsed = new URL(suggestedCanonical);
+      if (parsed.protocol !== "https:" && parsed.protocol !== "http:") suggestedCanonical = null;
+    } catch {
+      // It's prose, not a URL — derive from the page URL instead
+      try { suggestedCanonical = new URL(page.url).href.replace(/\/$/, ""); } catch { suggestedCanonical = null; }
+    }
+  }
+
   return {
     suggestedTitle: result.suggestedTitle,
     suggestedDescription: result.suggestedDescription,
     suggestedH1: result.suggestedH1,
+    suggestedCanonical,
     aiChecklist: result.checklist || [],
     issueSuggestions: result.issueSuggestions || [],
     suggestedPrimaryKeyword: result.suggestedPrimaryKeyword || null,
