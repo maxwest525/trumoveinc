@@ -114,7 +114,16 @@ export default function MarketingSEO() {
     { id: 4, label: "Backlinks", status: "coming_soon" },
   ];
 
-  const totalIssues = auditPages.reduce((sum, p) => sum + (p.issues?.length || 0), 0);
+  // Compute weighted scores for all pages
+  const pageScores = useMemo(() => {
+    const scoreMap: Record<string, PageScore> = {};
+    auditPages.forEach((page) => {
+      scoreMap[page.url] = scorePage(page, auditPages);
+    });
+    return scoreMap;
+  }, [auditPages]);
+
+  const totalIssues = Object.values(pageScores).reduce((sum, s) => sum + s.issue_count, 0);
 
   const phaseMeta: Record<string, { icon: typeof ScanSearch; title: string; description: string; status: PhaseInfo["status"] }> = {
     phase1: { icon: ScanSearch, title: "Crawl / Audit", description: "Discover pages and audit metadata.", status: phases[0].status },
