@@ -445,11 +445,14 @@ export default function MarketingSEO() {
   const pagesWithIssues = auditPages.filter(p => issueCount(p) > 0);
   const pagesOk = auditPages.filter(p => issueCount(p) === 0);
 
-  const filteredPages = filterMode === "issues"
-    ? pagesWithIssues
-    : filterMode === "ok"
-      ? pagesOk
-      : [...pagesWithIssues, ...pagesOk];
+  const filteredPages = useMemo(() => {
+    const base = filterMode === "issues"
+      ? pagesWithIssues
+      : filterMode === "ok"
+        ? pagesOk
+        : [...pagesWithIssues, ...pagesOk];
+    return base.sort((a, b) => (pageScores[b.url]?.weighted_score || 0) - (pageScores[a.url]?.weighted_score || 0));
+  }, [filterMode, pagesWithIssues, pagesOk, pageScores]);
 
   // Sidebar items
   const sidebarItems: SidebarItem[] = auditPages.flatMap((page) => {
