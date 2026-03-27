@@ -595,7 +595,8 @@ export default function MarketingSEO() {
         await supabase.from("seo_overrides" as any).delete().eq("url_path", urlPath);
       } else {
         const nullUpdate: Record<string, any> = { updated_at: new Date().toISOString() };
-        nullUpdate[item.fieldKey] = null;
+        const dbCol = item.fieldKey === "canonical" ? "canonical_url" : item.fieldKey;
+        nullUpdate[dbCol] = null;
         await supabase.from("seo_overrides" as any).update(nullUpdate as any).eq("url_path", urlPath);
       }
 
