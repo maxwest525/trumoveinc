@@ -61,11 +61,12 @@ const defaultDecisions = (): PageDecisions => ({
   title: { status: "pending" },
   description: { status: "pending" },
   h1: { status: "pending" },
+  canonical: { status: "pending" },
   issues: {},
 });
 
 type FilterMode = "all" | "issues" | "ok";
-type SidebarItem = { url: string; field: string; fieldKey: "title" | "description" | "h1" | string; value: string; status: FieldStatus; isIssue: boolean };
+type SidebarItem = { url: string; field: string; fieldKey: "title" | "description" | "h1" | "canonical" | string; value: string; status: FieldStatus; isIssue: boolean };
 
 export default function MarketingSEO() {
   const [singleUrl, setSingleUrl] = useState("");
@@ -285,7 +286,8 @@ export default function MarketingSEO() {
 
     const anyApproved = ["approved", "edited", "published"].includes(d.title.status) ||
       ["approved", "edited", "published"].includes(d.description.status) ||
-      ["approved", "edited", "published"].includes(d.h1.status);
+      ["approved", "edited", "published"].includes(d.h1.status) ||
+      ["approved", "edited", "published"].includes(d.canonical.status);
     if (anyApproved) updates.status = "approved";
 
     if (Object.keys(updates).length > 0) {
@@ -302,30 +304,17 @@ export default function MarketingSEO() {
       ? (d.description.editedValue || page.suggestedDescription)
       : null;
 
-    // Resolve canonical: check if a canonical issue was approved/published
+    // Resolve canonical from the canonical field decision
     let finalCanonical: string | null = null;
-    const canonicalIssueKey = Object.keys(d.issues || {}).find(k => k.toLowerCase().includes("canonical"));
-    if (canonicalIssueKey) {
-      const canonicalDecision = d.issues[canonicalIssueKey];
-      if (canonicalDecision.status === "published" || canonicalDecision.status === "approved") {
-        const rawVal = canonicalDecision.editedValue || page.issueSuggestions?.find(s => s.issue === canonicalIssueKey)?.suggestion || page.suggestedCanonical;
-        // Validate it's a URL, not prose
-        if (rawVal) {
-          try {
-            const parsed = new URL(rawVal);
-            if (parsed.protocol === "https:" || parsed.protocol === "http:") finalCanonical = parsed.href;
-          } catch {
-            // Not a URL — use suggestedCanonical from AI
-            if (page.suggestedCanonical) finalCanonical = page.suggestedCanonical;
-          }
+    if (d.canonical.status === "published") {
+      const rawVal = d.canonical.editedValue || page.suggestedCanonical;
+      if (rawVal) {
+        try {
+          const parsed = new URL(rawVal);
+          if (parsed.protocol === "https:" || parsed.protocol === "http:") finalCanonical = parsed.href;
+        } catch {
+          if (page.suggestedCanonical) finalCanonical = page.suggestedCanonical;
         }
-      }
-    }
-    // Also check if suggestedCanonical was set and page had missing canonical
-    if (!finalCanonical && page.suggestedCanonical && page.issues.some(i => i.toLowerCase().includes("canonical"))) {
-      // Auto-use suggestedCanonical if any canonical issue was approved
-      if (canonicalIssueKey && ["approved", "published"].includes(d.issues[canonicalIssueKey]?.status)) {
-        finalCanonical = page.suggestedCanonical;
       }
     }
 
@@ -473,7 +462,7 @@ export default function MarketingSEO() {
   const getPageStatus = (url: string) => {
     const d = decisions[url];
     if (!d) return "pending";
-    const statuses = [d.title.status, d.description.status, d.h1.status, ...Object.values(d.issues || {}).map(v => v.status)];
+    const statuses = [d.title.status, d.description.status, d.h1.status, d.canonical.status, ...Object.values(d.issues || {}).map(v => v.status)];
     if (statuses.every((s) => s === "ignored" || s === "published")) return "ignored";
     if (statuses.some((s) => s === "approved" || s === "edited")) return "actioned";
     if (statuses.some((s) => s === "published")) return "actioned";
@@ -510,10 +499,11 @@ export default function MarketingSEO() {
     const d = decisions[page.url];
     if (!d) return [];
     const items: SidebarItem[] = [];
-    const fields: Array<{ key: "title" | "description" | "h1"; label: string; suggested: string | null }> = [
+    const fields: Array<{ key: "title" | "description" | "h1" | "canonical"; label: string; suggested: string | null }> = [
       { key: "title", label: "Title", suggested: page.suggestedTitle },
       { key: "description", label: "Description", suggested: page.suggestedDescription },
       { key: "h1", label: "H1", suggested: page.suggestedH1 },
+      { key: "canonical", label: "Canonical", suggested: page.suggestedCanonical },
     ];
     fields.forEach(({ key, label, suggested }) => {
       const fd = d[key];
@@ -540,7 +530,7 @@ export default function MarketingSEO() {
     if (item.isIssue) {
       handleDecisionChange(item.url, { ...d, issues: { ...d.issues, [item.fieldKey]: { ...d.issues[item.fieldKey], status: "published" } } });
     } else {
-      handleDecisionChange(item.url, { ...d, [item.fieldKey]: { ...d[item.fieldKey as "title" | "description" | "h1"], status: "published" } });
+      handleDecisionChange(item.url, { ...d, [item.fieldKey]: { ...d[item.fieldKey as "title" | "description" | "h1" | "canonical"], status: "published" } });
     }
   };
 
@@ -552,7 +542,7 @@ export default function MarketingSEO() {
       if (item.isIssue) {
         updatedDecisions[item.url] = { ...d, issues: { ...d.issues, [item.fieldKey]: { ...d.issues[item.fieldKey], status: "published" as const } } };
       } else {
-        updatedDecisions[item.url] = { ...d, [item.fieldKey]: { ...d[item.fieldKey as "title" | "description" | "h1"], status: "published" as const } };
+        updatedDecisions[item.url] = { ...d, [item.fieldKey]: { ...d[item.fieldKey as "title" | "description" | "h1" | "canonical"], status: "published" as const } };
       }
     }
     setDecisions(updatedDecisions);
@@ -565,14 +555,20 @@ export default function MarketingSEO() {
 
       const finalTitle = d.title.status === "published" ? (d.title.editedValue || page.suggestedTitle) : null;
       const finalDesc = d.description.status === "published" ? (d.description.editedValue || page.suggestedDescription) : null;
+      let finalCanonical: string | null = null;
+      if (d.canonical.status === "published") {
+        const rawVal = d.canonical.editedValue || page.suggestedCanonical;
+        if (rawVal) { try { finalCanonical = new URL(rawVal).href; } catch {} }
+      }
 
-      if (finalTitle || finalDesc) {
+      if (finalTitle || finalDesc || finalCanonical) {
         let rawPath = "/";
         try { rawPath = new URL(url).pathname; } catch {}
         const urlPath = rawPath === "/" ? "/site" : `/site${rawPath}`;
         const override: Record<string, any> = { url_path: urlPath, updated_at: new Date().toISOString() };
         if (finalTitle) override.title = finalTitle;
         if (finalDesc) override.description = finalDesc;
+        if (finalCanonical) override.canonical_url = finalCanonical;
         await supabase.from("seo_overrides" as any).upsert(override as any, { onConflict: "url_path" });
       }
     }
@@ -588,18 +584,19 @@ export default function MarketingSEO() {
       try { rawPath = new URL(item.url).pathname; } catch {}
       const urlPath = rawPath === "/" ? "/site" : `/site${rawPath}`;
 
-      const updatedField = { ...d[item.fieldKey as "title" | "description" | "h1"], status: "approved" as const };
+      const updatedField = { ...d[item.fieldKey as "title" | "description" | "h1" | "canonical"], status: "approved" as const };
       const newD = { ...d, [item.fieldKey]: updatedField };
 
-      const stillPublished = ["title", "description", "h1"].some(
-        f => f !== item.fieldKey && newD[f as "title" | "description" | "h1"].status === "published"
+      const stillPublished = ["title", "description", "h1", "canonical"].some(
+        f => f !== item.fieldKey && newD[f as "title" | "description" | "h1" | "canonical"].status === "published"
       );
 
       if (!stillPublished) {
         await supabase.from("seo_overrides" as any).delete().eq("url_path", urlPath);
       } else {
         const nullUpdate: Record<string, any> = { updated_at: new Date().toISOString() };
-        nullUpdate[item.fieldKey] = null;
+        const dbCol = item.fieldKey === "canonical" ? "canonical_url" : item.fieldKey;
+        nullUpdate[dbCol] = null;
         await supabase.from("seo_overrides" as any).update(nullUpdate as any).eq("url_path", urlPath);
       }
 

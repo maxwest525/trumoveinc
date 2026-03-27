@@ -27,6 +27,7 @@ export interface PageDecisions {
   title: FieldDecision;
   description: FieldDecision;
   h1: FieldDecision;
+  canonical: FieldDecision;
   issues: Record<string, FieldDecision>; // keyed by issue text
 }
 
@@ -354,6 +355,161 @@ function FieldRow({
   );
 }
 
+/* ─── Canonical field row (URL-specific validation) ─── */
+function CanonicalFieldRow({
+  current, suggested, pageUrl, decision, onUpdate, onRegenerateItem,
+}: {
+  current: string | null; suggested: string | null; pageUrl: string;
+  decision: FieldDecision; onUpdate: (d: FieldDecision) => void;
+  onRegenerateItem?: () => Promise<void>;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(decision.editedValue || suggested || "");
+  const [regenerating, setRegenerating] = useState(false);
+
+  const finalValue = decision.status === "edited" ? decision.editedValue : suggested;
+
+  const validate = (url: string | null | undefined) => {
+    if (!url) return { valid: false, label: "Missing" };
+    try {
+      const parsed = new URL(url);
+      const pageHost = new URL(pageUrl).hostname;
+      if (parsed.protocol !== "https:") return { valid: false, label: "Not HTTPS" };
+      if (parsed.hostname !== pageHost) return { valid: false, label: "Domain mismatch" };
+      return { valid: true, label: "Valid" };
+    } catch { return { valid: false, label: "Invalid URL" }; }
+  };
+
+  const currentValid = validate(current);
+  const suggestedValid = validate(finalValue);
+
+  const handleApprove = () => { onUpdate({ status: "approved" }); setEditing(false); };
+  const handleIgnore = () => { onUpdate({ status: "ignored" }); setEditing(false); };
+  const handleSaveEdit = () => { onUpdate({ status: "edited", editedValue: draft }); setEditing(false); };
+  const handleStartEdit = () => { setDraft(decision.editedValue || suggested || ""); setEditing(true); };
+  const handleRegenSingle = async () => {
+    if (!onRegenerateItem) return;
+    setRegenerating(true);
+    await onRegenerateItem();
+    setRegenerating(false);
+  };
+
+  if (decision.status === "published") return null;
+
+  if (decision.status === "ignored") {
+    return (
+      <div className="rounded-lg border border-border bg-muted/20 p-3 opacity-60">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <StatusIcon status="ignored" />
+            <span className="text-xs font-semibold text-muted-foreground">Canonical Tag</span>
+            <Badge variant="secondary" className="text-[10px]">Ignored</Badge>
+          </div>
+          <Button variant="ghost" size="sm" className="h-6 text-[10px] px-2" onClick={() => onUpdate({ status: "pending" })}>Undo</Button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={`rounded-lg border p-3 space-y-2.5 ${
+      decision.status === "approved" ? "border-primary/30 bg-primary/5" :
+      decision.status === "edited" ? "border-amber-500/30 bg-amber-500/5" :
+      "border-border bg-background"
+    }`}>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <StatusIcon status={decision.status} />
+          <span className="text-xs font-semibold text-foreground">Canonical Tag</span>
+          {decision.status !== "pending" && (
+            <Badge variant={decision.status === "approved" ? "default" : "secondary"} className="text-[10px]">
+              {decision.status === "approved" ? "Approved" : "Edited"}
+            </Badge>
+          )}
+        </div>
+      </div>
+
+      <div className="space-y-1">
+        <div className="flex items-center gap-1.5">
+          <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">Current</span>
+          <Badge variant={currentValid.valid ? "default" : "destructive"} className="text-[9px] h-4 px-1.5">
+            {currentValid.label}
+          </Badge>
+        </div>
+        <div className="text-xs text-foreground font-mono bg-muted/40 rounded px-2.5 py-1.5 border border-border/50">
+          {current || <span className="text-destructive italic">Not set</span>}
+        </div>
+      </div>
+
+      {suggested && (
+        <div className="space-y-1">
+          <div className="flex items-center gap-1.5">
+            <span className="text-[10px] font-medium text-primary uppercase tracking-wide">
+              {decision.status === "edited" ? "Your Edit" : "AI Suggestion"}
+            </span>
+            <Badge variant={suggestedValid.valid ? "default" : "destructive"} className="text-[9px] h-4 px-1.5">
+              {suggestedValid.label}
+            </Badge>
+          </div>
+          {editing ? (
+            <div className="space-y-1.5">
+              <Input value={draft} onChange={(e) => setDraft(e.target.value)} className="text-xs font-mono h-8" placeholder="https://..." />
+              <div className="flex gap-1 ml-auto justify-end">
+                <Button variant="ghost" size="sm" className="h-6 text-[10px] px-2" onClick={() => setEditing(false)}>Cancel</Button>
+                <Button size="sm" className="h-6 text-[10px] px-2" onClick={handleSaveEdit}>Save</Button>
+              </div>
+            </div>
+          ) : (
+            <div className="text-xs text-foreground font-mono bg-primary/5 rounded px-2.5 py-1.5 border border-primary/10">
+              {finalValue}
+            </div>
+          )}
+        </div>
+      )}
+
+      {!editing && suggested && (
+        <div className="flex items-center gap-1.5 pt-0.5">
+          {decision.status === "approved" && (
+            <Button variant="default" size="sm" className="h-6 text-[10px] px-2.5 gap-1" onClick={() => onUpdate({ status: "published" })}>
+              <CheckCircle2 className="w-3 h-3" /> Publish
+            </Button>
+          )}
+          {decision.status !== "approved" && (
+            <Button variant="default" size="sm" className="h-6 text-[10px] px-2.5 gap-1" onClick={handleApprove}>
+              <CheckCircle2 className="w-3 h-3" /> Approve
+            </Button>
+          )}
+          {decision.status !== "approved" && (
+            <Button variant="outline" size="sm" className="h-6 text-[10px] px-2.5 gap-1" onClick={handleStartEdit}>
+              <Pencil className="w-3 h-3" /> Edit
+            </Button>
+          )}
+          {decision.status !== "approved" && (
+            <Button variant="ghost" size="sm" className="h-6 text-[10px] px-2.5 gap-1 text-muted-foreground" onClick={handleIgnore}>
+              <XCircle className="w-3 h-3" /> Ignore
+            </Button>
+          )}
+          {decision.status === "approved" && (
+            <Button variant="ghost" size="sm" className="h-6 text-[10px] px-2.5 gap-1 text-muted-foreground" onClick={() => onUpdate({ status: "pending" })}>Undo</Button>
+          )}
+          {decision.status !== "approved" && onRegenerateItem && (
+            <Button variant="ghost" size="sm" className="h-6 text-[10px] px-2.5 gap-1 text-muted-foreground ml-auto" onClick={handleRegenSingle} disabled={regenerating}>
+              <RefreshCw className={`w-3 h-3 ${regenerating ? "animate-spin" : ""}`} /> New Suggestion
+            </Button>
+          )}
+        </div>
+      )}
+
+      {!suggested && current && (
+        <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
+          <CheckCircle2 className="w-3 h-3 text-primary" />
+          Canonical tag looks good
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function AuditPageDetail({ page, decisions, onDecisionChange, onRegenerate }: Props) {
   const updateField = (field: keyof Omit<PageDecisions, "issues">) => (d: FieldDecision) => {
     onDecisionChange(page.url, { ...decisions, [field]: d });
@@ -442,48 +598,15 @@ export default function AuditPageDetail({ page, decisions, onDecisionChange, onR
         </div>
       )}
 
-      {/* Canonical info */}
-      <div className="rounded-lg border border-border bg-muted/20 p-3 space-y-2">
-        <span className="text-xs font-semibold text-foreground flex items-center gap-1.5">
-          Canonical Tag
-        </span>
-        <div className="space-y-1.5">
-          <div className="flex items-center gap-2 text-xs">
-            <span className="text-muted-foreground font-medium">Current:</span>
-            {page.fetchedCanonical ? (
-              <span className="font-mono truncate text-foreground">{page.fetchedCanonical}</span>
-            ) : (
-              <Badge variant="destructive" className="text-[9px]">Missing</Badge>
-            )}
-          </div>
-          {page.suggestedCanonical && (
-            <div className="flex items-center gap-2 text-xs">
-              <span className="text-primary font-medium">AI Suggested:</span>
-              <code className="font-mono text-foreground bg-primary/5 px-2 py-0.5 rounded border border-primary/10 truncate">
-                {page.suggestedCanonical}
-              </code>
-              {(() => {
-                try {
-                  const parsed = new URL(page.suggestedCanonical);
-                  const pageHost = new URL(page.url).hostname;
-                  const isValid = parsed.protocol === "https:" && parsed.hostname === pageHost;
-                  return isValid
-                    ? <Badge variant="default" className="text-[9px] shrink-0">Valid</Badge>
-                    : <Badge variant="destructive" className="text-[9px] shrink-0">Domain mismatch</Badge>;
-                } catch {
-                  return <Badge variant="destructive" className="text-[9px] shrink-0">Invalid URL</Badge>;
-                }
-              })()}
-            </div>
-          )}
-          {page.fetchedCanonical && !page.suggestedCanonical && (
-            <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
-              <CheckCircle2 className="w-3 h-3 text-primary" />
-              Canonical tag looks good
-            </div>
-          )}
-        </div>
-      </div>
+      {/* Canonical Tag — same pattern as title/meta */}
+      <CanonicalFieldRow
+        current={page.fetchedCanonical}
+        suggested={page.suggestedCanonical}
+        pageUrl={page.url}
+        decision={decisions.canonical}
+        onUpdate={updateField("canonical")}
+        onRegenerateItem={regenAndApplyField("title") /* reuses regen, canonical comes back too */}
+      />
 
       {/* Meta field rows */}
       <div className="space-y-3">
