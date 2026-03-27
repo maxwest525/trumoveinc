@@ -555,8 +555,13 @@ export default function MarketingSEO() {
 
       const finalTitle = d.title.status === "published" ? (d.title.editedValue || page.suggestedTitle) : null;
       const finalDesc = d.description.status === "published" ? (d.description.editedValue || page.suggestedDescription) : null;
+      let finalCanonical: string | null = null;
+      if (d.canonical.status === "published") {
+        const rawVal = d.canonical.editedValue || page.suggestedCanonical;
+        if (rawVal) { try { finalCanonical = new URL(rawVal).href; } catch {} }
+      }
 
-      if (finalTitle || finalDesc) {
+      if (finalTitle || finalDesc || finalCanonical) {
         let rawPath = "/";
         try { rawPath = new URL(url).pathname; } catch {}
         const urlPath = rawPath === "/" ? "/site" : `/site${rawPath}`;
