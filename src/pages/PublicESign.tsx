@@ -47,13 +47,6 @@ export default function PublicESign() {
     if (!refNumber || refNumber === "DOC-2026-0001") return;
     const fetchDocData = async () => {
       try {
-        const { data, error } = await supabase.functions.invoke("get-esign-public", {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-          body: undefined,
-        });
-
-        // Edge function invoked via GET with query param — use fetch directly
         const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
         const resp = await fetch(
           `https://${projectId}.supabase.co/functions/v1/get-esign-public?ref=${encodeURIComponent(refNumber)}`
