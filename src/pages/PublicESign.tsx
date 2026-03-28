@@ -42,37 +42,36 @@ export default function PublicESign() {
 
   useEffect(() => { window.scrollTo(0, 0); }, []);
 
-  // Fetch customer data from DB using refNumber (no query params needed)
+  // Fetch customer data via secure edge function (no direct anon DB access)
   useEffect(() => {
     if (!refNumber || refNumber === "DOC-2026-0001") return;
     const fetchDocData = async () => {
-      const { data: doc } = await supabase
-        .from("esign_documents")
-        .select("lead_id, document_type")
-        .eq("ref_number", refNumber)
-        .maybeSingle();
+      try {
+        const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+        const resp = await fetch(
+          `https://${projectId}.supabase.co/functions/v1/get-esign-public?ref=${encodeURIComponent(refNumber)}`
+        );
+        if (!resp.ok) return;
+        const result = await resp.json();
 
-      if (doc?.lead_id) {
-        setLeadId(doc.lead_id);
-        if (doc.document_type) setDocTypeFromDb(doc.document_type);
-        if (!qpDocType || qpDocType === "estimate") {
-          setActiveDocument((doc.document_type || "estimate") as DocumentType);
+        if (result.document?.lead_id) {
+          setLeadId(result.document.lead_id);
+          if (result.document.document_type) setDocTypeFromDb(result.document.document_type);
+          if (!qpDocType || qpDocType === "estimate") {
+            setActiveDocument((result.document.document_type || "estimate") as DocumentType);
+          }
         }
 
-        const { data: lead } = await supabase
-          .from("leads")
-          .select("first_name, last_name, email")
-          .eq("id", doc.lead_id)
-          .maybeSingle();
-
-        if (lead) {
-          const fullName = `${lead.first_name} ${lead.last_name}`.trim();
+        if (result.lead) {
+          const fullName = `${result.lead.first_name} ${result.lead.last_name}`.trim();
           if (fullName && !qpName) {
             setCustomerName(fullName);
             setTypedName(fullName);
           }
-          if (lead.email && !qpEmail) setCustomerEmail(lead.email);
+          if (result.lead.email && !qpEmail) setCustomerEmail(result.lead.email);
         }
+      } catch (e) {
+        console.error("Failed to fetch esign data:", e);
       }
     };
     fetchDocData();
@@ -100,13 +99,17 @@ export default function PublicESign() {
   };
 
   const updateDocumentStatus = async (status: string) => {
-    if (!leadId) return;
+    if (!refNumber) return;
     try {
-      const updateData: Record<string, any> = { status };
-      if (status === "completed") updateData.completed_at = new Date().toISOString();
-      if (status === "opened") updateData.opened_at = new Date().toISOString();
-      await supabase.from("esign_documents").update(updateData)
-        .eq("lead_id", leadId).eq("ref_number", refNumber);
+      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+      await fetch(
+        `https://${projectId}.supabase.co/functions/v1/get-esign-public`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ref_number: refNumber, status }),
+        }
+      );
     } catch (e) { console.error("Failed to update document status:", e); }
   };
 
