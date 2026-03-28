@@ -106,13 +106,17 @@ export default function PublicESign() {
   };
 
   const updateDocumentStatus = async (status: string) => {
-    if (!leadId) return;
+    if (!refNumber) return;
     try {
-      const updateData: Record<string, any> = { status };
-      if (status === "completed") updateData.completed_at = new Date().toISOString();
-      if (status === "opened") updateData.opened_at = new Date().toISOString();
-      await supabase.from("esign_documents").update(updateData)
-        .eq("lead_id", leadId).eq("ref_number", refNumber);
+      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+      await fetch(
+        `https://${projectId}.supabase.co/functions/v1/get-esign-public`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ref_number: refNumber, status }),
+        }
+      );
     } catch (e) { console.error("Failed to update document status:", e); }
   };
 
