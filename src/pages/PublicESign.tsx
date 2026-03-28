@@ -42,37 +42,43 @@ export default function PublicESign() {
 
   useEffect(() => { window.scrollTo(0, 0); }, []);
 
-  // Fetch customer data from DB using refNumber (no query params needed)
+  // Fetch customer data via secure edge function (no direct anon DB access)
   useEffect(() => {
     if (!refNumber || refNumber === "DOC-2026-0001") return;
     const fetchDocData = async () => {
-      const { data: doc } = await supabase
-        .from("esign_documents")
-        .select("lead_id, document_type")
-        .eq("ref_number", refNumber)
-        .maybeSingle();
+      try {
+        const { data, error } = await supabase.functions.invoke("get-esign-public", {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+          body: undefined,
+        });
 
-      if (doc?.lead_id) {
-        setLeadId(doc.lead_id);
-        if (doc.document_type) setDocTypeFromDb(doc.document_type);
-        if (!qpDocType || qpDocType === "estimate") {
-          setActiveDocument((doc.document_type || "estimate") as DocumentType);
+        // Edge function invoked via GET with query param — use fetch directly
+        const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+        const resp = await fetch(
+          `https://${projectId}.supabase.co/functions/v1/get-esign-public?ref=${encodeURIComponent(refNumber)}`
+        );
+        if (!resp.ok) return;
+        const result = await resp.json();
+
+        if (result.document?.lead_id) {
+          setLeadId(result.document.lead_id);
+          if (result.document.document_type) setDocTypeFromDb(result.document.document_type);
+          if (!qpDocType || qpDocType === "estimate") {
+            setActiveDocument((result.document.document_type || "estimate") as DocumentType);
+          }
         }
 
-        const { data: lead } = await supabase
-          .from("leads")
-          .select("first_name, last_name, email")
-          .eq("id", doc.lead_id)
-          .maybeSingle();
-
-        if (lead) {
-          const fullName = `${lead.first_name} ${lead.last_name}`.trim();
+        if (result.lead) {
+          const fullName = `${result.lead.first_name} ${result.lead.last_name}`.trim();
           if (fullName && !qpName) {
             setCustomerName(fullName);
             setTypedName(fullName);
           }
-          if (lead.email && !qpEmail) setCustomerEmail(lead.email);
+          if (result.lead.email && !qpEmail) setCustomerEmail(result.lead.email);
         }
+      } catch (e) {
+        console.error("Failed to fetch esign data:", e);
       }
     };
     fetchDocData();
