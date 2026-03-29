@@ -180,7 +180,7 @@ export default function AgentIncomingLeads() {
           <div className="space-y-3">
             {leads.map((lead) => {
               const isExpanded = expandedId === lead.id;
-              const hasEnrichment = lead.utm_source || lead.gclid || lead.ga_client_id || lead.device_type || lead.referrer;
+              const hasEnrichment = lead.utm_source || lead.gclid || lead.ga_client_id || lead.device_type || lead.referrer || lead.landing_page_url || lead.geo_city;
               const hasConsent = lead.consent_ad_storage || lead.consent_analytics_storage;
 
               return (
