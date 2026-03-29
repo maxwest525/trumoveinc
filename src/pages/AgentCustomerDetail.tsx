@@ -209,7 +209,7 @@ export default function AgentCustomerDetail() {
             </div>
 
           {/* Sidebar + Content layout */}
-          <div className="flex gap-8">
+          <div className="flex flex-col sm:flex-row gap-4 sm:gap-8">
             {/* Left nav */}
             <div className="hidden sm:flex flex-col gap-1.5 w-[160px] shrink-0 pt-1">
               <Button variant={activeTab === "overview" ? "default" : "ghost"} size="sm" className="justify-start gap-2 text-xs h-9 w-full"
