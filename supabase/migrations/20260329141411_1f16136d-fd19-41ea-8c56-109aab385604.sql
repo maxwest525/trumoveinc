@@ -1,0 +1,1 @@
+ALTER TABLE public.leads ADD COLUMN landing_page_url text;

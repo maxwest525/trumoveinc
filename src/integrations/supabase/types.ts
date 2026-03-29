@@ -920,6 +920,7 @@ export type Database = {
           ga_client_id: string | null
           gclid: string | null
           id: string
+          landing_page_url: string | null
           last_name: string
           move_date: string | null
           notes: string | null
@@ -958,6 +959,7 @@ export type Database = {
           ga_client_id?: string | null
           gclid?: string | null
           id?: string
+          landing_page_url?: string | null
           last_name: string
           move_date?: string | null
           notes?: string | null
@@ -996,6 +998,7 @@ export type Database = {
           ga_client_id?: string | null
           gclid?: string | null
           id?: string
+          landing_page_url?: string | null
           last_name?: string
           move_date?: string | null
           notes?: string | null
