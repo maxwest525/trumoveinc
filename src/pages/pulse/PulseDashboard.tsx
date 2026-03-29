@@ -151,7 +151,8 @@ const PulseDashboard: React.FC<{ embedded?: boolean; basePath?: string }> = ({ e
     if (!message.trim() || !agentName) return;
     setSendingCoaching(true);
     try {
-      const { error } = await supabase.from('pulse_agent_messages').insert({ agent_name: agentName, message: message.trim() });
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      const { error } = await supabase.from('pulse_agent_messages').insert({ agent_name: agentName, message: message.trim(), created_by: currentUser?.id });
       if (error) throw error;
       toast.success(`Sent to ${agentName}`);
       setCoachingMsg('');
