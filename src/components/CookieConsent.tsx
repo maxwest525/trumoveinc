@@ -2,7 +2,11 @@ import { useState, useEffect } from "react";
 import { X, Shield, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-/* ── Types ──────────────────────────────────────────────────── */
+declare global {
+  interface Window {
+    gtag?: (...args: any[]) => void;
+  }
+}
 interface ConsentRecord {
   choice: 'accepted' | 'rejected' | 'custom';
   ad_storage: boolean;
