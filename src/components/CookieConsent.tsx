@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { X, Shield, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
+import { enrichLead } from "@/lib/leadEnrichment";
 
 declare global {
   interface Window {
