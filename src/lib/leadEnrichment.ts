@@ -80,6 +80,7 @@ export interface LeadEnrichment {
   screen_resolution: string;
   language: string;
   device_type: 'mobile' | 'desktop';
+  landing_page_url: string;
 }
 
 export function enrichLead(): LeadEnrichment {
