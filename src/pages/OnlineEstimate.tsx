@@ -272,9 +272,51 @@ export default function OnlineEstimate() {
     }
   }, [extendedDetails?.homeSize, handleAddItem]);
 
-  const handleWizardComplete = (details: ExtendedMoveDetails) => {
+  const handleWizardComplete = async (details: ExtendedMoveDetails) => {
     setExtendedDetails(details);
     setShowIntroModal(true);
+
+    // Insert lead into DB with enrichment data for CRM incoming leads
+    try {
+      const { enrichLead } = await import("@/lib/leadEnrichment");
+      const enrichment = enrichLead();
+
+      const nameParts = (details.name || "").trim().split(/\s+/);
+      const firstName = nameParts[0] || "Website";
+      const lastName = nameParts.slice(1).join(" ") || "Visitor";
+
+      await supabase.from("leads").insert({
+        first_name: firstName,
+        last_name: lastName,
+        email: details.email || null,
+        phone: details.phone || null,
+        origin_address: details.fromLocation || null,
+        destination_address: details.toLocation || null,
+        move_date: details.moveDate ? format(details.moveDate, "yyyy-MM-dd") : null,
+        source: "website" as const,
+        status: "new" as const,
+        assigned_agent_id: null,
+        ga_client_id: enrichment.ga_client_id,
+        consent_ad_storage: enrichment.consent_ad_storage,
+        consent_analytics_storage: enrichment.consent_analytics_storage,
+        consent_ad_user_data: enrichment.consent_ad_user_data,
+        consent_ad_personalization: enrichment.consent_ad_personalization,
+        utm_source: enrichment.utm_source,
+        utm_medium: enrichment.utm_medium,
+        utm_campaign: enrichment.utm_campaign,
+        utm_term: enrichment.utm_term,
+        utm_content: enrichment.utm_content,
+        gclid: enrichment.gclid,
+        referrer: enrichment.referrer,
+        user_agent: enrichment.user_agent,
+        screen_resolution: enrichment.screen_resolution,
+        browser_language: enrichment.language,
+        device_type: enrichment.device_type,
+        enrichment_timestamp: enrichment.timestamp,
+      });
+    } catch (err) {
+      console.error("Lead insert error:", err);
+    }
   };
 
   const handleCloseModal = () => {
