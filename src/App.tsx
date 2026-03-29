@@ -191,7 +191,6 @@ const App = () => (
           </SeoOverrideProvider>
           {/* <ElevenLabsTrudyWidget /> */}
         </BrowserRouter>
-        </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>
   </ThemeProvider>
