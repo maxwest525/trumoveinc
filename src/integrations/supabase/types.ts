@@ -904,12 +904,21 @@ export type Database = {
       leads: {
         Row: {
           assigned_agent_id: string | null
+          browser_language: string | null
+          consent_ad_personalization: string | null
+          consent_ad_storage: string | null
+          consent_ad_user_data: string | null
+          consent_analytics_storage: string | null
           created_at: string
           destination_address: string | null
+          device_type: string | null
           email: string | null
+          enrichment_timestamp: string | null
           estimated_value: number | null
           estimated_weight: number | null
           first_name: string
+          ga_client_id: string | null
+          gclid: string | null
           id: string
           last_name: string
           move_date: string | null
@@ -917,20 +926,37 @@ export type Database = {
           origin_address: string | null
           phone: string | null
           price_per_cuft: number | null
+          referrer: string | null
+          screen_resolution: string | null
           source: Database["public"]["Enums"]["lead_source"]
           status: Database["public"]["Enums"]["lead_status"]
           tags: string[] | null
           updated_at: string
+          user_agent: string | null
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_medium: string | null
+          utm_source: string | null
+          utm_term: string | null
           vendor_id: string | null
         }
         Insert: {
           assigned_agent_id?: string | null
+          browser_language?: string | null
+          consent_ad_personalization?: string | null
+          consent_ad_storage?: string | null
+          consent_ad_user_data?: string | null
+          consent_analytics_storage?: string | null
           created_at?: string
           destination_address?: string | null
+          device_type?: string | null
           email?: string | null
+          enrichment_timestamp?: string | null
           estimated_value?: number | null
           estimated_weight?: number | null
           first_name: string
+          ga_client_id?: string | null
+          gclid?: string | null
           id?: string
           last_name: string
           move_date?: string | null
@@ -938,20 +964,37 @@ export type Database = {
           origin_address?: string | null
           phone?: string | null
           price_per_cuft?: number | null
+          referrer?: string | null
+          screen_resolution?: string | null
           source?: Database["public"]["Enums"]["lead_source"]
           status?: Database["public"]["Enums"]["lead_status"]
           tags?: string[] | null
           updated_at?: string
+          user_agent?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
           vendor_id?: string | null
         }
         Update: {
           assigned_agent_id?: string | null
+          browser_language?: string | null
+          consent_ad_personalization?: string | null
+          consent_ad_storage?: string | null
+          consent_ad_user_data?: string | null
+          consent_analytics_storage?: string | null
           created_at?: string
           destination_address?: string | null
+          device_type?: string | null
           email?: string | null
+          enrichment_timestamp?: string | null
           estimated_value?: number | null
           estimated_weight?: number | null
           first_name?: string
+          ga_client_id?: string | null
+          gclid?: string | null
           id?: string
           last_name?: string
           move_date?: string | null
@@ -959,10 +1002,18 @@ export type Database = {
           origin_address?: string | null
           phone?: string | null
           price_per_cuft?: number | null
+          referrer?: string | null
+          screen_resolution?: string | null
           source?: Database["public"]["Enums"]["lead_source"]
           status?: Database["public"]["Enums"]["lead_status"]
           tags?: string[] | null
           updated_at?: string
+          user_agent?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
           vendor_id?: string | null
         }
         Relationships: [
