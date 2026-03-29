@@ -99,8 +99,8 @@ const App = () => (
           <ScrollToTop />
           <SeoOverrideProvider>
           <Routes>
-            {/* ── Root = CRM Portal Hub (always) ──────────────────── */}
-            <Route path="/" element={<AgentLogin />} />
+            {/* ── Root: production domain → customer site; dev/preview → CRM login */}
+            <Route path="/" element={<ProductionHomeRedirect />} />
             <Route path="/login" element={<AgentLogin />} />
 
             {/* Legacy route redirect */}
