@@ -1268,6 +1268,7 @@ export type Database = {
           agent_name: string
           call_id: string | null
           created_at: string
+          created_by: string | null
           id: string
           message: string
           read: boolean
@@ -1276,6 +1277,7 @@ export type Database = {
           agent_name: string
           call_id?: string | null
           created_at?: string
+          created_by?: string | null
           id?: string
           message: string
           read?: boolean
@@ -1284,6 +1286,7 @@ export type Database = {
           agent_name?: string
           call_id?: string | null
           created_at?: string
+          created_by?: string | null
           id?: string
           message?: string
           read?: boolean
@@ -1297,6 +1300,7 @@ export type Database = {
           client_name: string
           context: string | null
           created_at: string
+          created_by: string | null
           id: string
           keyword: string
           match_type: string
@@ -1309,6 +1313,7 @@ export type Database = {
           client_name?: string
           context?: string | null
           created_at?: string
+          created_by?: string | null
           id?: string
           keyword: string
           match_type?: string
@@ -1321,6 +1326,7 @@ export type Database = {
           client_name?: string
           context?: string | null
           created_at?: string
+          created_by?: string | null
           id?: string
           keyword?: string
           match_type?: string
@@ -1343,6 +1349,7 @@ export type Database = {
           client_name: string
           compliance_score: number | null
           created_at: string
+          created_by: string | null
           duration_seconds: number | null
           ended_at: string | null
           flagged_keywords: string[] | null
@@ -1360,6 +1367,7 @@ export type Database = {
           client_name?: string
           compliance_score?: number | null
           created_at?: string
+          created_by?: string | null
           duration_seconds?: number | null
           ended_at?: string | null
           flagged_keywords?: string[] | null
@@ -1377,6 +1385,7 @@ export type Database = {
           client_name?: string
           compliance_score?: number | null
           created_at?: string
+          created_by?: string | null
           duration_seconds?: number | null
           ended_at?: string | null
           flagged_keywords?: string[] | null
@@ -1458,6 +1467,7 @@ export type Database = {
         Row: {
           alert_id: string
           created_at: string
+          created_by: string | null
           id: string
           line_index: number
           note: string
@@ -1465,6 +1475,7 @@ export type Database = {
         Insert: {
           alert_id: string
           created_at?: string
+          created_by?: string | null
           id?: string
           line_index: number
           note: string
@@ -1472,6 +1483,7 @@ export type Database = {
         Update: {
           alert_id?: string
           created_at?: string
+          created_by?: string | null
           id?: string
           line_index?: number
           note?: string
@@ -1778,7 +1790,33 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      gsc_connections_safe: {
+        Row: {
+          connected_at: string | null
+          id: string | null
+          selected_property: string | null
+          token_expires_at: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          connected_at?: string | null
+          id?: string | null
+          selected_property?: string | null
+          token_expires_at?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          connected_at?: string | null
+          id?: string | null
+          selected_property?: string | null
+          token_expires_at?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       delete_email: {
