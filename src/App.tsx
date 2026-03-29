@@ -190,7 +190,7 @@ const App = () => (
           </Routes>
           </SeoOverrideProvider>
           {/* <ElevenLabsTrudyWidget /> */}
-          <CookieConsent />
+        </BrowserRouter>
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>
