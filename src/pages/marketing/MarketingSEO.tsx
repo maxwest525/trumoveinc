@@ -98,7 +98,7 @@ export default function MarketingSEO() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
     const [gscRes, ga4Res] = await Promise.all([
-      supabase.from("gsc_connections").select("id").eq("user_id", user.id).limit(1),
+      supabase.from("gsc_connections_safe" as any).select("id").eq("user_id", user.id).limit(1),
       supabase.from("integration_connections").select("id").eq("user_id", user.id).eq("integration_id", "ga4").eq("connected", true).limit(1),
     ]);
     setGscConnected(!!(gscRes.data && gscRes.data.length > 0));

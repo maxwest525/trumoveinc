@@ -115,7 +115,8 @@ const PulseAgent: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
         const timeLabel = `${Math.floor(elapsed / 60)}:${(elapsed % 60).toString().padStart(2, '0')}`;
         setLiveFlags(prev => [...prev, { keyword: entry.pattern, severity: sev, timestamp: timeLabel, context: contextSnippet }]);
         toast.warning(`Keyword flagged: "${matched}"`, { description: contextSnippet.slice(0, 80), duration: 5000 });
-        await supabase.from('pulse_alerts' as any).insert({ agent_name: AGENT_NAME, keyword: entry.pattern, matched_text: matched, context: contextSnippet, severity: sev, match_type: entry.type, call_id: liveCallId } as any);
+        const { data: { user: currentUser } } = await supabase.auth.getUser();
+        await supabase.from('pulse_alerts' as any).insert({ agent_name: AGENT_NAME, keyword: entry.pattern, matched_text: matched, context: contextSnippet, severity: sev, match_type: entry.type, call_id: liveCallId, created_by: currentUser?.id } as any);
 
         // Send email alerts to configured managers
         if (notifSettings?.email?.enabled && notifSettings.email.recipients?.length) {
