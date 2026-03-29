@@ -29,6 +29,8 @@ import ElevenLabsTrudyWidget from "./components/ElevenLabsTrudyWidget";
 import ScrollToTop from "./components/ScrollToTop";
 import { SeoOverrideProvider } from "./components/SeoOverrideProvider";
 import SiteCanonicalLayout from "./components/SiteCanonicalLayout";
+import CookieConsent from "./components/CookieConsent";
+import { captureUtmParams } from "./lib/leadEnrichment";
 import CustomerService from "./pages/CustomerService";
 import AdminSupportTickets from "./pages/AdminSupportTickets";
 import AgentPipeline from "./pages/AgentPipeline";
@@ -83,6 +85,9 @@ import Unsubscribe from "./pages/Unsubscribe";
 import AgentIncomingLeads from "./pages/AgentIncomingLeads";
 
 const queryClient = new QueryClient();
+
+// Capture UTM params on initial load
+captureUtmParams();
 
 const App = () => (
   <HelmetProvider>
@@ -185,6 +190,7 @@ const App = () => (
           </Routes>
           </SeoOverrideProvider>
           {/* <ElevenLabsTrudyWidget /> */}
+          <CookieConsent />
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>

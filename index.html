@@ -3,6 +3,37 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Google Consent Mode v2 — MUST be before any gtag/GA4/Google Ads script -->
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+
+      // Restore previous consent choice instantly
+      (function(){
+        try {
+          var c = JSON.parse(localStorage.getItem('userConsent') || 'null');
+          if (c && c.choice) {
+            var g = c.choice === 'accepted' ? 'granted' : 'denied';
+            gtag('consent', 'default', {
+              'ad_storage': g,
+              'analytics_storage': g,
+              'ad_user_data': g,
+              'ad_personalization': g
+            });
+            return;
+          }
+        } catch(e){}
+        // First visit — deny all, wait for banner
+        gtag('consent', 'default', {
+          'ad_storage': 'denied',
+          'analytics_storage': 'denied',
+          'ad_user_data': 'denied',
+          'ad_personalization': 'denied',
+          'wait_for_update': 500
+        });
+      })();
+    </script>
     <title>TruMove - AI-Powered Moving Estimates</title>
     <meta name="description" content="Get instant AI-powered moving estimates. Scan your room, compare carriers, and track your shipment in real-time.">
     <meta name="author" content="TruMove" />
