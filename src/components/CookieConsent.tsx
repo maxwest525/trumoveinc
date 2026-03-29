@@ -90,6 +90,16 @@ export default function CookieConsent() {
   const insertCookieLead = async (record: ConsentRecord) => {
     try {
       const e = enrichLead();
+
+      // Attempt IP-based geolocation via edge function (non-blocking)
+      let geo: { city: string | null; region: string | null; country: string | null } = {
+        city: null, region: null, country: null,
+      };
+      try {
+        const { data } = await supabase.functions.invoke("get-visitor-geo");
+        if (data) geo = data;
+      } catch { /* geo is optional */ }
+
       await supabase.from("leads").insert({
         first_name: "Website",
         last_name: "Visitor",
@@ -114,6 +124,9 @@ export default function CookieConsent() {
         device_type: e.device_type,
         enrichment_timestamp: e.timestamp,
         landing_page_url: e.landing_page_url,
+        geo_city: geo.city,
+        geo_region: geo.region,
+        geo_country: geo.country,
       });
     } catch (err) {
       console.error("Cookie lead insert error:", err);

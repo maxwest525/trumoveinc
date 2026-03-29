@@ -919,6 +919,9 @@ export type Database = {
           first_name: string
           ga_client_id: string | null
           gclid: string | null
+          geo_city: string | null
+          geo_country: string | null
+          geo_region: string | null
           id: string
           landing_page_url: string | null
           last_name: string
@@ -958,6 +961,9 @@ export type Database = {
           first_name: string
           ga_client_id?: string | null
           gclid?: string | null
+          geo_city?: string | null
+          geo_country?: string | null
+          geo_region?: string | null
           id?: string
           landing_page_url?: string | null
           last_name: string
@@ -997,6 +1003,9 @@ export type Database = {
           first_name?: string
           ga_client_id?: string | null
           gclid?: string | null
+          geo_city?: string | null
+          geo_country?: string | null
+          geo_region?: string | null
           id?: string
           landing_page_url?: string | null
           last_name?: string

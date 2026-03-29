@@ -41,6 +41,10 @@ interface IncomingLead {
   consent_ad_personalization: string | null;
   estimated_weight: number | null;
   estimated_value: number | null;
+  landing_page_url: string | null;
+  geo_city: string | null;
+  geo_region: string | null;
+  geo_country: string | null;
 }
 
 const SOURCE_COLORS: Record<string, string> = {
@@ -176,7 +180,7 @@ export default function AgentIncomingLeads() {
           <div className="space-y-3">
             {leads.map((lead) => {
               const isExpanded = expandedId === lead.id;
-              const hasEnrichment = lead.utm_source || lead.gclid || lead.ga_client_id || lead.device_type || lead.referrer;
+              const hasEnrichment = lead.utm_source || lead.gclid || lead.ga_client_id || lead.device_type || lead.referrer || lead.landing_page_url || lead.geo_city;
               const hasConsent = lead.consent_ad_storage || lead.consent_analytics_storage;
 
               return (
@@ -213,6 +217,12 @@ export default function AgentIncomingLeads() {
                           <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
                             <DeviceIcon type={lead.device_type} />
                             {lead.device_type}
+                          </span>
+                        )}
+                        {lead.geo_city && lead.geo_region && (
+                          <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
+                            <MapPin className="w-2.5 h-2.5" />
+                            {lead.geo_city}, {lead.geo_region}
                           </span>
                         )}
                       </div>
@@ -275,7 +285,7 @@ export default function AgentIncomingLeads() {
                   {/* Expanded enrichment panel */}
                   {isExpanded && (
                     <div className="border-t border-border bg-muted/30 px-4 py-3">
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
                         {/* Attribution */}
                         <div>
                           <p className="font-medium text-foreground mb-1.5 flex items-center gap-1">
@@ -292,6 +302,33 @@ export default function AgentIncomingLeads() {
                             {lead.referrer && <p>Referrer: <span className="text-foreground truncate inline-block max-w-[180px] align-bottom">{lead.referrer}</span></p>}
                             {!lead.utm_source && !lead.gclid && !lead.ga_client_id && !lead.referrer && (
                               <p className="text-muted-foreground/50 italic">No attribution data</p>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Location & Page */}
+                        <div>
+                          <p className="font-medium text-foreground mb-1.5 flex items-center gap-1">
+                            <MapPin className="w-3 h-3 text-primary" /> Location & Page
+                          </p>
+                          <div className="space-y-1 text-muted-foreground">
+                            {(lead.geo_city || lead.geo_region || lead.geo_country) ? (
+                              <p>
+                                <span className="text-foreground">
+                                  {[lead.geo_city, lead.geo_region, lead.geo_country].filter(Boolean).join(", ")}
+                                </span>
+                              </p>
+                            ) : (
+                              <p className="text-muted-foreground/50 italic">No geo data</p>
+                            )}
+                            {lead.landing_page_url ? (
+                              <p className="truncate" title={lead.landing_page_url}>
+                                Page: <a href={lead.landing_page_url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline inline-flex items-center gap-0.5">
+                                  {new URL(lead.landing_page_url).pathname || "/"} <ExternalLink className="w-2.5 h-2.5" />
+                                </a>
+                              </p>
+                            ) : (
+                              <p className="text-muted-foreground/50 italic">No landing page</p>
                             )}
                           </div>
                         </div>
