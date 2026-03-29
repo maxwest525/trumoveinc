@@ -16,6 +16,22 @@ export interface Lead {
   destination_address: string | null;
   estimated_weight: number | null;
   estimated_value: number | null;
+  ga_client_id: string | null;
+  consent_ad_storage: string | null;
+  consent_analytics_storage: string | null;
+  consent_ad_user_data: string | null;
+  consent_ad_personalization: string | null;
+  utm_source: string | null;
+  utm_medium: string | null;
+  utm_campaign: string | null;
+  utm_term: string | null;
+  utm_content: string | null;
+  gclid: string | null;
+  referrer: string | null;
+  user_agent: string | null;
+  screen_resolution: string | null;
+  browser_language: string | null;
+  device_type: string | null;
 }
 
 export interface Deal {

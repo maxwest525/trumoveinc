@@ -11,7 +11,7 @@ import { AddActivityForm } from "./AddActivityForm";
 import { DealAIAssistant } from "./DealAIAssistant";
 import { DealEmailComposer } from "./DealEmailComposer";
 import { DealQuickActions } from "./DealQuickActions";
-import { Phone, PhoneCall, Mail, MapPin, Calendar, DollarSign } from "lucide-react";
+import { Phone, PhoneCall, Mail, MapPin, Calendar, DollarSign, Globe, Monitor, MousePointer, Shield } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { DialerProvider } from "@/components/dialer/dialerProvider";
 
@@ -120,6 +120,64 @@ export function DealDetailPanel({ deal, stages, open, onOpenChange, onStageChang
               )}
               {lead.estimated_value && (
                 <Badge variant="secondary" className="text-xs">Est. ${lead.estimated_value.toLocaleString()}</Badge>
+              )}
+            </div>
+          )}
+
+          {/* Lead Enrichment Data */}
+          {lead && (lead.utm_source || lead.device_type || lead.consent_ad_storage || lead.ga_client_id) && (
+            <div className="space-y-3">
+              <h5 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Marketing & Device</h5>
+              
+              {/* UTM Data */}
+              {(lead.utm_source || lead.utm_medium || lead.utm_campaign) && (
+                <div className="rounded-lg border border-border bg-muted/30 p-3 space-y-1.5">
+                  <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground mb-1">
+                    <MousePointer className="h-3 w-3" /> Attribution
+                  </div>
+                  {lead.utm_source && <div className="flex justify-between text-xs"><span className="text-muted-foreground">Source</span><span className="font-medium">{lead.utm_source}</span></div>}
+                  {lead.utm_medium && <div className="flex justify-between text-xs"><span className="text-muted-foreground">Medium</span><span className="font-medium">{lead.utm_medium}</span></div>}
+                  {lead.utm_campaign && <div className="flex justify-between text-xs"><span className="text-muted-foreground">Campaign</span><span className="font-medium">{lead.utm_campaign}</span></div>}
+                  {lead.utm_term && <div className="flex justify-between text-xs"><span className="text-muted-foreground">Term</span><span className="font-medium">{lead.utm_term}</span></div>}
+                  {lead.utm_content && <div className="flex justify-between text-xs"><span className="text-muted-foreground">Content</span><span className="font-medium">{lead.utm_content}</span></div>}
+                  {lead.gclid && <div className="flex justify-between text-xs"><span className="text-muted-foreground">GCLID</span><span className="font-medium font-mono truncate max-w-[160px]">{lead.gclid}</span></div>}
+                  {lead.ga_client_id && <div className="flex justify-between text-xs"><span className="text-muted-foreground">GA Client</span><span className="font-medium font-mono truncate max-w-[160px]">{lead.ga_client_id}</span></div>}
+                </div>
+              )}
+
+              {/* Device Info */}
+              {(lead.device_type || lead.screen_resolution || lead.browser_language) && (
+                <div className="rounded-lg border border-border bg-muted/30 p-3 space-y-1.5">
+                  <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground mb-1">
+                    <Monitor className="h-3 w-3" /> Device
+                  </div>
+                  {lead.device_type && <div className="flex justify-between text-xs"><span className="text-muted-foreground">Type</span><Badge variant="outline" className="text-[10px] h-5 capitalize">{lead.device_type}</Badge></div>}
+                  {lead.screen_resolution && <div className="flex justify-between text-xs"><span className="text-muted-foreground">Screen</span><span className="font-medium">{lead.screen_resolution}</span></div>}
+                  {lead.browser_language && <div className="flex justify-between text-xs"><span className="text-muted-foreground">Language</span><span className="font-medium">{lead.browser_language}</span></div>}
+                  {lead.referrer && <div className="flex justify-between text-xs"><span className="text-muted-foreground">Referrer</span><span className="font-medium truncate max-w-[180px]">{lead.referrer}</span></div>}
+                </div>
+              )}
+
+              {/* Consent State */}
+              {lead.consent_ad_storage && (
+                <div className="rounded-lg border border-border bg-muted/30 p-3 space-y-1.5">
+                  <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground mb-1">
+                    <Shield className="h-3 w-3" /> Consent
+                  </div>
+                  <div className="grid grid-cols-2 gap-1.5">
+                    {[
+                      { label: 'Ad Storage', val: lead.consent_ad_storage },
+                      { label: 'Analytics', val: lead.consent_analytics_storage },
+                      { label: 'Ad Data', val: lead.consent_ad_user_data },
+                      { label: 'Personalization', val: lead.consent_ad_personalization },
+                    ].map(({ label, val }) => val && (
+                      <div key={label} className="flex items-center gap-1 text-[10px]">
+                        <span className={`h-1.5 w-1.5 rounded-full ${val === 'granted' ? 'bg-emerald-500' : 'bg-red-400'}`} />
+                        <span className="text-muted-foreground">{label}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               )}
             </div>
           )}
