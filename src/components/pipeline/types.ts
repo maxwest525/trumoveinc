@@ -33,6 +33,9 @@ export interface Lead {
   browser_language: string | null;
   device_type: string | null;
   landing_page_url: string | null;
+  geo_city: string | null;
+  geo_region: string | null;
+  geo_country: string | null;
 }
 
 export interface Deal {

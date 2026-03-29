@@ -41,6 +41,10 @@ interface IncomingLead {
   consent_ad_personalization: string | null;
   estimated_weight: number | null;
   estimated_value: number | null;
+  landing_page_url: string | null;
+  geo_city: string | null;
+  geo_region: string | null;
+  geo_country: string | null;
 }
 
 const SOURCE_COLORS: Record<string, string> = {
