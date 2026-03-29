@@ -254,10 +254,20 @@ export default function AgentCustomerDetail() {
             </div>
 
             {/* Mobile horizontal nav */}
-            <div className="flex sm:hidden items-center gap-2 flex-wrap mb-4">
-              <Button variant={activeTab === "overview" ? "default" : "outline"} size="sm" className="gap-1.5 text-xs h-8" onClick={() => setActiveTab("overview")}><User className="w-3 h-3" /> Overview</Button>
-              <Button variant={activeTab === "payment" ? "default" : "outline"} size="sm" className="gap-1.5 text-xs h-8" onClick={() => setActiveTab("payment")}><CreditCard className="w-3 h-3" /> Payment</Button>
-              <Button variant={activeTab === "esign" ? "default" : "outline"} size="sm" className="gap-1.5 text-xs h-8" onClick={() => setActiveTab("esign")}><FileText className="w-3 h-3" /> E-Signs</Button>
+            <div className="flex sm:hidden items-center gap-1.5 overflow-x-auto pb-2 -mx-1 px-1">
+              <Button variant={activeTab === "overview" ? "default" : "outline"} size="sm" className="gap-1 text-[11px] h-8 shrink-0" onClick={() => setActiveTab("overview")}><User className="w-3 h-3" /> Overview</Button>
+              <Button variant={activeTab === "payment" ? "default" : "outline"} size="sm" className="gap-1 text-[11px] h-8 shrink-0" onClick={() => setActiveTab("payment")}><CreditCard className="w-3 h-3" /> Pay</Button>
+              <Button variant={activeTab === "esign" ? "default" : "outline"} size="sm" className="gap-1 text-[11px] h-8 shrink-0" onClick={() => setActiveTab("esign")}><FileText className="w-3 h-3" /> E-Sign</Button>
+              <Button variant={activeTab === "documents" ? "default" : "outline"} size="sm" className="gap-1 text-[11px] h-8 shrink-0" onClick={() => setActiveTab("documents")}><FolderOpen className="w-3 h-3" /> Docs</Button>
+              {lead.email && (
+                <Button variant={activeTab === "email" ? "default" : "outline"} size="sm" className="gap-1 text-[11px] h-8 shrink-0 relative" onClick={() => setActiveTab("email")}>
+                  <Mail className="w-3 h-3" /> Email
+                  {customerMsgCount > 0 && <span className="w-3.5 h-3.5 rounded-full bg-destructive text-destructive-foreground text-[8px] font-bold flex items-center justify-center">{customerMsgCount > 9 ? "9+" : customerMsgCount}</span>}
+                </Button>
+              )}
+              {lead.phone && (
+                <Button variant={activeTab === "sms" ? "default" : "outline"} size="sm" className="gap-1 text-[11px] h-8 shrink-0" onClick={() => setActiveTab("sms")}><MessageSquare className="w-3 h-3" /> SMS</Button>
+              )}
             </div>
 
             {/* Content area */}
