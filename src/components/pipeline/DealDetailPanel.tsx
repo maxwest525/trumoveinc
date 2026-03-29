@@ -125,7 +125,7 @@ export function DealDetailPanel({ deal, stages, open, onOpenChange, onStageChang
           )}
 
           {/* Lead Enrichment Data */}
-          {lead && (lead.utm_source || lead.device_type || lead.consent_ad_storage || lead.ga_client_id) && (
+          {lead && (lead.utm_source || lead.device_type || lead.consent_ad_storage || lead.ga_client_id || lead.landing_page_url || lead.geo_city) && (
             <div className="space-y-3">
               <h5 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Marketing & Device</h5>
               
