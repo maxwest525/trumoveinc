@@ -74,7 +74,9 @@ const PulseAgent: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
 
   const startCall = useCallback(async () => {
     clear(); setLiveFlags([]); lastCheckedRef.current = 0;
-    const { data, error } = await supabase.from('pulse_calls' as any).insert({ agent_name: AGENT_NAME, status: 'active', transcript: '' } as any).select('id').single();
+    const { data: { user } } = await supabase.auth.getUser();
+    const userId = user?.id;
+    const { data, error } = await supabase.from('pulse_calls' as any).insert({ agent_name: AGENT_NAME, status: 'active', transcript: '', created_by: userId } as any).select('id').single();
     if (error || !data) { toast.error('Failed to create call record'); return; }
     setLiveCallId((data as any).id); setCallStartTime(new Date()); setCallActive(true);
     if (isSupported) start(); fetchDbCalls();
