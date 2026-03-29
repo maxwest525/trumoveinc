@@ -82,6 +82,9 @@ export default function CookieConsent() {
 
   useEffect(() => {
     if (getStored()) return; // Already consented
+    // Only show on customer-facing domain, never on CRM subdomain
+    const host = window.location.hostname;
+    if (host.startsWith("crm.")) return;
     const t = setTimeout(() => setVisible(true), 800);
     return () => clearTimeout(t);
   }, []);

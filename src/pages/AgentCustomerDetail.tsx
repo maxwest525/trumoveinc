@@ -189,27 +189,27 @@ export default function AgentCustomerDetail() {
       { label: fullName },
     ]}>
       {() => (
-        <div className="p-6 sm:p-8 max-w-7xl mx-auto space-y-6">
+        <div className="p-3 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-4 sm:space-y-6">
           {/* Header */}
-          <div className="flex items-center gap-4">
-              <Button variant="ghost" size="icon" className="h-10 w-10 shrink-0" onClick={() => navigate("/agent/customers")}>
-                <ArrowLeft className="w-5 h-5" />
+          <div className="flex items-center gap-3 sm:gap-4">
+              <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-10 sm:w-10 shrink-0" onClick={() => navigate("/agent/customers")}>
+                <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
               </Button>
-              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-foreground/5 border border-border flex items-center justify-center shrink-0">
-                <span className="text-base sm:text-lg font-semibold text-foreground">
+              <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-full bg-foreground/5 border border-border flex items-center justify-center shrink-0">
+                <span className="text-sm sm:text-lg font-semibold text-foreground">
                   {lead.first_name[0]}{lead.last_name[0]}
                 </span>
               </div>
               <div className="min-w-0 flex-1">
-                <h1 className="text-xl sm:text-2xl font-bold truncate">{fullName}</h1>
-                <p className="text-sm text-muted-foreground truncate">
-                  Added {new Date(lead.created_at).toLocaleDateString()} • Source: {lead.source}
+                <h1 className="text-lg sm:text-2xl font-bold truncate">{fullName}</h1>
+                <p className="text-xs sm:text-sm text-muted-foreground truncate">
+                  Added {new Date(lead.created_at).toLocaleDateString()} • {lead.source}
                 </p>
               </div>
             </div>
 
           {/* Sidebar + Content layout */}
-          <div className="flex gap-8">
+          <div className="flex flex-col sm:flex-row gap-4 sm:gap-8">
             {/* Left nav */}
             <div className="hidden sm:flex flex-col gap-1.5 w-[160px] shrink-0 pt-1">
               <Button variant={activeTab === "overview" ? "default" : "ghost"} size="sm" className="justify-start gap-2 text-xs h-9 w-full"
@@ -254,10 +254,20 @@ export default function AgentCustomerDetail() {
             </div>
 
             {/* Mobile horizontal nav */}
-            <div className="flex sm:hidden items-center gap-2 flex-wrap mb-4">
-              <Button variant={activeTab === "overview" ? "default" : "outline"} size="sm" className="gap-1.5 text-xs h-8" onClick={() => setActiveTab("overview")}><User className="w-3 h-3" /> Overview</Button>
-              <Button variant={activeTab === "payment" ? "default" : "outline"} size="sm" className="gap-1.5 text-xs h-8" onClick={() => setActiveTab("payment")}><CreditCard className="w-3 h-3" /> Payment</Button>
-              <Button variant={activeTab === "esign" ? "default" : "outline"} size="sm" className="gap-1.5 text-xs h-8" onClick={() => setActiveTab("esign")}><FileText className="w-3 h-3" /> E-Signs</Button>
+            <div className="flex sm:hidden items-center gap-1.5 overflow-x-auto pb-2 -mx-1 px-1">
+              <Button variant={activeTab === "overview" ? "default" : "outline"} size="sm" className="gap-1 text-[11px] h-8 shrink-0" onClick={() => setActiveTab("overview")}><User className="w-3 h-3" /> Overview</Button>
+              <Button variant={activeTab === "payment" ? "default" : "outline"} size="sm" className="gap-1 text-[11px] h-8 shrink-0" onClick={() => setActiveTab("payment")}><CreditCard className="w-3 h-3" /> Pay</Button>
+              <Button variant={activeTab === "esign" ? "default" : "outline"} size="sm" className="gap-1 text-[11px] h-8 shrink-0" onClick={() => setActiveTab("esign")}><FileText className="w-3 h-3" /> E-Sign</Button>
+              <Button variant={activeTab === "documents" ? "default" : "outline"} size="sm" className="gap-1 text-[11px] h-8 shrink-0" onClick={() => setActiveTab("documents")}><FolderOpen className="w-3 h-3" /> Docs</Button>
+              {lead.email && (
+                <Button variant={activeTab === "email" ? "default" : "outline"} size="sm" className="gap-1 text-[11px] h-8 shrink-0 relative" onClick={() => setActiveTab("email")}>
+                  <Mail className="w-3 h-3" /> Email
+                  {customerMsgCount > 0 && <span className="w-3.5 h-3.5 rounded-full bg-destructive text-destructive-foreground text-[8px] font-bold flex items-center justify-center">{customerMsgCount > 9 ? "9+" : customerMsgCount}</span>}
+                </Button>
+              )}
+              {lead.phone && (
+                <Button variant={activeTab === "sms" ? "default" : "outline"} size="sm" className="gap-1 text-[11px] h-8 shrink-0" onClick={() => setActiveTab("sms")}><MessageSquare className="w-3 h-3" /> SMS</Button>
+              )}
             </div>
 
             {/* Content area */}
