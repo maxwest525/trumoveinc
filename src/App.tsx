@@ -86,6 +86,9 @@ import AgentIncomingLeads from "./pages/AgentIncomingLeads";
 
 const queryClient = new QueryClient();
 
+// Capture UTM params on initial load
+captureUtmParams();
+
 const App = () => (
   <HelmetProvider>
   <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
