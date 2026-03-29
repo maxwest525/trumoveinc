@@ -1,15 +1,16 @@
-import { Outlet } from "react-router-dom";
 import CanonicalTag from "./CanonicalTag";
+import CookieConsent from "./CookieConsent";
 
 /**
  * Wraps all /site/* routes to automatically inject a canonical tag
- * based on the current route path.
+ * and the cookie consent banner (customer-facing only).
  */
 export default function SiteCanonicalLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <CanonicalTag />
       {children}
+      <CookieConsent />
     </>
   );
 }

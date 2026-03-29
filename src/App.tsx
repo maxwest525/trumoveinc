@@ -29,7 +29,6 @@ import ElevenLabsTrudyWidget from "./components/ElevenLabsTrudyWidget";
 import ScrollToTop from "./components/ScrollToTop";
 import { SeoOverrideProvider } from "./components/SeoOverrideProvider";
 import SiteCanonicalLayout from "./components/SiteCanonicalLayout";
-import CookieConsent from "./components/CookieConsent";
 import { captureUtmParams } from "./lib/leadEnrichment";
 import CustomerService from "./pages/CustomerService";
 import AdminSupportTickets from "./pages/AdminSupportTickets";
@@ -190,7 +189,6 @@ const App = () => (
           </Routes>
           </SeoOverrideProvider>
           {/* <ElevenLabsTrudyWidget /> */}
-          <CookieConsent />
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>
