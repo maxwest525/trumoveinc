@@ -107,5 +107,6 @@ export function enrichLead(): LeadEnrichment {
     screen_resolution: `${screen.width}x${screen.height}`,
     language: navigator.language,
     device_type: getDeviceType(),
+    landing_page_url: window.location.href,
   };
 }
