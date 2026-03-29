@@ -189,9 +189,9 @@ export default function AgentCustomerDetail() {
       { label: fullName },
     ]}>
       {() => (
-        <div className="p-6 sm:p-8 max-w-7xl mx-auto space-y-6">
+        <div className="p-3 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-4 sm:space-y-6">
           {/* Header */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 sm:gap-4">
               <Button variant="ghost" size="icon" className="h-10 w-10 shrink-0" onClick={() => navigate("/agent/customers")}>
                 <ArrowLeft className="w-5 h-5" />
               </Button>
