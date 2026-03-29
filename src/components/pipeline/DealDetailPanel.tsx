@@ -11,7 +11,7 @@ import { AddActivityForm } from "./AddActivityForm";
 import { DealAIAssistant } from "./DealAIAssistant";
 import { DealEmailComposer } from "./DealEmailComposer";
 import { DealQuickActions } from "./DealQuickActions";
-import { Phone, PhoneCall, Mail, MapPin, Calendar, DollarSign, Globe, Monitor, MousePointer, Shield } from "lucide-react";
+import { Phone, PhoneCall, Mail, MapPin, Calendar, DollarSign, Globe, Monitor, MousePointer, Shield, ExternalLink } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { DialerProvider } from "@/components/dialer/dialerProvider";
 
