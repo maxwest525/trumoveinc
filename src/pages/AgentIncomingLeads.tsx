@@ -219,6 +219,12 @@ export default function AgentIncomingLeads() {
                             {lead.device_type}
                           </span>
                         )}
+                        {lead.geo_city && lead.geo_region && (
+                          <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
+                            <MapPin className="w-2.5 h-2.5" />
+                            {lead.geo_city}, {lead.geo_region}
+                          </span>
+                        )}
                       </div>
 
                       {/* Contact + route */}
