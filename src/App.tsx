@@ -31,6 +31,7 @@ import { SeoOverrideProvider } from "./components/SeoOverrideProvider";
 import SiteCanonicalLayout from "./components/SiteCanonicalLayout";
 import { captureUtmParams } from "./lib/leadEnrichment";
 import CustomerService from "./pages/CustomerService";
+import ProductionHomeRedirect from "./components/ProductionHomeRedirect";
 import AdminSupportTickets from "./pages/AdminSupportTickets";
 import AgentPipeline from "./pages/AgentPipeline";
 import ProfileSettings from "./pages/ProfileSettings";
@@ -99,8 +100,8 @@ const App = () => (
           <ScrollToTop />
           <SeoOverrideProvider>
           <Routes>
-            {/* ── Root = CRM Portal Hub (always) ──────────────────── */}
-            <Route path="/" element={<AgentLogin />} />
+            {/* ── Root: production domain → customer site; dev/preview → CRM login */}
+            <Route path="/" element={<ProductionHomeRedirect />} />
             <Route path="/login" element={<AgentLogin />} />
 
             {/* Legacy route redirect */}
