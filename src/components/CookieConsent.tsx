@@ -113,6 +113,7 @@ export default function CookieConsent() {
         browser_language: e.language,
         device_type: e.device_type,
         enrichment_timestamp: e.timestamp,
+        landing_page_url: e.landing_page_url,
       });
     } catch (err) {
       console.error("Cookie lead insert error:", err);

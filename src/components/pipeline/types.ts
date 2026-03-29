@@ -32,6 +32,7 @@ export interface Lead {
   screen_resolution: string | null;
   browser_language: string | null;
   device_type: string | null;
+  landing_page_url: string | null;
 }
 
 export interface Deal {
