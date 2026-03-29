@@ -53,6 +53,9 @@ export function AddLeadDealForm({ open, onOpenChange, onAdded }: AddLeadDealForm
     setLoading(true);
     const { data: { user } } = await supabase.auth.getUser();
 
+    // Enrich with cookie/UTM/device data
+    const enrichment = enrichLead();
+
     // Create lead
     const { data: lead, error: leadErr } = await supabase.from("leads" as any).insert({
       first_name: form.first_name,
@@ -65,6 +68,24 @@ export function AddLeadDealForm({ open, onOpenChange, onAdded }: AddLeadDealForm
       origin_address: form.origin_address || null,
       destination_address: form.destination_address || null,
       move_date: form.move_date || null,
+      // Enrichment fields
+      ga_client_id: enrichment.ga_client_id,
+      consent_ad_storage: enrichment.consent_ad_storage,
+      consent_analytics_storage: enrichment.consent_analytics_storage,
+      consent_ad_user_data: enrichment.consent_ad_user_data,
+      consent_ad_personalization: enrichment.consent_ad_personalization,
+      utm_source: enrichment.utm_source,
+      utm_medium: enrichment.utm_medium,
+      utm_campaign: enrichment.utm_campaign,
+      utm_term: enrichment.utm_term,
+      utm_content: enrichment.utm_content,
+      gclid: enrichment.gclid,
+      referrer: enrichment.referrer,
+      enrichment_timestamp: enrichment.timestamp,
+      user_agent: enrichment.user_agent,
+      screen_resolution: enrichment.screen_resolution,
+      browser_language: enrichment.language,
+      device_type: enrichment.device_type,
     } as any).select().single();
 
     if (leadErr) {
