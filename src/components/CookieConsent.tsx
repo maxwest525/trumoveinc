@@ -100,7 +100,7 @@ export default function CookieConsent() {
         if (data) geo = data;
       } catch { /* geo is optional */ }
 
-      await supabase.from("leads").insert({
+      const { data, error } = await supabase.from("leads").insert({
         first_name: "Website",
         last_name: "Visitor",
         source: "website" as const,
@@ -127,7 +127,12 @@ export default function CookieConsent() {
         geo_city: geo.city,
         geo_region: geo.region,
         geo_country: geo.country,
-      });
+      }).select("id").single();
+
+      // Store the lead ID so the estimate form can merge instead of duplicating
+      if (!error && data?.id) {
+        localStorage.setItem("trumove_cookie_lead_id", data.id);
+      }
     } catch (err) {
       console.error("Cookie lead insert error:", err);
     }
