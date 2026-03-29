@@ -31,6 +31,7 @@ import { SeoOverrideProvider } from "./components/SeoOverrideProvider";
 import SiteCanonicalLayout from "./components/SiteCanonicalLayout";
 import { captureUtmParams } from "./lib/leadEnrichment";
 import CustomerService from "./pages/CustomerService";
+import ProductionHomeRedirect from "./components/ProductionHomeRedirect";
 import AdminSupportTickets from "./pages/AdminSupportTickets";
 import AgentPipeline from "./pages/AgentPipeline";
 import ProfileSettings from "./pages/ProfileSettings";
