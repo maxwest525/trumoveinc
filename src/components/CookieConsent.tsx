@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { X, Shield, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
+import { enrichLead } from "@/lib/leadEnrichment";
 
 declare global {
   interface Window {
@@ -84,12 +86,46 @@ export default function CookieConsent() {
     return () => clearTimeout(t);
   }, []);
 
+  // Insert a passive lead with enrichment data when user interacts with cookie banner
+  const insertCookieLead = async (record: ConsentRecord) => {
+    try {
+      const e = enrichLead();
+      await supabase.from("leads").insert({
+        first_name: "Website",
+        last_name: "Visitor",
+        source: "website" as const,
+        status: "new" as const,
+        assigned_agent_id: null,
+        ga_client_id: e.ga_client_id,
+        consent_ad_storage: record.ad_storage ? "granted" : "denied",
+        consent_analytics_storage: record.analytics_storage ? "granted" : "denied",
+        consent_ad_user_data: record.ad_user_data ? "granted" : "denied",
+        consent_ad_personalization: record.ad_personalization ? "granted" : "denied",
+        utm_source: e.utm_source,
+        utm_medium: e.utm_medium,
+        utm_campaign: e.utm_campaign,
+        utm_term: e.utm_term,
+        utm_content: e.utm_content,
+        gclid: e.gclid,
+        referrer: e.referrer,
+        user_agent: e.user_agent,
+        screen_resolution: e.screen_resolution,
+        browser_language: e.language,
+        device_type: e.device_type,
+        enrichment_timestamp: e.timestamp,
+      });
+    } catch (err) {
+      console.error("Cookie lead insert error:", err);
+    }
+  };
+
   const handleAcceptAll = () => {
     const r: ConsentRecord = {
       choice: 'accepted', ad_storage: true, analytics_storage: true,
       ad_user_data: true, ad_personalization: true, timestamp: new Date().toISOString(),
     };
     persist(r);
+    insertCookieLead(r);
     setVisible(false);
     setShowSettings(false);
   };
@@ -100,6 +136,7 @@ export default function CookieConsent() {
       ad_user_data: false, ad_personalization: false, timestamp: new Date().toISOString(),
     };
     persist(r);
+    insertCookieLead(r);
     setVisible(false);
     setShowSettings(false);
   };
@@ -114,6 +151,7 @@ export default function CookieConsent() {
       timestamp: new Date().toISOString(),
     };
     persist(r);
+    insertCookieLead(r);
     setVisible(false);
     setShowSettings(false);
   };
