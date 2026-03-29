@@ -276,7 +276,7 @@ export default function OnlineEstimate() {
     setExtendedDetails(details);
     setShowIntroModal(true);
 
-    // Insert lead into DB with enrichment data for CRM incoming leads
+    // Upsert lead into DB — merge with cookie lead if one exists
     try {
       const { enrichLead } = await import("@/lib/leadEnrichment");
       const enrichment = enrichLead();
@@ -285,7 +285,9 @@ export default function OnlineEstimate() {
       const firstName = nameParts[0] || "Website";
       const lastName = nameParts.slice(1).join(" ") || "Visitor";
 
-      await supabase.from("leads").insert({
+      const cookieLeadId = localStorage.getItem("trumove_cookie_lead_id");
+
+      const leadPayload = {
         first_name: firstName,
         last_name: lastName,
         email: details.email || null,
@@ -313,7 +315,17 @@ export default function OnlineEstimate() {
         browser_language: enrichment.language,
         device_type: enrichment.device_type,
         enrichment_timestamp: enrichment.timestamp,
-      });
+        landing_page_url: enrichment.landing_page_url,
+      };
+
+      if (cookieLeadId) {
+        // Merge: update the existing cookie lead with real customer info
+        await supabase.from("leads").update(leadPayload).eq("id", cookieLeadId);
+        localStorage.removeItem("trumove_cookie_lead_id");
+      } else {
+        // No prior cookie lead — insert fresh
+        await supabase.from("leads").insert(leadPayload);
+      }
     } catch (err) {
       console.error("Lead insert error:", err);
     }
