@@ -11,7 +11,7 @@ import { AddActivityForm } from "./AddActivityForm";
 import { DealAIAssistant } from "./DealAIAssistant";
 import { DealEmailComposer } from "./DealEmailComposer";
 import { DealQuickActions } from "./DealQuickActions";
-import { Phone, PhoneCall, Mail, MapPin, Calendar, DollarSign, Globe, Monitor, MousePointer, Shield } from "lucide-react";
+import { Phone, PhoneCall, Mail, MapPin, Calendar, DollarSign, Globe, Monitor, MousePointer, Shield, ExternalLink } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { DialerProvider } from "@/components/dialer/dialerProvider";
 
@@ -125,7 +125,7 @@ export function DealDetailPanel({ deal, stages, open, onOpenChange, onStageChang
           )}
 
           {/* Lead Enrichment Data */}
-          {lead && (lead.utm_source || lead.device_type || lead.consent_ad_storage || lead.ga_client_id) && (
+          {lead && (lead.utm_source || lead.device_type || lead.consent_ad_storage || lead.ga_client_id || lead.landing_page_url || lead.geo_city) && (
             <div className="space-y-3">
               <h5 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Marketing & Device</h5>
               
@@ -155,6 +155,27 @@ export function DealDetailPanel({ deal, stages, open, onOpenChange, onStageChang
                   {lead.screen_resolution && <div className="flex justify-between text-xs"><span className="text-muted-foreground">Screen</span><span className="font-medium">{lead.screen_resolution}</span></div>}
                   {lead.browser_language && <div className="flex justify-between text-xs"><span className="text-muted-foreground">Language</span><span className="font-medium">{lead.browser_language}</span></div>}
                   {lead.referrer && <div className="flex justify-between text-xs"><span className="text-muted-foreground">Referrer</span><span className="font-medium truncate max-w-[180px]">{lead.referrer}</span></div>}
+                  {lead.landing_page_url && (
+                    <div className="flex justify-between text-xs">
+                      <span className="text-muted-foreground">Landing Page</span>
+                      <a href={lead.landing_page_url} target="_blank" rel="noopener noreferrer" className="font-medium text-primary hover:underline inline-flex items-center gap-0.5 truncate max-w-[180px]">
+                        {(() => { try { return new URL(lead.landing_page_url).pathname || "/"; } catch { return lead.landing_page_url; } })()}
+                        <ExternalLink className="w-2.5 h-2.5 shrink-0" />
+                      </a>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Geo Location */}
+              {(lead.geo_city || lead.geo_region || lead.geo_country) && (
+                <div className="rounded-lg border border-border bg-muted/30 p-3 space-y-1.5">
+                  <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground mb-1">
+                    <MapPin className="h-3 w-3" /> Visitor Location
+                  </div>
+                  {lead.geo_city && <div className="flex justify-between text-xs"><span className="text-muted-foreground">City</span><span className="font-medium">{lead.geo_city}</span></div>}
+                  {lead.geo_region && <div className="flex justify-between text-xs"><span className="text-muted-foreground">State</span><span className="font-medium">{lead.geo_region}</span></div>}
+                  {lead.geo_country && <div className="flex justify-between text-xs"><span className="text-muted-foreground">Country</span><span className="font-medium">{lead.geo_country}</span></div>}
                 </div>
               )}
 
