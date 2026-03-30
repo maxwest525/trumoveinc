@@ -330,23 +330,30 @@ const PulseAgent: React.FC<{ embedded?: boolean; showSummary?: boolean }> = ({ e
         </div>
 
         {/* Recent Calls Dropdown */}
-        <div className="px-6 pb-2">
+        <div className="px-6 pb-3">
           <div className="relative" ref={dropdownRef}>
               <button
               onClick={() => setCallDropdownOpen(p => !p)}
               className={cn(
-                "w-full flex items-center justify-between px-3 py-2.5 rounded-lg border transition-all text-left",
-                callDropdownOpen ? "border-primary/40 bg-primary/5 shadow-sm" : "border-border bg-card hover:border-primary/20"
+                "w-full flex items-center justify-between px-4 py-4 rounded-xl border transition-all text-left shadow-sm",
+                callDropdownOpen ? "border-primary/40 bg-primary/5 shadow-md" : "border-border bg-card hover:border-primary/20"
               )}
             >
-              <div className="flex items-center gap-2 min-w-0">
-                <Phone className="w-4 h-4 text-muted-foreground shrink-0" />
-                <span className="text-xs font-semibold truncate">
-                  {selectedCallLabel || 'Recent Calls'}
-                </span>
-                <span className="text-[10px] text-muted-foreground shrink-0">{dbCalls.length}</span>
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                  <Phone className="w-4 h-4 text-primary" />
+                </div>
+                <div className="min-w-0">
+                  <span className="text-sm font-semibold truncate block">
+                    {selectedCallLabel || 'Recent Calls'}
+                  </span>
+                  <span className="text-[10px] text-muted-foreground">{dbCalls.length} calls recorded</span>
+                </div>
               </div>
-              <ChevronDown className={cn("w-4 h-4 text-muted-foreground transition-transform shrink-0", callDropdownOpen && "rotate-180")} />
+              <div className="flex items-center gap-2 shrink-0">
+                <Search className="w-4 h-4 text-muted-foreground" />
+                <ChevronDown className={cn("w-4 h-4 text-muted-foreground transition-transform", callDropdownOpen && "rotate-180")} />
+              </div>
             </button>
 
             {callDropdownOpen && (
