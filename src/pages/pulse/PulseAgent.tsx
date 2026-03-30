@@ -58,6 +58,8 @@ function highlightKeywords(text: string, keywords: string[]) {
 }
 
 const PulseAgent: React.FC<{ embedded?: boolean; showSummary?: boolean }> = ({ embedded = false, showSummary = true }) => {
+  const [requestingSummary, setRequestingSummary] = useState(false);
+  const [requestingScorecard, setRequestingScorecard] = useState(false);
   const { isListening, transcript, interimText, isSupported, start, stop, clear, appendText } = usePulseSpeechRecognition();
   const [liveCallId, setLiveCallId] = useState<string | null>(null);
   const [liveFlags, setLiveFlags] = useState<FlaggedKeyword[]>([]);
