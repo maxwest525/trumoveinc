@@ -72,8 +72,8 @@ CRITICAL COMPLIANCE RULES:
 SEO RULES:
 - Meta keywords are useless for Google. Never recommend them.
 - Focus ONLY on: title tag, meta description, H1 heading, and clear human-readable copy.
-- Title tags should be 50-60 characters, include the primary keyword near the front, and include the brand name.
-- Meta descriptions should be 150-160 characters, compelling, and include a call-to-action.
+- Title tags MUST be 50-60 characters. NEVER produce a title shorter than 50 characters. If the current title is too short, pad it with relevant modifiers, brand name, or value propositions to reach at least 50 characters.
+- Meta descriptions MUST be 150-160 characters. NEVER produce a description shorter than 150 characters. Expand with benefits, CTAs, or detail to reach the minimum.
 - H1 should be clear, include the keyword naturally, and be different from the title tag.
 - Write for humans first, search engines second.
 - Be specific and actionable.
