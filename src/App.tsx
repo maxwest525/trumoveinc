@@ -19,7 +19,7 @@ import Terms from "./pages/Terms";
 import PropertyLookup from "./pages/PropertyLookup";
 import Auth from "./pages/Auth";
 import PublicESign from "./pages/PublicESign";
-import AgentLogin from "./pages/AgentLogin";
+import WorkspaceHub from "./pages/WorkspaceHub";
 import AgentDashboard from "./pages/AgentDashboard";
 import AdminDeveloper from "./pages/AdminDeveloper";
 import ScanRoom from "./pages/ScanRoom";
