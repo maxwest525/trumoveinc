@@ -442,25 +442,143 @@ const PulseAgent: React.FC<{ embedded?: boolean; showSummary?: boolean }> = ({ e
           </div>
         </div>
 
-        {/* Sentiment Analysis Placeholder */}
+        {/* Sentiment Analysis — Live */}
         <div className="px-6 pb-3">
-          <div className="flex items-center gap-3 px-3 py-2 rounded-lg border border-dashed border-border bg-muted/10 max-w-xs">
-            <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-              <Brain className="w-3.5 h-3.5 text-primary" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-semibold text-foreground">Sentiment Analysis</span>
-                <Badge variant="outline" className="text-[8px] h-4 px-1.5 border-primary/30 text-primary">Coming Soon</Badge>
+          {callActive && sentiment.isActive ? (
+            <div className="rounded-lg border border-border bg-card/50 overflow-hidden">
+              <div className="flex items-center gap-2 px-3 py-1.5 border-b border-border/40 bg-secondary/30">
+                <Brain className="w-3.5 h-3.5 text-primary" />
+                <span className="text-[11px] font-semibold text-foreground">Sentiment Analysis</span>
+                <span className="relative flex h-1.5 w-1.5 ml-1">
+                  <span className="animate-ping absolute h-full w-full rounded-full bg-compliance-pass opacity-75" />
+                  <span className="relative rounded-full h-1.5 w-1.5 bg-compliance-pass" />
+                </span>
+                <span className="text-[9px] text-compliance-pass font-medium">LIVE</span>
               </div>
-              <p className="text-[10px] text-muted-foreground mt-0.5">Anger detection · Speech pace · Filler words (ugh, um) · Tone shifts</p>
+              <div className="grid grid-cols-2 sm:grid-cols-5 gap-px bg-border/20">
+                {/* Tone */}
+                <div className="bg-card/80 px-3 py-2 flex flex-col items-center gap-1">
+                  {(() => {
+                    const toneConfig: Record<ToneLevel, { icon: React.ElementType; color: string; label: string }> = {
+                      positive: { icon: Smile, color: 'text-compliance-pass', label: 'Positive' },
+                      neutral: { icon: Meh, color: 'text-muted-foreground', label: 'Neutral' },
+                      cautious: { icon: Meh, color: 'text-compliance-review', label: 'Cautious' },
+                      negative: { icon: Frown, color: 'text-orange-500', label: 'Negative' },
+                      angry: { icon: Frown, color: 'text-destructive', label: 'Angry' },
+                    };
+                    const tc = toneConfig[sentiment.tone];
+                    const TIcon = tc.icon;
+                    return (
+                      <>
+                        <TIcon className={cn("w-5 h-5", tc.color)} />
+                        <span className={cn("text-[10px] font-bold", tc.color)}>{tc.label}</span>
+                        <span className="text-[8px] text-muted-foreground uppercase tracking-wider">Tone</span>
+                      </>
+                    );
+                  })()}
+                </div>
+                {/* Anger Score */}
+                <div className="bg-card/80 px-3 py-2 flex flex-col items-center gap-1">
+                  <div className="relative w-8 h-8">
+                    <svg className="w-8 h-8 -rotate-90" viewBox="0 0 36 36">
+                      <circle cx="18" cy="18" r="14" fill="none" strokeWidth="3" className="stroke-muted/30" />
+                      <circle
+                        cx="18" cy="18" r="14" fill="none" strokeWidth="3"
+                        strokeDasharray={`${(sentiment.angerScore / 100) * 88} 88`}
+                        strokeLinecap="round"
+                        className={cn(
+                          sentiment.angerScore >= 50 ? 'stroke-destructive' :
+                          sentiment.angerScore >= 20 ? 'stroke-orange-500' : 'stroke-compliance-pass'
+                        )}
+                      />
+                    </svg>
+                    <span className={cn("absolute inset-0 flex items-center justify-center text-[9px] font-bold",
+                      sentiment.angerScore >= 50 ? 'text-destructive' :
+                      sentiment.angerScore >= 20 ? 'text-orange-500' : 'text-compliance-pass'
+                    )}>{sentiment.angerScore}</span>
+                  </div>
+                  <span className="text-[8px] text-muted-foreground uppercase tracking-wider">Anger</span>
+                </div>
+                {/* Filler Words */}
+                <div className="bg-card/80 px-3 py-2 flex flex-col items-center gap-1">
+                  <span className={cn("text-lg font-bold leading-none",
+                    sentiment.fillerCount > 10 ? 'text-destructive' :
+                    sentiment.fillerCount > 5 ? 'text-compliance-review' : 'text-foreground'
+                  )}>{sentiment.fillerCount}</span>
+                  <span className="text-[8px] text-muted-foreground uppercase tracking-wider">Fillers</span>
+                  {Object.keys(sentiment.fillerBreakdown).length > 0 && (
+                    <div className="flex flex-wrap gap-0.5 justify-center mt-0.5">
+                      {Object.entries(sentiment.fillerBreakdown).slice(0, 3).map(([word, count]) => (
+                        <span key={word} className="text-[7px] px-1 py-0.5 rounded bg-muted text-muted-foreground">
+                          {word} ×{count}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                {/* Speech Pace */}
+                <div className="bg-card/80 px-3 py-2 flex flex-col items-center gap-1">
+                  <div className="flex items-baseline gap-0.5">
+                    <span className={cn("text-lg font-bold leading-none",
+                      sentiment.wordsPerMinute > 180 ? 'text-destructive' :
+                      sentiment.wordsPerMinute > 150 ? 'text-compliance-review' : 'text-foreground'
+                    )}>{sentiment.wordsPerMinute}</span>
+                    <span className="text-[8px] text-muted-foreground">wpm</span>
+                  </div>
+                  <span className="text-[8px] text-muted-foreground uppercase tracking-wider">Pace</span>
+                  <span className={cn("text-[8px] font-medium",
+                    sentiment.wordsPerMinute > 180 ? 'text-destructive' :
+                    sentiment.wordsPerMinute > 150 ? 'text-compliance-review' :
+                    sentiment.wordsPerMinute < 80 ? 'text-primary' : 'text-compliance-pass'
+                  )}>
+                    {sentiment.wordsPerMinute > 180 ? 'Too fast' :
+                     sentiment.wordsPerMinute > 150 ? 'Fast' :
+                     sentiment.wordsPerMinute < 80 ? 'Slow' : 'Normal'}
+                  </span>
+                </div>
+                {/* Tone Shift */}
+                <div className="bg-card/80 px-3 py-2 flex flex-col items-center gap-1">
+                  {sentiment.toneShift ? (
+                    <>
+                      {sentiment.toneShiftDirection === 'improving' ? (
+                        <TrendingUp className="w-5 h-5 text-compliance-pass" />
+                      ) : (
+                        <TrendingDown className="w-5 h-5 text-destructive" />
+                      )}
+                      <span className={cn("text-[10px] font-bold",
+                        sentiment.toneShiftDirection === 'improving' ? 'text-compliance-pass' : 'text-destructive'
+                      )}>
+                        {sentiment.toneShiftDirection === 'improving' ? 'Improving' : 'Worsening'}
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <Meh className="w-5 h-5 text-muted-foreground/50" />
+                      <span className="text-[10px] font-medium text-muted-foreground">Stable</span>
+                    </>
+                  )}
+                  <span className="text-[8px] text-muted-foreground uppercase tracking-wider">Shift</span>
+                </div>
+              </div>
             </div>
-            <div className="flex items-center gap-1.5 shrink-0">
-              <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/20" />
-              <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/20" />
-              <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/20" />
+          ) : (
+            <div className="flex items-center gap-3 px-3 py-2 rounded-lg border border-dashed border-border bg-muted/10 max-w-md">
+              <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                <Brain className="w-3.5 h-3.5 text-primary" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-semibold text-foreground">Sentiment Analysis</span>
+                  {!callActive && (
+                    <Badge variant="outline" className="text-[8px] h-4 px-1.5 border-muted-foreground/30 text-muted-foreground">Inactive</Badge>
+                  )}
+                </div>
+                <p className="text-[10px] text-muted-foreground mt-0.5">
+                  {callActive ? 'Waiting for speech…' : 'Start a call to activate real-time tone detection'}
+                </p>
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         {/* Main content — live transcription or call review */}
