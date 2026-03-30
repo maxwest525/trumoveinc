@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Phone, Clock, User, AlertTriangle, Shield, ShieldAlert, ShieldCheck, Mic, MicOff, StopCircle, SendHorizonal, Keyboard, FileText, MessageSquare, ArrowLeft, ChevronRight, Calendar, X, Eye } from 'lucide-react';
+import { Phone, Clock, User, AlertTriangle, Shield, ShieldAlert, ShieldCheck, Mic, MicOff, StopCircle, SendHorizonal, Keyboard, FileText, MessageSquare, ArrowLeft, ChevronRight, Calendar, X, Eye, Sparkles, Loader2 } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
