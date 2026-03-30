@@ -8,11 +8,15 @@ import logoImg from "@/assets/logo.png";
 import PortalCard from "@/components/portal/PortalCard";
 import { useAgentProfile } from "@/hooks/useAgentProfile";
 import { useNotifications } from "@/hooks/useNotifications";
+import { useUserRoles } from "@/hooks/useUserRoles";
 import { motion } from "framer-motion";
 import type { Session } from "@supabase/supabase-js";
+import type { Database } from "@/integrations/supabase/types";
 
 import AgentToolWorkspace from "@/components/agent/AgentToolWorkspace";
 import GreenParticles from "@/components/portal/GreenParticles";
+
+type AppRole = Database["public"]["Enums"]["app_role"];
 
 const STORAGE_KEY = "truemove_remembered_role";
 
@@ -23,7 +27,7 @@ function getGreeting(): string {
   return "Good evening";
 }
 
-const PORTALS = [
+const PORTALS: { key: string; label: string; description: string; href: string; icon: any; accentHsl: string; requiredRoles: AppRole[] }[] = [
   {
     key: "agents",
     label: "Agents",
@@ -31,6 +35,7 @@ const PORTALS = [
     href: "/agent/dashboard",
     icon: Headset,
     accentHsl: "142 71% 45%",
+    requiredRoles: ["agent"],
   },
   {
     key: "managers",
@@ -39,6 +44,7 @@ const PORTALS = [
     href: "/manager/dashboard",
     icon: Users,
     accentHsl: "217 91% 60%",
+    requiredRoles: ["manager"],
   },
   {
     key: "admin",
@@ -47,6 +53,7 @@ const PORTALS = [
     href: "/admin/dashboard",
     icon: Shield,
     accentHsl: "38 92% 50%",
+    requiredRoles: ["admin", "owner"],
   },
   {
     key: "dispatch",
@@ -55,6 +62,7 @@ const PORTALS = [
     href: "/dispatch/dashboard",
     icon: Truck,
     accentHsl: "262 83% 58%",
+    requiredRoles: ["agent", "manager"],
   },
   {
     key: "marketing",
@@ -63,6 +71,7 @@ const PORTALS = [
     href: "/marketing/dashboard",
     icon: Megaphone,
     accentHsl: "330 81% 60%",
+    requiredRoles: ["marketing"],
   },
 ];
 
@@ -71,6 +80,7 @@ export default function AgentLogin() {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   
+  const { isOwner, hasAnyRole, loading: rolesLoading } = useUserRoles();
   const [workspaceOpen, setWorkspaceOpen] = useState(false);
   const { displayName } = useAgentProfile();
   const { unreadCount } = useNotifications();
@@ -159,19 +169,23 @@ export default function AgentLogin() {
 
         {/* Portal cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-4xl">
-          {PORTALS.map((portal, i) => (
-            <PortalCard
-              key={portal.key}
-              label={portal.label}
-              description={portal.description}
-              icon={portal.icon}
-              accentHsl={portal.accentHsl}
-              index={i}
-              onClick={() => {
-                navigate(portal.key === "agents" ? "/agent/dashboard" : portal.href);
-              }}
-            />
-          ))}
+          {PORTALS.map((portal, i) => {
+            const allowed = isOwner || hasAnyRole(...portal.requiredRoles as AppRole[]);
+            return (
+              <PortalCard
+                key={portal.key}
+                label={portal.label}
+                description={portal.description}
+                icon={portal.icon}
+                accentHsl={portal.accentHsl}
+                index={i}
+                disabled={rolesLoading ? true : !allowed}
+                onClick={() => {
+                  navigate(portal.key === "agents" ? "/agent/dashboard" : portal.href);
+                }}
+              />
+            );
+          })}
         </div>
 
         
