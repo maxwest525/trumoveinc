@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Phone, Clock, User, AlertTriangle, Shield, ShieldAlert, ShieldCheck, Mic, MicOff, StopCircle, SendHorizonal, Keyboard, FileText, MessageSquare, ArrowLeft } from 'lucide-react';
+import { Phone, Clock, User, AlertTriangle, Shield, ShieldAlert, ShieldCheck, Mic, MicOff, StopCircle, SendHorizonal, Keyboard, FileText, MessageSquare, ArrowLeft, ChevronRight, Calendar, X, Eye } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
@@ -7,16 +7,17 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { usePulseSpeechRecognition } from '@/hooks/usePulseSpeechRecognition';
 import { Link } from 'react-router-dom';
+import { format, formatDistanceToNowStrict } from 'date-fns';
 
 type Severity = 'low' | 'medium' | 'high' | 'critical';
 interface FlaggedKeyword { keyword: string; severity: Severity; timestamp: string; context: string; }
 interface WatchEntry { id: string; pattern: string; type: 'keyword' | 'phrase' | 'regex'; }
 
-const SEVERITY_META: Record<Severity, { label: string; color: string; bg: string; icon: React.ElementType }> = {
-  low: { label: 'Low', color: 'text-muted-foreground', bg: 'bg-muted/50', icon: ShieldCheck },
-  medium: { label: 'Medium', color: 'text-compliance-review', bg: 'bg-compliance-review/10', icon: Shield },
-  high: { label: 'High', color: 'text-orange-500', bg: 'bg-orange-500/10', icon: ShieldAlert },
-  critical: { label: 'Critical', color: 'text-destructive', bg: 'bg-destructive/10', icon: AlertTriangle },
+const SEVERITY_META: Record<Severity, { label: string; color: string; bg: string; border: string; icon: React.ElementType }> = {
+  low: { label: 'Low', color: 'text-muted-foreground', bg: 'bg-muted/50', border: 'border-muted', icon: ShieldCheck },
+  medium: { label: 'Medium', color: 'text-compliance-review', bg: 'bg-compliance-review/10', border: 'border-compliance-review/30', icon: Shield },
+  high: { label: 'High', color: 'text-orange-500', bg: 'bg-orange-500/10', border: 'border-orange-500/30', icon: ShieldAlert },
+  critical: { label: 'Critical', color: 'text-destructive', bg: 'bg-destructive/10', border: 'border-destructive/30', icon: AlertTriangle },
 };
 
 const AGENT_NAME = 'Agent Smith';
@@ -38,6 +39,23 @@ function checkMatch(text: string, entry: WatchEntry): string | null {
   return null;
 }
 
+function highlightKeywords(text: string, keywords: string[]) {
+  if (!keywords.length || !text) return text;
+  try {
+    const escaped = keywords.map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+    const regex = new RegExp(`(${escaped.join('|')})`, 'gi');
+    return text.split(regex).map((seg, i) => {
+      regex.lastIndex = 0;
+      if (regex.test(seg)) {
+        regex.lastIndex = 0;
+        return <mark key={i} className="bg-destructive/30 text-destructive-foreground px-0.5 rounded-sm font-semibold">{seg}</mark>;
+      }
+      regex.lastIndex = 0;
+      return seg;
+    });
+  } catch { return text; }
+}
+
 const PulseAgent: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
   const { isListening, transcript, interimText, isSupported, start, stop, clear, appendText } = usePulseSpeechRecognition();
   const [liveCallId, setLiveCallId] = useState<string | null>(null);
@@ -47,6 +65,10 @@ const PulseAgent: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
   const lastCheckedRef = useRef(0);
   const [dbCalls, setDbCalls] = useState<any[]>([]);
   const [manualText, setManualText] = useState('');
+  const [selectedCallId, setSelectedCallId] = useState<string | null>(null);
+  const [reviewCall, setReviewCall] = useState<any>(null);
+  const [reviewAlerts, setReviewAlerts] = useState<any[]>([]);
+  const [reviewLoading, setReviewLoading] = useState(false);
 
   const getWatchEntries = useCallback(async (): Promise<WatchEntry[]> => {
     try { const saved = localStorage.getItem('pulse-watch-entries'); if (saved) { const parsed = JSON.parse(saved); if (Array.isArray(parsed) && parsed.length > 0) return parsed; } } catch {}
@@ -66,13 +88,33 @@ const PulseAgent: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
   const handleManualSubmit = useCallback(() => { if (!manualText.trim() || !callActive) return; appendText(manualText.trim()); setManualText(''); }, [manualText, callActive, appendText]);
 
   const fetchDbCalls = useCallback(async () => {
-    const { data } = await supabase.from('pulse_calls' as any).select('id, agent_name, created_at, status, flagged_keywords').order('created_at', { ascending: false }).limit(20);
+    const { data } = await supabase.from('pulse_calls' as any).select('id, agent_name, client_name, created_at, status, severity, duration_seconds, flagged_keywords, compliance_score, talk_ratio_agent, talk_ratio_client').order('created_at', { ascending: false }).limit(30);
     if (data) setDbCalls(data);
   }, []);
 
   useEffect(() => { fetchDbCalls(); }, [fetchDbCalls]);
 
+  // Load selected call for review
+  const openCallReview = useCallback(async (callId: string) => {
+    setSelectedCallId(callId);
+    setReviewLoading(true);
+    const [callRes, alertsRes] = await Promise.all([
+      supabase.from('pulse_calls' as any).select('*').eq('id', callId).single(),
+      supabase.from('pulse_alerts' as any).select('*').eq('call_id', callId).order('created_at', { ascending: true }),
+    ]);
+    if (callRes.data) setReviewCall(callRes.data);
+    if (alertsRes.data) setReviewAlerts(alertsRes.data as any[]);
+    setReviewLoading(false);
+  }, []);
+
+  const closeCallReview = useCallback(() => {
+    setSelectedCallId(null);
+    setReviewCall(null);
+    setReviewAlerts([]);
+  }, []);
+
   const startCall = useCallback(async () => {
+    closeCallReview();
     clear(); setLiveFlags([]); lastCheckedRef.current = 0;
     const { data: { user } } = await supabase.auth.getUser();
     const userId = user?.id;
@@ -80,7 +122,7 @@ const PulseAgent: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
     if (error || !data) { toast.error('Failed to create call record'); return; }
     setLiveCallId((data as any).id); setCallStartTime(new Date()); setCallActive(true);
     if (isSupported) start(); fetchDbCalls();
-  }, [clear, start, fetchDbCalls, isSupported]);
+  }, [clear, start, fetchDbCalls, isSupported, closeCallReview]);
 
   useEffect(() => {
     if (!callActive || !liveCallId) return;
@@ -118,69 +160,28 @@ const PulseAgent: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
         const { data: { user: currentUser } } = await supabase.auth.getUser();
         await supabase.from('pulse_alerts' as any).insert({ agent_name: AGENT_NAME, keyword: entry.pattern, matched_text: matched, context: contextSnippet, severity: sev, match_type: entry.type, call_id: liveCallId, created_by: currentUser?.id } as any);
 
-        // Send email alerts to configured managers
         if (notifSettings?.email?.enabled && notifSettings.email.recipients?.length) {
           const enabledRecipients = notifSettings.email.recipients.filter((r: any) => r.enabled);
           for (const recipient of enabledRecipients) {
             try {
-              await supabase.functions.invoke('pulse-send-keyword-alert', {
-                body: {
-                  channel: 'email',
-                  keyword: entry.pattern,
-                  matched,
-                  context: contextSnippet,
-                  timestamp: new Date().toISOString(),
-                  agent_name: AGENT_NAME,
-                  to_email: recipient.value,
-                },
-              });
-            } catch (err) {
-              console.error('Failed to send keyword alert email:', err);
-            }
+              await supabase.functions.invoke('pulse-send-keyword-alert', { body: { channel: 'email', keyword: entry.pattern, matched, context: contextSnippet, timestamp: new Date().toISOString(), agent_name: AGENT_NAME, to_email: recipient.value } });
+            } catch (err) { console.error('Failed to send keyword alert email:', err); }
           }
         }
-
-        // Send SMS alerts if configured
         if (notifSettings?.sms?.enabled && notifSettings.sms.recipients?.length) {
           const enabledSmsRecipients = notifSettings.sms.recipients.filter((r: any) => r.enabled);
           for (const recipient of enabledSmsRecipients) {
             try {
-              await supabase.functions.invoke('pulse-send-keyword-alert', {
-                body: {
-                  channel: 'sms',
-                  keyword: entry.pattern,
-                  matched,
-                  context: contextSnippet,
-                  timestamp: new Date().toISOString(),
-                  agent_name: AGENT_NAME,
-                  phone_number: recipient.value,
-                },
-              });
-            } catch (err) {
-              console.error('Failed to send keyword alert SMS:', err);
-            }
+              await supabase.functions.invoke('pulse-send-keyword-alert', { body: { channel: 'sms', keyword: entry.pattern, matched, context: contextSnippet, timestamp: new Date().toISOString(), agent_name: AGENT_NAME, phone_number: recipient.value } });
+            } catch (err) { console.error('Failed to send keyword alert SMS:', err); }
           }
         }
-
-        // Send Slack alerts if configured
         if (notifSettings?.slack?.enabled && notifSettings.slack.recipients?.length) {
           const slackUrls = notifSettings.slack.recipients.filter((r: any) => r.enabled).map((r: any) => r.value).join(',');
           if (slackUrls) {
             try {
-              await supabase.functions.invoke('pulse-send-keyword-alert', {
-                body: {
-                  channel: 'slack',
-                  keyword: entry.pattern,
-                  matched,
-                  context: contextSnippet,
-                  timestamp: new Date().toISOString(),
-                  agent_name: AGENT_NAME,
-                  slack_webhook_urls: slackUrls,
-                },
-              });
-            } catch (err) {
-              console.error('Failed to send keyword alert to Slack:', err);
-            }
+              await supabase.functions.invoke('pulse-send-keyword-alert', { body: { channel: 'slack', keyword: entry.pattern, matched, context: contextSnippet, timestamp: new Date().toISOString(), agent_name: AGENT_NAME, slack_webhook_urls: slackUrls } });
+            } catch (err) { console.error('Failed to send keyword alert to Slack:', err); }
           }
         }
       });
@@ -196,6 +197,9 @@ const PulseAgent: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
       }).subscribe();
     return () => { supabase.removeChannel(channel); };
   }, []);
+
+  // Show call review panel or live transcription
+  const showingReview = selectedCallId && !callActive;
 
   return (
     <div className={cn(embedded ? "" : "min-h-screen bg-background text-foreground")}>
@@ -216,75 +220,356 @@ const PulseAgent: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
       )}
 
       <main className={cn("max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-[340px_1fr]", embedded ? "" : "min-h-[calc(100vh-3.5rem)]")}>
-        <div className="border-r border-border/40 bg-secondary/5">
-          <div className="p-3 border-b border-border/30"><h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5"><Phone className="w-3 h-3" /> Recent Calls</h2></div>
-          <ScrollArea className="h-[calc(100vh-7rem)]">
+        {/* Left sidebar — Recent Calls */}
+        <div className="border-r border-border/40 bg-secondary/5 flex flex-col">
+          <div className="p-3 border-b border-border/30 flex items-center justify-between">
+            <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+              <Phone className="w-3 h-3" /> Recent Calls
+            </h2>
+            <span className="text-[10px] text-muted-foreground">{dbCalls.length} total</span>
+          </div>
+          <ScrollArea className="flex-1">
             <div className="p-2 space-y-1">
               {dbCalls.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-40 text-center px-6"><Phone className="w-8 h-8 text-muted-foreground/30 mb-3" /><p className="text-sm text-muted-foreground">No calls yet</p></div>
-              ) : dbCalls.map(call => (
-                <div key={call.id} className="p-3 rounded-lg border border-border bg-secondary/10">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm font-medium">{call.agent_name}</span>
-                    <Badge variant={call.status === 'active' ? 'default' : 'secondary'} className="text-[9px] h-4 px-1.5">{call.status}</Badge>
-                  </div>
-                  <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
-                    <span>{new Date(call.created_at).toLocaleTimeString()}</span>
-                    {call.flagged_keywords?.length > 0 && <Badge variant="destructive" className="text-[9px] h-4 px-1.5">{call.flagged_keywords.length} flags</Badge>}
-                  </div>
+                <div className="flex flex-col items-center justify-center h-40 text-center px-6">
+                  <Phone className="w-8 h-8 text-muted-foreground/30 mb-3" />
+                  <p className="text-sm text-muted-foreground">No calls yet</p>
+                  <p className="text-[10px] text-muted-foreground/60 mt-1">Start a call to begin monitoring</p>
                 </div>
-              ))}
+              ) : dbCalls.map(call => {
+                const sev = (call.severity as Severity) || 'low';
+                const sm = SEVERITY_META[sev];
+                const SIcon = sm.icon;
+                const isActive = call.status === 'active';
+                const isSelected = selectedCallId === call.id;
+                const flagCount = call.flagged_keywords?.length || 0;
+                const dur = call.duration_seconds;
+                const durLabel = dur ? `${Math.floor(dur / 60)}:${(dur % 60).toString().padStart(2, '0')}` : null;
+
+                return (
+                  <button
+                    key={call.id}
+                    onClick={() => openCallReview(call.id)}
+                    className={cn(
+                      "w-full text-left p-3 rounded-lg border transition-all group",
+                      isSelected
+                        ? "bg-primary/5 border-primary/30 shadow-sm"
+                        : "bg-card border-border hover:border-primary/20 hover:bg-secondary/20",
+                      isActive && "ring-1 ring-compliance-pass/40"
+                    )}
+                  >
+                    {/* Row 1: Agent + Status */}
+                    <div className="flex items-center justify-between mb-1.5">
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <User className="w-3 h-3 text-muted-foreground shrink-0" />
+                        <span className="text-xs font-semibold truncate">{call.agent_name}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        {isActive && (
+                          <span className="flex items-center gap-1 text-[9px] font-medium text-compliance-pass">
+                            <span className="relative flex h-1.5 w-1.5">
+                              <span className="animate-ping absolute h-full w-full rounded-full bg-compliance-pass opacity-75" />
+                              <span className="relative rounded-full h-1.5 w-1.5 bg-compliance-pass" />
+                            </span>
+                            LIVE
+                          </span>
+                        )}
+                        {!isActive && (
+                          <Badge variant="secondary" className="text-[8px] h-4 px-1.5 font-medium">
+                            {call.status}
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Row 2: Client + Severity */}
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="text-[11px] text-muted-foreground truncate">
+                        {call.client_name || 'Unknown Client'}
+                      </span>
+                      {flagCount > 0 && (
+                        <span className={cn("flex items-center gap-0.5 text-[9px] font-bold uppercase", sm.color)}>
+                          <SIcon className="w-2.5 h-2.5" />
+                          {sm.label}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Row 3: Meta chips */}
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-[10px] text-muted-foreground/70 flex items-center gap-0.5">
+                        <Calendar className="w-2.5 h-2.5" />
+                        {formatDistanceToNowStrict(new Date(call.created_at), { addSuffix: true })}
+                      </span>
+                      {durLabel && (
+                        <span className="text-[10px] text-muted-foreground/70 flex items-center gap-0.5">
+                          <Clock className="w-2.5 h-2.5" />
+                          {durLabel}
+                        </span>
+                      )}
+                      {flagCount > 0 && (
+                        <span className="text-[10px] font-medium text-destructive flex items-center gap-0.5">
+                          <AlertTriangle className="w-2.5 h-2.5" />
+                          {flagCount} flag{flagCount !== 1 ? 's' : ''}
+                        </span>
+                      )}
+                      {call.compliance_score != null && (
+                        <span className={cn(
+                          "text-[10px] font-bold",
+                          call.compliance_score >= 80 ? "text-compliance-pass" : call.compliance_score >= 60 ? "text-compliance-review" : "text-destructive"
+                        )}>
+                          {call.compliance_score}%
+                        </span>
+                      )}
+                      <ChevronRight className="w-3 h-3 text-muted-foreground/30 ml-auto group-hover:text-foreground transition-colors" />
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           </ScrollArea>
         </div>
 
+        {/* Right panel — live transcription or call review */}
         <div className="overflow-y-auto">
-          <div className="p-6 space-y-5">
-            <div className="flex items-center justify-between">
-              <div><h1 className="text-lg font-bold">Live Transcription</h1><p className="text-xs text-muted-foreground mt-0.5">{callActive ? 'Listening… speak or type below' : 'Press Start Call to begin'}</p></div>
-              <div className="flex items-center gap-2">
-                {!callActive ? (
-                  <button onClick={startCall} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-compliance-pass text-white text-sm font-semibold hover:opacity-90 transition-opacity"><Mic className="w-4 h-4" /> Start Call</button>
-                ) : (
-                  <button onClick={stopCall} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-destructive text-destructive-foreground text-sm font-semibold hover:opacity-90 transition-opacity"><StopCircle className="w-4 h-4" /> End Call</button>
-                )}
-              </div>
-            </div>
-            {!isSupported && <div className="p-3 rounded-lg border border-destructive/30 bg-destructive/5 text-destructive text-xs">Speech recognition is not supported in this browser. Use Chrome or Edge.</div>}
-            {callActive && (
-              <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-compliance-pass/10 border border-compliance-pass/20">
-                <span className="relative flex h-2.5 w-2.5"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-compliance-pass opacity-75" /><span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-compliance-pass" /></span>
-                <span className="text-xs font-medium text-compliance-pass">Recording</span>
-              </div>
-            )}
-            {callActive && (
-              <div className="flex items-center gap-2">
-                <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-muted/50 border border-border/40"><Keyboard className="w-3 h-3 text-muted-foreground" /><span className="text-[10px] text-muted-foreground font-medium">Manual Input</span></div>
-                <input type="text" value={manualText} onChange={e => setManualText(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') handleManualSubmit(); }} placeholder="Type text to simulate speech…" className="flex-1 h-8 px-3 text-xs bg-secondary/40 border border-border/40 rounded-md placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/50" />
-                <button onClick={handleManualSubmit} disabled={!manualText.trim()} className="h-8 px-3 rounded-md bg-primary text-primary-foreground text-xs font-medium flex items-center gap-1.5 hover:opacity-90 disabled:opacity-40"><SendHorizonal className="w-3 h-3" /> Send</button>
-              </div>
-            )}
-            {liveFlags.length > 0 && (
-              <div className="space-y-2">
-                <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5"><AlertTriangle className="w-3 h-3 text-destructive" /> Flagged Keywords</h2>
-                {liveFlags.map((flag, i) => { const sm = SEVERITY_META[flag.severity]; const SI = sm.icon; return (
-                  <div key={i} className={cn('p-3 rounded-lg border border-border', sm.bg)}>
-                    <div className="flex items-center gap-2 mb-1"><SI className={cn('w-3.5 h-3.5', sm.color)} /><Badge variant="destructive" className="text-[10px]">{flag.keyword}</Badge><span className={cn('text-[10px] font-semibold uppercase', sm.color)}>{sm.label}</span><span className="ml-auto text-[10px] text-muted-foreground flex items-center gap-0.5"><Clock className="w-2.5 h-2.5" /> {flag.timestamp}</span></div>
-                    <p className="text-xs text-muted-foreground leading-relaxed">{flag.context}</p>
-                  </div>
-                ); })}
-              </div>
-            )}
-            <div className="space-y-2">
-              <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5"><FileText className="w-3 h-3 text-primary" /> Live Transcript</h2>
-              <ScrollArea className="h-[50vh] rounded-lg bg-secondary/20 border border-border p-4">
-                <div className="text-sm leading-relaxed whitespace-pre-wrap font-mono">
-                  {transcript || (callActive ? '' : 'No transcript yet. Start a call to begin.')}
-                  {interimText && <span className="text-muted-foreground/50">{interimText}</span>}
+          {showingReview ? (
+            /* ── Call Review Panel ── */
+            <div className="p-6 space-y-5">
+              {reviewLoading ? (
+                <div className="flex items-center justify-center py-20">
+                  <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
                 </div>
-              </ScrollArea>
+              ) : reviewCall ? (
+                <>
+                  {/* Header */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <button onClick={closeCallReview} className="p-1.5 rounded-md hover:bg-muted transition-colors">
+                        <ArrowLeft className="w-4 h-4 text-muted-foreground" />
+                      </button>
+                      <div>
+                        <h1 className="text-lg font-bold">Call Review</h1>
+                        <p className="text-[11px] text-muted-foreground mt-0.5">
+                          {reviewCall.agent_name} → {reviewCall.client_name || 'Unknown Client'} · {format(new Date(reviewCall.created_at), 'MMM d, yyyy h:mm a')}
+                        </p>
+                      </div>
+                    </div>
+                    {(() => {
+                      const s = (reviewCall.severity as Severity) || 'low';
+                      const m = SEVERITY_META[s];
+                      const I = m.icon;
+                      return (
+                        <span className={cn("flex items-center gap-1 text-xs font-bold uppercase px-2 py-1 rounded-md", m.bg, m.color, m.border, "border")}>
+                          <I className="w-3.5 h-3.5" /> {m.label}
+                        </span>
+                      );
+                    })()}
+                  </div>
+
+                  {/* Call meta bar */}
+                  <div className="flex items-center gap-6 p-3 rounded-xl border border-border bg-secondary/20">
+                    <div className="flex items-center gap-2">
+                      <User className="w-3.5 h-3.5 text-primary" />
+                      <div>
+                        <p className="text-xs font-semibold">{reviewCall.agent_name}</p>
+                        <p className="text-[9px] text-muted-foreground uppercase">Agent</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Phone className="w-3.5 h-3.5 text-muted-foreground" />
+                      <div>
+                        <p className="text-xs font-semibold">{reviewCall.client_name || 'Unknown'}</p>
+                        <p className="text-[9px] text-muted-foreground uppercase">Client</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-3.5 h-3.5 text-muted-foreground" />
+                      <div>
+                        <p className="text-xs font-semibold">
+                          {reviewCall.duration_seconds ? `${Math.floor(reviewCall.duration_seconds / 60)}:${(reviewCall.duration_seconds % 60).toString().padStart(2, '0')}` : '—'}
+                        </p>
+                        <p className="text-[9px] text-muted-foreground uppercase">Duration</p>
+                      </div>
+                    </div>
+                    {reviewCall.compliance_score != null && (
+                      <div className="flex items-center gap-2">
+                        <Shield className="w-3.5 h-3.5 text-muted-foreground" />
+                        <div>
+                          <p className={cn("text-xs font-bold",
+                            reviewCall.compliance_score >= 80 ? "text-compliance-pass" : reviewCall.compliance_score >= 60 ? "text-compliance-review" : "text-destructive"
+                          )}>{reviewCall.compliance_score}%</p>
+                          <p className="text-[9px] text-muted-foreground uppercase">Compliance</p>
+                        </div>
+                      </div>
+                    )}
+                    {(reviewCall.talk_ratio_agent || reviewCall.talk_ratio_client) && (
+                      <div className="flex items-center gap-2 ml-auto">
+                        <div className="text-right">
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-[10px] text-muted-foreground">Agent</span>
+                            <span className="text-xs font-bold text-foreground">{reviewCall.talk_ratio_agent || 0}%</span>
+                            <span className="text-muted-foreground/30">|</span>
+                            <span className="text-xs font-bold text-foreground">{reviewCall.talk_ratio_client || 0}%</span>
+                            <span className="text-[10px] text-muted-foreground">Client</span>
+                          </div>
+                          <p className="text-[9px] text-muted-foreground uppercase text-right">Talk Ratio</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Flagged keywords */}
+                  {reviewAlerts.length > 0 && (
+                    <div className="space-y-2">
+                      <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+                        <AlertTriangle className="w-3 h-3 text-destructive" />
+                        Flagged Keywords
+                        <Badge variant="destructive" className="text-[9px] ml-1">{reviewAlerts.length}</Badge>
+                      </h2>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {reviewAlerts.map((alert: any) => {
+                          const aSev = (alert.severity as Severity) || 'medium';
+                          const aMeta = SEVERITY_META[aSev];
+                          const AIcon = aMeta.icon;
+                          return (
+                            <div key={alert.id} className={cn("p-2.5 rounded-lg border", aMeta.bg, aMeta.border)}>
+                              <div className="flex items-center gap-2 mb-1">
+                                <AIcon className={cn("w-3 h-3", aMeta.color)} />
+                                <Badge variant="destructive" className="text-[10px]">{alert.matched_text}</Badge>
+                                <span className={cn("text-[9px] font-bold uppercase", aMeta.color)}>{aMeta.label}</span>
+                                <span className="ml-auto text-[9px] text-muted-foreground">{alert.match_type}</span>
+                              </div>
+                              {alert.context && <p className="text-[10px] text-muted-foreground leading-relaxed line-clamp-2">{alert.context}</p>}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Summary */}
+                  {reviewCall.summary && (
+                    <div className="rounded-xl border border-border bg-card/50 p-4">
+                      <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Call Summary</h3>
+                      <p className="text-sm leading-relaxed">{reviewCall.summary}</p>
+                    </div>
+                  )}
+
+                  {/* Transcript */}
+                  <div className="space-y-2">
+                    <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+                      <FileText className="w-3 h-3 text-primary" /> Full Transcript
+                    </h2>
+                    <ScrollArea className="h-[50vh] rounded-lg bg-secondary/20 border border-border p-4">
+                      <div className="space-y-1 font-mono text-xs leading-relaxed whitespace-pre-wrap">
+                        {reviewCall.transcript ? reviewCall.transcript.split('\n').map((line: string, i: number) => (
+                          <div key={i} className={cn("py-1.5 px-2 rounded", line.includes('Agent:') ? 'bg-primary/5' : '')}>
+                            {highlightKeywords(line, reviewCall.flagged_keywords || [])}
+                          </div>
+                        )) : (
+                          <p className="text-muted-foreground/50 italic text-center py-8">No transcript recorded</p>
+                        )}
+                      </div>
+                    </ScrollArea>
+                  </div>
+                </>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
+                  <AlertTriangle className="w-10 h-10 mb-3 opacity-30" />
+                  <p className="text-sm">Call not found</p>
+                </div>
+              )}
             </div>
-          </div>
+          ) : (
+            /* ── Live Transcription Panel ── */
+            <div className="p-6 space-y-5">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h1 className="text-lg font-bold">Live Transcription</h1>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {callActive ? 'Listening… speak or type below' : 'Press Start Call to begin, or select a call to review'}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  {!callActive ? (
+                    <button onClick={startCall} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-compliance-pass text-white text-sm font-semibold hover:opacity-90 transition-opacity">
+                      <Mic className="w-4 h-4" /> Start Call
+                    </button>
+                  ) : (
+                    <button onClick={stopCall} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-destructive text-destructive-foreground text-sm font-semibold hover:opacity-90 transition-opacity">
+                      <StopCircle className="w-4 h-4" /> End Call
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {!isSupported && (
+                <div className="p-3 rounded-lg border border-destructive/30 bg-destructive/5 text-destructive text-xs">
+                  Speech recognition is not supported in this browser. Use Chrome or Edge.
+                </div>
+              )}
+
+              {callActive && (
+                <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-compliance-pass/10 border border-compliance-pass/20">
+                  <span className="relative flex h-2.5 w-2.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-compliance-pass opacity-75" />
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-compliance-pass" />
+                  </span>
+                  <span className="text-xs font-medium text-compliance-pass">Recording</span>
+                </div>
+              )}
+
+              {callActive && (
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-muted/50 border border-border/40">
+                    <Keyboard className="w-3 h-3 text-muted-foreground" />
+                    <span className="text-[10px] text-muted-foreground font-medium">Manual Input</span>
+                  </div>
+                  <input type="text" value={manualText} onChange={e => setManualText(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') handleManualSubmit(); }} placeholder="Type text to simulate speech…" className="flex-1 h-8 px-3 text-xs bg-secondary/40 border border-border/40 rounded-md placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/50" />
+                  <button onClick={handleManualSubmit} disabled={!manualText.trim()} className="h-8 px-3 rounded-md bg-primary text-primary-foreground text-xs font-medium flex items-center gap-1.5 hover:opacity-90 disabled:opacity-40">
+                    <SendHorizonal className="w-3 h-3" /> Send
+                  </button>
+                </div>
+              )}
+
+              {liveFlags.length > 0 && (
+                <div className="space-y-2">
+                  <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+                    <AlertTriangle className="w-3 h-3 text-destructive" /> Flagged Keywords
+                  </h2>
+                  {liveFlags.map((flag, i) => {
+                    const sm = SEVERITY_META[flag.severity];
+                    const SI = sm.icon;
+                    return (
+                      <div key={i} className={cn('p-3 rounded-lg border border-border', sm.bg)}>
+                        <div className="flex items-center gap-2 mb-1">
+                          <SI className={cn('w-3.5 h-3.5', sm.color)} />
+                          <Badge variant="destructive" className="text-[10px]">{flag.keyword}</Badge>
+                          <span className={cn('text-[10px] font-semibold uppercase', sm.color)}>{sm.label}</span>
+                          <span className="ml-auto text-[10px] text-muted-foreground flex items-center gap-0.5">
+                            <Clock className="w-2.5 h-2.5" /> {flag.timestamp}
+                          </span>
+                        </div>
+                        <p className="text-xs text-muted-foreground leading-relaxed">{flag.context}</p>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              <div className="space-y-2">
+                <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+                  <FileText className="w-3 h-3 text-primary" /> Live Transcript
+                </h2>
+                <ScrollArea className="h-[50vh] rounded-lg bg-secondary/20 border border-border p-4">
+                  <div className="text-sm leading-relaxed whitespace-pre-wrap font-mono">
+                    {transcript || (callActive ? '' : 'No transcript yet. Start a call to begin.')}
+                    {interimText && <span className="text-muted-foreground/50">{interimText}</span>}
+                  </div>
+                </ScrollArea>
+              </div>
+            </div>
+          )}
         </div>
       </main>
     </div>
