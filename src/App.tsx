@@ -103,59 +103,72 @@ const App = () => (
             <Route path="/esign/:refNumber" element={<PublicESign />} />
 
             {/* ── CRM / Backend routes ─────────────────────────────── */}
-            <Route path="/agent/dashboard" element={<AgentDashboard />} />
-            <Route path="/admin/developer" element={<AdminDeveloper />} />
-            <Route path="/admin/employee-requests" element={<AdminSupportTickets />} />
-            <Route path="/agent/pipeline" element={<AgentPipeline />} />
+            {/* Agent routes */}
+            <Route path="/agent/dashboard" element={<RoleGuard allowedRoles={["agent"]}><AgentDashboard /></RoleGuard>} />
+            <Route path="/agent/pipeline" element={<RoleGuard allowedRoles={["agent"]}><AgentPipeline /></RoleGuard>} />
             <Route path="/agent/profile" element={<ProfileSettings />} />
-            <Route path="/manager/dashboard" element={<ManagerDashboard />} />
-            <Route path="/admin/dashboard" element={<AdminDashboard />} />
-            <Route path="/admin/users" element={<AdminUsersPage />} />
-            <Route path="/admin/pricing" element={<AdminPricing />} />
-            <Route path="/admin/lead-vendors" element={<AdminLeadVendors />} />
-            <Route path="/leads/dashboard" element={<LeadsDashboard />} />
-            <Route path="/leads/vendors" element={<AdminLeadVendors />} />
-            <Route path="/leads/performance" element={<LeadsPerformance />} />
-            <Route path="/kpi" element={<KpiDashboard />} />
-            <Route path="/leaderboard" element={<Leaderboard />} />
+            <Route path="/agent/incoming" element={<RoleGuard allowedRoles={["agent"]}><AgentIncomingLeads /></RoleGuard>} />
+            <Route path="/agent/operations" element={<RoleGuard allowedRoles={["agent"]}><AgentOperations /></RoleGuard>} />
+            <Route path="/agent/new-customer" element={<RoleGuard allowedRoles={["agent"]}><AgentNewCustomer /></RoleGuard>} />
+            <Route path="/agent/move-details/:leadId" element={<RoleGuard allowedRoles={["agent"]}><AgentMoveDetails /></RoleGuard>} />
+            <Route path="/agent/inventory/:leadId" element={<RoleGuard allowedRoles={["agent"]}><AgentInventory /></RoleGuard>} />
+            <Route path="/agent/dialer" element={<RoleGuard allowedRoles={["agent"]}><AgentDialerPage /></RoleGuard>} />
+            <Route path="/agent/esign" element={<RoleGuard allowedRoles={["agent"]}><AgentESign /></RoleGuard>} />
+            <Route path="/agent/esign/view" element={<RoleGuard allowedRoles={["agent"]}><ESignViewPage /></RoleGuard>} />
+            <Route path="/agent/payment" element={<RoleGuard allowedRoles={["agent"]}><AgentPayment /></RoleGuard>} />
+            <Route path="/agent/customers" element={<RoleGuard allowedRoles={["agent"]}><AgentCustomers /></RoleGuard>} />
+            <Route path="/agent/customers/:id" element={<RoleGuard allowedRoles={["agent"]}><AgentCustomerDetail /></RoleGuard>} />
+            <Route path="/agent/messages" element={<RoleGuard allowedRoles={["agent"]}><AgentMessaging /></RoleGuard>} />
+            <Route path="/agent/team-chat" element={<RoleGuard allowedRoles={["agent"]}><AgentTeamChat /></RoleGuard>} />
+            <Route path="/agent/pulse" element={<RoleGuard allowedRoles={["agent"]}><AgentPulse /></RoleGuard>} />
+            <Route path="/agent/pulse/call/:callId" element={<RoleGuard allowedRoles={["agent"]}><AgentPulseCallReview /></RoleGuard>} />
+
+            {/* Manager routes */}
+            <Route path="/manager/dashboard" element={<RoleGuard allowedRoles={["manager"]}><ManagerDashboard /></RoleGuard>} />
+            <Route path="/manager/pulse" element={<RoleGuard allowedRoles={["manager"]}><ManagerPulse /></RoleGuard>} />
+            <Route path="/manager/pulse/call/:callId" element={<RoleGuard allowedRoles={["manager"]}><ManagerPulseCallReview /></RoleGuard>} />
+            <Route path="/manager/team-chat" element={<RoleGuard allowedRoles={["manager"]}><ManagerTeamChat /></RoleGuard>} />
+
+            {/* Admin routes */}
+            <Route path="/admin/dashboard" element={<RoleGuard allowedRoles={["admin"]}><AdminDashboard /></RoleGuard>} />
+            <Route path="/admin/developer" element={<RoleGuard allowedRoles={["admin"]}><AdminDeveloper /></RoleGuard>} />
+            <Route path="/admin/employee-requests" element={<RoleGuard allowedRoles={["admin"]}><AdminSupportTickets /></RoleGuard>} />
+            <Route path="/admin/users" element={<RoleGuard allowedRoles={["admin"]}><AdminUsersPage /></RoleGuard>} />
+            <Route path="/admin/pricing" element={<RoleGuard allowedRoles={["admin"]}><AdminPricing /></RoleGuard>} />
+            <Route path="/admin/lead-vendors" element={<RoleGuard allowedRoles={["admin"]}><AdminLeadVendors /></RoleGuard>} />
+            <Route path="/admin/pulse" element={<RoleGuard allowedRoles={["admin"]}><AdminPulse /></RoleGuard>} />
+            <Route path="/admin/pulse/call/:callId" element={<RoleGuard allowedRoles={["admin"]}><AdminPulseCallReview /></RoleGuard>} />
+            <Route path="/admin/team-chat" element={<RoleGuard allowedRoles={["admin"]}><AdminTeamChat /></RoleGuard>} />
+
+            {/* Leads & KPI (agent + manager access) */}
+            <Route path="/leads/dashboard" element={<RoleGuard allowedRoles={["agent", "manager"]}><LeadsDashboard /></RoleGuard>} />
+            <Route path="/leads/vendors" element={<RoleGuard allowedRoles={["admin"]}><AdminLeadVendors /></RoleGuard>} />
+            <Route path="/leads/performance" element={<RoleGuard allowedRoles={["agent", "manager"]}><LeadsPerformance /></RoleGuard>} />
+            <Route path="/kpi" element={<RoleGuard allowedRoles={["agent", "manager"]}><KpiDashboard /></RoleGuard>} />
+            <Route path="/leaderboard" element={<RoleGuard allowedRoles={["agent", "manager"]}><Leaderboard /></RoleGuard>} />
+
+            {/* Marketing routes */}
+            <Route path="/marketing/dashboard" element={<RoleGuard allowedRoles={["marketing"]}><MarketingDashboard /></RoleGuard>} />
+            <Route path="/marketing/templates" element={<RoleGuard allowedRoles={["marketing"]}><MarketingTemplates /></RoleGuard>} />
+            <Route path="/marketing/seo" element={<RoleGuard allowedRoles={["marketing"]}><MarketingSEO /></RoleGuard>} />
+
+            {/* Accounting */}
+            <Route path="/accounting/dashboard" element={<RoleGuard allowedRoles={["admin", "accounting"]}><AccountingDashboard /></RoleGuard>} />
+
+            {/* Dispatch routes */}
+            <Route path="/dispatch/dashboard" element={<RoleGuard allowedRoles={["agent", "manager"]}><DispatchDashboard /></RoleGuard>} />
+            <Route path="/dispatch/fleet" element={<RoleGuard allowedRoles={["agent", "manager"]}><DispatchFleet /></RoleGuard>} />
+            <Route path="/dispatch/drivers" element={<RoleGuard allowedRoles={["agent", "manager"]}><DispatchDrivers /></RoleGuard>} />
+            <Route path="/dispatch/routes" element={<RoleGuard allowedRoles={["agent", "manager"]}><DispatchRoutes /></RoleGuard>} />
+            <Route path="/dispatch/jobs" element={<RoleGuard allowedRoles={["agent", "manager"]}><DispatchJobs /></RoleGuard>} />
+
+            {/* Auth & misc (no role guard needed) */}
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/set-password" element={<SetPassword />} />
-            <Route path="/marketing/dashboard" element={<MarketingDashboard />} />
-            <Route path="/marketing/templates" element={<MarketingTemplates />} />
-            <Route path="/marketing/seo" element={<MarketingSEO />} />
-            <Route path="/accounting/dashboard" element={<AccountingDashboard />} />
-            
-            <Route path="/agent/incoming" element={<AgentIncomingLeads />} />
-            <Route path="/agent/operations" element={<AgentOperations />} />
-            <Route path="/agent/new-customer" element={<AgentNewCustomer />} />
-            <Route path="/agent/move-details/:leadId" element={<AgentMoveDetails />} />
-            <Route path="/agent/inventory/:leadId" element={<AgentInventory />} />
-            <Route path="/agent/dialer" element={<AgentDialerPage />} />
-            <Route path="/agent/esign" element={<AgentESign />} />
-            <Route path="/agent/esign/view" element={<ESignViewPage />} />
-            <Route path="/agent/payment" element={<AgentPayment />} />
-            <Route path="/agent/customers" element={<AgentCustomers />} />
-            <Route path="/agent/customers/:id" element={<AgentCustomerDetail />} />
-            <Route path="/agent/messages" element={<AgentMessaging />} />
-            <Route path="/agent/team-chat" element={<AgentTeamChat />} />
-            
+            <Route path="/unsubscribe" element={<Unsubscribe />} />
             <Route path="/homepage-2" element={<HomepageV2 />} />
             <Route path="/customer-facing-sites" element={<CustomerFacingSites />} />
             <Route path="/tools/:tool" element={<IntegrationPlaceholder />} />
-            <Route path="/agent/pulse" element={<AgentPulse />} />
-            <Route path="/agent/pulse/call/:callId" element={<AgentPulseCallReview />} />
-            <Route path="/manager/pulse" element={<ManagerPulse />} />
-            <Route path="/manager/pulse/call/:callId" element={<ManagerPulseCallReview />} />
-            <Route path="/admin/pulse" element={<AdminPulse />} />
-            <Route path="/admin/pulse/call/:callId" element={<AdminPulseCallReview />} />
-            <Route path="/manager/team-chat" element={<ManagerTeamChat />} />
-            <Route path="/admin/team-chat" element={<AdminTeamChat />} />
-            <Route path="/dispatch/dashboard" element={<DispatchDashboard />} />
-            <Route path="/dispatch/fleet" element={<DispatchFleet />} />
-            <Route path="/dispatch/drivers" element={<DispatchDrivers />} />
-            <Route path="/dispatch/routes" element={<DispatchRoutes />} />
-            <Route path="/dispatch/jobs" element={<DispatchJobs />} />
-            <Route path="/unsubscribe" element={<Unsubscribe />} />
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
