@@ -164,6 +164,7 @@ const PulseDashboard: React.FC<{ embedded?: boolean; basePath?: string }> = ({ e
     return { avgAnger, avgSentiment, totalFillers, avgWpm, dominantTone, worseningCount, improvingCount, totalCalls: callSentiments.length, toneCounts };
   }, [recentCalls]);
 
+  const exportCsv = () => {
     const headers = ['Timestamp', 'Severity', 'Agent', 'Matched', 'Keyword', 'Match Type', 'Context'];
     const rows = filteredAlerts.map(a => [a.created_at, a.severity, a.agent_name, a.matched_text, a.keyword, a.match_type, `"${(a.context || '').replace(/"/g, '""')}"`]);
     const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
