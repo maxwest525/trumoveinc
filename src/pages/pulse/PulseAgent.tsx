@@ -562,7 +562,7 @@ const PulseAgent: React.FC<{ embedded?: boolean; showSummary?: boolean }> = ({ e
               </div>
             </div>
           ) : (
-            <div className="flex items-center gap-3 px-3 py-2 rounded-lg border border-dashed border-border bg-muted/10 max-w-md">
+            <div className="flex items-center gap-3 px-3 py-2 rounded-lg border border-dashed border-border bg-muted/10">
               <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
                 <Brain className="w-3.5 h-3.5 text-primary" />
               </div>
