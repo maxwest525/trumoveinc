@@ -131,12 +131,41 @@ const PulseAgent: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
     return () => clearInterval(timer);
   }, [callActive, liveCallId, transcript]);
 
+  const [summaryGenerating, setSummaryGenerating] = useState(false);
+
   const stopCall = useCallback(async () => {
     stop(); setCallActive(false);
     if (liveCallId && callStartTime) {
       const duration = Math.round((Date.now() - callStartTime.getTime()) / 1000);
-      await supabase.from('pulse_calls' as any).update({ status: 'completed', ended_at: new Date().toISOString(), duration_seconds: duration, transcript, flagged_keywords: liveFlags.map(f => f.keyword) } as any).eq('id', liveCallId);
+      const flagKeywords = liveFlags.map(f => f.keyword);
+      await supabase.from('pulse_calls' as any).update({ status: 'completed', ended_at: new Date().toISOString(), duration_seconds: duration, transcript, flagged_keywords: flagKeywords } as any).eq('id', liveCallId);
       fetchDbCalls();
+
+      // Trigger AI summary generation in background
+      if (transcript && transcript.trim().length > 20) {
+        setSummaryGenerating(true);
+        toast.info('Generating AI call summary…', { duration: 3000, icon: <Sparkles className="w-4 h-4 text-primary" /> });
+        try {
+          const { data, error } = await supabase.functions.invoke('pulse-call-summary', {
+            body: {
+              call_id: liveCallId,
+              transcript,
+              flagged_keywords: flagKeywords,
+              agent_name: AGENT_NAME,
+              client_name: 'Unknown Client',
+              duration_seconds: duration,
+            },
+          });
+          if (error) throw error;
+          toast.success('Call summary generated', { duration: 4000 });
+          fetchDbCalls();
+        } catch (err) {
+          console.error('Summary generation failed:', err);
+          toast.error('Failed to generate call summary');
+        } finally {
+          setSummaryGenerating(false);
+        }
+      }
     }
   }, [stop, liveCallId, callStartTime, transcript, liveFlags, fetchDbCalls]);
 
