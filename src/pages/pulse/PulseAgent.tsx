@@ -75,6 +75,7 @@ const PulseAgent: React.FC<{ embedded?: boolean; showSummary?: boolean }> = ({ e
   const [reviewLoading, setReviewLoading] = useState(false);
   const [callSearch, setCallSearch] = useState('');
   const [callDropdownOpen, setCallDropdownOpen] = useState(false);
+  const [callSortBy, setCallSortBy] = useState<'recent' | 'duration' | 'score' | 'flags'>('recent');
   const dropdownRef = useRef<HTMLDivElement>(null);
   const AGENT_NAME = 'You';
   const [liveDurationSec, setLiveDurationSec] = useState(0);
