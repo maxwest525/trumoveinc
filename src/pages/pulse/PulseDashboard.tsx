@@ -247,10 +247,10 @@ const PulseDashboard: React.FC<{ embedded?: boolean; basePath?: string }> = ({ e
           )}
         </div>
 
-        {/* Two-column layout: Flagged Interactions + Live Transcript */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 flex-1 min-h-0">
-          {/* Left: Flagged Interactions */}
-          <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden flex flex-col min-h-0">
+        {/* Stacked layout: Flagged Interactions on top, Live Transcript below */}
+        <div className="flex flex-col gap-5 flex-1 min-h-0">
+          {/* Flagged Interactions - fixed height, scrollable */}
+          <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden flex flex-col" style={{ height: '340px' }}>
             <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-secondary/30">
               <h3 className="text-xs font-semibold flex items-center gap-1.5"><AlertTriangle className="w-3.5 h-3.5 text-destructive" />Flagged Interactions{filteredAlerts.length > 0 && <Badge variant="secondary" className="text-[10px]">{filteredAlerts.length}</Badge>}</h3>
               <span className="text-[10px] text-muted-foreground">Live • Real-time updates</span>
@@ -348,8 +348,8 @@ const PulseDashboard: React.FC<{ embedded?: boolean; basePath?: string }> = ({ e
             </ScrollArea>
           </div>
 
-          {/* Right: Live Transcript */}
-          <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden flex flex-col min-h-0">
+          {/* Live Transcript - full width below */}
+          <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden flex flex-col min-h-[300px]">
             <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-secondary/30">
               <h3 className="text-xs font-semibold flex items-center gap-1.5"><Radio className="w-3.5 h-3.5 text-primary" />Live Transcript</h3>
               <div className="flex items-center gap-2">
