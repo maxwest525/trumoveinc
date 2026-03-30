@@ -171,8 +171,8 @@ const PulseAgent: React.FC<{ embedded?: boolean; showSummary?: boolean }> = ({ e
       await supabase.from('pulse_calls' as any).update({ status: 'completed', ended_at: new Date().toISOString(), duration_seconds: duration, transcript, flagged_keywords: flagKeywords } as any).eq('id', liveCallId);
       fetchDbCalls();
 
-      // Trigger AI summary generation in background
-      if (transcript && transcript.trim().length > 20) {
+      // Trigger AI summary generation in background (managers/admins only)
+      if (showSummary && transcript && transcript.trim().length > 20) {
         setSummaryGenerating(true);
         toast.info('Generating AI call summary…', { duration: 3000, icon: <Sparkles className="w-4 h-4 text-primary" /> });
         try {
