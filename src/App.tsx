@@ -129,6 +129,7 @@ const App = () => (
             <Route path="/manager/pulse" element={<RoleGuard allowedRoles={["manager"]}><ManagerPulse /></RoleGuard>} />
             <Route path="/manager/pulse/call/:callId" element={<RoleGuard allowedRoles={["manager"]}><ManagerPulseCallReview /></RoleGuard>} />
             <Route path="/manager/team-chat" element={<RoleGuard allowedRoles={["manager"]}><ManagerTeamChat /></RoleGuard>} />
+            <Route path="/manager/employee-requests" element={<RoleGuard allowedRoles={["manager"]}><ManagerEmployeeRequests /></RoleGuard>} />
 
             {/* Admin routes */}
             <Route path="/admin/dashboard" element={<RoleGuard allowedRoles={["admin"]}><AdminDashboard /></RoleGuard>} />
