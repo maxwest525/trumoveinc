@@ -98,6 +98,33 @@ const PulseAgent: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
 
   useEffect(() => { fetchDbCalls(); }, [fetchDbCalls]);
 
+  // Click outside to close dropdown
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) setCallDropdownOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  const filteredCalls = useMemo(() => {
+    if (!callSearch.trim()) return dbCalls;
+    const q = callSearch.toLowerCase();
+    return dbCalls.filter(c =>
+      (c.agent_name || '').toLowerCase().includes(q) ||
+      (c.client_name || '').toLowerCase().includes(q) ||
+      (c.status || '').toLowerCase().includes(q) ||
+      (c.flagged_keywords || []).some((k: string) => k.toLowerCase().includes(q))
+    );
+  }, [dbCalls, callSearch]);
+
+  const selectedCallLabel = useMemo(() => {
+    if (!selectedCallId) return null;
+    const c = dbCalls.find(x => x.id === selectedCallId);
+    if (!c) return null;
+    return `${c.agent_name} → ${c.client_name || 'Unknown'} · ${formatDistanceToNowStrict(new Date(c.created_at), { addSuffix: true })}`;
+  }, [selectedCallId, dbCalls]);
+
   // Load selected call for review
   const openCallReview = useCallback(async (callId: string) => {
     setSelectedCallId(callId);
