@@ -27,7 +27,7 @@ function getGreeting(): string {
   return "Good evening";
 }
 
-const PORTALS = [
+const PORTALS: { key: string; label: string; description: string; href: string; icon: any; accentHsl: string; requiredRoles: AppRole[] }[] = [
   {
     key: "agents",
     label: "Agents",
@@ -35,6 +35,7 @@ const PORTALS = [
     href: "/agent/dashboard",
     icon: Headset,
     accentHsl: "142 71% 45%",
+    requiredRoles: ["agent"],
   },
   {
     key: "managers",
@@ -43,6 +44,7 @@ const PORTALS = [
     href: "/manager/dashboard",
     icon: Users,
     accentHsl: "217 91% 60%",
+    requiredRoles: ["manager"],
   },
   {
     key: "admin",
@@ -51,6 +53,7 @@ const PORTALS = [
     href: "/admin/dashboard",
     icon: Shield,
     accentHsl: "38 92% 50%",
+    requiredRoles: ["admin", "owner"],
   },
   {
     key: "dispatch",
@@ -59,6 +62,7 @@ const PORTALS = [
     href: "/dispatch/dashboard",
     icon: Truck,
     accentHsl: "262 83% 58%",
+    requiredRoles: ["agent", "manager"],
   },
   {
     key: "marketing",
@@ -67,6 +71,7 @@ const PORTALS = [
     href: "/marketing/dashboard",
     icon: Megaphone,
     accentHsl: "330 81% 60%",
+    requiredRoles: ["marketing"],
   },
 ];
 
