@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { Phone, Clock, User, AlertTriangle, Shield, ShieldAlert, ShieldCheck, Mic, MicOff, StopCircle, SendHorizonal, Keyboard, FileText, MessageSquare, ArrowLeft, ChevronRight, Calendar, X, Eye, Sparkles, Loader2, CheckCircle2 } from 'lucide-react';
+import { Phone, Clock, User, AlertTriangle, Shield, ShieldAlert, ShieldCheck, Mic, MicOff, StopCircle, SendHorizonal, Keyboard, FileText, MessageSquare, ArrowLeft, ChevronRight, Calendar, X, Eye, Sparkles, Loader2, CheckCircle2, Search, ChevronDown } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -70,6 +70,9 @@ const PulseAgent: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
   const [reviewCall, setReviewCall] = useState<any>(null);
   const [reviewAlerts, setReviewAlerts] = useState<any[]>([]);
   const [reviewLoading, setReviewLoading] = useState(false);
+  const [callSearch, setCallSearch] = useState('');
+  const [callDropdownOpen, setCallDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const getWatchEntries = useCallback(async (): Promise<WatchEntry[]> => {
     try { const saved = localStorage.getItem('pulse-watch-entries'); if (saved) { const parsed = JSON.parse(saved); if (Array.isArray(parsed) && parsed.length > 0) return parsed; } } catch {}
@@ -94,6 +97,33 @@ const PulseAgent: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
   }, []);
 
   useEffect(() => { fetchDbCalls(); }, [fetchDbCalls]);
+
+  // Click outside to close dropdown
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) setCallDropdownOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  const filteredCalls = useMemo(() => {
+    if (!callSearch.trim()) return dbCalls;
+    const q = callSearch.toLowerCase();
+    return dbCalls.filter(c =>
+      (c.agent_name || '').toLowerCase().includes(q) ||
+      (c.client_name || '').toLowerCase().includes(q) ||
+      (c.status || '').toLowerCase().includes(q) ||
+      (c.flagged_keywords || []).some((k: string) => k.toLowerCase().includes(q))
+    );
+  }, [dbCalls, callSearch]);
+
+  const selectedCallLabel = useMemo(() => {
+    if (!selectedCallId) return null;
+    const c = dbCalls.find(x => x.id === selectedCallId);
+    if (!c) return null;
+    return `${c.agent_name} → ${c.client_name || 'Unknown'} · ${formatDistanceToNowStrict(new Date(c.created_at), { addSuffix: true })}`;
+  }, [selectedCallId, dbCalls]);
 
   // Load selected call for review
   const openCallReview = useCallback(async (callId: string) => {
@@ -249,118 +279,118 @@ const PulseAgent: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
         </header>
       )}
 
-      <main className={cn("max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-[340px_1fr]", embedded ? "" : "min-h-[calc(100vh-3.5rem)]")}>
-        {/* Left sidebar — Recent Calls */}
-        <div className="border-r border-border/40 bg-secondary/5 flex flex-col">
-          <div className="p-3 border-b border-border/30 flex items-center justify-between">
-            <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
-              <Phone className="w-3 h-3" /> Recent Calls
-            </h2>
-            <span className="text-[10px] text-muted-foreground">{dbCalls.length} total</span>
-          </div>
-          <ScrollArea className="flex-1">
-            <div className="p-2 space-y-1">
-              {dbCalls.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-40 text-center px-6">
-                  <Phone className="w-8 h-8 text-muted-foreground/30 mb-3" />
-                  <p className="text-sm text-muted-foreground">No calls yet</p>
-                  <p className="text-[10px] text-muted-foreground/60 mt-1">Start a call to begin monitoring</p>
-                </div>
-              ) : dbCalls.map(call => {
-                const sev = (call.severity as Severity) || 'low';
-                const sm = SEVERITY_META[sev];
-                const SIcon = sm.icon;
-                const isActive = call.status === 'active';
-                const isSelected = selectedCallId === call.id;
-                const flagCount = call.flagged_keywords?.length || 0;
-                const dur = call.duration_seconds;
-                const durLabel = dur ? `${Math.floor(dur / 60)}:${(dur % 60).toString().padStart(2, '0')}` : null;
+      <main className={cn("max-w-7xl mx-auto", embedded ? "" : "min-h-[calc(100vh-3.5rem)]")}>
+        {/* Recent Calls Dropdown */}
+        <div className="px-6 pt-4 pb-2">
+          <div className="relative" ref={dropdownRef}>
+            <button
+              onClick={() => setCallDropdownOpen(p => !p)}
+              className={cn(
+                "w-full flex items-center justify-between px-3 py-2.5 rounded-lg border transition-all text-left",
+                callDropdownOpen ? "border-primary/40 bg-primary/5 shadow-sm" : "border-border bg-card hover:border-primary/20"
+              )}
+            >
+              <div className="flex items-center gap-2 min-w-0">
+                <Phone className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                <span className="text-xs font-semibold truncate">
+                  {selectedCallLabel || 'Recent Calls'}
+                </span>
+                <span className="text-[10px] text-muted-foreground shrink-0">{dbCalls.length} total</span>
+              </div>
+              <ChevronDown className={cn("w-4 h-4 text-muted-foreground transition-transform shrink-0", callDropdownOpen && "rotate-180")} />
+            </button>
 
-                return (
-                  <button
-                    key={call.id}
-                    onClick={() => openCallReview(call.id)}
-                    className={cn(
-                      "w-full text-left p-3 rounded-lg border transition-all group",
-                      isSelected
-                        ? "bg-primary/5 border-primary/30 shadow-sm"
-                        : "bg-card border-border hover:border-primary/20 hover:bg-secondary/20",
-                      isActive && "ring-1 ring-compliance-pass/40"
+            {callDropdownOpen && (
+              <div className="absolute z-50 top-full left-0 right-0 mt-1 rounded-lg border border-border bg-card shadow-xl overflow-hidden">
+                {/* Search input */}
+                <div className="p-2 border-b border-border/50">
+                  <div className="relative">
+                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+                    <input
+                      autoFocus
+                      type="text"
+                      value={callSearch}
+                      onChange={e => setCallSearch(e.target.value)}
+                      placeholder="Search by agent, client, keyword…"
+                      className="w-full h-8 pl-8 pr-3 text-xs bg-secondary/40 border border-border/40 rounded-md placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/50"
+                    />
+                    {callSearch && (
+                      <button onClick={() => setCallSearch('')} className="absolute right-2 top-1/2 -translate-y-1/2">
+                        <X className="w-3 h-3 text-muted-foreground hover:text-foreground" />
+                      </button>
                     )}
-                  >
-                    {/* Row 1: Agent + Status */}
-                    <div className="flex items-center justify-between mb-1.5">
-                      <div className="flex items-center gap-1.5 min-w-0">
-                        <User className="w-3 h-3 text-muted-foreground shrink-0" />
-                        <span className="text-xs font-semibold truncate">{call.agent_name}</span>
-                      </div>
-                      <div className="flex items-center gap-1.5 shrink-0">
-                        {isActive && (
-                          <span className="flex items-center gap-1 text-[9px] font-medium text-compliance-pass">
-                            <span className="relative flex h-1.5 w-1.5">
-                              <span className="animate-ping absolute h-full w-full rounded-full bg-compliance-pass opacity-75" />
-                              <span className="relative rounded-full h-1.5 w-1.5 bg-compliance-pass" />
-                            </span>
-                            LIVE
-                          </span>
-                        )}
-                        {!isActive && (
-                          <Badge variant="secondary" className="text-[8px] h-4 px-1.5 font-medium">
-                            {call.status}
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
+                  </div>
+                </div>
 
-                    {/* Row 2: Client + Severity */}
-                    <div className="flex items-center justify-between mb-1.5">
-                      <span className="text-[11px] text-muted-foreground truncate">
-                        {call.client_name || 'Unknown Client'}
-                      </span>
-                      {flagCount > 0 && (
-                        <span className={cn("flex items-center gap-0.5 text-[9px] font-bold uppercase", sm.color)}>
-                          <SIcon className="w-2.5 h-2.5" />
-                          {sm.label}
-                        </span>
-                      )}
-                    </div>
+                {/* Call list */}
+                <ScrollArea className="max-h-80">
+                  <div className="p-1.5 space-y-0.5">
+                    {filteredCalls.length === 0 ? (
+                      <div className="flex flex-col items-center justify-center py-8 text-center">
+                        <Phone className="w-6 h-6 text-muted-foreground/30 mb-2" />
+                        <p className="text-xs text-muted-foreground">{callSearch ? 'No matching calls' : 'No calls yet'}</p>
+                      </div>
+                    ) : filteredCalls.map(call => {
+                      const sev = (call.severity as Severity) || 'low';
+                      const sm = SEVERITY_META[sev];
+                      const SIcon = sm.icon;
+                      const isActive = call.status === 'active';
+                      const isSelected = selectedCallId === call.id;
+                      const flagCount = call.flagged_keywords?.length || 0;
+                      const dur = call.duration_seconds;
+                      const durLabel = dur ? `${Math.floor(dur / 60)}:${(dur % 60).toString().padStart(2, '0')}` : null;
 
-                    {/* Row 3: Meta chips */}
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-[10px] text-muted-foreground/70 flex items-center gap-0.5">
-                        <Calendar className="w-2.5 h-2.5" />
-                        {formatDistanceToNowStrict(new Date(call.created_at), { addSuffix: true })}
-                      </span>
-                      {durLabel && (
-                        <span className="text-[10px] text-muted-foreground/70 flex items-center gap-0.5">
-                          <Clock className="w-2.5 h-2.5" />
-                          {durLabel}
-                        </span>
-                      )}
-                      {flagCount > 0 && (
-                        <span className="text-[10px] font-medium text-destructive flex items-center gap-0.5">
-                          <AlertTriangle className="w-2.5 h-2.5" />
-                          {flagCount} flag{flagCount !== 1 ? 's' : ''}
-                        </span>
-                      )}
-                      {call.compliance_score != null && (
-                        <span className={cn(
-                          "text-[10px] font-bold",
-                          call.compliance_score >= 80 ? "text-compliance-pass" : call.compliance_score >= 60 ? "text-compliance-review" : "text-destructive"
-                        )}>
-                          {call.compliance_score}%
-                        </span>
-                      )}
-                      <ChevronRight className="w-3 h-3 text-muted-foreground/30 ml-auto group-hover:text-foreground transition-colors" />
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </ScrollArea>
+                      return (
+                        <button
+                          key={call.id}
+                          onClick={() => { openCallReview(call.id); setCallDropdownOpen(false); }}
+                          className={cn(
+                            "w-full text-left px-3 py-2.5 rounded-md transition-all group flex items-center gap-3",
+                            isSelected ? "bg-primary/10 text-foreground" : "hover:bg-secondary/40"
+                          )}
+                        >
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-1.5 mb-0.5">
+                              <span className="text-xs font-semibold truncate">{call.agent_name}</span>
+                              <span className="text-muted-foreground/40">→</span>
+                              <span className="text-[11px] text-muted-foreground truncate">{call.client_name || 'Unknown'}</span>
+                              {isActive && (
+                                <span className="flex items-center gap-0.5 text-[8px] font-bold text-compliance-pass ml-1">
+                                  <span className="relative flex h-1.5 w-1.5">
+                                    <span className="animate-ping absolute h-full w-full rounded-full bg-compliance-pass opacity-75" />
+                                    <span className="relative rounded-full h-1.5 w-1.5 bg-compliance-pass" />
+                                  </span>
+                                  LIVE
+                                </span>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-[10px] text-muted-foreground/60">{formatDistanceToNowStrict(new Date(call.created_at), { addSuffix: true })}</span>
+                              {durLabel && <span className="text-[10px] text-muted-foreground/60">{durLabel}</span>}
+                              {flagCount > 0 && (
+                                <span className={cn("text-[9px] font-bold uppercase flex items-center gap-0.5", sm.color)}>
+                                  <SIcon className="w-2.5 h-2.5" /> {flagCount}
+                                </span>
+                              )}
+                              {call.compliance_score != null && (
+                                <span className={cn("text-[10px] font-bold", call.compliance_score >= 80 ? "text-compliance-pass" : call.compliance_score >= 60 ? "text-compliance-review" : "text-destructive")}>
+                                  {call.compliance_score}%
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          <ChevronRight className="w-3 h-3 text-muted-foreground/30 shrink-0 group-hover:text-foreground" />
+                        </button>
+                      );
+                    })}
+                  </div>
+                </ScrollArea>
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* Right panel — live transcription or call review */}
+        {/* Main content — live transcription or call review */}
         <div className="overflow-y-auto">
           {showingReview ? (
             /* ── Call Review Panel ── */
