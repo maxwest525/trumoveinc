@@ -17,7 +17,7 @@ const TOOLS = [
   { title: "QuickBooks", description: "Connect and sync with QuickBooks", icon: Globe },
 ];
 
-export default function AccountingDashboard() {
+export default function AccountingDashboard() { 
   return (
     <AdminShell breadcrumb=" / Accounting">
       <div className="space-y-6">
