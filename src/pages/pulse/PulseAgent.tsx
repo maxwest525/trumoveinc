@@ -604,6 +604,7 @@ const PulseAgent: React.FC<{ embedded?: boolean; showSummary?: boolean }> = ({ e
                       </div>
                     );
                   })()}
+                  {showSummary && (
                   <div className="rounded-xl border border-border bg-card/50 p-4">
                     <div className="flex items-center justify-between mb-2">
                       <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
@@ -651,6 +652,7 @@ const PulseAgent: React.FC<{ embedded?: boolean; showSummary?: boolean }> = ({ e
                       </p>
                     )}
                   </div>
+                  )}
 
                   {/* Transcript */}
                   <div className="space-y-2">

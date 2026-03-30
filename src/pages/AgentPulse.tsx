@@ -4,7 +4,7 @@ import PulseAgent from "@/pages/pulse/PulseAgent";
 export default function AgentPulse() {
   return (
     <AgentShell breadcrumb="/ Pulse Monitor">
-      <PulseAgent embedded />
+      <PulseAgent embedded showSummary={false} />
     </AgentShell>
   );
 }
