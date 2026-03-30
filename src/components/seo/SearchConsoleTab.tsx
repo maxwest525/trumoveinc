@@ -38,7 +38,13 @@ interface SearchConsoleTabProps {
 function getPreferredGscRedirectUri() {
   const host = window.location.hostname;
 
-  if (host === "trumoveinc.com" || host === "www.trumoveinc.com") {
+  const shouldUseCrmCallback =
+    host === "trumoveinc.com" ||
+    host === "www.trumoveinc.com" ||
+    host === "trumoveinc.lovable.app" ||
+    host.endsWith(".lovable.app");
+
+  if (shouldUseCrmCallback) {
     return "https://crm.trumoveinc.com/marketing/seo";
   }
 
