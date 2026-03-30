@@ -111,23 +111,9 @@ const App = () => (
             <Route path="/agent-login" element={<Navigate to="/dashboard" replace />} />
 
             {/* ── Customer-facing website under /site ─────────────── */}
-            {/* On CRM/dev, /site redirects to workspace hub; on production main domain it renders normally */}
+            {/* On CRM/dev, all /site/* redirects to workspace hub; on production they render normally */}
             <Route path="/site" element={<SiteRouteGuard />} />
-            <Route path="/site/online-estimate" element={<SiteCanonicalLayout><OnlineEstimate /></SiteCanonicalLayout>} />
-            <Route path="/site/book" element={<SiteCanonicalLayout><Book /></SiteCanonicalLayout>} />
-            <Route path="/site/vetting" element={<SiteCanonicalLayout><CarrierVetting /></SiteCanonicalLayout>} />
-            <Route path="/site/vetting-dashboard" element={<SiteCanonicalLayout><VettingDashboard /></SiteCanonicalLayout>} />
-            <Route path="/site/carrier-vetting" element={<SiteCanonicalLayout><CarrierVetting /></SiteCanonicalLayout>} />
-            <Route path="/site/faq" element={<SiteCanonicalLayout><FAQ /></SiteCanonicalLayout>} />
-            <Route path="/site/about" element={<SiteCanonicalLayout><About /></SiteCanonicalLayout>} />
-            <Route path="/site/privacy" element={<SiteCanonicalLayout><Privacy /></SiteCanonicalLayout>} />
-            <Route path="/site/terms" element={<SiteCanonicalLayout><Terms /></SiteCanonicalLayout>} />
-            <Route path="/site/property-lookup" element={<SiteCanonicalLayout><PropertyLookup /></SiteCanonicalLayout>} />
-            <Route path="/site/auth" element={<SiteCanonicalLayout><Auth /></SiteCanonicalLayout>} />
-            <Route path="/site/scan-room" element={<SiteCanonicalLayout><ScanRoom /></SiteCanonicalLayout>} />
-            <Route path="/site/classic" element={<SiteCanonicalLayout><Classic /></SiteCanonicalLayout>} />
-            <Route path="/site/track" element={<SiteCanonicalLayout><LiveTracking /></SiteCanonicalLayout>} />
-            <Route path="/site/customer-service" element={<SiteCanonicalLayout><CustomerService /></SiteCanonicalLayout>} />
+            <Route path="/site/*" element={<SiteRouteGuard />} />
 
             {/* ── Public e-sign route (customer clicks from email) ── */}
             <Route path="/esign/:refNumber" element={<PublicESign />} />
