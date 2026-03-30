@@ -77,12 +77,8 @@ export default function AdminShell({ children, breadcrumb = "", breadcrumbs }: A
               to={item.href}
               className={cn(
                 "flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors",
-                item.beta && "opacity-40 pointer-events-none",
                 active ? "bg-foreground text-background" : "text-muted-foreground hover:bg-muted hover:text-foreground"
               )}
-              tabIndex={item.beta ? -1 : undefined}
-              aria-disabled={item.beta}
-              onClick={item.beta ? (e) => e.preventDefault() : undefined}
             >
               <Icon className="w-4 h-4" />
               <span>{item.label}</span>
