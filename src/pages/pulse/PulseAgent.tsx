@@ -336,7 +336,7 @@ const PulseAgent: React.FC<{ embedded?: boolean; showSummary?: boolean }> = ({ e
         </div>
 
         {/* Recent Calls Dropdown */}
-        <div className="px-6 pb-2">
+        <div className="px-6 pb-2 max-w-[220px]">
           <div className="relative" ref={dropdownRef}>
             <button
               onClick={() => setCallDropdownOpen(p => !p)}
@@ -378,7 +378,7 @@ const PulseAgent: React.FC<{ embedded?: boolean; showSummary?: boolean }> = ({ e
                 </div>
 
                 {/* Call list */}
-                <ScrollArea className="max-h-48">
+                <ScrollArea className="max-h-64">
                   <div className="p-1 space-y-0.5">
                     {filteredCalls.length === 0 ? (
                       <div className="flex flex-col items-center justify-center py-6 text-center">
