@@ -8,11 +8,15 @@ import logoImg from "@/assets/logo.png";
 import PortalCard from "@/components/portal/PortalCard";
 import { useAgentProfile } from "@/hooks/useAgentProfile";
 import { useNotifications } from "@/hooks/useNotifications";
+import { useUserRoles } from "@/hooks/useUserRoles";
 import { motion } from "framer-motion";
 import type { Session } from "@supabase/supabase-js";
+import type { Database } from "@/integrations/supabase/types";
 
 import AgentToolWorkspace from "@/components/agent/AgentToolWorkspace";
 import GreenParticles from "@/components/portal/GreenParticles";
+
+type AppRole = Database["public"]["Enums"]["app_role"];
 
 const STORAGE_KEY = "truemove_remembered_role";
 
