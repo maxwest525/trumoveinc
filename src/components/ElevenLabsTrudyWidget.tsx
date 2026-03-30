@@ -38,6 +38,10 @@ export default function ElevenLabsTrudyWidget() {
       setShowTranscript(true);
       setShowPostCall(false);
       setTranscript([]);
+      // Start Pulse monitoring
+      pulse.onConversationStart();
+      // Periodic transcript sync every 5s
+      syncIntervalRef.current = setInterval(() => pulse.syncTranscript(), 5000);
     },
     onDisconnect: () => {
       const current = transcriptRef.current;
@@ -46,14 +50,27 @@ export default function ElevenLabsTrudyWidget() {
         setShowPostCall(true);
         setShowTranscript(false);
       }
+      // End Pulse monitoring
+      pulse.onConversationEnd();
+      if (syncIntervalRef.current) {
+        clearInterval(syncIntervalRef.current);
+        syncIntervalRef.current = null;
+      }
     },
     onMessage: (message: any) => {
       if (message.type === 'user_transcript') {
         const text = message.user_transcription_event?.user_transcript;
-        if (text) setTranscript(prev => [...prev, { id: ++idRef.current, speaker: 'user', text }]);
+        if (text) {
+          setTranscript(prev => [...prev, { id: ++idRef.current, speaker: 'user', text }]);
+          // Send customer speech to Pulse for compliance scanning
+          pulse.onCustomerSpeech(text);
+        }
       } else if (message.type === 'agent_response') {
         const text = message.agent_response_event?.agent_response;
-        if (text) setTranscript(prev => [...prev, { id: ++idRef.current, speaker: 'trudy', text }]);
+        if (text) {
+          setTranscript(prev => [...prev, { id: ++idRef.current, speaker: 'trudy', text }]);
+          pulse.onTrudyResponse(text);
+        }
       } else if (message.type === 'agent_response_correction') {
         const corrected = message.agent_response_correction_event?.corrected_agent_response;
         if (corrected) {
