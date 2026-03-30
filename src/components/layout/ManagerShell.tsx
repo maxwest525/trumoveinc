@@ -1,4 +1,5 @@
 import { useState, useEffect, type ReactNode } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { Link, useLocation } from "react-router-dom";
 import {
   Home, Sun, Moon, Bell, LayoutDashboard,
@@ -38,12 +39,27 @@ export default function ManagerShell({ children, breadcrumb = "", breadcrumbs }:
   const isMobile = useIsMobile();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  const [openRequestCount, setOpenRequestCount] = useState(0);
+
   useEffect(() => {
     setPortalContext("manager");
     window.scrollTo(0, 0);
   }, []);
 
   useEffect(() => { setSidebarOpen(false); }, [location.pathname]);
+
+  useEffect(() => {
+    const fetchCount = async () => {
+      const { count } = await supabase
+        .from('support_tickets')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'open');
+      setOpenRequestCount(count || 0);
+    };
+    fetchCount();
+    const interval = setInterval(fetchCount, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
   const sidebarContent = (
     <>
@@ -71,6 +87,11 @@ export default function ManagerShell({ children, breadcrumb = "", breadcrumbs }:
               )}
             >
               <Icon className="w-4 h-4" /><span>{item.label}</span>
+              {item.label === 'Employee Requests' && openRequestCount > 0 && (
+                <span className="ml-auto min-w-[18px] h-[18px] flex items-center justify-center rounded-full text-[10px] font-semibold bg-destructive text-destructive-foreground leading-none px-1">
+                  {openRequestCount > 99 ? '99+' : openRequestCount}
+                </span>
+              )}
             </Link>
           );
         })}
