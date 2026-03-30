@@ -77,8 +77,17 @@ const PulseAgent: React.FC<{ embedded?: boolean; showSummary?: boolean }> = ({ e
   const [callDropdownOpen, setCallDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const AGENT_NAME = 'You';
-  const callDurationSec = callStartTime && callActive ? Math.round((Date.now() - callStartTime.getTime()) / 1000) : 0;
-  const sentiment = useSentimentAnalysis(transcript, callDurationSec, callActive);
+  const [liveDurationSec, setLiveDurationSec] = useState(0);
+  const sentiment = useSentimentAnalysis(transcript, liveDurationSec, callActive);
+
+  // Tick live duration every second while call is active
+  useEffect(() => {
+    if (!callActive || !callStartTime) { setLiveDurationSec(0); return; }
+    const timer = setInterval(() => {
+      setLiveDurationSec(Math.round((Date.now() - callStartTime.getTime()) / 1000));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [callActive, callStartTime]);
 
   const getWatchEntries = useCallback(async (): Promise<WatchEntry[]> => {
     try { const saved = localStorage.getItem('pulse-watch-entries'); if (saved) { const parsed = JSON.parse(saved); if (Array.isArray(parsed) && parsed.length > 0) return parsed; } } catch {}
