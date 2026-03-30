@@ -250,7 +250,7 @@ export default function AdminSupportTickets() {
             return (
               <div key={ticket.id} className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
                 <button
-                  onClick={() => setExpandedId(isExpanded ? null : ticket.id)}
+                  onClick={() => handleExpandTicket(ticket)}
                   className="w-full px-5 py-4 text-left flex items-start gap-4 hover:bg-muted/30 transition-colors"
                 >
                   <div className="flex-1 min-w-0">
