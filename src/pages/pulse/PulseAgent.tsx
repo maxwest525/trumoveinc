@@ -376,8 +376,8 @@ const PulseAgent: React.FC<{ embedded?: boolean; showSummary?: boolean }> = ({ e
 
             {callDropdownOpen && (
               <div className="absolute z-50 top-full left-0 right-0 mt-1 rounded-lg border border-border bg-card shadow-xl overflow-hidden">
-                {/* Search input */}
-                <div className="p-2 border-b border-border/50">
+                {/* Search input + sort */}
+                <div className="p-2 border-b border-border/50 space-y-1.5">
                   <div className="relative">
                     <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
                     <input
@@ -393,6 +393,29 @@ const PulseAgent: React.FC<{ embedded?: boolean; showSummary?: boolean }> = ({ e
                         <X className="w-3.5 h-3.5 text-muted-foreground hover:text-foreground" />
                       </button>
                     )}
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <span className="text-[10px] text-muted-foreground/60 mr-1">Sort:</span>
+                    {([
+                      { key: 'recent', label: 'Recent', icon: Calendar },
+                      { key: 'duration', label: 'Duration', icon: Clock },
+                      { key: 'score', label: 'Score', icon: Shield },
+                      { key: 'flags', label: 'Flags', icon: AlertTriangle },
+                    ] as const).map(opt => (
+                      <button
+                        key={opt.key}
+                        onClick={() => setCallSortBy(opt.key)}
+                        className={cn(
+                          "inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium transition-all",
+                          callSortBy === opt.key
+                            ? "bg-primary/15 text-primary border border-primary/30"
+                            : "text-muted-foreground hover:text-foreground hover:bg-muted/50 border border-transparent"
+                        )}
+                      >
+                        <opt.icon className="w-2.5 h-2.5" />
+                        {opt.label}
+                      </button>
+                    ))}
                   </div>
                 </div>
 
