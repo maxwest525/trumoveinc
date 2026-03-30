@@ -359,32 +359,32 @@ const PulseAgent: React.FC<{ embedded?: boolean; showSummary?: boolean }> = ({ e
             {callDropdownOpen && (
               <div className="absolute z-50 top-full left-0 right-0 mt-1 rounded-lg border border-border bg-card shadow-xl overflow-hidden">
                 {/* Search input */}
-                <div className="p-1 border-b border-border/50">
+                <div className="p-2 border-b border-border/50">
                   <div className="relative">
-                    <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-2.5 h-2.5 text-muted-foreground" />
+                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
                     <input
                       autoFocus
                       type="text"
                       value={callSearch}
                       onChange={e => setCallSearch(e.target.value)}
                       placeholder="Search calls…"
-                      className="w-full h-6 pl-6 pr-3 text-[10px] bg-secondary/40 border border-border/40 rounded placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/50"
+                      className="w-full h-8 pl-8 pr-8 text-xs bg-secondary/40 border border-border/40 rounded-md placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/50"
                     />
                     {callSearch && (
-                      <button onClick={() => setCallSearch('')} className="absolute right-2 top-1/2 -translate-y-1/2">
-                        <X className="w-3 h-3 text-muted-foreground hover:text-foreground" />
+                      <button onClick={() => setCallSearch('')} className="absolute right-2.5 top-1/2 -translate-y-1/2">
+                        <X className="w-3.5 h-3.5 text-muted-foreground hover:text-foreground" />
                       </button>
                     )}
                   </div>
                 </div>
 
                 {/* Call list */}
-                <ScrollArea className="max-h-[800px]">
-                  <div className="p-1 space-y-0.5">
+                <ScrollArea className="max-h-[340px]">
+                  <div className="p-1.5 space-y-0.5">
                     {filteredCalls.length === 0 ? (
                       <div className="flex flex-col items-center justify-center py-6 text-center">
                         <Phone className="w-5 h-5 text-muted-foreground/30 mb-1.5" />
-                        <p className="text-[11px] text-muted-foreground">{callSearch ? 'No matching calls' : 'No calls yet'}</p>
+                        <p className="text-xs text-muted-foreground">{callSearch ? 'No matching calls' : 'No calls yet'}</p>
                       </div>
                     ) : filteredCalls.map(call => {
                       const sev = (call.severity as Severity) || 'low';
@@ -395,26 +395,27 @@ const PulseAgent: React.FC<{ embedded?: boolean; showSummary?: boolean }> = ({ e
                       const flagCount = call.flagged_keywords?.length || 0;
                       const dur = call.duration_seconds;
                       const durLabel = dur ? `${Math.floor(dur / 60)}:${(dur % 60).toString().padStart(2, '0')}` : null;
+                      const noteSnippet = call.summary || call.notes || null;
 
                       return (
                         <button
                           key={call.id}
                           onClick={() => { openCallReview(call.id); setCallDropdownOpen(false); }}
                           className={cn(
-                            "w-full text-left px-2.5 py-1.5 rounded-md transition-all group flex items-center gap-2",
+                            "w-full text-left px-3 py-2 rounded-md transition-all group flex items-center gap-2.5",
                             isSelected ? "bg-primary/10 text-foreground" : "hover:bg-secondary/40"
                           )}
                         >
                           <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-1.5">
-                              <span className="text-[11px] font-semibold truncate">{call.agent_name}</span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-semibold truncate">{call.agent_name}</span>
                               {call.agent_name === 'Trudy AI' && (
-                                <Badge className="text-[7px] h-3 px-1 bg-violet-500/15 text-violet-500 border-violet-500/30 font-bold">AI</Badge>
+                                <Badge className="text-[8px] h-3.5 px-1.5 bg-violet-500/15 text-violet-500 border-violet-500/30 font-bold">AI</Badge>
                               )}
-                              <span className="text-muted-foreground/40 text-[10px]">→</span>
-                              <span className="text-[10px] text-muted-foreground truncate">{call.client_name || 'Unknown'}</span>
+                              <span className="text-muted-foreground/40 text-xs">→</span>
+                              <span className="text-xs text-muted-foreground truncate">{call.client_name || 'Unknown'}</span>
                               {isActive && (
-                                <span className="flex items-center gap-0.5 text-[7px] font-bold text-compliance-pass ml-0.5">
+                                <span className="flex items-center gap-0.5 text-[8px] font-bold text-compliance-pass ml-0.5">
                                   <span className="relative flex h-1.5 w-1.5">
                                     <span className="animate-ping absolute h-full w-full rounded-full bg-compliance-pass opacity-75" />
                                     <span className="relative rounded-full h-1.5 w-1.5 bg-compliance-pass" />
@@ -424,21 +425,26 @@ const PulseAgent: React.FC<{ embedded?: boolean; showSummary?: boolean }> = ({ e
                               )}
                             </div>
                             <div className="flex items-center gap-2 mt-0.5">
-                              <span className="text-[9px] text-muted-foreground/60">{formatDistanceToNowStrict(new Date(call.created_at), { addSuffix: true })}</span>
-                              {durLabel && <span className="text-[9px] text-muted-foreground/60">{durLabel}</span>}
+                              <span className="text-[10px] text-muted-foreground/60">{formatDistanceToNowStrict(new Date(call.created_at), { addSuffix: true })}</span>
+                              {durLabel && <span className="text-[10px] text-muted-foreground/60">{durLabel}</span>}
                               {flagCount > 0 && (
-                                <span className={cn("text-[8px] font-bold uppercase flex items-center gap-0.5", sm.color)}>
+                                <span className={cn("text-[9px] font-bold uppercase flex items-center gap-0.5", sm.color)}>
                                   <SIcon className="w-2.5 h-2.5" /> {flagCount}
                                 </span>
                               )}
                               {call.compliance_score != null && (
-                                <span className={cn("text-[9px] font-bold", call.compliance_score >= 80 ? "text-compliance-pass" : call.compliance_score >= 60 ? "text-compliance-review" : "text-destructive")}>
+                                <span className={cn("text-[10px] font-bold", call.compliance_score >= 80 ? "text-compliance-pass" : call.compliance_score >= 60 ? "text-compliance-review" : "text-destructive")}>
                                   {call.compliance_score}%
                                 </span>
                               )}
                             </div>
+                            {noteSnippet && (
+                              <p className="text-[10px] text-muted-foreground/50 truncate mt-0.5 italic">
+                                {noteSnippet.length > 80 ? noteSnippet.slice(0, 80) + '…' : noteSnippet}
+                              </p>
+                            )}
                           </div>
-                          <ChevronRight className="w-3 h-3 text-muted-foreground/30 shrink-0 group-hover:text-foreground" />
+                          <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/30 shrink-0 group-hover:text-foreground" />
                         </button>
                       );
                     })}
