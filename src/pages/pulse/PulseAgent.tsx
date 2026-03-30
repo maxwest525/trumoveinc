@@ -518,7 +518,8 @@ const PulseAgent: React.FC<{ embedded?: boolean; showSummary?: boolean }> = ({ e
                   )}
 
                   {/* Compliance Scorecard Breakdown */}
-                  {(() => {
+                  {showSummary ? (
+                  (() => {
                     const COMPLIANCE_CATEGORIES = [
                       { key: 'legal', label: 'Legal & Regulatory', icon: '⚖️', maxDeduct: 30 },
                       { key: 'compliance', label: 'Compliance', icon: '📋', maxDeduct: 25 },
@@ -541,7 +542,6 @@ const PulseAgent: React.FC<{ embedded?: boolean; showSummary?: boolean }> = ({ e
                       return { ...cat, score, flagCount: catAlerts.length };
                     });
 
-                    // Also compute categories from flagged_keywords that match known categories
                     const uncategorizedAlerts = reviewAlerts.filter((a: any) => {
                       const kw = (a.keyword || '').toLowerCase();
                       const ctx = (a.context || '').toLowerCase();
@@ -605,7 +605,76 @@ const PulseAgent: React.FC<{ embedded?: boolean; showSummary?: boolean }> = ({ e
                         )}
                       </div>
                     );
-                  })()}
+                  })()
+                  ) : (
+                    /* Agent view: request buttons instead of direct scorecard/summary */
+                    <div className="space-y-3">
+                      <div className="rounded-xl border border-border bg-card/50 p-4 space-y-3">
+                        <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+                          <Shield className="w-3 h-3 text-primary" /> Compliance & Summary
+                        </h3>
+                        <p className="text-[11px] text-muted-foreground">
+                          AI summaries and compliance scorecards require manager or admin approval. Submit a request below.
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          <button
+                            disabled={requestingSummary}
+                            onClick={async () => {
+                              setRequestingSummary(true);
+                              try {
+                                const { data: { user } } = await supabase.auth.getUser();
+                                const { data: profile } = await supabase.from('profiles').select('display_name').eq('id', user?.id || '').maybeSingle();
+                                const agentName = profile?.display_name || user?.email || 'Agent';
+                                await supabase.from('support_tickets').insert({
+                                  name: agentName,
+                                  email: user?.email || '',
+                                  subject: `AI Call Summary Request — ${reviewCall.agent_name} → ${reviewCall.client_name || 'Unknown'}`,
+                                  message: `Agent "${agentName}" is requesting an AI-generated call summary for:\n\nCall ID: ${reviewCall.id}\nAgent: ${reviewCall.agent_name}\nClient: ${reviewCall.client_name || 'Unknown'}\nDate: ${format(new Date(reviewCall.created_at), 'MMM d, yyyy h:mm a')}\nDuration: ${reviewCall.duration_seconds ? Math.floor(reviewCall.duration_seconds / 60) + 'm ' + (reviewCall.duration_seconds % 60) + 's' : 'N/A'}\nFlagged Keywords: ${(reviewCall.flagged_keywords || []).join(', ') || 'None'}`,
+                                  status: 'open',
+                                });
+                                toast.success('Summary request submitted for approval');
+                              } catch {
+                                toast.error('Failed to submit request');
+                              } finally {
+                                setRequestingSummary(false);
+                              }
+                            }}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-primary/10 text-primary text-[11px] font-semibold hover:bg-primary/20 transition-colors disabled:opacity-50"
+                          >
+                            {requestingSummary ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
+                            Request AI Summary
+                          </button>
+                          <button
+                            disabled={requestingScorecard}
+                            onClick={async () => {
+                              setRequestingScorecard(true);
+                              try {
+                                const { data: { user } } = await supabase.auth.getUser();
+                                const { data: profile } = await supabase.from('profiles').select('display_name').eq('id', user?.id || '').maybeSingle();
+                                const agentName = profile?.display_name || user?.email || 'Agent';
+                                await supabase.from('support_tickets').insert({
+                                  name: agentName,
+                                  email: user?.email || '',
+                                  subject: `Compliance Scorecard Request — ${reviewCall.agent_name} → ${reviewCall.client_name || 'Unknown'}`,
+                                  message: `Agent "${agentName}" is requesting a compliance scorecard for:\n\nCall ID: ${reviewCall.id}\nAgent: ${reviewCall.agent_name}\nClient: ${reviewCall.client_name || 'Unknown'}\nDate: ${format(new Date(reviewCall.created_at), 'MMM d, yyyy h:mm a')}\nDuration: ${reviewCall.duration_seconds ? Math.floor(reviewCall.duration_seconds / 60) + 'm ' + (reviewCall.duration_seconds % 60) + 's' : 'N/A'}\nFlagged Keywords: ${(reviewCall.flagged_keywords || []).join(', ') || 'None'}\nAlerts: ${reviewAlerts.length} total`,
+                                  status: 'open',
+                                });
+                                toast.success('Scorecard request submitted for approval');
+                              } catch {
+                                toast.error('Failed to submit request');
+                              } finally {
+                                setRequestingScorecard(false);
+                              }
+                            }}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-primary/10 text-primary text-[11px] font-semibold hover:bg-primary/20 transition-colors disabled:opacity-50"
+                          >
+                            {requestingScorecard ? <Loader2 className="w-3 h-3 animate-spin" /> : <Shield className="w-3 h-3" />}
+                            Request Scorecard
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                   {showSummary && (
                   <div className="rounded-xl border border-border bg-card/50 p-4">
                     <div className="flex items-center justify-between mb-2">
