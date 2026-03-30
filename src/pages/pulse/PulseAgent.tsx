@@ -352,6 +352,9 @@ const PulseAgent: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-1.5 mb-0.5">
                               <span className="text-xs font-semibold truncate">{call.agent_name}</span>
+                              {call.agent_name === 'Trudy AI' && (
+                                <Badge className="text-[8px] h-3.5 px-1 bg-violet-500/15 text-violet-500 border-violet-500/30 font-bold">AI</Badge>
+                              )}
                               <span className="text-muted-foreground/40">→</span>
                               <span className="text-[11px] text-muted-foreground truncate">{call.client_name || 'Unknown'}</span>
                               {isActive && (
