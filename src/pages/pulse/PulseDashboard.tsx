@@ -283,11 +283,111 @@ const PulseDashboard: React.FC<{ embedded?: boolean; basePath?: string }> = ({ e
         {/* Stacked layout: Flagged Interactions on top, Live Transcript below */}
         <div className="flex flex-col gap-5 flex-1 min-h-0">
           {/* Flagged Interactions - fixed height, scrollable */}
-          <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden flex flex-col" style={{ height: '340px' }}>
+          <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden flex flex-col" style={{ height: '400px' }}>
             <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-secondary/30">
               <h3 className="text-xs font-semibold flex items-center gap-1.5"><AlertTriangle className="w-3.5 h-3.5 text-destructive" />Flagged Interactions{filteredAlerts.length > 0 && <Badge variant="secondary" className="text-[10px]">{filteredAlerts.length}</Badge>}</h3>
               <span className="text-[10px] text-muted-foreground">Live • Real-time updates</span>
             </div>
+            {/* Sentiment Overview Strip */}
+            {sentimentOverview && (
+              <div className="border-b border-border/40 bg-muted/20 px-4 py-2">
+                <div className="flex items-center gap-2 mb-1.5">
+                  <Brain className="w-3 h-3 text-primary" />
+                  <span className="text-[10px] font-semibold text-foreground">Sentiment Overview</span>
+                  <span className="text-[9px] text-muted-foreground">({sentimentOverview.totalCalls} calls)</span>
+                </div>
+                <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                  {/* Dominant Tone */}
+                  <div className="flex items-center gap-1.5">
+                    {(() => {
+                      const toneIcons: Record<ToneLevel, { icon: React.ElementType; color: string }> = {
+                        positive: { icon: Smile, color: 'text-compliance-pass' },
+                        neutral: { icon: Meh, color: 'text-muted-foreground' },
+                        cautious: { icon: Meh, color: 'text-compliance-review' },
+                        negative: { icon: Frown, color: 'text-orange-500' },
+                        angry: { icon: Frown, color: 'text-destructive' },
+                      };
+                      const t = toneIcons[sentimentOverview.dominantTone];
+                      const TIcon = t.icon;
+                      return <TIcon className={cn("w-4 h-4", t.color)} />;
+                    })()}
+                    <div>
+                      <p className={cn("text-[10px] font-bold leading-none",
+                        sentimentOverview.dominantTone === 'positive' ? 'text-compliance-pass' :
+                        sentimentOverview.dominantTone === 'angry' || sentimentOverview.dominantTone === 'negative' ? 'text-destructive' : 'text-foreground'
+                      )}>{sentimentOverview.dominantTone.charAt(0).toUpperCase() + sentimentOverview.dominantTone.slice(1)}</p>
+                      <p className="text-[8px] text-muted-foreground">Avg Tone</p>
+                    </div>
+                  </div>
+                  {/* Avg Anger */}
+                  <div className="flex items-center gap-1.5">
+                    <div className={cn("w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-bold",
+                      sentimentOverview.avgAnger >= 40 ? 'bg-destructive/20 text-destructive' :
+                      sentimentOverview.avgAnger >= 15 ? 'bg-orange-500/20 text-orange-500' : 'bg-compliance-pass/20 text-compliance-pass'
+                    )}>{sentimentOverview.avgAnger}</div>
+                    <div>
+                      <p className={cn("text-[10px] font-bold leading-none",
+                        sentimentOverview.avgAnger >= 40 ? 'text-destructive' :
+                        sentimentOverview.avgAnger >= 15 ? 'text-orange-500' : 'text-compliance-pass'
+                      )}>{sentimentOverview.avgAnger}%</p>
+                      <p className="text-[8px] text-muted-foreground">Anger</p>
+                    </div>
+                  </div>
+                  {/* Sentiment Score */}
+                  <div className="flex items-center gap-1.5">
+                    {sentimentOverview.avgSentiment >= 0 ?
+                      <TrendingUp className="w-4 h-4 text-compliance-pass" /> :
+                      <TrendingDown className="w-4 h-4 text-destructive" />
+                    }
+                    <div>
+                      <p className={cn("text-[10px] font-bold leading-none",
+                        sentimentOverview.avgSentiment >= 0 ? 'text-compliance-pass' : 'text-destructive'
+                      )}>{sentimentOverview.avgSentiment > 0 ? '+' : ''}{sentimentOverview.avgSentiment}</p>
+                      <p className="text-[8px] text-muted-foreground">Sentiment</p>
+                    </div>
+                  </div>
+                  {/* Fillers */}
+                  <div className="flex items-center gap-1.5">
+                    <Volume2 className={cn("w-4 h-4", sentimentOverview.totalFillers > 50 ? 'text-destructive' : 'text-muted-foreground')} />
+                    <div>
+                      <p className={cn("text-[10px] font-bold leading-none",
+                        sentimentOverview.totalFillers > 50 ? 'text-destructive' :
+                        sentimentOverview.totalFillers > 20 ? 'text-compliance-review' : 'text-foreground'
+                      )}>{sentimentOverview.totalFillers}</p>
+                      <p className="text-[8px] text-muted-foreground">Fillers</p>
+                    </div>
+                  </div>
+                  {/* Avg Pace */}
+                  <div className="flex items-center gap-1.5">
+                    <Clock className={cn("w-4 h-4", sentimentOverview.avgWpm > 180 ? 'text-destructive' : 'text-muted-foreground')} />
+                    <div>
+                      <p className={cn("text-[10px] font-bold leading-none",
+                        sentimentOverview.avgWpm > 180 ? 'text-destructive' : 'text-foreground'
+                      )}>{sentimentOverview.avgWpm} wpm</p>
+                      <p className="text-[8px] text-muted-foreground">Pace</p>
+                    </div>
+                  </div>
+                  {/* Tone Shifts */}
+                  <div className="flex items-center gap-1.5">
+                    {sentimentOverview.worseningCount > sentimentOverview.improvingCount ?
+                      <TrendingDown className="w-4 h-4 text-destructive" /> :
+                      sentimentOverview.improvingCount > 0 ?
+                      <TrendingUp className="w-4 h-4 text-compliance-pass" /> :
+                      <Minus className="w-4 h-4 text-muted-foreground" />
+                    }
+                    <div>
+                      <p className="text-[10px] font-bold leading-none text-foreground">
+                        {sentimentOverview.worseningCount > 0 && <span className="text-destructive">{sentimentOverview.worseningCount}↓</span>}
+                        {sentimentOverview.worseningCount > 0 && sentimentOverview.improvingCount > 0 && ' '}
+                        {sentimentOverview.improvingCount > 0 && <span className="text-compliance-pass">{sentimentOverview.improvingCount}↑</span>}
+                        {sentimentOverview.worseningCount === 0 && sentimentOverview.improvingCount === 0 && 'Stable'}
+                      </p>
+                      <p className="text-[8px] text-muted-foreground">Shifts</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
             <ScrollArea className="flex-1">
               {isLoading ? (
                 <div className="text-center py-12 text-muted-foreground"><RefreshCw className="w-6 h-6 mx-auto mb-2 animate-spin opacity-30" /><p className="text-xs">Loading alerts...</p></div>
