@@ -21,7 +21,7 @@ const SEVERITY_META: Record<Severity, { label: string; color: string; bg: string
   critical: { label: 'Critical', color: 'text-destructive', bg: 'bg-destructive/10', border: 'border-destructive/30', icon: AlertTriangle },
 };
 
-const AGENT_NAME = 'Agent Smith';
+const AGENT_OPTIONS = ['Agent Smith', 'Trudy AI', 'Sarah Johnson', 'Mike Chen', 'Lisa Park', 'James Rivera'];
 
 function checkMatch(text: string, entry: WatchEntry): string | null {
   const lower = text.toLowerCase();
