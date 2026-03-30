@@ -46,6 +46,9 @@ export default function AdminSupportTickets() {
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [approvingId, setApprovingId] = useState<string | null>(null);
+  const [denyingId, setDenyingId] = useState<string | null>(null);
+  const [callPreviews, setCallPreviews] = useState<Record<string, any>>({});
+  const [loadingPreview, setLoadingPreview] = useState<string | null>(null);
 
   const fetchTickets = async () => {
     setLoading(true);
