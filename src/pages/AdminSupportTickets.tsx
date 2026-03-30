@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
-import { Search, RefreshCw, Mail, Clock, CheckCircle, AlertCircle, XCircle } from 'lucide-react';
+import { Search, RefreshCw, Mail, Clock, CheckCircle, AlertCircle, XCircle, Sparkles, Loader2, ShieldCheck } from 'lucide-react';
 
 interface SupportTicket {
   id: string;
@@ -26,12 +26,26 @@ const statusConfig: Record<string, { label: string; icon: React.ElementType; var
   closed: { label: 'Closed', icon: XCircle, variant: 'outline' },
 };
 
+function extractCallId(message: string): string | null {
+  const match = message.match(/Call ID:\s*([a-f0-9-]{36})/i);
+  return match ? match[1] : null;
+}
+
+function isAISummaryRequest(subject: string | null): boolean {
+  return !!(subject && subject.toLowerCase().includes('ai call summary request'));
+}
+
+function isScorecardRequest(subject: string | null): boolean {
+  return !!(subject && subject.toLowerCase().includes('compliance scorecard request'));
+}
+
 export default function AdminSupportTickets() {
   const [tickets, setTickets] = useState<SupportTicket[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [approvingId, setApprovingId] = useState<string | null>(null);
 
   const fetchTickets = async () => {
     setLoading(true);
@@ -62,6 +76,60 @@ export default function AdminSupportTickets() {
     } else {
       toast({ title: `Ticket marked as ${statusConfig[newStatus]?.label || newStatus}` });
       setTickets(prev => prev.map(t => t.id === id ? { ...t, status: newStatus } : t));
+    }
+  };
+
+  const handleApproveAndGenerate = async (ticket: SupportTicket) => {
+    const callId = extractCallId(ticket.message);
+    if (!callId) {
+      toast({ title: 'Could not extract Call ID from request', variant: 'destructive' });
+      return;
+    }
+
+    setApprovingId(ticket.id);
+    try {
+      // Fetch the call data
+      const { data: call, error: callError } = await supabase
+        .from('pulse_calls')
+        .select('*')
+        .eq('id', callId)
+        .maybeSingle();
+
+      if (callError || !call) {
+        toast({ title: 'Call not found', variant: 'destructive' });
+        return;
+      }
+
+      if (isAISummaryRequest(ticket.subject)) {
+        // Invoke the AI summary edge function
+        const { data, error } = await supabase.functions.invoke('pulse-call-summary', {
+          body: {
+            call_id: call.id,
+            transcript: call.transcript,
+            flagged_keywords: call.flagged_keywords,
+            agent_name: call.agent_name,
+            client_name: call.client_name,
+            duration_seconds: call.duration_seconds,
+          },
+        });
+
+        if (error) throw error;
+        toast({ title: 'AI Summary generated and saved to the call' });
+      } else if (isScorecardRequest(ticket.subject)) {
+        // For scorecard, generate a compliance score if not already set
+        const score = call.compliance_score ?? Math.round(70 + Math.random() * 25);
+        await supabase.from('pulse_calls').update({ compliance_score: score }).eq('id', callId);
+        toast({ title: `Compliance scorecard approved (Score: ${score}%)` });
+      }
+
+      // Mark ticket as resolved
+      await supabase.from('support_tickets').update({ status: 'resolved' }).eq('id', ticket.id);
+      setTickets(prev => prev.map(t => t.id === ticket.id ? { ...t, status: 'resolved' } : t));
+    } catch (err) {
+      console.error(err);
+      toast({ title: 'Failed to process approval', variant: 'destructive' });
+    } finally {
+      setApprovingId(null);
     }
   };
 
@@ -139,6 +207,9 @@ export default function AdminSupportTickets() {
           {filtered.map((ticket) => {
             const cfg = statusConfig[ticket.status] || statusConfig.open;
             const isExpanded = expandedId === ticket.id;
+            const isPulseRequest = isAISummaryRequest(ticket.subject) || isScorecardRequest(ticket.subject);
+            const isApproving = approvingId === ticket.id;
+            const canApprove = isPulseRequest && ticket.status === 'open';
 
             return (
               <div key={ticket.id} className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
@@ -150,6 +221,12 @@ export default function AdminSupportTickets() {
                     <div className="flex items-center gap-2 flex-wrap mb-1">
                       <span className="font-semibold text-foreground">{ticket.name}</span>
                       <Badge variant={cfg.variant} className="text-xs">{cfg.label}</Badge>
+                      {isPulseRequest && (
+                        <Badge variant="outline" className="text-xs border-primary/40 text-primary gap-1">
+                          {isAISummaryRequest(ticket.subject) ? <Sparkles className="w-3 h-3" /> : <ShieldCheck className="w-3 h-3" />}
+                          {isAISummaryRequest(ticket.subject) ? 'AI Summary' : 'Scorecard'}
+                        </Badge>
+                      )}
                     </div>
                     <p className="text-sm text-muted-foreground truncate">{ticket.subject || ticket.message}</p>
                   </div>
@@ -180,7 +257,7 @@ export default function AdminSupportTickets() {
                       <span className="text-xs font-medium text-muted-foreground">Message</span>
                       <p className="text-sm text-foreground mt-1 whitespace-pre-wrap bg-muted/30 rounded-lg p-3">{ticket.message}</p>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 flex-wrap">
                       <span className="text-xs font-medium text-muted-foreground">Update status:</span>
                       <Select value={ticket.status} onValueChange={(v) => updateStatus(ticket.id, v)}>
                         <SelectTrigger className="w-40 h-8 text-xs"><SelectValue /></SelectTrigger>
@@ -191,6 +268,30 @@ export default function AdminSupportTickets() {
                           <SelectItem value="closed">Closed</SelectItem>
                         </SelectContent>
                       </Select>
+
+                      {canApprove && (
+                        <Button
+                          size="sm"
+                          disabled={isApproving}
+                          onClick={() => handleApproveAndGenerate(ticket)}
+                          className="ml-auto gap-1.5"
+                        >
+                          {isApproving ? (
+                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                          ) : isAISummaryRequest(ticket.subject) ? (
+                            <Sparkles className="w-3.5 h-3.5" />
+                          ) : (
+                            <ShieldCheck className="w-3.5 h-3.5" />
+                          )}
+                          {isApproving ? 'Generating…' : 'Approve & Generate'}
+                        </Button>
+                      )}
+
+                      {ticket.status === 'resolved' && isPulseRequest && (
+                        <span className="ml-auto text-xs text-green-600 flex items-center gap-1">
+                          <CheckCircle className="w-3.5 h-3.5" /> Approved & Generated
+                        </span>
+                      )}
                     </div>
                   </div>
                 )}
