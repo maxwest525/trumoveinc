@@ -75,6 +75,7 @@ const PulseAgent: React.FC<{ embedded?: boolean; showSummary?: boolean }> = ({ e
   const [reviewLoading, setReviewLoading] = useState(false);
   const [callSearch, setCallSearch] = useState('');
   const [callDropdownOpen, setCallDropdownOpen] = useState(false);
+  const [callSortBy, setCallSortBy] = useState<'recent' | 'duration' | 'score' | 'flags'>('recent');
   const dropdownRef = useRef<HTMLDivElement>(null);
   const AGENT_NAME = 'You';
   const [liveDurationSec, setLiveDurationSec] = useState(0);
@@ -123,15 +124,32 @@ const PulseAgent: React.FC<{ embedded?: boolean; showSummary?: boolean }> = ({ e
   }, []);
 
   const filteredCalls = useMemo(() => {
-    if (!callSearch.trim()) return dbCalls;
-    const q = callSearch.toLowerCase();
-    return dbCalls.filter(c =>
-      (c.agent_name || '').toLowerCase().includes(q) ||
-      (c.client_name || '').toLowerCase().includes(q) ||
-      (c.status || '').toLowerCase().includes(q) ||
-      (c.flagged_keywords || []).some((k: string) => k.toLowerCase().includes(q))
-    );
-  }, [dbCalls, callSearch]);
+    let list = dbCalls;
+    if (callSearch.trim()) {
+      const q = callSearch.toLowerCase();
+      list = list.filter(c =>
+        (c.agent_name || '').toLowerCase().includes(q) ||
+        (c.client_name || '').toLowerCase().includes(q) ||
+        (c.status || '').toLowerCase().includes(q) ||
+        (c.flagged_keywords || []).some((k: string) => k.toLowerCase().includes(q))
+      );
+    }
+    const sorted = [...list];
+    switch (callSortBy) {
+      case 'duration':
+        sorted.sort((a, b) => (b.duration_seconds || 0) - (a.duration_seconds || 0));
+        break;
+      case 'score':
+        sorted.sort((a, b) => (a.compliance_score ?? 100) - (b.compliance_score ?? 100));
+        break;
+      case 'flags':
+        sorted.sort((a, b) => (b.flagged_keywords?.length || 0) - (a.flagged_keywords?.length || 0));
+        break;
+      default:
+        sorted.sort((a, b) => new Date(b.started_at).getTime() - new Date(a.started_at).getTime());
+    }
+    return sorted;
+  }, [dbCalls, callSearch, callSortBy]);
 
   const selectedCallLabel = useMemo(() => {
     if (!selectedCallId) return null;
@@ -358,8 +376,8 @@ const PulseAgent: React.FC<{ embedded?: boolean; showSummary?: boolean }> = ({ e
 
             {callDropdownOpen && (
               <div className="absolute z-50 top-full left-0 right-0 mt-1 rounded-lg border border-border bg-card shadow-xl overflow-hidden">
-                {/* Search input */}
-                <div className="p-2 border-b border-border/50">
+                {/* Search input + sort */}
+                <div className="p-2 border-b border-border/50 space-y-1.5">
                   <div className="relative">
                     <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
                     <input
@@ -375,6 +393,29 @@ const PulseAgent: React.FC<{ embedded?: boolean; showSummary?: boolean }> = ({ e
                         <X className="w-3.5 h-3.5 text-muted-foreground hover:text-foreground" />
                       </button>
                     )}
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <span className="text-[10px] text-muted-foreground/60 mr-1">Sort:</span>
+                    {([
+                      { key: 'recent', label: 'Recent', icon: Calendar },
+                      { key: 'duration', label: 'Duration', icon: Clock },
+                      { key: 'score', label: 'Score', icon: Shield },
+                      { key: 'flags', label: 'Flags', icon: AlertTriangle },
+                    ] as const).map(opt => (
+                      <button
+                        key={opt.key}
+                        onClick={() => setCallSortBy(opt.key)}
+                        className={cn(
+                          "inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium transition-all",
+                          callSortBy === opt.key
+                            ? "bg-primary/15 text-primary border border-primary/30"
+                            : "text-muted-foreground hover:text-foreground hover:bg-muted/50 border border-transparent"
+                        )}
+                      >
+                        <opt.icon className="w-2.5 h-2.5" />
+                        {opt.label}
+                      </button>
+                    ))}
                   </div>
                 </div>
 
