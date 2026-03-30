@@ -5,32 +5,15 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { ThemeProvider } from "next-themes";
-import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-import OnlineEstimate from "./pages/OnlineEstimate";
-import Book from "./pages/Book";
-import Vetting from "./pages/Vetting";
-import VettingDashboard from "./pages/VettingDashboard";
-import CarrierVetting from "./pages/CarrierVetting";
-import FAQ from "./pages/FAQ";
-import About from "./pages/About";
-import Privacy from "./pages/Privacy";
-import Terms from "./pages/Terms";
-import PropertyLookup from "./pages/PropertyLookup";
-import Auth from "./pages/Auth";
 import PublicESign from "./pages/PublicESign";
 import WorkspaceHub from "./pages/WorkspaceHub";
 import AgentDashboard from "./pages/AgentDashboard";
 import AdminDeveloper from "./pages/AdminDeveloper";
-import ScanRoom from "./pages/ScanRoom";
-import Classic from "./pages/Classic";
-import LiveTracking from "./pages/LiveTracking";
 import ElevenLabsTrudyWidget from "./components/ElevenLabsTrudyWidget";
 import ScrollToTop from "./components/ScrollToTop";
 import { SeoOverrideProvider } from "./components/SeoOverrideProvider";
-import SiteCanonicalLayout from "./components/SiteCanonicalLayout";
 import { captureUtmParams } from "./lib/leadEnrichment";
-import CustomerService from "./pages/CustomerService";
 import ProductionHomeRedirect from "./components/ProductionHomeRedirect";
 import SiteRouteGuard from "./components/SiteRouteGuard";
 import AdminSupportTickets from "./pages/AdminSupportTickets";
@@ -111,23 +94,9 @@ const App = () => (
             <Route path="/agent-login" element={<Navigate to="/dashboard" replace />} />
 
             {/* ── Customer-facing website under /site ─────────────── */}
-            {/* On CRM/dev, /site redirects to workspace hub; on production main domain it renders normally */}
+            {/* On CRM/dev, all /site/* redirects to workspace hub; on production they render normally */}
             <Route path="/site" element={<SiteRouteGuard />} />
-            <Route path="/site/online-estimate" element={<SiteCanonicalLayout><OnlineEstimate /></SiteCanonicalLayout>} />
-            <Route path="/site/book" element={<SiteCanonicalLayout><Book /></SiteCanonicalLayout>} />
-            <Route path="/site/vetting" element={<SiteCanonicalLayout><CarrierVetting /></SiteCanonicalLayout>} />
-            <Route path="/site/vetting-dashboard" element={<SiteCanonicalLayout><VettingDashboard /></SiteCanonicalLayout>} />
-            <Route path="/site/carrier-vetting" element={<SiteCanonicalLayout><CarrierVetting /></SiteCanonicalLayout>} />
-            <Route path="/site/faq" element={<SiteCanonicalLayout><FAQ /></SiteCanonicalLayout>} />
-            <Route path="/site/about" element={<SiteCanonicalLayout><About /></SiteCanonicalLayout>} />
-            <Route path="/site/privacy" element={<SiteCanonicalLayout><Privacy /></SiteCanonicalLayout>} />
-            <Route path="/site/terms" element={<SiteCanonicalLayout><Terms /></SiteCanonicalLayout>} />
-            <Route path="/site/property-lookup" element={<SiteCanonicalLayout><PropertyLookup /></SiteCanonicalLayout>} />
-            <Route path="/site/auth" element={<SiteCanonicalLayout><Auth /></SiteCanonicalLayout>} />
-            <Route path="/site/scan-room" element={<SiteCanonicalLayout><ScanRoom /></SiteCanonicalLayout>} />
-            <Route path="/site/classic" element={<SiteCanonicalLayout><Classic /></SiteCanonicalLayout>} />
-            <Route path="/site/track" element={<SiteCanonicalLayout><LiveTracking /></SiteCanonicalLayout>} />
-            <Route path="/site/customer-service" element={<SiteCanonicalLayout><CustomerService /></SiteCanonicalLayout>} />
+            <Route path="/site/*" element={<SiteRouteGuard />} />
 
             {/* ── Public e-sign route (customer clicks from email) ── */}
             <Route path="/esign/:refNumber" element={<PublicESign />} />
