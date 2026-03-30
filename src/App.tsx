@@ -108,7 +108,8 @@ const App = () => (
             <Route path="/agent-login" element={<Navigate to="/" replace />} />
 
             {/* ── Customer-facing website under /site ─────────────── */}
-            <Route path="/site" element={<SiteCanonicalLayout><Index /></SiteCanonicalLayout>} />
+            {/* On CRM/dev, /site redirects to workspace hub; on production main domain it renders normally */}
+            <Route path="/site" element={<SiteRouteGuard />} />
             <Route path="/site/online-estimate" element={<SiteCanonicalLayout><OnlineEstimate /></SiteCanonicalLayout>} />
             <Route path="/site/book" element={<SiteCanonicalLayout><Book /></SiteCanonicalLayout>} />
             <Route path="/site/vetting" element={<SiteCanonicalLayout><CarrierVetting /></SiteCanonicalLayout>} />
