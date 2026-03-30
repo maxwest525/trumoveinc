@@ -336,7 +336,7 @@ const PulseAgent: React.FC<{ embedded?: boolean; showSummary?: boolean }> = ({ e
         </div>
 
         {/* Recent Calls Dropdown */}
-        <div className="px-6 pb-2">
+        <div className="px-6 pb-2 max-w-[220px]">
           <div className="relative" ref={dropdownRef}>
             <button
               onClick={() => setCallDropdownOpen(p => !p)}
