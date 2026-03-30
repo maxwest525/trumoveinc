@@ -70,6 +70,9 @@ const PulseAgent: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
   const [reviewCall, setReviewCall] = useState<any>(null);
   const [reviewAlerts, setReviewAlerts] = useState<any[]>([]);
   const [reviewLoading, setReviewLoading] = useState(false);
+  const [callSearch, setCallSearch] = useState('');
+  const [callDropdownOpen, setCallDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const getWatchEntries = useCallback(async (): Promise<WatchEntry[]> => {
     try { const saved = localStorage.getItem('pulse-watch-entries'); if (saved) { const parsed = JSON.parse(saved); if (Array.isArray(parsed) && parsed.length > 0) return parsed; } } catch {}
