@@ -5,6 +5,7 @@ import { toast } from '@/hooks/use-toast';
 import { useNavigate, useLocation } from 'react-router-dom';
 import trudyAvatar from '@/assets/trudy-avatar.png';
 import VoiceWaveform from './VoiceWaveform';
+import { useTrudyPulseMonitor } from '@/hooks/useTrudyPulseMonitor';
 
 const TRUDY_AGENT_ID = 'agent_0501khwa2t2pfj0s3echetmjhx4n';
 
@@ -28,12 +29,19 @@ export default function ElevenLabsTrudyWidget() {
   const idRef = useRef(0);
   const scrollRef = useRef<HTMLDivElement>(null);
   const transcriptRef = useRef<TranscriptEntry[]>([]);
+  const syncIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const pulse = useTrudyPulseMonitor();
 
   const conversation = useConversation({
     onConnect: () => {
       setShowTranscript(true);
       setShowPostCall(false);
       setTranscript([]);
+      // Start Pulse monitoring
+      pulse.onConversationStart();
+      // Periodic transcript sync every 5s
+      syncIntervalRef.current = setInterval(() => pulse.syncTranscript(), 5000);
     },
     onDisconnect: () => {
       const current = transcriptRef.current;
@@ -42,14 +50,27 @@ export default function ElevenLabsTrudyWidget() {
         setShowPostCall(true);
         setShowTranscript(false);
       }
+      // End Pulse monitoring
+      pulse.onConversationEnd();
+      if (syncIntervalRef.current) {
+        clearInterval(syncIntervalRef.current);
+        syncIntervalRef.current = null;
+      }
     },
     onMessage: (message: any) => {
       if (message.type === 'user_transcript') {
         const text = message.user_transcription_event?.user_transcript;
-        if (text) setTranscript(prev => [...prev, { id: ++idRef.current, speaker: 'user', text }]);
+        if (text) {
+          setTranscript(prev => [...prev, { id: ++idRef.current, speaker: 'user', text }]);
+          // Send customer speech to Pulse for compliance scanning
+          pulse.onCustomerSpeech(text);
+        }
       } else if (message.type === 'agent_response') {
         const text = message.agent_response_event?.agent_response;
-        if (text) setTranscript(prev => [...prev, { id: ++idRef.current, speaker: 'trudy', text }]);
+        if (text) {
+          setTranscript(prev => [...prev, { id: ++idRef.current, speaker: 'trudy', text }]);
+          pulse.onTrudyResponse(text);
+        }
       } else if (message.type === 'agent_response_correction') {
         const corrected = message.agent_response_correction_event?.corrected_agent_response;
         if (corrected) {
