@@ -138,8 +138,6 @@ const App = () => (
             <Route path="/agent/messages" element={<AgentMessaging />} />
             <Route path="/agent/team-chat" element={<AgentTeamChat />} />
             
-            <Route path="/portal" element={<CustomerPortal />} />
-            <Route path="/portal/dashboard" element={<CustomerPortalDashboard />} />
             <Route path="/homepage-2" element={<HomepageV2 />} />
             <Route path="/customer-facing-sites" element={<CustomerFacingSites />} />
             <Route path="/tools/:tool" element={<IntegrationPlaceholder />} />
