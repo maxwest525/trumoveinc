@@ -808,11 +808,13 @@ const PulseAgent: React.FC<{ embedded?: boolean; showSummary?: boolean }> = ({ e
             /* ── Live Transcription Panel ── */
             <div className="p-6 space-y-5">
               <div className="flex items-center justify-between">
-                <div>
-                  <h1 className="text-lg font-bold">Live Transcription</h1>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    {callActive ? 'Listening… speak or type below' : 'Press Start Call to begin, or select a call to review'}
-                  </p>
+                <div className="flex items-center gap-3">
+                  <div>
+                    <h1 className="text-lg font-bold">Live Transcription</h1>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {callActive ? 'Listening… speak or type below' : 'Press Start Call to begin, or select a call to review'}
+                    </p>
+                  </div>
                 </div>
                 <div className="flex items-center gap-2">
                   {!callActive ? (
