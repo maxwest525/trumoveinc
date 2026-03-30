@@ -169,19 +169,23 @@ export default function AgentLogin() {
 
         {/* Portal cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-4xl">
-          {PORTALS.map((portal, i) => (
-            <PortalCard
-              key={portal.key}
-              label={portal.label}
-              description={portal.description}
-              icon={portal.icon}
-              accentHsl={portal.accentHsl}
-              index={i}
-              onClick={() => {
-                navigate(portal.key === "agents" ? "/agent/dashboard" : portal.href);
-              }}
-            />
-          ))}
+          {PORTALS.map((portal, i) => {
+            const allowed = isOwner || hasAnyRole(...portal.requiredRoles as AppRole[]);
+            return (
+              <PortalCard
+                key={portal.key}
+                label={portal.label}
+                description={portal.description}
+                icon={portal.icon}
+                accentHsl={portal.accentHsl}
+                index={i}
+                disabled={rolesLoading ? true : !allowed}
+                onClick={() => {
+                  navigate(portal.key === "agents" ? "/agent/dashboard" : portal.href);
+                }}
+              />
+            );
+          })}
         </div>
 
         
