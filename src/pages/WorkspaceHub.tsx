@@ -134,12 +134,7 @@ export default function AgentLogin() {
       <div className="flex flex-col items-center justify-center min-h-screen px-4 py-20">
 
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.35 }}
-          className="flex flex-col items-center gap-1.5 mb-16"
-        >
+        <div className="flex flex-col items-center gap-1.5 mb-16">
           <img src={logoImg} alt="TruMove" className="h-7" />
           <h1 className="text-lg font-semibold tracking-tight text-foreground mt-2 flex items-center gap-2">
             {greeting}, {displayName}
