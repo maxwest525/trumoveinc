@@ -63,7 +63,6 @@ const PORTALS: { key: string; label: string; description: string; href: string; 
     icon: Truck,
     accentHsl: "262 83% 58%",
     requiredRoles: ["agent", "manager"],
-    beta: true,
   },
   {
     key: "marketing",
