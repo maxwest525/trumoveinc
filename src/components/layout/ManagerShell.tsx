@@ -18,7 +18,7 @@ import ShellBreadcrumbs, { type BreadcrumbSegment } from "@/components/layout/Sh
 const NAV_ITEMS = [
   { label: "Dashboard", icon: LayoutDashboard, href: "/manager/dashboard" },
   { label: "Leaderboard", icon: Trophy, href: "/leaderboard" },
-  { label: "Pulse Dashboard", icon: Activity, href: "/manager/pulse" },
+  { label: "Pulse Compliance", icon: Activity, href: "/manager/pulse" },
 ];
 
 const ADVANCED_ITEMS: { label: string; icon: typeof Target; badge?: number; href?: string }[] = [
