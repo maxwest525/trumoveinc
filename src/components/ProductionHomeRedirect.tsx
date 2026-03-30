@@ -1,12 +1,12 @@
-import AgentLogin from "@/pages/AgentLogin";
+import { Navigate } from "react-router-dom";
 import Index from "@/pages/Index";
 import SiteCanonicalLayout from "./SiteCanonicalLayout";
 
 /**
  * Hostname-based routing for the root path "/":
- *   crm.trumoveinc.com  → Agent login (CRM)
+ *   crm.trumoveinc.com  → /dashboard (CRM workspace hub)
  *   trumoveinc.com       → Customer homepage rendered directly at "/"
- *   localhost / preview   → Agent login (dev default)
+ *   localhost / preview   → /dashboard (dev default)
  */
 export default function ProductionHomeRedirect() {
   const host = window.location.hostname;
@@ -16,9 +16,9 @@ export default function ProductionHomeRedirect() {
     host === "127.0.0.1" ||
     host.endsWith(".lovable.app");
 
-  // Dev/preview and CRM subdomain → agent login
+  // Dev/preview and CRM subdomain → workspace hub
   if (isDev || host.startsWith("crm.")) {
-    return <AgentLogin />;
+    return <Navigate to="/dashboard" replace />;
   }
 
   // Main production domain → customer homepage at "/"
