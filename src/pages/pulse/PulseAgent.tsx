@@ -372,7 +372,7 @@ const PulseAgent: React.FC<{ embedded?: boolean; showSummary?: boolean }> = ({ e
                 </div>
 
                 {/* Call list */}
-                <ScrollArea className="max-h-[400px]">
+                <ScrollArea className="max-h-[800px]">
                   <div className="p-1 space-y-0.5">
                     {filteredCalls.length === 0 ? (
                       <div className="flex flex-col items-center justify-center py-6 text-center">
