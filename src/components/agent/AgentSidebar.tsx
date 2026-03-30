@@ -25,7 +25,7 @@ const NAV_ITEMS: NavItem[] = [
   
   { label: "Dialer", icon: Phone, href: "/agent/dialer", beta: true },
   
-  { label: "Pulse Monitor", icon: Activity, href: "/agent/pulse" },
+  { label: "Pulse Compliance", icon: Activity, href: "/agent/pulse" },
   { label: "Leaderboard", icon: Trophy, href: "/leaderboard" },
 ];
 

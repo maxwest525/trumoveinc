@@ -27,7 +27,7 @@ const NAV_ITEMS: { label: string; icon: any; href: string; beta?: boolean }[] = 
   { label: "Products & Pricing", icon: DollarSign, href: "/admin/pricing" },
   { label: "Accounting", icon: CreditCard, href: "/accounting/dashboard", beta: true },
   { label: "Developer", icon: Link2, href: "/admin/developer", beta: true },
-  { label: "Pulse Settings", icon: Settings2, href: "/admin/pulse" },
+  { label: "Pulse Compliance", icon: Settings2, href: "/admin/pulse" },
 ];
 
 const ADVANCED_ITEMS = [
