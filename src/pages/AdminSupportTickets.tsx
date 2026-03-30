@@ -293,6 +293,75 @@ export default function AdminSupportTickets() {
                       <span className="text-xs font-medium text-muted-foreground">Message</span>
                       <p className="text-sm text-foreground mt-1 whitespace-pre-wrap bg-muted/30 rounded-lg p-3">{ticket.message}</p>
                     </div>
+
+                    {/* Call Preview for Pulse Requests */}
+                    {isPulseRequest && (() => {
+                      const callData = callPreviews[ticket.id];
+                      const isLoadingThis = loadingPreview === ticket.id;
+                      return (
+                        <div className="rounded-lg border border-border bg-muted/20 p-4 space-y-3">
+                          <div className="flex items-center gap-2 text-xs font-semibold text-foreground">
+                            <Phone className="w-3.5 h-3.5 text-primary" />
+                            Call Details
+                          </div>
+                          {isLoadingThis ? (
+                            <div className="flex items-center gap-2 text-xs text-muted-foreground py-4 justify-center">
+                              <Loader2 className="w-3.5 h-3.5 animate-spin" /> Loading call data…
+                            </div>
+                          ) : !callData ? (
+                            <p className="text-xs text-muted-foreground">Call data not found.</p>
+                          ) : (
+                            <>
+                              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                <div>
+                                  <span className="text-[10px] text-muted-foreground uppercase tracking-wide">Agent</span>
+                                  <p className="text-xs font-medium text-foreground flex items-center gap-1 mt-0.5"><User className="w-3 h-3" />{callData.agent_name}</p>
+                                </div>
+                                <div>
+                                  <span className="text-[10px] text-muted-foreground uppercase tracking-wide">Client</span>
+                                  <p className="text-xs font-medium text-foreground mt-0.5">{callData.client_name || 'Unknown'}</p>
+                                </div>
+                                <div>
+                                  <span className="text-[10px] text-muted-foreground uppercase tracking-wide">Duration</span>
+                                  <p className="text-xs font-medium text-foreground mt-0.5">
+                                    {callData.duration_seconds ? `${Math.floor(callData.duration_seconds / 60)}m ${callData.duration_seconds % 60}s` : 'N/A'}
+                                  </p>
+                                </div>
+                                <div>
+                                  <span className="text-[10px] text-muted-foreground uppercase tracking-wide">Compliance</span>
+                                  <p className="text-xs font-medium text-foreground mt-0.5">{callData.compliance_score != null ? `${callData.compliance_score}%` : 'Pending'}</p>
+                                </div>
+                              </div>
+                              {callData.flagged_keywords?.length > 0 && (
+                                <div>
+                                  <span className="text-[10px] text-muted-foreground uppercase tracking-wide">Flagged Keywords</span>
+                                  <div className="flex flex-wrap gap-1 mt-1">
+                                    {callData.flagged_keywords.map((kw: string, i: number) => (
+                                      <span key={i} className="px-1.5 py-0.5 text-[10px] font-medium bg-destructive/10 text-destructive rounded">{kw}</span>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                              {callData.transcript && (
+                                <div>
+                                  <span className="text-[10px] text-muted-foreground uppercase tracking-wide flex items-center gap-1"><FileText className="w-3 h-3" /> Transcript Preview</span>
+                                  <p className="text-[11px] text-foreground mt-1 whitespace-pre-wrap bg-card rounded-md border border-border/50 p-3 max-h-40 overflow-y-auto leading-relaxed">
+                                    {callData.transcript.slice(0, 1500)}{callData.transcript.length > 1500 ? '…' : ''}
+                                  </p>
+                                </div>
+                              )}
+                              {callData.summary && (
+                                <div>
+                                  <span className="text-[10px] text-muted-foreground uppercase tracking-wide">Existing Summary</span>
+                                  <p className="text-[11px] text-foreground mt-1 whitespace-pre-wrap bg-card rounded-md border border-primary/20 p-3">{callData.summary}</p>
+                                </div>
+                              )}
+                            </>
+                          )}
+                        </div>
+                      );
+                    })()}
+
                     <div className="flex items-center gap-3 flex-wrap">
                       <span className="text-xs font-medium text-muted-foreground">Update status:</span>
                       <Select value={ticket.status} onValueChange={(v) => updateStatus(ticket.id, v)}>
@@ -306,26 +375,43 @@ export default function AdminSupportTickets() {
                       </Select>
 
                       {canApprove && (
-                        <Button
-                          size="sm"
-                          disabled={isApproving}
-                          onClick={() => handleApproveAndGenerate(ticket)}
-                          className="ml-auto gap-1.5"
-                        >
-                          {isApproving ? (
-                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                          ) : isAISummaryRequest(ticket.subject) ? (
-                            <Sparkles className="w-3.5 h-3.5" />
-                          ) : (
-                            <ShieldCheck className="w-3.5 h-3.5" />
-                          )}
-                          {isApproving ? 'Generating…' : 'Approve & Generate'}
-                        </Button>
+                        <div className="ml-auto flex items-center gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            disabled={denyingId === ticket.id}
+                            onClick={() => handleDeny(ticket)}
+                            className="gap-1.5 text-destructive border-destructive/30 hover:bg-destructive/10"
+                          >
+                            {denyingId === ticket.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <XOctagon className="w-3.5 h-3.5" />}
+                            Deny
+                          </Button>
+                          <Button
+                            size="sm"
+                            disabled={isApproving}
+                            onClick={() => handleApproveAndGenerate(ticket)}
+                            className="gap-1.5"
+                          >
+                            {isApproving ? (
+                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            ) : isAISummaryRequest(ticket.subject) ? (
+                              <Sparkles className="w-3.5 h-3.5" />
+                            ) : (
+                              <ShieldCheck className="w-3.5 h-3.5" />
+                            )}
+                            {isApproving ? 'Generating…' : 'Approve & Generate'}
+                          </Button>
+                        </div>
                       )}
 
                       {ticket.status === 'resolved' && isPulseRequest && (
                         <span className="ml-auto text-xs text-green-600 flex items-center gap-1">
                           <CheckCircle className="w-3.5 h-3.5" /> Approved & Generated
+                        </span>
+                      )}
+                      {ticket.status === 'closed' && isPulseRequest && (
+                        <span className="ml-auto text-xs text-destructive flex items-center gap-1">
+                          <XOctagon className="w-3.5 h-3.5" /> Denied
                         </span>
                       )}
                     </div>
