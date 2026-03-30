@@ -49,6 +49,6 @@ export default function AccountingDashboard() {
           })}
         </div>
       </div>
-    </AccountingShell>
+    </AdminShell>
   );
 }
