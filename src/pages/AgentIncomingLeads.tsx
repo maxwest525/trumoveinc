@@ -3,11 +3,12 @@ import { useQuery } from "@tanstack/react-query";
 import AgentShell from "@/components/layout/AgentShell";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { format } from "date-fns";
+import { format, formatDistanceToNowStrict } from "date-fns";
 import {
   Inbox, MapPin, Phone, Mail, Calendar, Globe, Smartphone,
   Monitor, MousePointer, Clock, RefreshCw, UserPlus, ChevronDown, ChevronUp,
-  Tag, ExternalLink, Plus, Cookie, FileText, PhoneCall, Share2
+  Tag, ExternalLink, Plus, Cookie, FileText, PhoneCall, Share2,
+  GitBranch, Timer
 } from "lucide-react";
 import {
   DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator,
