@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import AgentShell from "@/components/layout/AgentShell";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,7 +7,7 @@ import { format } from "date-fns";
 import {
   Inbox, MapPin, Phone, Mail, Calendar, Globe, Smartphone,
   Monitor, MousePointer, Clock, RefreshCw, UserPlus, ChevronDown, ChevronUp,
-  Tag, ExternalLink
+  Tag, ExternalLink, Plus
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -147,13 +147,42 @@ export default function AgentIncomingLeads() {
               Unassigned leads from website, ads, and external sources
             </p>
           </div>
-          <button
-            onClick={() => refetch()}
-            className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5 rounded-lg border border-border hover:bg-muted/50"
-          >
-            <RefreshCw className="w-3.5 h-3.5" />
-            Refresh
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={async () => {
+                const names = ["Sarah Johnson", "Mike Chen", "Emily Davis", "James Wilson", "Lisa Martinez", "David Kim", "Rachel Brown", "Tom Anderson"];
+                const sources = ["website", "ppc", "referral", "phone"] as const;
+                const cities = ["Miami", "New York", "Chicago", "Dallas", "Los Angeles", "Atlanta", "Denver", "Seattle"];
+                const pick = names[Math.floor(Math.random() * names.length)].split(" ");
+                const city = cities[Math.floor(Math.random() * cities.length)];
+                const { error } = await supabase.from("leads").insert({
+                  first_name: pick[0],
+                  last_name: pick[1],
+                  email: `${pick[0].toLowerCase()}@example.com`,
+                  phone: `(${Math.floor(Math.random() * 900) + 100}) ${Math.floor(Math.random() * 900) + 100}-${Math.floor(Math.random() * 9000) + 1000}`,
+                  source: sources[Math.floor(Math.random() * sources.length)],
+                  origin_address: `${Math.floor(Math.random() * 9000) + 1000} Oak St, ${city}, FL`,
+                  destination_address: `${Math.floor(Math.random() * 9000) + 1000} Pine Ave, ${cities[Math.floor(Math.random() * cities.length)]}, CA`,
+                  move_date: new Date(Date.now() + Math.floor(Math.random() * 30 + 7) * 86400000).toISOString().split("T")[0],
+                  utm_source: "demo",
+                  utm_medium: "test",
+                });
+                if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
+                else { toast({ title: "Demo lead created" }); refetch(); }
+              }}
+              className="flex items-center gap-1.5 text-xs text-primary hover:text-primary/80 transition-colors px-3 py-1.5 rounded-lg border border-primary/20 hover:bg-primary/5"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              Demo Lead
+            </button>
+            <button
+              onClick={() => refetch()}
+              className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5 rounded-lg border border-border hover:bg-muted/50"
+            >
+              <RefreshCw className="w-3.5 h-3.5" />
+              Refresh
+            </button>
+          </div>
         </div>
 
         {/* Loading */}
