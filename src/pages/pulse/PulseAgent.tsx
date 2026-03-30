@@ -124,15 +124,32 @@ const PulseAgent: React.FC<{ embedded?: boolean; showSummary?: boolean }> = ({ e
   }, []);
 
   const filteredCalls = useMemo(() => {
-    if (!callSearch.trim()) return dbCalls;
-    const q = callSearch.toLowerCase();
-    return dbCalls.filter(c =>
-      (c.agent_name || '').toLowerCase().includes(q) ||
-      (c.client_name || '').toLowerCase().includes(q) ||
-      (c.status || '').toLowerCase().includes(q) ||
-      (c.flagged_keywords || []).some((k: string) => k.toLowerCase().includes(q))
-    );
-  }, [dbCalls, callSearch]);
+    let list = dbCalls;
+    if (callSearch.trim()) {
+      const q = callSearch.toLowerCase();
+      list = list.filter(c =>
+        (c.agent_name || '').toLowerCase().includes(q) ||
+        (c.client_name || '').toLowerCase().includes(q) ||
+        (c.status || '').toLowerCase().includes(q) ||
+        (c.flagged_keywords || []).some((k: string) => k.toLowerCase().includes(q))
+      );
+    }
+    const sorted = [...list];
+    switch (callSortBy) {
+      case 'duration':
+        sorted.sort((a, b) => (b.duration_seconds || 0) - (a.duration_seconds || 0));
+        break;
+      case 'score':
+        sorted.sort((a, b) => (a.compliance_score ?? 100) - (b.compliance_score ?? 100));
+        break;
+      case 'flags':
+        sorted.sort((a, b) => (b.flagged_keywords?.length || 0) - (a.flagged_keywords?.length || 0));
+        break;
+      default:
+        sorted.sort((a, b) => new Date(b.started_at).getTime() - new Date(a.started_at).getTime());
+    }
+    return sorted;
+  }, [dbCalls, callSearch, callSortBy]);
 
   const selectedCallLabel = useMemo(() => {
     if (!selectedCallId) return null;
