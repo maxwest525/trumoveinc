@@ -1,5 +1,6 @@
 import { useState, useEffect, type ReactNode } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Home, Sun, Moon, Bell, LayoutDashboard, Users, Link2, Package,
   Zap, ScrollText, Gauge, Sparkles, DollarSign,
@@ -48,12 +49,27 @@ export default function AdminShell({ children, breadcrumb = "", breadcrumbs }: A
   const [notifOpen, setNotifOpen] = useState(false);
   const { notifications, unreadCount, loading: notifLoading, markAsRead, markAllAsRead, deleteNotification } = useNotifications();
 
+  const [openRequestCount, setOpenRequestCount] = useState(0);
+
   useEffect(() => {
     setPortalContext("admin");
     window.scrollTo(0, 0);
   }, []);
 
   useEffect(() => { setSidebarOpen(false); }, [location.pathname]);
+
+  useEffect(() => {
+    const fetchCount = async () => {
+      const { count } = await supabase
+        .from('support_tickets')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'open');
+      setOpenRequestCount(count || 0);
+    };
+    fetchCount();
+    const interval = setInterval(fetchCount, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
   const sidebarContent = (
     <>
@@ -82,6 +98,11 @@ export default function AdminShell({ children, breadcrumb = "", breadcrumbs }: A
             >
               <Icon className="w-4 h-4" />
               <span>{item.label}</span>
+              {item.label === 'Employee Requests' && openRequestCount > 0 && (
+                <Badge className="ml-auto h-4 min-w-4 px-1 text-[9px] leading-none bg-destructive text-destructive-foreground">
+                  {openRequestCount > 99 ? '99+' : openRequestCount}
+                </Badge>
+              )}
               {item.beta && (
                 <span className="ml-auto text-[9px] font-semibold uppercase tracking-wider text-muted-foreground bg-muted px-1.5 py-0.5 rounded">Beta</span>
               )}
