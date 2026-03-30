@@ -430,6 +430,27 @@ const PulseAgent: React.FC<{ embedded?: boolean; showSummary?: boolean }> = ({ e
           </div>
         </div>
 
+        {/* Sentiment Analysis Placeholder */}
+        <div className="px-6 pb-3">
+          <div className="flex items-center gap-3 px-3 py-2 rounded-lg border border-dashed border-border bg-muted/10 max-w-xs">
+            <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+              <Brain className="w-3.5 h-3.5 text-primary" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-semibold text-foreground">Sentiment Analysis</span>
+                <Badge variant="outline" className="text-[8px] h-4 px-1.5 border-primary/30 text-primary">Coming Soon</Badge>
+              </div>
+              <p className="text-[10px] text-muted-foreground mt-0.5">Anger detection · Speech pace · Filler words (ugh, um) · Tone shifts</p>
+            </div>
+            <div className="flex items-center gap-1.5 shrink-0">
+              <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/20" />
+              <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/20" />
+              <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/20" />
+            </div>
+          </div>
+        </div>
+
         {/* Main content — live transcription or call review */}
         <div className="overflow-y-auto">
           {showingReview ? (
