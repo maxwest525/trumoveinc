@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import { usePulseSpeechRecognition } from '@/hooks/usePulseSpeechRecognition';
 import { Link } from 'react-router-dom';
 import { format, formatDistanceToNowStrict } from 'date-fns';
+import { useSentimentAnalysis, type ToneLevel } from '@/hooks/useSentimentAnalysis';
 
 type Severity = 'low' | 'medium' | 'high' | 'critical';
 interface FlaggedKeyword { keyword: string; severity: Severity; timestamp: string; context: string; }
