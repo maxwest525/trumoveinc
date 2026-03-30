@@ -87,6 +87,11 @@ export default function ManagerShell({ children, breadcrumb = "", breadcrumbs }:
               )}
             >
               <Icon className="w-4 h-4" /><span>{item.label}</span>
+              {item.label === 'Employee Requests' && openRequestCount > 0 && (
+                <span className="ml-auto min-w-[18px] h-[18px] flex items-center justify-center rounded-full text-[10px] font-semibold bg-destructive text-destructive-foreground leading-none px-1">
+                  {openRequestCount > 99 ? '99+' : openRequestCount}
+                </span>
+              )}
             </Link>
           );
         })}
