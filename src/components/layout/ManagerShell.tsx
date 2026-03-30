@@ -4,7 +4,7 @@ import {
   Home, Sun, Moon, Bell, LayoutDashboard,
   Target, AlertTriangle, CheckCircle, BarChart3,
   Gauge, Activity, MessageSquare, Trophy,
-  Menu, X,
+  Menu, X, ClipboardList,
 } from "lucide-react";
 import logoImg from "@/assets/logo.png";
 import { toast } from "sonner";
@@ -19,6 +19,7 @@ const NAV_ITEMS = [
   { label: "Dashboard", icon: LayoutDashboard, href: "/manager/dashboard" },
   { label: "Leaderboard", icon: Trophy, href: "/leaderboard" },
   { label: "Pulse Compliance", icon: Activity, href: "/manager/pulse" },
+  { label: "Employee Requests", icon: ClipboardList, href: "/manager/employee-requests" },
 ];
 
 const ADVANCED_ITEMS: { label: string; icon: typeof Target; badge?: number; href?: string }[] = [

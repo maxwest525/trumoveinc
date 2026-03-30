@@ -18,6 +18,7 @@ import { captureUtmParams } from "./lib/leadEnrichment";
 import ProductionHomeRedirect from "./components/ProductionHomeRedirect";
 import SiteRouteGuard from "./components/SiteRouteGuard";
 import AdminSupportTickets from "./pages/AdminSupportTickets";
+import ManagerEmployeeRequests from "./pages/ManagerEmployeeRequests";
 import AgentPipeline from "./pages/AgentPipeline";
 import ProfileSettings from "./pages/ProfileSettings";
 import ManagerDashboard from "./pages/ManagerDashboard";
@@ -128,6 +129,7 @@ const App = () => (
             <Route path="/manager/pulse" element={<RoleGuard allowedRoles={["manager"]}><ManagerPulse /></RoleGuard>} />
             <Route path="/manager/pulse/call/:callId" element={<RoleGuard allowedRoles={["manager"]}><ManagerPulseCallReview /></RoleGuard>} />
             <Route path="/manager/team-chat" element={<RoleGuard allowedRoles={["manager"]}><ManagerTeamChat /></RoleGuard>} />
+            <Route path="/manager/employee-requests" element={<RoleGuard allowedRoles={["manager"]}><ManagerEmployeeRequests /></RoleGuard>} />
 
             {/* Admin routes */}
             <Route path="/admin/dashboard" element={<RoleGuard allowedRoles={["admin"]}><AdminDashboard /></RoleGuard>} />
