@@ -18,6 +18,7 @@ import { captureUtmParams } from "./lib/leadEnrichment";
 import ProductionHomeRedirect from "./components/ProductionHomeRedirect";
 import SiteRouteGuard from "./components/SiteRouteGuard";
 import AdminSupportTickets from "./pages/AdminSupportTickets";
+import ManagerEmployeeRequests from "./pages/ManagerEmployeeRequests";
 import AgentPipeline from "./pages/AgentPipeline";
 import ProfileSettings from "./pages/ProfileSettings";
 import ManagerDashboard from "./pages/ManagerDashboard";
