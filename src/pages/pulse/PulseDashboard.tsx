@@ -143,7 +143,27 @@ const PulseDashboard: React.FC<{ embedded?: boolean; basePath?: string }> = ({ e
     low: alerts.filter(a => a.severity === 'low').length,
   }), [alerts]);
 
-  const exportCsv = () => {
+  // Aggregate sentiment from recent calls
+  const sentimentOverview = useMemo(() => {
+    if (!recentCalls.length) return null;
+    const callSentiments = recentCalls
+      .filter((c: any) => c.transcript && c.transcript.length > 10)
+      .map((c: any) => analyzeSentiment(c.transcript, c.duration_seconds || 60));
+    if (!callSentiments.length) return null;
+
+    const avgAnger = Math.round(callSentiments.reduce((s, m) => s + m.angerScore, 0) / callSentiments.length);
+    const avgSentiment = Math.round(callSentiments.reduce((s, m) => s + m.sentimentScore, 0) / callSentiments.length);
+    const totalFillers = callSentiments.reduce((s, m) => s + m.fillerCount, 0);
+    const avgWpm = Math.round(callSentiments.reduce((s, m) => s + m.wordsPerMinute, 0) / callSentiments.length);
+    const toneCounts: Record<ToneLevel, number> = { positive: 0, neutral: 0, cautious: 0, negative: 0, angry: 0 };
+    callSentiments.forEach(m => toneCounts[m.tone]++);
+    const dominantTone = (Object.entries(toneCounts).sort((a, b) => b[1] - a[1])[0][0]) as ToneLevel;
+    const worseningCount = callSentiments.filter(m => m.toneShiftDirection === 'worsening').length;
+    const improvingCount = callSentiments.filter(m => m.toneShiftDirection === 'improving').length;
+
+    return { avgAnger, avgSentiment, totalFillers, avgWpm, dominantTone, worseningCount, improvingCount, totalCalls: callSentiments.length, toneCounts };
+  }, [recentCalls]);
+
     const headers = ['Timestamp', 'Severity', 'Agent', 'Matched', 'Keyword', 'Match Type', 'Context'];
     const rows = filteredAlerts.map(a => [a.created_at, a.severity, a.agent_name, a.matched_text, a.keyword, a.match_type, `"${(a.context || '').replace(/"/g, '""')}"`]);
     const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
