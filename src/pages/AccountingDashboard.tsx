@@ -1,4 +1,4 @@
-import AccountingShell from "@/components/layout/AccountingShell";
+import AdminShell from "@/components/layout/AdminShell";
 import {
   FileText, CreditCard, TrendingDown, Users, BarChart3,
   DollarSign, Receipt, Globe, ArrowRight,
@@ -19,7 +19,7 @@ const TOOLS = [
 
 export default function AccountingDashboard() {
   return (
-    <AccountingShell>
+    <AdminShell breadcrumb=" / Accounting">
       <div className="space-y-6">
         <div>
           <h1 className="text-xl font-bold text-foreground">Accounting</h1>
@@ -49,6 +49,6 @@ export default function AccountingDashboard() {
           })}
         </div>
       </div>
-    </AccountingShell>
+    </AdminShell>
   );
 }
