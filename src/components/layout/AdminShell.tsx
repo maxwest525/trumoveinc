@@ -25,6 +25,7 @@ const NAV_ITEMS: { label: string; icon: any; href: string; beta?: boolean }[] = 
   { label: "Employee Requests", icon: FileText, href: "/admin/employee-requests" },
   
   { label: "Products & Pricing", icon: DollarSign, href: "/admin/pricing" },
+  { label: "Accounting", icon: CreditCard, href: "/accounting/dashboard", beta: true },
   { label: "Developer", icon: Link2, href: "/admin/developer", beta: true },
   { label: "Pulse Settings", icon: Settings2, href: "/admin/pulse" },
 ];
@@ -76,12 +77,8 @@ export default function AdminShell({ children, breadcrumb = "", breadcrumbs }: A
               to={item.href}
               className={cn(
                 "flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors",
-                item.beta && "opacity-40 pointer-events-none",
                 active ? "bg-foreground text-background" : "text-muted-foreground hover:bg-muted hover:text-foreground"
               )}
-              tabIndex={item.beta ? -1 : undefined}
-              aria-disabled={item.beta}
-              onClick={item.beta ? (e) => e.preventDefault() : undefined}
             >
               <Icon className="w-4 h-4" />
               <span>{item.label}</span>
