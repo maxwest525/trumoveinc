@@ -21,7 +21,7 @@ const SEVERITY_META: Record<Severity, { label: string; color: string; bg: string
   critical: { label: 'Critical', color: 'text-destructive', bg: 'bg-destructive/10', border: 'border-destructive/30', icon: AlertTriangle },
 };
 
-const AGENT_NAME = 'Agent Smith';
+const AGENT_OPTIONS = ['Agent Smith', 'Trudy AI', 'Sarah Johnson', 'Mike Chen', 'Lisa Park', 'James Rivera'];
 
 function checkMatch(text: string, entry: WatchEntry): string | null {
   const lower = text.toLowerCase();
@@ -75,6 +75,8 @@ const PulseAgent: React.FC<{ embedded?: boolean; showSummary?: boolean }> = ({ e
   const [callSearch, setCallSearch] = useState('');
   const [callDropdownOpen, setCallDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const [selectedAgent, setSelectedAgent] = useState(AGENT_OPTIONS[0]);
+  const AGENT_NAME = selectedAgent;
 
   const getWatchEntries = useCallback(async (): Promise<WatchEntry[]> => {
     try { const saved = localStorage.getItem('pulse-watch-entries'); if (saved) { const parsed = JSON.parse(saved); if (Array.isArray(parsed) && parsed.length > 0) return parsed; } } catch {}
@@ -806,13 +808,25 @@ const PulseAgent: React.FC<{ embedded?: boolean; showSummary?: boolean }> = ({ e
             /* ── Live Transcription Panel ── */
             <div className="p-6 space-y-5">
               <div className="flex items-center justify-between">
-                <div>
-                  <h1 className="text-lg font-bold">Live Transcription</h1>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    {callActive ? 'Listening… speak or type below' : 'Press Start Call to begin, or select a call to review'}
-                  </p>
+                <div className="flex items-center gap-3">
+                  <div>
+                    <h1 className="text-lg font-bold">Live Transcription</h1>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {callActive ? 'Listening… speak or type below' : 'Press Start Call to begin, or select a call to review'}
+                    </p>
+                  </div>
                 </div>
                 <div className="flex items-center gap-2">
+                  <select
+                    value={selectedAgent}
+                    onChange={e => setSelectedAgent(e.target.value)}
+                    disabled={callActive}
+                    className="h-9 px-2.5 text-xs font-medium rounded-lg border border-border bg-card text-foreground focus:outline-none focus:ring-1 focus:ring-primary/50 disabled:opacity-50"
+                  >
+                    {AGENT_OPTIONS.map(name => (
+                      <option key={name} value={name}>{name}</option>
+                    ))}
+                  </select>
                   {!callActive ? (
                     <button onClick={startCall} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-compliance-pass text-white text-sm font-semibold hover:opacity-90 transition-opacity">
                       <Mic className="w-4 h-4" /> Start Call
