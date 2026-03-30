@@ -445,7 +445,7 @@ const PulseAgent: React.FC<{ embedded?: boolean; showSummary?: boolean }> = ({ e
         {/* Stacked layout: Sentiment Analysis on top, Live Transcript below — matches manager layout */}
         <div className="flex flex-col gap-5 flex-1 min-h-0 px-6 pb-6">
           {/* Sentiment Analysis - fixed height card, matches manager flagged interactions */}
-          <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden flex flex-col" style={{ height: '400px' }}>
+          <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden flex flex-col">
             <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-secondary/30">
               <h3 className="text-xs font-semibold flex items-center gap-1.5">
                 <Brain className="w-3.5 h-3.5 text-primary" />
