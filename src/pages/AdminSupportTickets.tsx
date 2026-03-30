@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
-import { Search, RefreshCw, Mail, Clock, CheckCircle, AlertCircle, XCircle, Sparkles, Loader2, ShieldCheck } from 'lucide-react';
+import { Search, RefreshCw, Mail, Clock, CheckCircle, AlertCircle, XCircle, Sparkles, Loader2, ShieldCheck, Phone, User, FileText, XOctagon } from 'lucide-react';
 
 interface SupportTicket {
   id: string;
