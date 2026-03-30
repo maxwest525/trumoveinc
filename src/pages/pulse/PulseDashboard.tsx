@@ -80,7 +80,7 @@ const PulseDashboard: React.FC<{ embedded?: boolean; basePath?: string }> = ({ e
     if (data) setRecentCalls(data as any);
   }, []);
 
-  useEffect(() => { fetchAlerts(); }, [fetchAlerts]);
+  useEffect(() => { fetchAlerts(); fetchRecentCalls(); }, [fetchAlerts, fetchRecentCalls]);
 
   // Fetch live call for transcript panel
   const fetchLiveCall = useCallback(async (agentName: string) => {
