@@ -7,8 +7,11 @@ import { format } from "date-fns";
 import {
   Inbox, MapPin, Phone, Mail, Calendar, Globe, Smartphone,
   Monitor, MousePointer, Clock, RefreshCw, UserPlus, ChevronDown, ChevronUp,
-  Tag, ExternalLink, Plus
+  Tag, ExternalLink, Plus, Cookie, FileText, PhoneCall, Share2
 } from "lucide-react";
+import {
+  DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 
 interface IncomingLead {
