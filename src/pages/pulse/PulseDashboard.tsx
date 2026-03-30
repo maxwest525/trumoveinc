@@ -348,8 +348,8 @@ const PulseDashboard: React.FC<{ embedded?: boolean; basePath?: string }> = ({ e
             </ScrollArea>
           </div>
 
-          {/* Right: Live Transcript */}
-          <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden flex flex-col min-h-0">
+          {/* Live Transcript - full width below */}
+          <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden flex flex-col min-h-[300px]">
             <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-secondary/30">
               <h3 className="text-xs font-semibold flex items-center gap-1.5"><Radio className="w-3.5 h-3.5 text-primary" />Live Transcript</h3>
               <div className="flex items-center gap-2">
