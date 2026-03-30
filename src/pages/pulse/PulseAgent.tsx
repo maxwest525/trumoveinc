@@ -341,33 +341,33 @@ const PulseAgent: React.FC<{ embedded?: boolean; showSummary?: boolean }> = ({ e
             <button
               onClick={() => setCallDropdownOpen(p => !p)}
               className={cn(
-                "w-full flex items-center justify-between px-3 py-2 rounded-lg border transition-all text-left",
+                "w-full flex items-center justify-between px-2.5 py-1.5 rounded-md border transition-all text-left",
                 callDropdownOpen ? "border-primary/40 bg-primary/5 shadow-sm" : "border-border bg-card hover:border-primary/20"
               )}
             >
-              <div className="flex items-center gap-2 min-w-0">
-                <Phone className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
-                <span className="text-xs font-semibold truncate">
+              <div className="flex items-center gap-1.5 min-w-0">
+                <Phone className="w-3 h-3 text-muted-foreground shrink-0" />
+                <span className="text-[11px] font-semibold truncate">
                   {selectedCallLabel || 'Recent Calls'}
                 </span>
-                <span className="text-[10px] text-muted-foreground shrink-0">{dbCalls.length} total</span>
+                <span className="text-[9px] text-muted-foreground shrink-0">{dbCalls.length}</span>
               </div>
-              <ChevronDown className={cn("w-4 h-4 text-muted-foreground transition-transform shrink-0", callDropdownOpen && "rotate-180")} />
+              <ChevronDown className={cn("w-3.5 h-3.5 text-muted-foreground transition-transform shrink-0", callDropdownOpen && "rotate-180")} />
             </button>
 
             {callDropdownOpen && (
               <div className="absolute z-50 top-full left-0 right-0 mt-1 rounded-lg border border-border bg-card shadow-xl overflow-hidden">
                 {/* Search input */}
-                <div className="p-1.5 border-b border-border/50">
+                <div className="p-1 border-b border-border/50">
                   <div className="relative">
-                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3 h-3 text-muted-foreground" />
+                    <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-2.5 h-2.5 text-muted-foreground" />
                     <input
                       autoFocus
                       type="text"
                       value={callSearch}
                       onChange={e => setCallSearch(e.target.value)}
-                      placeholder="Search by agent, client, keyword…"
-                      className="w-full h-7 pl-7 pr-3 text-[11px] bg-secondary/40 border border-border/40 rounded-md placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/50"
+                      placeholder="Search calls…"
+                      className="w-full h-6 pl-6 pr-3 text-[10px] bg-secondary/40 border border-border/40 rounded placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/50"
                     />
                     {callSearch && (
                       <button onClick={() => setCallSearch('')} className="absolute right-2 top-1/2 -translate-y-1/2">
