@@ -98,6 +98,11 @@ export default function AdminShell({ children, breadcrumb = "", breadcrumbs }: A
             >
               <Icon className="w-4 h-4" />
               <span>{item.label}</span>
+              {item.label === 'Employee Requests' && openRequestCount > 0 && (
+                <Badge className="ml-auto h-4 min-w-4 px-1 text-[9px] leading-none bg-destructive text-destructive-foreground">
+                  {openRequestCount > 99 ? '99+' : openRequestCount}
+                </Badge>
+              )}
               {item.beta && (
                 <span className="ml-auto text-[9px] font-semibold uppercase tracking-wider text-muted-foreground bg-muted px-1.5 py-0.5 rounded">Beta</span>
               )}
