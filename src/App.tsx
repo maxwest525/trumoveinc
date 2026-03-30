@@ -32,6 +32,7 @@ import SiteCanonicalLayout from "./components/SiteCanonicalLayout";
 import { captureUtmParams } from "./lib/leadEnrichment";
 import CustomerService from "./pages/CustomerService";
 import ProductionHomeRedirect from "./components/ProductionHomeRedirect";
+import SiteRouteGuard from "./components/SiteRouteGuard";
 import AdminSupportTickets from "./pages/AdminSupportTickets";
 import AgentPipeline from "./pages/AgentPipeline";
 import ProfileSettings from "./pages/ProfileSettings";
