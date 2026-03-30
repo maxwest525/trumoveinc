@@ -68,6 +68,39 @@ export default function AdminSupportTickets() {
 
   useEffect(() => { fetchTickets(); }, []);
 
+  const loadCallPreview = async (ticket: SupportTicket) => {
+    const callId = extractCallId(ticket.message);
+    if (!callId || callPreviews[ticket.id]) return;
+    setLoadingPreview(ticket.id);
+    try {
+      const { data } = await supabase
+        .from('pulse_calls')
+        .select('*')
+        .eq('id', callId)
+        .maybeSingle();
+      if (data) setCallPreviews(prev => ({ ...prev, [ticket.id]: data }));
+    } catch (e) { console.error(e); }
+    finally { setLoadingPreview(null); }
+  };
+
+  const handleExpandTicket = (ticket: SupportTicket) => {
+    const newId = expandedId === ticket.id ? null : ticket.id;
+    setExpandedId(newId);
+    if (newId && (isAISummaryRequest(ticket.subject) || isScorecardRequest(ticket.subject))) {
+      loadCallPreview(ticket);
+    }
+  };
+
+  const handleDeny = async (ticket: SupportTicket) => {
+    setDenyingId(ticket.id);
+    try {
+      await supabase.from('support_tickets').update({ status: 'closed' }).eq('id', ticket.id);
+      setTickets(prev => prev.map(t => t.id === ticket.id ? { ...t, status: 'closed' } : t));
+      toast({ title: 'Request denied and closed' });
+    } catch { toast({ title: 'Failed to deny request', variant: 'destructive' }); }
+    finally { setDenyingId(null); }
+  };
+
   const updateStatus = async (id: string, newStatus: string) => {
     const { error } = await supabase
       .from('support_tickets')
