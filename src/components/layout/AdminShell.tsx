@@ -1,6 +1,7 @@
 import { useState, useEffect, type ReactNode } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useOpenRequestCount } from "@/hooks/useOpenRequestCount";
 import {
   Home, Sun, Moon, Bell, LayoutDashboard, Users, Link2, Package,
   Zap, ScrollText, Gauge, Sparkles, DollarSign,
@@ -49,7 +50,7 @@ export default function AdminShell({ children, breadcrumb = "", breadcrumbs }: A
   const [notifOpen, setNotifOpen] = useState(false);
   const { notifications, unreadCount, loading: notifLoading, markAsRead, markAllAsRead, deleteNotification } = useNotifications();
 
-  const [openRequestCount, setOpenRequestCount] = useState(0);
+  const openRequestCount = useOpenRequestCount();
 
   useEffect(() => {
     setPortalContext("admin");
@@ -57,19 +58,6 @@ export default function AdminShell({ children, breadcrumb = "", breadcrumbs }: A
   }, []);
 
   useEffect(() => { setSidebarOpen(false); }, [location.pathname]);
-
-  useEffect(() => {
-    const fetchCount = async () => {
-      const { count } = await supabase
-        .from('support_tickets')
-        .select('*', { count: 'exact', head: true })
-        .eq('status', 'open');
-      setOpenRequestCount(count || 0);
-    };
-    fetchCount();
-    const interval = setInterval(fetchCount, 30000);
-    return () => clearInterval(interval);
-  }, []);
 
   const sidebarContent = (
     <>

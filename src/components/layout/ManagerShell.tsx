@@ -1,5 +1,6 @@
 import { useState, useEffect, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useOpenRequestCount } from "@/hooks/useOpenRequestCount";
 import { Link, useLocation } from "react-router-dom";
 import {
   Home, Sun, Moon, Bell, LayoutDashboard,
@@ -39,7 +40,7 @@ export default function ManagerShell({ children, breadcrumb = "", breadcrumbs }:
   const isMobile = useIsMobile();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const [openRequestCount, setOpenRequestCount] = useState(0);
+  const openRequestCount = useOpenRequestCount();
 
   useEffect(() => {
     setPortalContext("manager");
@@ -47,19 +48,6 @@ export default function ManagerShell({ children, breadcrumb = "", breadcrumbs }:
   }, []);
 
   useEffect(() => { setSidebarOpen(false); }, [location.pathname]);
-
-  useEffect(() => {
-    const fetchCount = async () => {
-      const { count } = await supabase
-        .from('support_tickets')
-        .select('*', { count: 'exact', head: true })
-        .eq('status', 'open');
-      setOpenRequestCount(count || 0);
-    };
-    fetchCount();
-    const interval = setInterval(fetchCount, 30000);
-    return () => clearInterval(interval);
-  }, []);
 
   const sidebarContent = (
     <>
