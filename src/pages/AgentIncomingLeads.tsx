@@ -7,7 +7,7 @@ import { format } from "date-fns";
 import {
   Inbox, MapPin, Phone, Mail, Calendar, Globe, Smartphone,
   Monitor, MousePointer, Clock, RefreshCw, UserPlus, ChevronDown, ChevronUp,
-  Tag, ExternalLink
+  Tag, ExternalLink, Plus
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
