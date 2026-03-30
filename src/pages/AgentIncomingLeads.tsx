@@ -3,11 +3,12 @@ import { useQuery } from "@tanstack/react-query";
 import AgentShell from "@/components/layout/AgentShell";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { format } from "date-fns";
+import { format, formatDistanceToNowStrict } from "date-fns";
 import {
   Inbox, MapPin, Phone, Mail, Calendar, Globe, Smartphone,
   Monitor, MousePointer, Clock, RefreshCw, UserPlus, ChevronDown, ChevronUp,
-  Tag, ExternalLink, Plus, Cookie, FileText, PhoneCall, Share2
+  Tag, ExternalLink, Plus, Cookie, FileText, PhoneCall, Share2,
+  GitBranch, Timer
 } from "lucide-react";
 import {
   DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator,
@@ -48,6 +49,7 @@ interface IncomingLead {
   geo_city: string | null;
   geo_region: string | null;
   geo_country: string | null;
+  tags: string[] | null;
 }
 
 const SOURCE_COLORS: Record<string, string> = {
@@ -62,14 +64,45 @@ const SOURCE_COLORS: Record<string, string> = {
 
 function ConsentDot({ value }: { value: string | null }) {
   const granted = value === "granted";
+  const denied = value === "denied";
   return (
-    <span className={cn("inline-block w-2 h-2 rounded-full", granted ? "bg-emerald-500" : "bg-red-400")} />
+    <span className={cn("inline-block w-2 h-2 rounded-full", granted ? "bg-emerald-500" : denied ? "bg-red-400" : "bg-muted-foreground/20")} />
   );
 }
 
 function DeviceIcon({ type }: { type: string | null }) {
   if (type === "mobile") return <Smartphone className="w-3.5 h-3.5" />;
   return <Monitor className="w-3.5 h-3.5" />;
+}
+
+/** Shows N/A in muted style when value is missing */
+function Val({ v, mono }: { v: string | null | undefined; mono?: boolean }) {
+  if (!v) return <span className="text-muted-foreground/40 italic">N/A</span>;
+  return <span className={cn("text-foreground", mono && "font-mono text-[10px]")}>{v}</span>;
+}
+
+/** Live elapsed timer that updates every second */
+function ElapsedTimer({ since }: { since: string }) {
+  const [, setTick] = useState(0);
+  useEffect(() => {
+    const i = setInterval(() => setTick((t) => t + 1), 1000);
+    return () => clearInterval(i);
+  }, []);
+  const seconds = Math.floor((Date.now() - new Date(since).getTime()) / 1000);
+  if (seconds < 60) return <>{seconds}s</>;
+  if (seconds < 3600) return <>{Math.floor(seconds / 60)}m {seconds % 60}s</>;
+  return <>{Math.floor(seconds / 3600)}h {Math.floor((seconds % 3600) / 60)}m</>;
+}
+
+/** Routing status badge */
+function RoutingBadge({ lead }: { lead: IncomingLead }) {
+  // Unassigned = waiting for routing
+  return (
+    <span className="flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-amber-500/10 text-amber-600">
+      <GitBranch className="w-2.5 h-2.5" />
+      Unrouted
+    </span>
+  );
 }
 
 // ── Demo lead factory ─────────────────────────────────────────────
@@ -411,10 +444,8 @@ export default function AgentIncomingLeads() {
         {/* Lead cards */}
         {!isLoading && leads.length > 0 && (
           <div className="space-y-3">
-            {leads.map((lead) => {
+             {leads.map((lead) => {
               const isExpanded = expandedId === lead.id;
-              const hasEnrichment = lead.utm_source || lead.gclid || lead.ga_client_id || lead.device_type || lead.referrer || lead.landing_page_url || lead.geo_city;
-              const hasConsent = lead.consent_ad_storage || lead.consent_analytics_storage;
 
               return (
                 <div
@@ -423,7 +454,7 @@ export default function AgentIncomingLeads() {
                 >
                   {/* Main row */}
                   <div className="p-4 flex flex-col sm:flex-row sm:items-center gap-3">
-                    {/* Name + source */}
+                    {/* Name + badges */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
                         <h3 className="font-semibold text-foreground text-sm truncate">
@@ -435,12 +466,7 @@ export default function AgentIncomingLeads() {
                         )}>
                           {lead.source}
                         </span>
-                        {lead.utm_source && (
-                          <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-violet-500/10 text-violet-600 flex items-center gap-0.5">
-                            <Globe className="w-2.5 h-2.5" />
-                            {lead.utm_source}{lead.utm_medium ? ` / ${lead.utm_medium}` : ""}
-                          </span>
-                        )}
+                        <RoutingBadge lead={lead} />
                         {lead.gclid && (
                           <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-blue-500/10 text-blue-600">
                             Google Ads
@@ -462,47 +488,38 @@ export default function AgentIncomingLeads() {
 
                       {/* Contact + route */}
                       <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1.5 text-xs text-muted-foreground">
-                        {lead.phone && (
-                          <span className="flex items-center gap-1">
-                            <Phone className="w-3 h-3" /> {lead.phone}
-                          </span>
-                        )}
-                        {lead.email && (
-                          <span className="flex items-center gap-1 truncate max-w-[200px]">
-                            <Mail className="w-3 h-3" /> {lead.email}
-                          </span>
-                        )}
-                        {(lead.origin_address || lead.destination_address) && (
-                          <span className="flex items-center gap-1 truncate max-w-[300px]">
-                            <MapPin className="w-3 h-3" />
-                            {lead.origin_address || "?"} → {lead.destination_address || "?"}
-                          </span>
-                        )}
-                        {lead.move_date && (
-                          <span className="flex items-center gap-1">
-                            <Calendar className="w-3 h-3" />
-                            {format(new Date(lead.move_date), "MMM d, yyyy")}
-                          </span>
-                        )}
+                        <span className="flex items-center gap-1">
+                          <Phone className="w-3 h-3" /> {lead.phone || <span className="text-muted-foreground/40 italic">N/A</span>}
+                        </span>
+                        <span className="flex items-center gap-1 truncate max-w-[200px]">
+                          <Mail className="w-3 h-3" /> {lead.email || <span className="text-muted-foreground/40 italic">N/A</span>}
+                        </span>
+                        <span className="flex items-center gap-1 truncate max-w-[300px]">
+                          <MapPin className="w-3 h-3" />
+                          {lead.origin_address || "N/A"} → {lead.destination_address || "N/A"}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Calendar className="w-3 h-3" />
+                          {lead.move_date ? format(new Date(lead.move_date), "MMM d, yyyy") : <span className="text-muted-foreground/40 italic">N/A</span>}
+                        </span>
                       </div>
                     </div>
 
-                    {/* Time + actions */}
+                    {/* Timer + actions */}
                     <div className="flex items-center gap-2 shrink-0">
-                      <span className="text-[10px] text-muted-foreground/60 flex items-center gap-1">
-                        <Clock className="w-3 h-3" />
-                        {format(new Date(lead.created_at), "MMM d, h:mm a")}
+                      {/* Live timer */}
+                      <span className="text-[10px] font-mono text-amber-600 bg-amber-500/10 px-2 py-1 rounded-md flex items-center gap-1">
+                        <Timer className="w-3 h-3" />
+                        <ElapsedTimer since={lead.created_at} />
                       </span>
 
-                      {hasEnrichment && (
-                        <button
-                          onClick={() => toggleExpand(lead.id)}
-                          className="text-xs text-muted-foreground hover:text-foreground transition-colors p-1 rounded"
-                          title="View enrichment data"
-                        >
-                          {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                        </button>
-                      )}
+                      <button
+                        onClick={() => toggleExpand(lead.id)}
+                        className="text-xs text-muted-foreground hover:text-foreground transition-colors p-1 rounded"
+                        title="View all data"
+                      >
+                        {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                      </button>
 
                       <button
                         onClick={() => handleClaim(lead.id)}
@@ -515,54 +532,69 @@ export default function AgentIncomingLeads() {
                     </div>
                   </div>
 
-                  {/* Expanded enrichment panel */}
+                  {/* Expanded enrichment panel — always shows ALL fields */}
                   {isExpanded && (
                     <div className="border-t border-border bg-muted/30 px-4 py-3">
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
+                        {/* Contact Info */}
+                        <div>
+                          <p className="font-medium text-foreground mb-1.5 flex items-center gap-1">
+                            <Phone className="w-3 h-3 text-primary" /> Contact Info
+                          </p>
+                          <div className="space-y-1 text-muted-foreground">
+                            <p>First Name: <Val v={lead.first_name} /></p>
+                            <p>Last Name: <Val v={lead.last_name} /></p>
+                            <p>Email: <Val v={lead.email} /></p>
+                            <p>Phone: <Val v={lead.phone} /></p>
+                          </div>
+                        </div>
+
+                        {/* Move Details */}
+                        <div>
+                          <p className="font-medium text-foreground mb-1.5 flex items-center gap-1">
+                            <MapPin className="w-3 h-3 text-primary" /> Move Details
+                          </p>
+                          <div className="space-y-1 text-muted-foreground">
+                            <p>Origin: <Val v={lead.origin_address} /></p>
+                            <p>Destination: <Val v={lead.destination_address} /></p>
+                            <p>Move Date: <Val v={lead.move_date ? format(new Date(lead.move_date), "MMM d, yyyy") : null} /></p>
+                            <p>Est. Weight: {lead.estimated_weight ? <span className="text-foreground">{lead.estimated_weight.toLocaleString()} lbs</span> : <Val v={null} />}</p>
+                            <p>Est. Value: {lead.estimated_value ? <span className="text-foreground">${lead.estimated_value.toLocaleString()}</span> : <Val v={null} />}</p>
+                          </div>
+                        </div>
+
                         {/* Attribution */}
                         <div>
                           <p className="font-medium text-foreground mb-1.5 flex items-center gap-1">
                             <Tag className="w-3 h-3 text-primary" /> Attribution
                           </p>
                           <div className="space-y-1 text-muted-foreground">
-                            {lead.utm_source && <p>Source: <span className="text-foreground">{lead.utm_source}</span></p>}
-                            {lead.utm_medium && <p>Medium: <span className="text-foreground">{lead.utm_medium}</span></p>}
-                            {lead.utm_campaign && <p>Campaign: <span className="text-foreground">{lead.utm_campaign}</span></p>}
-                            {lead.utm_term && <p>Term: <span className="text-foreground">{lead.utm_term}</span></p>}
-                            {lead.utm_content && <p>Content: <span className="text-foreground">{lead.utm_content}</span></p>}
-                            {lead.gclid && <p>GCLID: <span className="text-foreground font-mono text-[10px]">{lead.gclid.slice(0, 20)}…</span></p>}
-                            {lead.ga_client_id && <p>GA ID: <span className="text-foreground font-mono text-[10px]">{lead.ga_client_id}</span></p>}
-                            {lead.referrer && <p>Referrer: <span className="text-foreground truncate inline-block max-w-[180px] align-bottom">{lead.referrer}</span></p>}
-                            {!lead.utm_source && !lead.gclid && !lead.ga_client_id && !lead.referrer && (
-                              <p className="text-muted-foreground/50 italic">No attribution data</p>
-                            )}
+                            <p>Source: <Val v={lead.utm_source} /></p>
+                            <p>Medium: <Val v={lead.utm_medium} /></p>
+                            <p>Campaign: <Val v={lead.utm_campaign} /></p>
+                            <p>Term: <Val v={lead.utm_term} /></p>
+                            <p>Content: <Val v={lead.utm_content} /></p>
+                            <p>GCLID: <Val v={lead.gclid ? lead.gclid.slice(0, 20) + "…" : null} mono /></p>
+                            <p>GA Client ID: <Val v={lead.ga_client_id} mono /></p>
+                            <p>Referrer: <Val v={lead.referrer || null} /></p>
                           </div>
                         </div>
 
                         {/* Location & Page */}
                         <div>
                           <p className="font-medium text-foreground mb-1.5 flex items-center gap-1">
-                            <MapPin className="w-3 h-3 text-primary" /> Location & Page
+                            <Globe className="w-3 h-3 text-primary" /> Geo & Page
                           </p>
                           <div className="space-y-1 text-muted-foreground">
-                            {(lead.geo_city || lead.geo_region || lead.geo_country) ? (
-                              <p>
-                                <span className="text-foreground">
-                                  {[lead.geo_city, lead.geo_region, lead.geo_country].filter(Boolean).join(", ")}
-                                </span>
-                              </p>
-                            ) : (
-                              <p className="text-muted-foreground/50 italic">No geo data</p>
-                            )}
-                            {lead.landing_page_url ? (
-                              <p className="truncate" title={lead.landing_page_url}>
-                                Page: <a href={lead.landing_page_url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline inline-flex items-center gap-0.5">
-                                  {new URL(lead.landing_page_url).pathname || "/"} <ExternalLink className="w-2.5 h-2.5" />
-                                </a>
-                              </p>
-                            ) : (
-                              <p className="text-muted-foreground/50 italic">No landing page</p>
-                            )}
+                            <p>City: <Val v={lead.geo_city} /></p>
+                            <p>Region: <Val v={lead.geo_region} /></p>
+                            <p>Country: <Val v={lead.geo_country} /></p>
+                            <p className="truncate">Landing Page: {lead.landing_page_url ? (
+                              <a href={lead.landing_page_url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline inline-flex items-center gap-0.5">
+                                {(() => { try { return new URL(lead.landing_page_url).pathname || "/"; } catch { return lead.landing_page_url; }})()}
+                                <ExternalLink className="w-2.5 h-2.5" />
+                              </a>
+                            ) : <Val v={null} />}</p>
                           </div>
                         </div>
 
@@ -572,17 +604,10 @@ export default function AgentIncomingLeads() {
                             <Monitor className="w-3 h-3 text-primary" /> Device
                           </p>
                           <div className="space-y-1 text-muted-foreground">
-                            {lead.device_type && <p>Type: <span className="text-foreground capitalize">{lead.device_type}</span></p>}
-                            {lead.screen_resolution && <p>Screen: <span className="text-foreground">{lead.screen_resolution}</span></p>}
-                            {lead.browser_language && <p>Language: <span className="text-foreground">{lead.browser_language}</span></p>}
-                            {lead.user_agent && (
-                              <p className="truncate" title={lead.user_agent}>
-                                UA: <span className="text-foreground font-mono text-[10px]">{lead.user_agent.slice(0, 50)}…</span>
-                              </p>
-                            )}
-                            {!lead.device_type && !lead.screen_resolution && (
-                              <p className="text-muted-foreground/50 italic">No device data</p>
-                            )}
+                            <p>Type: <Val v={lead.device_type} /></p>
+                            <p>Screen: <Val v={lead.screen_resolution} /></p>
+                            <p>Language: <Val v={lead.browser_language} /></p>
+                            <p className="truncate" title={lead.user_agent || ""}>UA: <Val v={lead.user_agent ? lead.user_agent.slice(0, 50) + "…" : null} mono /></p>
                           </div>
                         </div>
 
@@ -591,38 +616,48 @@ export default function AgentIncomingLeads() {
                           <p className="font-medium text-foreground mb-1.5 flex items-center gap-1">
                             <MousePointer className="w-3 h-3 text-primary" /> Consent
                           </p>
-                          {hasConsent ? (
-                            <div className="space-y-1 text-muted-foreground">
-                              <p className="flex items-center gap-1.5">
-                                <ConsentDot value={lead.consent_ad_storage} /> Ad Storage
-                              </p>
-                              <p className="flex items-center gap-1.5">
-                                <ConsentDot value={lead.consent_analytics_storage} /> Analytics
-                              </p>
-                              <p className="flex items-center gap-1.5">
-                                <ConsentDot value={lead.consent_ad_user_data} /> Ad Data
-                              </p>
-                              <p className="flex items-center gap-1.5">
-                                <ConsentDot value={lead.consent_ad_personalization} /> Personalization
-                              </p>
-                            </div>
-                          ) : (
-                            <p className="text-muted-foreground/50 italic">No consent data</p>
-                          )}
+                          <div className="space-y-1 text-muted-foreground">
+                            <p className="flex items-center gap-1.5">
+                              <ConsentDot value={lead.consent_ad_storage} /> Ad Storage: <Val v={lead.consent_ad_storage} />
+                            </p>
+                            <p className="flex items-center gap-1.5">
+                              <ConsentDot value={lead.consent_analytics_storage} /> Analytics: <Val v={lead.consent_analytics_storage} />
+                            </p>
+                            <p className="flex items-center gap-1.5">
+                              <ConsentDot value={lead.consent_ad_user_data} /> Ad Data: <Val v={lead.consent_ad_user_data} />
+                            </p>
+                            <p className="flex items-center gap-1.5">
+                              <ConsentDot value={lead.consent_ad_personalization} /> Personalization: <Val v={lead.consent_ad_personalization} />
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Routing & Meta */}
+                        <div>
+                          <p className="font-medium text-foreground mb-1.5 flex items-center gap-1">
+                            <GitBranch className="w-3 h-3 text-primary" /> Routing
+                          </p>
+                          <div className="space-y-1 text-muted-foreground">
+                            <p>Status: <span className="text-amber-600 font-medium">Unrouted</span></p>
+                            <p>Assigned To: <Val v={null} /></p>
+                            <p>Lead Source: <Val v={lead.source} /></p>
+                            <p>Created: <span className="text-foreground">{format(new Date(lead.created_at), "MMM d, yyyy h:mm a")}</span></p>
+                            <p>Elapsed: <span className="text-amber-600 font-mono"><ElapsedTimer since={lead.created_at} /></span></p>
+                          </div>
+                        </div>
+
+                        {/* Lead ID & System */}
+                        <div>
+                          <p className="font-medium text-foreground mb-1.5 flex items-center gap-1">
+                            <Clock className="w-3 h-3 text-primary" /> System
+                          </p>
+                          <div className="space-y-1 text-muted-foreground">
+                            <p>Lead ID: <span className="text-foreground font-mono text-[10px]">{lead.id.slice(0, 8)}…</span></p>
+                            <p>Status: <span className="text-foreground capitalize">{lead.status}</span></p>
+                            <p>Tags: {lead.tags?.length ? <span className="text-foreground">{(lead.tags as string[]).join(", ")}</span> : <Val v={null} />}</p>
+                          </div>
                         </div>
                       </div>
-
-                      {/* Estimate info if available */}
-                      {(lead.estimated_weight || lead.estimated_value) && (
-                        <div className="mt-3 pt-3 border-t border-border/50 flex gap-4 text-xs text-muted-foreground">
-                          {lead.estimated_weight && (
-                            <p>Est. Weight: <span className="text-foreground font-medium">{lead.estimated_weight.toLocaleString()} lbs</span></p>
-                          )}
-                          {lead.estimated_value && (
-                            <p>Est. Value: <span className="text-foreground font-medium">${lead.estimated_value.toLocaleString()}</span></p>
-                          )}
-                        </div>
-                      )}
                     </div>
                   )}
                 </div>
