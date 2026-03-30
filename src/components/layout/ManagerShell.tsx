@@ -4,7 +4,7 @@ import {
   Home, Sun, Moon, Bell, LayoutDashboard,
   Target, AlertTriangle, CheckCircle, BarChart3,
   Gauge, Activity, MessageSquare, Trophy,
-  Menu, X,
+  Menu, X, ClipboardList,
 } from "lucide-react";
 import logoImg from "@/assets/logo.png";
 import { toast } from "sonner";
