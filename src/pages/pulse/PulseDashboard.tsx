@@ -19,6 +19,7 @@ import PulseTopFlagsToday from '@/components/pulse/dashboard/PulseTopFlagsToday'
 import PulseSeverityBreakdown from '@/components/pulse/dashboard/PulseSeverityBreakdown';
 import PulseLiveActivityFeed, { PulseFeedItem } from '@/components/pulse/dashboard/PulseLiveActivityFeed';
 import { ArrowLeft } from 'lucide-react';
+import { analyzeSentiment, type ToneLevel } from '@/hooks/useSentimentAnalysis';
 
 type Severity = 'low' | 'medium' | 'high' | 'critical';
 interface DbAlert { id: string; agent_name: string; client_name: string; keyword: string; matched_text: string; match_type: string; context: string | null; severity: string; created_at: string; call_id: string | null; }
