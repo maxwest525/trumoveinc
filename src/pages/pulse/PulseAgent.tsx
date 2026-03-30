@@ -57,7 +57,7 @@ function highlightKeywords(text: string, keywords: string[]) {
   } catch { return text; }
 }
 
-const PulseAgent: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
+const PulseAgent: React.FC<{ embedded?: boolean; showSummary?: boolean }> = ({ embedded = false, showSummary = true }) => {
   const { isListening, transcript, interimText, isSupported, start, stop, clear, appendText } = usePulseSpeechRecognition();
   const [liveCallId, setLiveCallId] = useState<string | null>(null);
   const [liveFlags, setLiveFlags] = useState<FlaggedKeyword[]>([]);
@@ -171,8 +171,8 @@ const PulseAgent: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
       await supabase.from('pulse_calls' as any).update({ status: 'completed', ended_at: new Date().toISOString(), duration_seconds: duration, transcript, flagged_keywords: flagKeywords } as any).eq('id', liveCallId);
       fetchDbCalls();
 
-      // Trigger AI summary generation in background
-      if (transcript && transcript.trim().length > 20) {
+      // Trigger AI summary generation in background (managers/admins only)
+      if (showSummary && transcript && transcript.trim().length > 20) {
         setSummaryGenerating(true);
         toast.info('Generating AI call summary…', { duration: 3000, icon: <Sparkles className="w-4 h-4 text-primary" /> });
         try {
@@ -604,6 +604,7 @@ const PulseAgent: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
                       </div>
                     );
                   })()}
+                  {showSummary && (
                   <div className="rounded-xl border border-border bg-card/50 p-4">
                     <div className="flex items-center justify-between mb-2">
                       <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
@@ -651,6 +652,7 @@ const PulseAgent: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
                       </p>
                     )}
                   </div>
+                  )}
 
                   {/* Transcript */}
                   <div className="space-y-2">
