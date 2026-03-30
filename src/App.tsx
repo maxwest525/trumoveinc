@@ -8,6 +8,7 @@ import { ThemeProvider } from "next-themes";
 import NotFound from "./pages/NotFound";
 import PublicESign from "./pages/PublicESign";
 import WorkspaceHub from "./pages/WorkspaceHub";
+import RoleGuard from "./components/RoleGuard";
 import AgentDashboard from "./pages/AgentDashboard";
 import AdminDeveloper from "./pages/AdminDeveloper";
 import ElevenLabsTrudyWidget from "./components/ElevenLabsTrudyWidget";
