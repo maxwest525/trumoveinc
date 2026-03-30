@@ -693,7 +693,7 @@ const PulseAgent: React.FC<{ embedded?: boolean; showSummary?: boolean }> = ({ e
                                 setRequestingSummary(false);
                               }
                             }}
-                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-primary/10 text-primary text-[11px] font-semibold hover:bg-primary/20 transition-colors disabled:opacity-50"
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-primary/10 text-foreground text-[11px] font-semibold hover:bg-primary/20 transition-colors disabled:opacity-50"
                           >
                             {requestingSummary ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
                             Request AI Summary
@@ -720,7 +720,7 @@ const PulseAgent: React.FC<{ embedded?: boolean; showSummary?: boolean }> = ({ e
                                 setRequestingScorecard(false);
                               }
                             }}
-                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-primary/10 text-primary text-[11px] font-semibold hover:bg-primary/20 transition-colors disabled:opacity-50"
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-primary/10 text-foreground text-[11px] font-semibold hover:bg-primary/20 transition-colors disabled:opacity-50"
                           >
                             {requestingScorecard ? <Loader2 className="w-3 h-3 animate-spin" /> : <Shield className="w-3 h-3" />}
                             Request Scorecard
