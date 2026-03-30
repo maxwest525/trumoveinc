@@ -155,7 +155,7 @@ export default function AgentLogin() {
               <LogOut className="w-3 h-3" /> Sign out
             </button>
           </div>
-        </motion.div>
+        </div>
 
         {/* Portal cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-4xl">
