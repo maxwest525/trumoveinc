@@ -63,14 +63,45 @@ const SOURCE_COLORS: Record<string, string> = {
 
 function ConsentDot({ value }: { value: string | null }) {
   const granted = value === "granted";
+  const denied = value === "denied";
   return (
-    <span className={cn("inline-block w-2 h-2 rounded-full", granted ? "bg-emerald-500" : "bg-red-400")} />
+    <span className={cn("inline-block w-2 h-2 rounded-full", granted ? "bg-emerald-500" : denied ? "bg-red-400" : "bg-muted-foreground/20")} />
   );
 }
 
 function DeviceIcon({ type }: { type: string | null }) {
   if (type === "mobile") return <Smartphone className="w-3.5 h-3.5" />;
   return <Monitor className="w-3.5 h-3.5" />;
+}
+
+/** Shows N/A in muted style when value is missing */
+function Val({ v, mono }: { v: string | null | undefined; mono?: boolean }) {
+  if (!v) return <span className="text-muted-foreground/40 italic">N/A</span>;
+  return <span className={cn("text-foreground", mono && "font-mono text-[10px]")}>{v}</span>;
+}
+
+/** Live elapsed timer that updates every second */
+function ElapsedTimer({ since }: { since: string }) {
+  const [, setTick] = useState(0);
+  useEffect(() => {
+    const i = setInterval(() => setTick((t) => t + 1), 1000);
+    return () => clearInterval(i);
+  }, []);
+  const seconds = Math.floor((Date.now() - new Date(since).getTime()) / 1000);
+  if (seconds < 60) return <>{seconds}s</>;
+  if (seconds < 3600) return <>{Math.floor(seconds / 60)}m {seconds % 60}s</>;
+  return <>{Math.floor(seconds / 3600)}h {Math.floor((seconds % 3600) / 60)}m</>;
+}
+
+/** Routing status badge */
+function RoutingBadge({ lead }: { lead: IncomingLead }) {
+  // Unassigned = waiting for routing
+  return (
+    <span className="flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-amber-500/10 text-amber-600">
+      <GitBranch className="w-2.5 h-2.5" />
+      Unrouted
+    </span>
+  );
 }
 
 // ── Demo lead factory ─────────────────────────────────────────────
