@@ -114,8 +114,8 @@ Return your recommendations.`;
               parameters: {
                 type: "object",
                 properties: {
-                  suggestedTitle: { type: "string", description: "Suggested title tag (50-60 chars)" },
-                  suggestedDescription: { type: "string", description: "Suggested meta description (150-160 chars)" },
+                  suggestedTitle: { type: "string", description: "Suggested title tag. MUST be between 50 and 60 characters. Never shorter than 50 characters." },
+                  suggestedDescription: { type: "string", description: "Suggested meta description. MUST be between 150 and 160 characters. Never shorter than 150 characters." },
                   suggestedH1: { type: "string", description: "Suggested H1, or null if current is fine", nullable: true },
                   checklist: {
                     type: "array",
