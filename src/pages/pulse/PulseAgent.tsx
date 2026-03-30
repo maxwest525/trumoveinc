@@ -402,49 +402,79 @@ const PulseAgent: React.FC<{ embedded?: boolean; showSummary?: boolean }> = ({ e
                           key={call.id}
                           onClick={() => { openCallReview(call.id); setCallDropdownOpen(false); }}
                           className={cn(
-                            "w-full text-left px-3 py-2 rounded-md transition-all group flex items-center gap-2.5",
-                            isSelected ? "bg-primary/10 text-foreground" : "hover:bg-secondary/40"
+                            "w-full text-left px-3 py-2.5 rounded-lg transition-all group",
+                            isSelected ? "bg-primary/10 border border-primary/20" : "hover:bg-secondary/40 border border-transparent"
                           )}
                         >
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2">
-                              <span className="text-sm font-semibold truncate">{call.agent_name}</span>
-                              {call.agent_name === 'Trudy AI' && (
-                                <Badge className="text-[8px] h-3.5 px-1.5 bg-violet-500/15 text-violet-500 border-violet-500/30 font-bold">AI</Badge>
-                              )}
-                              <span className="text-muted-foreground/40 text-xs">→</span>
-                              <span className="text-xs text-muted-foreground truncate">{call.client_name || 'Unknown'}</span>
-                              {isActive && (
-                                <span className="flex items-center gap-0.5 text-[8px] font-bold text-compliance-pass ml-0.5">
-                                  <span className="relative flex h-1.5 w-1.5">
-                                    <span className="animate-ping absolute h-full w-full rounded-full bg-compliance-pass opacity-75" />
-                                    <span className="relative rounded-full h-1.5 w-1.5 bg-compliance-pass" />
-                                  </span>
-                                  LIVE
+                          {/* Row 1: Names + Live badge */}
+                          <div className="flex items-center gap-2 mb-1">
+                            <SIcon className={cn("w-3.5 h-3.5 shrink-0", sm.color)} />
+                            <span className="text-sm font-semibold truncate">{call.agent_name}</span>
+                            {call.agent_name === 'Trudy AI' && (
+                              <Badge className="text-[8px] h-3.5 px-1.5 bg-violet-500/15 text-violet-500 border-violet-500/30 font-bold">AI</Badge>
+                            )}
+                            <span className="text-muted-foreground/40 text-xs">→</span>
+                            <span className="text-xs text-muted-foreground truncate">{call.client_name || 'Unknown'}</span>
+                            {isActive && (
+                              <span className="flex items-center gap-0.5 text-[8px] font-bold text-compliance-pass ml-auto">
+                                <span className="relative flex h-1.5 w-1.5">
+                                  <span className="animate-ping absolute h-full w-full rounded-full bg-compliance-pass opacity-75" />
+                                  <span className="relative rounded-full h-1.5 w-1.5 bg-compliance-pass" />
                                 </span>
-                              )}
-                            </div>
-                            <div className="flex items-center gap-2 mt-0.5">
-                              <span className="text-[10px] text-muted-foreground/60">{formatDistanceToNowStrict(new Date(call.created_at), { addSuffix: true })}</span>
-                              {durLabel && <span className="text-[10px] text-muted-foreground/60">{durLabel}</span>}
-                              {flagCount > 0 && (
-                                <span className={cn("text-[9px] font-bold uppercase flex items-center gap-0.5", sm.color)}>
-                                  <SIcon className="w-2.5 h-2.5" /> {flagCount}
-                                </span>
-                              )}
-                              {call.compliance_score != null && (
-                                <span className={cn("text-[10px] font-bold", call.compliance_score >= 80 ? "text-compliance-pass" : call.compliance_score >= 60 ? "text-compliance-review" : "text-destructive")}>
-                                  {call.compliance_score}%
-                                </span>
-                              )}
-                            </div>
-                            {noteSnippet && (
-                              <p className="text-[10px] text-muted-foreground/50 truncate mt-0.5 italic">
-                                {noteSnippet.length > 80 ? noteSnippet.slice(0, 80) + '…' : noteSnippet}
-                              </p>
+                                LIVE
+                              </span>
+                            )}
+                            <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/30 shrink-0 group-hover:text-foreground ml-auto" />
+                          </div>
+
+                          {/* Row 2: Key metrics chips */}
+                          <div className="flex items-center gap-1.5 flex-wrap ml-5">
+                            <span className="text-[10px] text-muted-foreground/60">{formatDistanceToNowStrict(new Date(call.created_at), { addSuffix: true })}</span>
+                            {durLabel && (
+                              <span className="inline-flex items-center gap-0.5 text-[10px] px-1.5 py-0.5 rounded bg-muted/50 text-muted-foreground font-medium">
+                                <Clock className="w-2.5 h-2.5" /> {durLabel}
+                              </span>
+                            )}
+                            {call.compliance_score != null && (
+                              <span className={cn(
+                                "inline-flex items-center gap-0.5 text-[10px] px-1.5 py-0.5 rounded font-bold",
+                                call.compliance_score >= 80 ? "bg-compliance-pass/10 text-compliance-pass" : call.compliance_score >= 60 ? "bg-compliance-review/10 text-compliance-review" : "bg-destructive/10 text-destructive"
+                              )}>
+                                <Shield className="w-2.5 h-2.5" /> {call.compliance_score}%
+                              </span>
+                            )}
+                            {flagCount > 0 && (
+                              <span className={cn("inline-flex items-center gap-0.5 text-[10px] px-1.5 py-0.5 rounded font-bold", sm.bg, sm.color)}>
+                                <AlertTriangle className="w-2.5 h-2.5" /> {flagCount} flag{flagCount !== 1 ? 's' : ''}
+                              </span>
+                            )}
+                            {(call.talk_ratio_agent != null && call.talk_ratio_client != null) && (
+                              <span className="inline-flex items-center gap-0.5 text-[10px] px-1.5 py-0.5 rounded bg-muted/50 text-muted-foreground font-medium">
+                                <Volume2 className="w-2.5 h-2.5" /> {call.talk_ratio_agent}/{call.talk_ratio_client}
+                              </span>
                             )}
                           </div>
-                          <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/30 shrink-0 group-hover:text-foreground" />
+
+                          {/* Row 3: Flagged keywords preview */}
+                          {call.flagged_keywords && call.flagged_keywords.length > 0 && (
+                            <div className="flex items-center gap-1 flex-wrap ml-5 mt-1">
+                              {call.flagged_keywords.slice(0, 4).map((kw: string, ki: number) => (
+                                <span key={ki} className="text-[9px] px-1.5 py-0.5 rounded-full bg-destructive/10 text-destructive font-medium border border-destructive/20">
+                                  {kw}
+                                </span>
+                              ))}
+                              {call.flagged_keywords.length > 4 && (
+                                <span className="text-[9px] text-muted-foreground">+{call.flagged_keywords.length - 4} more</span>
+                              )}
+                            </div>
+                          )}
+
+                          {/* Row 4: Note snippet */}
+                          {noteSnippet && (
+                            <p className="text-[10px] text-muted-foreground/50 truncate mt-1 ml-5 italic">
+                              {noteSnippet.length > 80 ? noteSnippet.slice(0, 80) + '…' : noteSnippet}
+                            </p>
+                          )}
                         </button>
                       );
                     })}
