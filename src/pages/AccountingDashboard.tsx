@@ -1,4 +1,4 @@
-import AccountingShell from "@/components/layout/AccountingShell";
+import AdminShell from "@/components/layout/AdminShell";
 import {
   FileText, CreditCard, TrendingDown, Users, BarChart3,
   DollarSign, Receipt, Globe, ArrowRight,
