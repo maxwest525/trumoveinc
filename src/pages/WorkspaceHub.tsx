@@ -182,6 +182,7 @@ export default function AgentLogin() {
                 accentHsl={portal.accentHsl}
                 index={i}
                 disabled={rolesLoading ? true : !allowed}
+                beta={portal.beta}
                 onClick={() => {
                   navigate(portal.key === "agents" ? "/agent/dashboard" : portal.href);
                 }}
