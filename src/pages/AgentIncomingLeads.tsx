@@ -7,8 +7,11 @@ import { format } from "date-fns";
 import {
   Inbox, MapPin, Phone, Mail, Calendar, Globe, Smartphone,
   Monitor, MousePointer, Clock, RefreshCw, UserPlus, ChevronDown, ChevronUp,
-  Tag, ExternalLink, Plus
+  Tag, ExternalLink, Plus, Cookie, FileText, PhoneCall, Share2
 } from "lucide-react";
+import {
+  DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 
 interface IncomingLead {
@@ -67,6 +70,233 @@ function ConsentDot({ value }: { value: string | null }) {
 function DeviceIcon({ type }: { type: string | null }) {
   if (type === "mobile") return <Smartphone className="w-3.5 h-3.5" />;
   return <Monitor className="w-3.5 h-3.5" />;
+}
+
+// ── Demo lead factory ─────────────────────────────────────────────
+function randomName() {
+  const names = ["Sarah Johnson","Mike Chen","Emily Davis","James Wilson","Lisa Martinez","David Kim","Rachel Brown","Tom Anderson","Ana Garcia","Chris Lee"];
+  return names[Math.floor(Math.random() * names.length)].split(" ") as [string, string];
+}
+function randomCity() {
+  const c = ["Miami","New York","Chicago","Dallas","Los Angeles","Atlanta","Denver","Seattle","Houston","Phoenix"];
+  return c[Math.floor(Math.random() * c.length)];
+}
+function randomPhone() {
+  return `(${Math.floor(Math.random()*900)+100}) ${Math.floor(Math.random()*900)+100}-${Math.floor(Math.random()*9000)+1000}`;
+}
+function futureDate(minDays = 7, maxDays = 37) {
+  return new Date(Date.now() + (Math.floor(Math.random()*(maxDays-minDays))+minDays)*86400000).toISOString().split("T")[0];
+}
+
+const DEMO_LEAD_TYPES = [
+  {
+    key: "cookie",
+    label: "Cookie Consent Visitor",
+    icon: Cookie,
+    description: "Consent banner interaction — no contact info, enrichment only",
+    build: () => {
+      const [fn, ln] = ["Website", "Visitor"];
+      return {
+        first_name: fn, last_name: ln,
+        source: "website" as const,
+        // NO email, phone, addresses, move_date — cookie visitors don't fill forms
+        // Full enrichment data:
+        utm_source: ["google","facebook","bing","direct"][Math.floor(Math.random()*4)],
+        utm_medium: ["cpc","organic","social","referral"][Math.floor(Math.random()*4)],
+        utm_campaign: ["spring_movers_2026","brand_awareness","retarget_q1"][Math.floor(Math.random()*3)],
+        utm_term: ["long distance movers","moving company near me","interstate moving"][Math.floor(Math.random()*3)],
+        utm_content: ["hero_cta","sidebar_banner",null][Math.floor(Math.random()*3)],
+        gclid: Math.random() > 0.5 ? `CL-${Math.random().toString(36).slice(2,14)}` : null,
+        ga_client_id: `${Math.floor(Math.random()*9e8)+1e8}.${Math.floor(Date.now()/1000)}`,
+        consent_ad_storage: "granted",
+        consent_analytics_storage: "granted",
+        consent_ad_user_data: Math.random() > 0.3 ? "granted" : "denied",
+        consent_ad_personalization: Math.random() > 0.5 ? "granted" : "denied",
+        landing_page_url: `https://trumoveinc.com/${["","long-distance-moving","get-quote","faq"][Math.floor(Math.random()*4)]}`,
+        referrer: ["https://google.com/","https://facebook.com/","","https://yelp.com/"][Math.floor(Math.random()*4)],
+        user_agent: "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0) AppleWebKit/605 Mobile/15E148",
+        screen_resolution: ["390x844","414x896","1920x1080","1440x900"][Math.floor(Math.random()*4)],
+        browser_language: "en-US",
+        device_type: Math.random() > 0.4 ? "mobile" : "desktop",
+        geo_city: randomCity(),
+        geo_region: "FL",
+        geo_country: "US",
+        enrichment_timestamp: new Date().toISOString(),
+      };
+    },
+  },
+  {
+    key: "short_form",
+    label: "Short Quote Form",
+    icon: FileText,
+    description: "Name, email, phone, origin, destination, move date + enrichment",
+    build: () => {
+      const [fn, ln] = randomName();
+      return {
+        first_name: fn, last_name: ln,
+        email: `${fn.toLowerCase()}.${ln.toLowerCase()}@gmail.com`,
+        phone: randomPhone(),
+        source: "website" as const,
+        origin_address: `${Math.floor(Math.random()*9000)+1000} Oak St, ${randomCity()}, FL 33101`,
+        destination_address: `${Math.floor(Math.random()*9000)+1000} Pine Ave, ${randomCity()}, CA 90210`,
+        move_date: futureDate(),
+        // Enrichment
+        utm_source: ["google","facebook","bing"][Math.floor(Math.random()*3)],
+        utm_medium: "cpc",
+        utm_campaign: "quote_funnel_v2",
+        gclid: Math.random() > 0.4 ? `CL-${Math.random().toString(36).slice(2,14)}` : null,
+        ga_client_id: `${Math.floor(Math.random()*9e8)+1e8}.${Math.floor(Date.now()/1000)}`,
+        consent_ad_storage: "granted",
+        consent_analytics_storage: "granted",
+        consent_ad_user_data: "granted",
+        consent_ad_personalization: "granted",
+        landing_page_url: "https://trumoveinc.com/get-quote",
+        referrer: "https://google.com/",
+        user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/125.0",
+        screen_resolution: "1920x1080",
+        browser_language: "en-US",
+        device_type: Math.random() > 0.5 ? "mobile" : "desktop",
+        geo_city: randomCity(),
+        geo_region: "FL",
+        geo_country: "US",
+        enrichment_timestamp: new Date().toISOString(),
+      };
+    },
+  },
+  {
+    key: "ppc",
+    label: "PPC / Google Ads",
+    icon: MousePointer,
+    description: "Paid click — GCLID, UTMs, consent, device, geo, contact info",
+    build: () => {
+      const [fn, ln] = randomName();
+      return {
+        first_name: fn, last_name: ln,
+        email: `${fn.toLowerCase()}@yahoo.com`,
+        phone: randomPhone(),
+        source: "ppc" as const,
+        origin_address: `${Math.floor(Math.random()*9000)+1000} Main St, ${randomCity()}, TX 75001`,
+        destination_address: `${Math.floor(Math.random()*9000)+1000} Elm Blvd, ${randomCity()}, NY 10001`,
+        move_date: futureDate(),
+        utm_source: "google",
+        utm_medium: "cpc",
+        utm_campaign: "long_distance_movers_exact",
+        utm_term: "long distance moving company",
+        utm_content: "headline_v3",
+        gclid: `CL-${Math.random().toString(36).slice(2,18)}`,
+        ga_client_id: `${Math.floor(Math.random()*9e8)+1e8}.${Math.floor(Date.now()/1000)}`,
+        consent_ad_storage: "granted",
+        consent_analytics_storage: "granted",
+        consent_ad_user_data: "granted",
+        consent_ad_personalization: "granted",
+        landing_page_url: "https://trumoveinc.com/get-quote?utm_source=google&utm_medium=cpc",
+        referrer: "https://google.com/",
+        user_agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0) AppleWebKit/537.36 Chrome/125.0",
+        screen_resolution: "1440x900",
+        browser_language: "en-US",
+        device_type: "desktop",
+        geo_city: randomCity(),
+        geo_region: "TX",
+        geo_country: "US",
+        enrichment_timestamp: new Date().toISOString(),
+      };
+    },
+  },
+  {
+    key: "phone",
+    label: "Phone Call",
+    icon: PhoneCall,
+    description: "Manual entry — name, phone, addresses only. No digital enrichment",
+    build: () => {
+      const [fn, ln] = randomName();
+      return {
+        first_name: fn, last_name: ln,
+        phone: randomPhone(),
+        source: "phone" as const,
+        origin_address: `${Math.floor(Math.random()*9000)+1000} Maple Dr, ${randomCity()}, GA 30301`,
+        destination_address: `${Math.floor(Math.random()*9000)+1000} Cedar Ln, ${randomCity()}, IL 60601`,
+        move_date: futureDate(),
+        // NO enrichment — phone calls don't have browser data
+      };
+    },
+  },
+  {
+    key: "referral",
+    label: "Referral",
+    icon: Share2,
+    description: "Referred lead — contact info, referrer URL, no paid UTMs or GCLID",
+    build: () => {
+      const [fn, ln] = randomName();
+      return {
+        first_name: fn, last_name: ln,
+        email: `${fn.toLowerCase()}.${ln.toLowerCase()}@outlook.com`,
+        phone: randomPhone(),
+        source: "referral" as const,
+        origin_address: `${Math.floor(Math.random()*9000)+1000} Birch Way, ${randomCity()}, CO 80201`,
+        destination_address: `${Math.floor(Math.random()*9000)+1000} Spruce St, ${randomCity()}, WA 98101`,
+        move_date: futureDate(),
+        // Partial enrichment — organic, no paid markers
+        utm_source: "referral",
+        utm_medium: "partner",
+        utm_campaign: "yelp_reviews",
+        referrer: ["https://yelp.com/biz/trumove","https://bbb.org/trumove","https://movingreviews.com"][Math.floor(Math.random()*3)],
+        landing_page_url: "https://trumoveinc.com/",
+        ga_client_id: `${Math.floor(Math.random()*9e8)+1e8}.${Math.floor(Date.now()/1000)}`,
+        consent_ad_storage: "denied",
+        consent_analytics_storage: "granted",
+        consent_ad_user_data: "denied",
+        consent_ad_personalization: "denied",
+        user_agent: "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Chrome/125.0 Mobile",
+        screen_resolution: "412x915",
+        browser_language: "en-US",
+        device_type: "mobile",
+        geo_city: randomCity(),
+        geo_region: "CO",
+        geo_country: "US",
+        enrichment_timestamp: new Date().toISOString(),
+      };
+    },
+  },
+];
+
+function DemoLeadDropdown({ onCreated }: { onCreated: () => void }) {
+  const handleCreate = async (type: typeof DEMO_LEAD_TYPES[number]) => {
+    const leadData = type.build();
+    const { error } = await supabase.from("leads").insert(leadData);
+    if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
+    else { toast({ title: `Demo lead created`, description: `Source: ${type.label}` }); onCreated(); }
+  };
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button className="flex items-center gap-1.5 text-xs text-primary hover:text-primary/80 transition-colors px-3 py-1.5 rounded-lg border border-primary/20 hover:bg-primary/5">
+          <Plus className="w-3.5 h-3.5" />
+          Demo Lead
+          <ChevronDown className="w-3 h-3 opacity-60" />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-72">
+        <DropdownMenuLabel className="text-xs text-muted-foreground font-normal">Choose lead source type</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        {DEMO_LEAD_TYPES.map((type) => (
+          <DropdownMenuItem
+            key={type.key}
+            onClick={() => handleCreate(type)}
+            className="flex flex-col items-start gap-0.5 py-2.5 cursor-pointer"
+          >
+            <span className="flex items-center gap-2 font-medium text-sm">
+              <type.icon className="w-3.5 h-3.5 text-primary" />
+              {type.label}
+            </span>
+            <span className="text-[11px] text-muted-foreground leading-tight pl-[22px]">
+              {type.description}
+            </span>
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
 }
 
 export default function AgentIncomingLeads() {
@@ -148,33 +378,7 @@ export default function AgentIncomingLeads() {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <button
-              onClick={async () => {
-                const names = ["Sarah Johnson", "Mike Chen", "Emily Davis", "James Wilson", "Lisa Martinez", "David Kim", "Rachel Brown", "Tom Anderson"];
-                const sources = ["website", "ppc", "referral", "phone"] as const;
-                const cities = ["Miami", "New York", "Chicago", "Dallas", "Los Angeles", "Atlanta", "Denver", "Seattle"];
-                const pick = names[Math.floor(Math.random() * names.length)].split(" ");
-                const city = cities[Math.floor(Math.random() * cities.length)];
-                const { error } = await supabase.from("leads").insert({
-                  first_name: pick[0],
-                  last_name: pick[1],
-                  email: `${pick[0].toLowerCase()}@example.com`,
-                  phone: `(${Math.floor(Math.random() * 900) + 100}) ${Math.floor(Math.random() * 900) + 100}-${Math.floor(Math.random() * 9000) + 1000}`,
-                  source: sources[Math.floor(Math.random() * sources.length)],
-                  origin_address: `${Math.floor(Math.random() * 9000) + 1000} Oak St, ${city}, FL`,
-                  destination_address: `${Math.floor(Math.random() * 9000) + 1000} Pine Ave, ${cities[Math.floor(Math.random() * cities.length)]}, CA`,
-                  move_date: new Date(Date.now() + Math.floor(Math.random() * 30 + 7) * 86400000).toISOString().split("T")[0],
-                  utm_source: "demo",
-                  utm_medium: "test",
-                });
-                if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
-                else { toast({ title: "Demo lead created" }); refetch(); }
-              }}
-              className="flex items-center gap-1.5 text-xs text-primary hover:text-primary/80 transition-colors px-3 py-1.5 rounded-lg border border-primary/20 hover:bg-primary/5"
-            >
-              <Plus className="w-3.5 h-3.5" />
-              Demo Lead
-            </button>
+            <DemoLeadDropdown onCreated={refetch} />
             <button
               onClick={() => refetch()}
               className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5 rounded-lg border border-border hover:bg-muted/50"
