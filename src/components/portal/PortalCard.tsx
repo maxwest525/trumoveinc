@@ -11,9 +11,10 @@ interface PortalCardProps {
   index: number;
   onClick: () => void;
   disabled?: boolean;
+  beta?: boolean;
 }
 
-export default function PortalCard({ label, description, icon: Icon, accentHsl, index, onClick, disabled = false }: PortalCardProps) {
+export default function PortalCard({ label, description, icon: Icon, accentHsl, index, onClick, disabled = false, beta = false }: PortalCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [hovered, setHovered] = useState(false);
 
@@ -119,7 +120,14 @@ export default function PortalCard({ label, description, icon: Icon, accentHsl, 
 
           {/* Text */}
           <div className="space-y-2">
-            <h2 className="text-base font-bold tracking-tight text-foreground">{label}</h2>
+            <h2 className="text-base font-bold tracking-tight text-foreground flex items-center justify-center gap-2">
+              {label}
+              {beta && (
+                <span className="text-[9px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+                  Beta
+                </span>
+              )}
+            </h2>
             <p className="text-[11.5px] text-muted-foreground leading-relaxed max-w-[200px]">{description}</p>
           </div>
 

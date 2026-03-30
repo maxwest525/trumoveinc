@@ -27,7 +27,7 @@ function getGreeting(): string {
   return "Good evening";
 }
 
-const PORTALS: { key: string; label: string; description: string; href: string; icon: any; accentHsl: string; requiredRoles: AppRole[] }[] = [
+const PORTALS: { key: string; label: string; description: string; href: string; icon: any; accentHsl: string; requiredRoles: AppRole[]; beta?: boolean }[] = [
   {
     key: "agents",
     label: "Agents",
@@ -49,7 +49,7 @@ const PORTALS: { key: string; label: string; description: string; href: string; 
   {
     key: "admin",
     label: "Admin / Owner",
-    description: "Overhead, expenses, invoices, vendors, payroll, compliance & settings",
+    description: "Accounting, expenses, invoices, vendors, payroll, compliance & settings",
     href: "/admin/dashboard",
     icon: Shield,
     accentHsl: "38 92% 50%",
@@ -63,6 +63,7 @@ const PORTALS: { key: string; label: string; description: string; href: string; 
     icon: Truck,
     accentHsl: "262 83% 58%",
     requiredRoles: ["agent", "manager"],
+    beta: true,
   },
   {
     key: "marketing",
@@ -72,6 +73,7 @@ const PORTALS: { key: string; label: string; description: string; href: string; 
     icon: Megaphone,
     accentHsl: "330 81% 60%",
     requiredRoles: ["marketing"],
+    beta: true,
   },
 ];
 
@@ -180,6 +182,7 @@ export default function AgentLogin() {
                 accentHsl={portal.accentHsl}
                 index={i}
                 disabled={rolesLoading ? true : !allowed}
+                beta={portal.beta}
                 onClick={() => {
                   navigate(portal.key === "agents" ? "/agent/dashboard" : portal.href);
                 }}
