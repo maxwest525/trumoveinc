@@ -477,7 +477,95 @@ const PulseAgent: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
                     </div>
                   )}
 
-                  {/* Summary */}
+                  {/* Compliance Scorecard Breakdown */}
+                  {(() => {
+                    const COMPLIANCE_CATEGORIES = [
+                      { key: 'legal', label: 'Legal & Regulatory', icon: '⚖️', maxDeduct: 30 },
+                      { key: 'compliance', label: 'Compliance', icon: '📋', maxDeduct: 25 },
+                      { key: 'pii', label: 'PII Protection', icon: '🔒', maxDeduct: 20 },
+                      { key: 'financial', label: 'Financial Disclosure', icon: '💰', maxDeduct: 15 },
+                      { key: 'profanity', label: 'Professionalism', icon: '🗣️', maxDeduct: 15 },
+                      { key: 'escalation', label: 'Escalation Handling', icon: '📢', maxDeduct: 10 },
+                      { key: 'safety', label: 'Safety & HIPAA', icon: '🏥', maxDeduct: 20 },
+                    ];
+                    const SEVERITY_WEIGHT: Record<string, number> = { critical: 15, high: 10, medium: 5, low: 2 };
+
+                    const categoryScores = COMPLIANCE_CATEGORIES.map(cat => {
+                      const catAlerts = reviewAlerts.filter((a: any) => {
+                        const kw = (a.keyword || '').toLowerCase();
+                        const ctx = (a.context || '').toLowerCase();
+                        return kw.includes(cat.key) || ctx.includes(cat.key);
+                      });
+                      const deduction = catAlerts.reduce((sum: number, a: any) => sum + (SEVERITY_WEIGHT[a.severity] || 5), 0);
+                      const score = Math.max(0, 100 - Math.min(deduction, 100));
+                      return { ...cat, score, flagCount: catAlerts.length };
+                    });
+
+                    // Also compute categories from flagged_keywords that match known categories
+                    const uncategorizedAlerts = reviewAlerts.filter((a: any) => {
+                      const kw = (a.keyword || '').toLowerCase();
+                      const ctx = (a.context || '').toLowerCase();
+                      return !COMPLIANCE_CATEGORIES.some(c => kw.includes(c.key) || ctx.includes(c.key));
+                    });
+
+                    const overallScore = reviewCall.compliance_score ?? (
+                      categoryScores.length > 0
+                        ? Math.round(categoryScores.reduce((s, c) => s + c.score, 0) / categoryScores.length)
+                        : 100
+                    );
+
+                    return (
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+                            <Shield className="w-3 h-3 text-primary" /> Compliance Scorecard
+                          </h2>
+                          <div className={cn(
+                            "text-lg font-bold",
+                            overallScore >= 80 ? "text-compliance-pass" : overallScore >= 60 ? "text-compliance-review" : "text-destructive"
+                          )}>
+                            {overallScore}%
+                            <span className="text-[9px] font-normal text-muted-foreground ml-1">overall</span>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          {categoryScores.map(cat => {
+                            const scoreColor = cat.score >= 80 ? 'text-compliance-pass' : cat.score >= 60 ? 'text-compliance-review' : 'text-destructive';
+                            const barColor = cat.score >= 80 ? 'bg-compliance-pass' : cat.score >= 60 ? 'bg-compliance-review' : 'bg-destructive';
+                            return (
+                              <div key={cat.key} className="p-3 rounded-lg border border-border bg-card/30">
+                                <div className="flex items-center justify-between mb-1.5">
+                                  <span className="text-xs font-medium flex items-center gap-1.5">
+                                    <span className="text-sm">{cat.icon}</span> {cat.label}
+                                  </span>
+                                  <div className="flex items-center gap-2">
+                                    {cat.flagCount > 0 && (
+                                      <span className="text-[9px] text-destructive font-medium">{cat.flagCount} flag{cat.flagCount !== 1 ? 's' : ''}</span>
+                                    )}
+                                    <span className={cn("text-sm font-bold", scoreColor)}>{cat.score}%</span>
+                                  </div>
+                                </div>
+                                <div className="h-1.5 rounded-full bg-muted/50 overflow-hidden">
+                                  <div className={cn("h-full rounded-full transition-all", barColor)} style={{ width: `${cat.score}%` }} />
+                                </div>
+                                {cat.flagCount === 0 && (
+                                  <div className="flex items-center gap-1 mt-1.5">
+                                    <CheckCircle2 className="w-2.5 h-2.5 text-compliance-pass" />
+                                    <span className="text-[9px] text-compliance-pass font-medium">No issues detected</span>
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                        {uncategorizedAlerts.length > 0 && (
+                          <p className="text-[10px] text-muted-foreground">
+                            + {uncategorizedAlerts.length} additional flag{uncategorizedAlerts.length !== 1 ? 's' : ''} outside standard categories
+                          </p>
+                        )}
+                      </div>
+                    );
+                  })()}
                   <div className="rounded-xl border border-border bg-card/50 p-4">
                     <div className="flex items-center justify-between mb-2">
                       <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
