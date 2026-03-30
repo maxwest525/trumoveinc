@@ -49,12 +49,27 @@ export default function AdminShell({ children, breadcrumb = "", breadcrumbs }: A
   const [notifOpen, setNotifOpen] = useState(false);
   const { notifications, unreadCount, loading: notifLoading, markAsRead, markAllAsRead, deleteNotification } = useNotifications();
 
+  const [openRequestCount, setOpenRequestCount] = useState(0);
+
   useEffect(() => {
     setPortalContext("admin");
     window.scrollTo(0, 0);
   }, []);
 
   useEffect(() => { setSidebarOpen(false); }, [location.pathname]);
+
+  useEffect(() => {
+    const fetchCount = async () => {
+      const { count } = await supabase
+        .from('support_tickets')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'open');
+      setOpenRequestCount(count || 0);
+    };
+    fetchCount();
+    const interval = setInterval(fetchCount, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
   const sidebarContent = (
     <>
