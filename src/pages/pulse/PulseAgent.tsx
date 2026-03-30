@@ -107,7 +107,7 @@ const PulseAgent: React.FC<{ embedded?: boolean; showSummary?: boolean }> = ({ e
   const handleManualSubmit = useCallback(() => { if (!manualText.trim() || !callActive) return; appendText(manualText.trim()); setManualText(''); }, [manualText, callActive, appendText]);
 
   const fetchDbCalls = useCallback(async () => {
-    const { data } = await supabase.from('pulse_calls' as any).select('id, agent_name, client_name, created_at, status, severity, duration_seconds, flagged_keywords, compliance_score, talk_ratio_agent, talk_ratio_client').order('created_at', { ascending: false }).limit(30);
+    const { data } = await supabase.from('pulse_calls' as any).select('id, agent_name, client_name, created_at, status, severity, duration_seconds, flagged_keywords, compliance_score, talk_ratio_agent, talk_ratio_client, summary').order('created_at', { ascending: false }).limit(30);
     if (data) setDbCalls(data);
   }, []);
 
