@@ -11,9 +11,10 @@ interface PortalCardProps {
   index: number;
   onClick: () => void;
   disabled?: boolean;
+  beta?: boolean;
 }
 
-export default function PortalCard({ label, description, icon: Icon, accentHsl, index, onClick, disabled = false }: PortalCardProps) {
+export default function PortalCard({ label, description, icon: Icon, accentHsl, index, onClick, disabled = false, beta = false }: PortalCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [hovered, setHovered] = useState(false);
 
