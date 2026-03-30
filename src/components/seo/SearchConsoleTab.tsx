@@ -35,6 +35,30 @@ interface SearchConsoleTabProps {
   onGscStatusChange?: (connected: boolean) => void;
 }
 
+function getPreferredGscRedirectUri() {
+  const host = window.location.hostname;
+
+  if (host === "trumoveinc.com" || host === "www.trumoveinc.com") {
+    return "https://crm.trumoveinc.com/marketing/seo";
+  }
+
+  return `${window.location.origin}/marketing/seo`;
+}
+
+function buildGscOAuthState(userId: string, redirectUri: string) {
+  return new URLSearchParams({ user_id: userId, redirect_uri: redirectUri }).toString();
+}
+
+function parseGscOAuthState(rawState: string | null) {
+  if (!rawState) return { userId: null, redirectUri: null };
+
+  const params = new URLSearchParams(rawState);
+  return {
+    userId: params.get("user_id"),
+    redirectUri: params.get("redirect_uri"),
+  };
+}
+
 export default function SearchConsoleTab({ status, auditUrls, onGscStatusChange }: SearchConsoleTabProps) {
   const [connecting, setConnecting] = useState(false);
   const [gscStatus, setGscStatus] = useState<GscStatus | null>(null);
@@ -83,11 +107,18 @@ export default function SearchConsoleTab({ status, auditUrls, onGscStatusChange 
   };
 
   const handleConnect = async () => {
+    if (!userId) {
+      toast.error("Please sign in again before connecting Search Console");
+      return;
+    }
+
     setConnecting(true);
     try {
-      const redirectUri = `${window.location.origin}/marketing/seo`;
+      const redirectUri = getPreferredGscRedirectUri();
+      const state = buildGscOAuthState(userId, redirectUri);
+
       const { data, error } = await supabase.functions.invoke("gsc-auth", {
-        body: { action: "get-auth-url", redirect_uri: redirectUri },
+        body: { action: "get-auth-url", redirect_uri: redirectUri, state },
       });
       if (error) throw error;
       if (data.url) {
@@ -106,7 +137,9 @@ export default function SearchConsoleTab({ status, auditUrls, onGscStatusChange 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const code = params.get("code");
+    const rawState = params.get("state");
     const oauthError = params.get("error");
+    const { userId: stateUserId, redirectUri: stateRedirectUri } = parseGscOAuthState(rawState);
 
     if (oauthError) {
       const errorKey = `error:${oauthError}`;
@@ -117,12 +150,14 @@ export default function SearchConsoleTab({ status, auditUrls, onGscStatusChange 
       return;
     }
 
-    if (code && userId) {
+    const callbackUserId = userId || stateUserId;
+
+    if (code && callbackUserId) {
       const codeKey = `code:${code}`;
       if (handledOauthResult.current === codeKey) return;
       handledOauthResult.current = codeKey;
 
-      const redirectUri = sessionStorage.getItem("gsc_redirect") || `${window.location.origin}/marketing/seo`;
+      const redirectUri = stateRedirectUri || sessionStorage.getItem("gsc_redirect") || getPreferredGscRedirectUri();
       sessionStorage.removeItem("gsc_redirect");
 
       // Clean up URL
@@ -131,7 +166,7 @@ export default function SearchConsoleTab({ status, auditUrls, onGscStatusChange 
       (async () => {
         try {
           const { error } = await supabase.functions.invoke("gsc-auth", {
-            body: { action: "exchange-code", code, redirect_uri: redirectUri, user_id: userId },
+            body: { action: "exchange-code", code, redirect_uri: redirectUri, user_id: callbackUserId },
           });
           if (error) throw error;
           toast.success("Google Search Console connected!");
@@ -142,6 +177,8 @@ export default function SearchConsoleTab({ status, auditUrls, onGscStatusChange 
           toast.error(e.message || "Failed to complete authorization");
         }
       })();
+    } else if (code && !callbackUserId) {
+      toast.error("Google returned successfully, but your session was missing. Please retry from the CRM domain.");
     }
   }, [userId]);
 
