@@ -62,11 +62,22 @@ const PulseDashboard: React.FC<{ embedded?: boolean; basePath?: string }> = ({ e
   const [modalTranscript, setModalTranscript] = useState<{ transcript: string; flagged_keywords: string[] } | null>(null);
   const [modalLoading, setModalLoading] = useState(false);
 
+  // Sentiment overview data from recent calls
+  const [recentCalls, setRecentCalls] = useState<any[]>([]);
+
   const fetchAlerts = useCallback(async () => {
     setIsLoading(true);
     const { data, error } = await supabase.from('pulse_alerts' as any).select('*').order('created_at', { ascending: false }).limit(500);
     if (!error && data) setAlerts(data as any);
     setIsLoading(false);
+  }, []);
+
+  const fetchRecentCalls = useCallback(async () => {
+    const { data } = await supabase.from('pulse_calls' as any)
+      .select('id, agent_name, transcript, duration_seconds, status, created_at')
+      .order('created_at', { ascending: false })
+      .limit(50);
+    if (data) setRecentCalls(data as any);
   }, []);
 
   useEffect(() => { fetchAlerts(); }, [fetchAlerts]);
