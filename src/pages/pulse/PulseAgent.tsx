@@ -438,85 +438,80 @@ const PulseAgent: React.FC<{ embedded?: boolean; showSummary?: boolean }> = ({ e
                       const durLabel = dur ? `${Math.floor(dur / 60)}:${(dur % 60).toString().padStart(2, '0')}` : null;
                       const noteSnippet = call.summary || call.notes || null;
 
-                      return (
-                        <button
-                          key={call.id}
-                          onClick={() => { openCallReview(call.id); setCallDropdownOpen(false); }}
-                          className={cn(
-                            "w-full text-left px-3 py-2.5 rounded-lg transition-all group",
-                            isSelected ? "bg-primary/10 border border-primary/20" : "hover:bg-secondary/40 border border-transparent"
-                          )}
-                        >
-                          {/* Row 1: Names + Live badge */}
-                          <div className="flex items-center gap-2 mb-1">
-                            <SIcon className={cn("w-3.5 h-3.5 shrink-0", sm.color)} />
-                            <span className="text-sm font-semibold truncate">{call.agent_name}</span>
-                            {call.agent_name === 'Trudy AI' && (
-                              <Badge className="text-[8px] h-3.5 px-1.5 bg-violet-500/15 text-violet-500 border-violet-500/30 font-bold">AI</Badge>
+                        return (
+                          <button
+                            key={call.id}
+                            onClick={() => { openCallReview(call.id); setCallDropdownOpen(false); }}
+                            className={cn(
+                              "w-full text-left px-3 py-3 rounded-lg transition-all group",
+                              isSelected ? "bg-primary/10 border border-primary/20" : "hover:bg-secondary/40 border border-transparent"
                             )}
-                            <span className="text-muted-foreground/40 text-xs">→</span>
-                            <span className="text-xs text-muted-foreground truncate">{call.client_name || 'Unknown'}</span>
-                            {isActive && (
-                              <span className="flex items-center gap-0.5 text-[8px] font-bold text-compliance-pass ml-auto">
-                                <span className="relative flex h-1.5 w-1.5">
-                                  <span className="animate-ping absolute h-full w-full rounded-full bg-compliance-pass opacity-75" />
-                                  <span className="relative rounded-full h-1.5 w-1.5 bg-compliance-pass" />
-                                </span>
-                                LIVE
-                              </span>
-                            )}
-                            <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/30 shrink-0 group-hover:text-foreground ml-auto" />
-                          </div>
-
-                          {/* Row 2: Key metrics chips */}
-                          <div className="flex items-center gap-1.5 flex-wrap ml-5">
-                            <span className="text-[10px] text-muted-foreground/60">{formatDistanceToNowStrict(new Date(call.created_at), { addSuffix: true })}</span>
-                            {durLabel && (
-                              <span className="inline-flex items-center gap-0.5 text-[10px] px-1.5 py-0.5 rounded bg-muted/50 text-muted-foreground font-medium">
-                                <Clock className="w-2.5 h-2.5" /> {durLabel}
-                              </span>
-                            )}
-                            {call.compliance_score != null && (
-                              <span className={cn(
-                                "inline-flex items-center gap-0.5 text-[10px] px-1.5 py-0.5 rounded font-bold",
-                                call.compliance_score >= 80 ? "bg-compliance-pass/10 text-compliance-pass" : call.compliance_score >= 60 ? "bg-compliance-review/10 text-compliance-review" : "bg-destructive/10 text-destructive"
-                              )}>
-                                <Shield className="w-2.5 h-2.5" /> {call.compliance_score}%
-                              </span>
-                            )}
-                            {flagCount > 0 && (
-                              <span className={cn("inline-flex items-center gap-0.5 text-[10px] px-1.5 py-0.5 rounded font-bold", sm.bg, sm.color)}>
-                                <AlertTriangle className="w-2.5 h-2.5" /> {flagCount} flag{flagCount !== 1 ? 's' : ''}
-                              </span>
-                            )}
-                            {(call.talk_ratio_agent != null && call.talk_ratio_client != null) && (
-                              <span className="inline-flex items-center gap-0.5 text-[10px] px-1.5 py-0.5 rounded bg-muted/50 text-muted-foreground font-medium">
-                                <Volume2 className="w-2.5 h-2.5" /> {call.talk_ratio_agent}/{call.talk_ratio_client}
-                              </span>
-                            )}
-                          </div>
-
-                          {/* Row 3: Flagged keywords preview */}
-                          {call.flagged_keywords && call.flagged_keywords.length > 0 && (
-                            <div className="flex items-center gap-1 flex-wrap ml-5 mt-1">
-                              {call.flagged_keywords.slice(0, 4).map((kw: string, ki: number) => (
-                                <span key={ki} className="text-[9px] px-1.5 py-0.5 rounded-full bg-destructive/10 text-destructive font-medium border border-destructive/20">
-                                  {kw}
-                                </span>
-                              ))}
-                              {call.flagged_keywords.length > 4 && (
-                                <span className="text-[9px] text-muted-foreground">+{call.flagged_keywords.length - 4} more</span>
+                          >
+                            {/* Header: Names + Live badge */}
+                            <div className="flex items-center gap-2 mb-2">
+                              <SIcon className={cn("w-3.5 h-3.5 shrink-0", sm.color)} />
+                              <span className="text-sm font-semibold truncate">{call.agent_name}</span>
+                              {call.agent_name === 'Trudy AI' && (
+                                <Badge className="text-[8px] h-3.5 px-1.5 bg-violet-500/15 text-violet-500 border-violet-500/30 font-bold">AI</Badge>
                               )}
+                              <span className="text-muted-foreground/40 text-xs">→</span>
+                              <span className="text-xs text-muted-foreground truncate">{call.client_name || 'Unknown'}</span>
+                              {isActive && (
+                                <span className="flex items-center gap-0.5 text-[8px] font-bold text-compliance-pass ml-auto">
+                                  <span className="relative flex h-1.5 w-1.5">
+                                    <span className="animate-ping absolute h-full w-full rounded-full bg-compliance-pass opacity-75" />
+                                    <span className="relative rounded-full h-1.5 w-1.5 bg-compliance-pass" />
+                                  </span>
+                                  LIVE
+                                </span>
+                              )}
+                              <span className="text-[10px] text-muted-foreground/50 ml-auto shrink-0">{formatDistanceToNowStrict(new Date(call.created_at), { addSuffix: true })}</span>
+                              <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/30 shrink-0 group-hover:text-foreground" />
                             </div>
-                          )}
 
-                          {/* Row 4: Note snippet */}
-                          {noteSnippet && (
-                            <p className="text-[10px] text-muted-foreground/50 truncate mt-1 ml-5 italic">
-                              {noteSnippet.length > 80 ? noteSnippet.slice(0, 80) + '…' : noteSnippet}
-                            </p>
-                          )}
-                        </button>
+                            {/* Metrics grid — spread across full width */}
+                            <div className="grid grid-cols-4 gap-2 ml-5 mb-2">
+                              <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                                <Clock className="w-3 h-3 shrink-0" />
+                                <span className="font-medium">{durLabel || '—'}</span>
+                              </div>
+                              <div className={cn("flex items-center gap-1 text-xs font-bold",
+                                call.compliance_score != null
+                                  ? call.compliance_score >= 80 ? "text-compliance-pass" : call.compliance_score >= 60 ? "text-compliance-review" : "text-destructive"
+                                  : "text-muted-foreground/40"
+                              )}>
+                                <Shield className="w-3 h-3 shrink-0" />
+                                <span>{call.compliance_score != null ? `${call.compliance_score}%` : '—'}</span>
+                              </div>
+                              <div className={cn("flex items-center gap-1 text-xs font-bold", flagCount > 0 ? sm.color : "text-muted-foreground/40")}>
+                                <AlertTriangle className="w-3 h-3 shrink-0" />
+                                <span>{flagCount > 0 ? `${flagCount} flag${flagCount !== 1 ? 's' : ''}` : '0'}</span>
+                              </div>
+                              <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                                <Volume2 className="w-3 h-3 shrink-0" />
+                                <span className="font-medium">{(call.talk_ratio_agent != null && call.talk_ratio_client != null) ? `${call.talk_ratio_agent}/${call.talk_ratio_client}` : '—'}</span>
+                              </div>
+                            </div>
+
+                            {/* Keywords + note row */}
+                            {(call.flagged_keywords?.length || noteSnippet) && (
+                              <div className="flex items-center gap-2 ml-5 flex-wrap">
+                                {call.flagged_keywords?.slice(0, 4).map((kw: string, ki: number) => (
+                                  <span key={ki} className="text-[9px] px-1.5 py-0.5 rounded-full bg-destructive/10 text-destructive font-medium border border-destructive/20">
+                                    {kw}
+                                  </span>
+                                ))}
+                                {(call.flagged_keywords?.length || 0) > 4 && (
+                                  <span className="text-[9px] text-muted-foreground">+{(call.flagged_keywords?.length || 0) - 4}</span>
+                                )}
+                                {noteSnippet && (
+                                  <span className="text-[10px] text-muted-foreground/50 truncate italic ml-auto max-w-[50%]">
+                                    {noteSnippet.length > 60 ? noteSnippet.slice(0, 60) + '…' : noteSnippet}
+                                  </span>
+                                )}
+                              </div>
+                            )}
+                          </button>
                       );
                     })}
                   </div>
