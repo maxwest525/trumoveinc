@@ -5,6 +5,7 @@ import { toast } from '@/hooks/use-toast';
 import { useNavigate, useLocation } from 'react-router-dom';
 import trudyAvatar from '@/assets/trudy-avatar.png';
 import VoiceWaveform from './VoiceWaveform';
+import { useTrudyPulseMonitor } from '@/hooks/useTrudyPulseMonitor';
 
 const TRUDY_AGENT_ID = 'agent_0501khwa2t2pfj0s3echetmjhx4n';
 
