@@ -72,7 +72,7 @@ Deno.serve(async (req) => {
       throw new Error("Google OAuth credentials not configured. Add GSC_CLIENT_ID and GSC_CLIENT_SECRET.");
     }
 
-    const { action, code, redirect_uri, user_id, property } = await req.json();
+    const { action, code, redirect_uri, user_id, property, state } = await req.json();
 
     // ACTION: get-auth-url — generate OAuth URL
     if (action === "get-auth-url") {
@@ -85,6 +85,7 @@ Deno.serve(async (req) => {
         access_type: "offline",
         prompt: "consent select_account",
       });
+      if (state) params.set("state", state);
       const url = `https://accounts.google.com/o/oauth2/v2/auth?${params}`;
       return new Response(JSON.stringify({ url }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
