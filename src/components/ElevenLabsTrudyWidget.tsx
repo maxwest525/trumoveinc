@@ -29,6 +29,9 @@ export default function ElevenLabsTrudyWidget() {
   const idRef = useRef(0);
   const scrollRef = useRef<HTMLDivElement>(null);
   const transcriptRef = useRef<TranscriptEntry[]>([]);
+  const syncIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const pulse = useTrudyPulseMonitor();
 
   const conversation = useConversation({
     onConnect: () => {
