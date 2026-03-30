@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Phone, Clock, User, AlertTriangle, Shield, ShieldAlert, ShieldCheck, Mic, MicOff, StopCircle, SendHorizonal, Keyboard, FileText, MessageSquare, ArrowLeft, ChevronRight, Calendar, X, Eye } from 'lucide-react';
+import { Phone, Clock, User, AlertTriangle, Shield, ShieldAlert, ShieldCheck, Mic, MicOff, StopCircle, SendHorizonal, Keyboard, FileText, MessageSquare, ArrowLeft, ChevronRight, Calendar, X, Eye, Sparkles, Loader2 } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
@@ -130,12 +131,41 @@ const PulseAgent: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
     return () => clearInterval(timer);
   }, [callActive, liveCallId, transcript]);
 
+  const [summaryGenerating, setSummaryGenerating] = useState(false);
+
   const stopCall = useCallback(async () => {
     stop(); setCallActive(false);
     if (liveCallId && callStartTime) {
       const duration = Math.round((Date.now() - callStartTime.getTime()) / 1000);
-      await supabase.from('pulse_calls' as any).update({ status: 'completed', ended_at: new Date().toISOString(), duration_seconds: duration, transcript, flagged_keywords: liveFlags.map(f => f.keyword) } as any).eq('id', liveCallId);
+      const flagKeywords = liveFlags.map(f => f.keyword);
+      await supabase.from('pulse_calls' as any).update({ status: 'completed', ended_at: new Date().toISOString(), duration_seconds: duration, transcript, flagged_keywords: flagKeywords } as any).eq('id', liveCallId);
       fetchDbCalls();
+
+      // Trigger AI summary generation in background
+      if (transcript && transcript.trim().length > 20) {
+        setSummaryGenerating(true);
+        toast.info('Generating AI call summary…', { duration: 3000, icon: <Sparkles className="w-4 h-4 text-primary" /> });
+        try {
+          const { data, error } = await supabase.functions.invoke('pulse-call-summary', {
+            body: {
+              call_id: liveCallId,
+              transcript,
+              flagged_keywords: flagKeywords,
+              agent_name: AGENT_NAME,
+              client_name: 'Unknown Client',
+              duration_seconds: duration,
+            },
+          });
+          if (error) throw error;
+          toast.success('Call summary generated', { duration: 4000 });
+          fetchDbCalls();
+        } catch (err) {
+          console.error('Summary generation failed:', err);
+          toast.error('Failed to generate call summary');
+        } finally {
+          setSummaryGenerating(false);
+        }
+      }
     }
   }, [stop, liveCallId, callStartTime, transcript, liveFlags, fetchDbCalls]);
 
@@ -448,12 +478,53 @@ const PulseAgent: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
                   )}
 
                   {/* Summary */}
-                  {reviewCall.summary && (
-                    <div className="rounded-xl border border-border bg-card/50 p-4">
-                      <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Call Summary</h3>
-                      <p className="text-sm leading-relaxed">{reviewCall.summary}</p>
+                  <div className="rounded-xl border border-border bg-card/50 p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+                        <Sparkles className="w-3 h-3 text-primary" /> AI Call Summary
+                      </h3>
+                      {!reviewCall.summary && reviewCall.transcript && (
+                        <button
+                          disabled={summaryGenerating}
+                          onClick={async () => {
+                            setSummaryGenerating(true);
+                            try {
+                              const { error } = await supabase.functions.invoke('pulse-call-summary', {
+                                body: {
+                                  call_id: reviewCall.id,
+                                  transcript: reviewCall.transcript,
+                                  flagged_keywords: reviewCall.flagged_keywords || [],
+                                  agent_name: reviewCall.agent_name,
+                                  client_name: reviewCall.client_name,
+                                  duration_seconds: reviewCall.duration_seconds,
+                                },
+                              });
+                              if (error) throw error;
+                              toast.success('Summary generated');
+                              openCallReview(reviewCall.id);
+                            } catch {
+                              toast.error('Failed to generate summary');
+                            } finally {
+                              setSummaryGenerating(false);
+                            }
+                          }}
+                          className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-primary/10 text-primary text-[10px] font-semibold hover:bg-primary/20 transition-colors disabled:opacity-50"
+                        >
+                          {summaryGenerating ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
+                          Generate Summary
+                        </button>
+                      )}
                     </div>
-                  )}
+                    {reviewCall.summary ? (
+                      <div className="prose prose-sm max-w-none text-foreground prose-headings:text-foreground prose-strong:text-foreground prose-li:text-foreground/90">
+                        <ReactMarkdown>{reviewCall.summary}</ReactMarkdown>
+                      </div>
+                    ) : (
+                      <p className="text-xs text-muted-foreground/50 italic">
+                        {summaryGenerating ? 'Generating summary…' : 'No summary yet — click Generate to create one'}
+                      </p>
+                    )}
+                  </div>
 
                   {/* Transcript */}
                   <div className="space-y-2">
