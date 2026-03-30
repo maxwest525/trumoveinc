@@ -134,12 +134,7 @@ export default function AgentLogin() {
       <div className="flex flex-col items-center justify-center min-h-screen px-4 py-20">
 
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.35 }}
-          className="flex flex-col items-center gap-1.5 mb-16"
-        >
+        <div className="flex flex-col items-center gap-1.5 mb-16">
           <img src={logoImg} alt="TruMove" className="h-7" />
           <h1 className="text-lg font-semibold tracking-tight text-foreground mt-2 flex items-center gap-2">
             {greeting}, {displayName}
@@ -160,7 +155,7 @@ export default function AgentLogin() {
               <LogOut className="w-3 h-3" /> Sign out
             </button>
           </div>
-        </motion.div>
+        </div>
 
         {/* Portal cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-4xl">

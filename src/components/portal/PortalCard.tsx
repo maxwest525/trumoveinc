@@ -40,9 +40,6 @@ export default function PortalCard({ label, description, icon: Icon, accentHsl, 
   return (
     <motion.div
       ref={cardRef}
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.15 + index * 0.12, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
       style={disabled ? {} : { rotateX, rotateY, transformPerspective: 800 }}
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setHovered(true)}
