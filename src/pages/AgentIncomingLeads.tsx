@@ -49,6 +49,7 @@ interface IncomingLead {
   geo_city: string | null;
   geo_region: string | null;
   geo_country: string | null;
+  tags: string[] | null;
 }
 
 const SOURCE_COLORS: Record<string, string> = {
