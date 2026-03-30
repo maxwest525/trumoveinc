@@ -411,7 +411,12 @@ const PulseAgent: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
                         <ArrowLeft className="w-4 h-4 text-muted-foreground" />
                       </button>
                       <div>
-                        <h1 className="text-lg font-bold">Call Review</h1>
+                        <div className="flex items-center gap-2">
+                          <h1 className="text-lg font-bold">Call Review</h1>
+                          {reviewCall.agent_name === 'Trudy AI' && (
+                            <Badge className="text-[9px] h-4 px-1.5 bg-violet-500/15 text-violet-500 border-violet-500/30 font-bold">Trudy AI</Badge>
+                          )}
+                        </div>
                         <p className="text-[11px] text-muted-foreground mt-0.5">
                           {reviewCall.agent_name} → {reviewCall.client_name || 'Unknown Client'} · {format(new Date(reviewCall.created_at), 'MMM d, yyyy h:mm a')}
                         </p>
