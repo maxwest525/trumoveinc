@@ -19,7 +19,7 @@ import Terms from "./pages/Terms";
 import PropertyLookup from "./pages/PropertyLookup";
 import Auth from "./pages/Auth";
 import PublicESign from "./pages/PublicESign";
-import AgentLogin from "./pages/AgentLogin";
+import WorkspaceHub from "./pages/WorkspaceHub";
 import AgentDashboard from "./pages/AgentDashboard";
 import AdminDeveloper from "./pages/AdminDeveloper";
 import ScanRoom from "./pages/ScanRoom";
@@ -102,11 +102,13 @@ const App = () => (
           <SeoOverrideProvider>
           <Routes>
             {/* ── Root: production domain → customer site; dev/preview → CRM login */}
+            {/* Root: production domain → customer site; dev/preview → /dashboard */}
             <Route path="/" element={<ProductionHomeRedirect />} />
-            <Route path="/login" element={<AgentLogin />} />
+            <Route path="/dashboard" element={<WorkspaceHub />} />
 
-            {/* Legacy route redirect */}
-            <Route path="/agent-login" element={<Navigate to="/" replace />} />
+            {/* Legacy redirects */}
+            <Route path="/login" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/agent-login" element={<Navigate to="/dashboard" replace />} />
 
             {/* ── Customer-facing website under /site ─────────────── */}
             {/* On CRM/dev, /site redirects to workspace hub; on production main domain it renders normally */}
