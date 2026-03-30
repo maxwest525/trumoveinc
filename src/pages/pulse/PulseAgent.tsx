@@ -478,12 +478,53 @@ const PulseAgent: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
                   )}
 
                   {/* Summary */}
-                  {reviewCall.summary && (
-                    <div className="rounded-xl border border-border bg-card/50 p-4">
-                      <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Call Summary</h3>
-                      <p className="text-sm leading-relaxed">{reviewCall.summary}</p>
+                  <div className="rounded-xl border border-border bg-card/50 p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+                        <Sparkles className="w-3 h-3 text-primary" /> AI Call Summary
+                      </h3>
+                      {!reviewCall.summary && reviewCall.transcript && (
+                        <button
+                          disabled={summaryGenerating}
+                          onClick={async () => {
+                            setSummaryGenerating(true);
+                            try {
+                              const { error } = await supabase.functions.invoke('pulse-call-summary', {
+                                body: {
+                                  call_id: reviewCall.id,
+                                  transcript: reviewCall.transcript,
+                                  flagged_keywords: reviewCall.flagged_keywords || [],
+                                  agent_name: reviewCall.agent_name,
+                                  client_name: reviewCall.client_name,
+                                  duration_seconds: reviewCall.duration_seconds,
+                                },
+                              });
+                              if (error) throw error;
+                              toast.success('Summary generated');
+                              openCallReview(reviewCall.id);
+                            } catch {
+                              toast.error('Failed to generate summary');
+                            } finally {
+                              setSummaryGenerating(false);
+                            }
+                          }}
+                          className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-primary/10 text-primary text-[10px] font-semibold hover:bg-primary/20 transition-colors disabled:opacity-50"
+                        >
+                          {summaryGenerating ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
+                          Generate Summary
+                        </button>
+                      )}
                     </div>
-                  )}
+                    {reviewCall.summary ? (
+                      <div className="prose prose-sm max-w-none text-foreground prose-headings:text-foreground prose-strong:text-foreground prose-li:text-foreground/90">
+                        <ReactMarkdown>{reviewCall.summary}</ReactMarkdown>
+                      </div>
+                    ) : (
+                      <p className="text-xs text-muted-foreground/50 italic">
+                        {summaryGenerating ? 'Generating summary…' : 'No summary yet — click Generate to create one'}
+                      </p>
+                    )}
+                  </div>
 
                   {/* Transcript */}
                   <div className="space-y-2">
