@@ -377,25 +377,25 @@ const PulseAgent: React.FC<{ embedded?: boolean; showSummary?: boolean }> = ({ e
             {callDropdownOpen && (
               <div className="absolute z-50 top-full left-0 right-0 mt-1 rounded-lg border border-border bg-card shadow-xl overflow-hidden">
                 {/* Search input + sort */}
-                <div className="p-2 border-b border-border/50 space-y-1.5">
+                <div className="px-3 py-2.5 border-b border-border/50 space-y-2">
                   <div className="relative">
-                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <input
                       autoFocus
                       type="text"
                       value={callSearch}
                       onChange={e => setCallSearch(e.target.value)}
                       placeholder="Search calls…"
-                      className="w-full h-8 pl-8 pr-8 text-xs bg-secondary/40 border border-border/40 rounded-md placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/50"
+                      className="w-full h-9 pl-9 pr-8 text-sm bg-secondary/40 border border-border/40 rounded-md placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/50"
                     />
                     {callSearch && (
                       <button onClick={() => setCallSearch('')} className="absolute right-2.5 top-1/2 -translate-y-1/2">
-                        <X className="w-3.5 h-3.5 text-muted-foreground hover:text-foreground" />
+                        <X className="w-4 h-4 text-muted-foreground hover:text-foreground" />
                       </button>
                     )}
                   </div>
-                  <div className="flex items-center gap-1">
-                    <span className="text-[10px] text-muted-foreground/60 mr-1">Sort:</span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs text-muted-foreground/60 mr-0.5">Sort:</span>
                     {([
                       { key: 'recent', label: 'Recent', icon: Calendar },
                       { key: 'duration', label: 'Duration', icon: Clock },
@@ -406,13 +406,13 @@ const PulseAgent: React.FC<{ embedded?: boolean; showSummary?: boolean }> = ({ e
                         key={opt.key}
                         onClick={() => setCallSortBy(opt.key)}
                         className={cn(
-                          "inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium transition-all",
+                          "inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium transition-all",
                           callSortBy === opt.key
                             ? "bg-primary/15 text-primary border border-primary/30"
                             : "text-muted-foreground hover:text-foreground hover:bg-muted/50 border border-transparent"
                         )}
                       >
-                        <opt.icon className="w-2.5 h-2.5" />
+                        <opt.icon className="w-3 h-3" />
                         {opt.label}
                       </button>
                     ))}
@@ -421,11 +421,11 @@ const PulseAgent: React.FC<{ embedded?: boolean; showSummary?: boolean }> = ({ e
 
                 {/* Call list */}
                 <ScrollArea className="max-h-[340px]">
-                  <div className="p-1.5 space-y-0.5">
+                  <div className="p-2 space-y-1">
                     {filteredCalls.length === 0 ? (
                       <div className="flex flex-col items-center justify-center py-6 text-center">
                         <Phone className="w-5 h-5 text-muted-foreground/30 mb-1.5" />
-                        <p className="text-xs text-muted-foreground">{callSearch ? 'No matching calls' : 'No calls yet'}</p>
+                        <p className="text-sm text-muted-foreground">{callSearch ? 'No matching calls' : 'No calls yet'}</p>
                       </div>
                     ) : filteredCalls.map(call => {
                       const sev = (call.severity as Severity) || 'low';
@@ -443,21 +443,21 @@ const PulseAgent: React.FC<{ embedded?: boolean; showSummary?: boolean }> = ({ e
                             key={call.id}
                             onClick={() => { openCallReview(call.id); setCallDropdownOpen(false); }}
                             className={cn(
-                              "w-full text-left px-3 py-3 rounded-lg transition-all group",
+                              "w-full text-left px-3 py-2.5 rounded-lg transition-all group",
                               isSelected ? "bg-primary/10 border border-primary/20" : "hover:bg-secondary/40 border border-transparent"
                             )}
                           >
-                            {/* Header: Names + Live badge */}
-                            <div className="flex items-center gap-2 mb-2">
-                              <SIcon className={cn("w-3.5 h-3.5 shrink-0", sm.color)} />
+                            {/* Header row */}
+                            <div className="flex items-center gap-2 mb-1.5">
+                              <SIcon className={cn("w-4 h-4 shrink-0", sm.color)} />
                               <span className="text-sm font-semibold truncate">{call.agent_name}</span>
                               {call.agent_name === 'Trudy AI' && (
-                                <Badge className="text-[8px] h-3.5 px-1.5 bg-violet-500/15 text-violet-500 border-violet-500/30 font-bold">AI</Badge>
+                                <Badge className="text-[9px] h-4 px-1.5 bg-violet-500/15 text-violet-500 border-violet-500/30 font-bold">AI</Badge>
                               )}
-                              <span className="text-muted-foreground/40 text-xs">→</span>
-                              <span className="text-xs text-muted-foreground truncate">{call.client_name || 'Unknown'}</span>
+                              <span className="text-muted-foreground/40 text-sm">→</span>
+                              <span className="text-sm text-muted-foreground truncate">{call.client_name || 'Unknown'}</span>
                               {isActive && (
-                                <span className="flex items-center gap-0.5 text-[8px] font-bold text-compliance-pass ml-auto">
+                                <span className="flex items-center gap-1 text-[9px] font-bold text-compliance-pass ml-auto">
                                   <span className="relative flex h-1.5 w-1.5">
                                     <span className="animate-ping absolute h-full w-full rounded-full bg-compliance-pass opacity-75" />
                                     <span className="relative rounded-full h-1.5 w-1.5 bg-compliance-pass" />
@@ -465,47 +465,47 @@ const PulseAgent: React.FC<{ embedded?: boolean; showSummary?: boolean }> = ({ e
                                   LIVE
                                 </span>
                               )}
-                              <span className="text-[10px] text-muted-foreground/50 ml-auto shrink-0">{formatDistanceToNowStrict(new Date(call.created_at), { addSuffix: true })}</span>
-                              <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/30 shrink-0 group-hover:text-foreground" />
+                              <span className="text-xs text-muted-foreground/50 ml-auto shrink-0">{formatDistanceToNowStrict(new Date(call.created_at), { addSuffix: true })}</span>
+                              <ChevronRight className="w-4 h-4 text-muted-foreground/30 shrink-0 group-hover:text-foreground" />
                             </div>
 
-                            {/* Metrics grid — spread across full width */}
-                            <div className="grid grid-cols-4 gap-2 ml-5 mb-2">
-                              <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                                <Clock className="w-3 h-3 shrink-0" />
+                            {/* Metrics row — compact inline */}
+                            <div className="flex items-center gap-4 ml-6 mb-1">
+                              <span className="inline-flex items-center gap-1 text-sm text-muted-foreground">
+                                <Clock className="w-3.5 h-3.5 shrink-0" />
                                 <span className="font-medium">{durLabel || '—'}</span>
-                              </div>
-                              <div className={cn("flex items-center gap-1 text-xs font-bold",
+                              </span>
+                              <span className={cn("inline-flex items-center gap-1 text-sm font-bold",
                                 call.compliance_score != null
                                   ? call.compliance_score >= 80 ? "text-compliance-pass" : call.compliance_score >= 60 ? "text-compliance-review" : "text-destructive"
                                   : "text-muted-foreground/40"
                               )}>
-                                <Shield className="w-3 h-3 shrink-0" />
-                                <span>{call.compliance_score != null ? `${call.compliance_score}%` : '—'}</span>
-                              </div>
-                              <div className={cn("flex items-center gap-1 text-xs font-bold", flagCount > 0 ? sm.color : "text-muted-foreground/40")}>
-                                <AlertTriangle className="w-3 h-3 shrink-0" />
-                                <span>{flagCount > 0 ? `${flagCount} flag${flagCount !== 1 ? 's' : ''}` : '0'}</span>
-                              </div>
-                              <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                                <Volume2 className="w-3 h-3 shrink-0" />
+                                <Shield className="w-3.5 h-3.5 shrink-0" />
+                                {call.compliance_score != null ? `${call.compliance_score}%` : '—'}
+                              </span>
+                              <span className={cn("inline-flex items-center gap-1 text-sm font-bold", flagCount > 0 ? sm.color : "text-muted-foreground/40")}>
+                                <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+                                {flagCount > 0 ? `${flagCount} flag${flagCount !== 1 ? 's' : ''}` : '0'}
+                              </span>
+                              <span className="inline-flex items-center gap-1 text-sm text-muted-foreground">
+                                <Volume2 className="w-3.5 h-3.5 shrink-0" />
                                 <span className="font-medium">{(call.talk_ratio_agent != null && call.talk_ratio_client != null) ? `${call.talk_ratio_agent}/${call.talk_ratio_client}` : '—'}</span>
-                              </div>
+                              </span>
                             </div>
 
-                            {/* Keywords + note row */}
+                            {/* Keywords + note */}
                             {(call.flagged_keywords?.length || noteSnippet) && (
-                              <div className="flex items-center gap-2 ml-5 flex-wrap">
+                              <div className="flex items-center gap-2 ml-6 flex-wrap">
                                 {call.flagged_keywords?.slice(0, 4).map((kw: string, ki: number) => (
-                                  <span key={ki} className="text-[9px] px-1.5 py-0.5 rounded-full bg-destructive/10 text-destructive font-medium border border-destructive/20">
+                                  <span key={ki} className="text-[10px] px-2 py-0.5 rounded-full bg-destructive/10 text-destructive font-medium border border-destructive/20">
                                     {kw}
                                   </span>
                                 ))}
                                 {(call.flagged_keywords?.length || 0) > 4 && (
-                                  <span className="text-[9px] text-muted-foreground">+{(call.flagged_keywords?.length || 0) - 4}</span>
+                                  <span className="text-xs text-muted-foreground">+{(call.flagged_keywords?.length || 0) - 4}</span>
                                 )}
                                 {noteSnippet && (
-                                  <span className="text-[10px] text-muted-foreground/50 truncate italic ml-auto max-w-[50%]">
+                                  <span className="text-xs text-muted-foreground/50 truncate italic ml-auto max-w-[50%]">
                                     {noteSnippet.length > 60 ? noteSnippet.slice(0, 60) + '…' : noteSnippet}
                                   </span>
                                 )}
