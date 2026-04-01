@@ -128,6 +128,10 @@ export default function AgentCustomers() {
     const signing = signingMap[c.id] || { estimate: false, ccach: false, bol: false };
     const allSigned = signing.estimate && signing.ccach && signing.bol;
     const noneSigned = !signing.estimate && !signing.ccach && !signing.bol;
+    const md = moveDetailsMap[c.id];
+    const hasRoute = c.origin_address || c.destination_address;
+    const shortAddr = (addr: string | null) => addr ? addr.split(",").slice(0, 2).join(",").trim() : null;
+
     return (
     <Card
       className="border border-border hover:border-foreground/20 transition-all cursor-pointer group"
@@ -144,20 +148,54 @@ export default function AgentCustomers() {
             <div className="flex items-center gap-2 flex-wrap">
               <p className="text-sm font-medium text-foreground">{c.first_name} {c.last_name}</p>
               <Badge className={`text-[10px] capitalize ${statusColor(c.status)}`}>{c.status}</Badge>
+              {c.estimated_value && (
+                <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
+                  <DollarSign className="w-2.5 h-2.5" />{c.estimated_value.toLocaleString()}
+                </span>
+              )}
             </div>
             <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-muted-foreground mt-0.5">
               {c.email && <span className="flex items-center gap-1 truncate max-w-[180px] sm:max-w-none"><Mail className="w-3 h-3 shrink-0" />{c.email}</span>}
               {c.phone && <span className="flex items-center gap-1"><Phone className="w-3 h-3 shrink-0" />{c.phone}</span>}
-              {c.move_date && <span className="hidden sm:flex items-center gap-1"><Calendar className="w-3 h-3" />{new Date(c.move_date).toLocaleDateString()}</span>}
+              {c.move_date && <span className="flex items-center gap-1"><Calendar className="w-3 h-3" />{new Date(c.move_date).toLocaleDateString()}</span>}
             </div>
-            <div className="flex items-center gap-1.5 mt-1.5">
+
+            {/* Move route */}
+            {hasRoute && (
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-1">
+                <MapPin className="w-3 h-3 text-primary shrink-0" />
+                <span className="truncate">{shortAddr(c.origin_address) || "TBD"}</span>
+                <ChevronRight className="w-3 h-3 shrink-0" />
+                <span className="truncate">{shortAddr(c.destination_address) || "TBD"}</span>
+              </div>
+            )}
+
+            {/* Move details + signing badges */}
+            <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
+              {md && (
+                <>
+                  <Badge variant="secondary" className="text-[10px] gap-0.5 capitalize">
+                    <Home className="w-2.5 h-2.5" />{md.property_type} • {md.bedrooms}BR
+                  </Badge>
+                  {md.packing_service && (
+                    <Badge variant="secondary" className="text-[10px] gap-0.5">
+                      <Package className="w-2.5 h-2.5" />Packing
+                    </Badge>
+                  )}
+                  {md.auto_transport && (
+                    <Badge variant="secondary" className="text-[10px] gap-0.5">
+                      <Truck className="w-2.5 h-2.5" />Auto
+                    </Badge>
+                  )}
+                </>
+              )}
               {allSigned ? (
                 <Badge className="bg-primary/10 text-primary text-[10px] gap-1">
                   <CheckCircle2 className="w-3 h-3" />All Signed
                 </Badge>
               ) : noneSigned ? (
                 <Badge className="bg-muted text-muted-foreground text-[10px] gap-1">
-                  <Clock className="w-3 h-3" />No Docs Signed
+                  <Clock className="w-3 h-3" />No Docs
                 </Badge>
               ) : (
                 <>
