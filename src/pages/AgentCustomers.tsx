@@ -57,15 +57,16 @@ export default function AgentCustomers() {
     const fetchData = async () => {
       const { data } = await supabase
         .from("leads")
-        .select("id, first_name, last_name, email, phone, origin_address, destination_address, move_date, status, created_at")
+        .select("id, first_name, last_name, email, phone, origin_address, destination_address, move_date, estimated_value, status, created_at")
         .order("created_at", { ascending: false })
         .limit(100);
       const leads = (data as Customer[]) || [];
       setCustomers(leads);
 
-      // Fetch real signing statuses from esign_documents
       if (leads.length > 0) {
         const leadIds = leads.map(l => l.id);
+
+        // Fetch signing statuses
         const { data: docs } = await supabase
           .from("esign_documents")
           .select("lead_id, document_type, status")
@@ -85,6 +86,20 @@ export default function AgentCustomers() {
           }
         }
         setSigningMap(map);
+
+        // Fetch move details
+        const { data: moveData } = await supabase
+          .from("move_details")
+          .select("lead_id, property_type, bedrooms, packing_service, auto_transport")
+          .in("lead_id", leadIds);
+
+        if (moveData) {
+          const mdMap: Record<string, MoveDetail> = {};
+          for (const md of moveData) {
+            mdMap[md.lead_id] = md as MoveDetail;
+          }
+          setMoveDetailsMap(mdMap);
+        }
       }
 
       setLoading(false);
