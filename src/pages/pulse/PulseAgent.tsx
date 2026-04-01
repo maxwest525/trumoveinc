@@ -295,6 +295,8 @@ const PulseAgent: React.FC<{ embedded?: boolean; showSummary?: boolean }> = ({ e
   // Show call review panel or live transcription
   const showingReview = selectedCallId && !callActive;
 
+  const reviewModalOpen = !!selectedCallId && !callActive;
+
   return (
     <div className={cn(embedded ? "" : "min-h-screen bg-background text-foreground")}>
       {!embedded && (
