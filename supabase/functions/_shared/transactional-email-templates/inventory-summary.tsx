@@ -39,7 +39,7 @@ const InventorySummaryEmail = ({
 }: InventorySummaryProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Your Inventory Summary — {totalItems} items, {totalCuFt} cu ft — {refNumber || ''}</Preview>
+    <Preview>{`Your Inventory Summary — ${totalItems} items, ${totalCuFt} cu ft — ${refNumber || ''}`}</Preview>
     <Body style={main}>
       <Container style={container}>
         {/* Logo */}

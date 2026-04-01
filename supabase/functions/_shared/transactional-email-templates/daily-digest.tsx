@@ -15,7 +15,7 @@ interface DailyDigestProps {
 const DailyDigestEmail = ({ agentName, staleDealsHtml, upcomingMovesHtml, staleCount, upcomingCount }: DailyDigestProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Pipeline Digest: {staleCount || 0} stale deals, {upcomingCount || 0} upcoming moves</Preview>
+    <Preview>{`Pipeline Digest: ${staleCount || 0} stale deals, ${upcomingCount || 0} upcoming moves`}</Preview>
     <Body style={main}>
       <Container style={container}>
         <Heading style={h1}>Daily Pipeline Digest</Heading>
