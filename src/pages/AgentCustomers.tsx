@@ -51,6 +51,7 @@ export default function AgentCustomers() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [signingMap, setSigningMap] = useState<Record<string, SigningStatus>>({});
+  const [moveDetailsMap, setMoveDetailsMap] = useState<Record<string, MoveDetail>>({});
 
   useEffect(() => {
     const fetchData = async () => {
