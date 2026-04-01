@@ -1,7 +1,8 @@
 import { Link, useLocation } from "react-router-dom";
 import {
-  LayoutDashboard, UserPlus, CalendarCheck, Users, Phone, Mail, Kanban, Activity, Trophy, ExternalLink, Monitor, Inbox,
+  LayoutDashboard, UserPlus, CalendarCheck, Users, Phone, Mail, Kanban, Activity, Trophy, ExternalLink, Monitor, Inbox, ClipboardList,
 } from "lucide-react";
+import SubmitRequestDialog from "@/components/agent/SubmitRequestDialog";
 import { cn } from "@/lib/utils";
 import logoImg from "@/assets/logo.png";
 
@@ -66,6 +67,15 @@ export default function AgentSidebar({ onDialerToggle }: AgentSidebarProps) {
             </Link>
           );
         })}
+
+        <SubmitRequestDialog
+          trigger={
+            <button className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">
+              <ClipboardList className="w-4 h-4" />
+              <span>Submit Request</span>
+            </button>
+          }
+        />
       </nav>
 
       <div className="px-2 pb-4 space-y-0.5">

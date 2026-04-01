@@ -64,7 +64,14 @@ export default function ManagerEmployeeRequests() {
     setLoading(false);
   };
 
-  useEffect(() => { fetchTickets(); }, []);
+  useEffect(() => {
+    fetchTickets();
+    const channel = supabase
+      .channel('manager-employee-requests')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'support_tickets' }, () => fetchTickets())
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, []);
 
   const loadCallPreview = async (ticket: SupportTicket) => {
     const callId = extractCallId(ticket.message);
