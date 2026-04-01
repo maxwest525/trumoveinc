@@ -769,6 +769,332 @@ const PulseAgent: React.FC<{ embedded?: boolean; showSummary?: boolean }> = ({ e
           </div>
         </div>
       </main>
+
+      {/* ── Call Review Modal ── */}
+      <Dialog open={reviewModalOpen} onOpenChange={(open) => { if (!open) closeCallReview(); }}>
+        <DialogContent className="max-w-4xl max-h-[85vh] overflow-hidden flex flex-col p-0">
+          <DialogTitle className="sr-only">Call Review</DialogTitle>
+          <ScrollArea className="flex-1 overflow-auto">
+            <div className="p-6 space-y-5">
+              {reviewLoading ? (
+                <div className="flex items-center justify-center py-20">
+                  <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                </div>
+              ) : reviewCall ? (
+                <>
+                  {/* Header */}
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h1 className="text-lg font-bold">Call Review</h1>
+                        {reviewCall.agent_name === 'Trudy AI' && (
+                          <Badge className="text-[9px] h-4 px-1.5 bg-violet-500/15 text-violet-500 border-violet-500/30 font-bold">Trudy AI</Badge>
+                        )}
+                      </div>
+                      <p className="text-[11px] text-muted-foreground mt-0.5">
+                        {reviewCall.agent_name} → {reviewCall.client_name || 'Unknown Client'} · {format(new Date(reviewCall.created_at), 'MMM d, yyyy h:mm a')}
+                      </p>
+                    </div>
+                    {(() => {
+                      const s = (reviewCall.severity as Severity) || 'low';
+                      const m = SEVERITY_META[s];
+                      const I = m.icon;
+                      return (
+                        <span className={cn("flex items-center gap-1 text-xs font-bold uppercase px-2 py-1 rounded-md", m.bg, m.color, m.border, "border")}>
+                          <I className="w-3.5 h-3.5" /> {m.label}
+                        </span>
+                      );
+                    })()}
+                  </div>
+
+                  {/* Call meta bar */}
+                  <div className="flex items-center gap-6 p-3 rounded-xl border border-border bg-secondary/20">
+                    <div className="flex items-center gap-2">
+                      <User className="w-3.5 h-3.5 text-primary" />
+                      <div>
+                        <p className="text-xs font-semibold">{reviewCall.agent_name}</p>
+                        <p className="text-[9px] text-muted-foreground uppercase">Agent</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Phone className="w-3.5 h-3.5 text-muted-foreground" />
+                      <div>
+                        <p className="text-xs font-semibold">{reviewCall.client_name || 'Unknown'}</p>
+                        <p className="text-[9px] text-muted-foreground uppercase">Client</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-3.5 h-3.5 text-muted-foreground" />
+                      <div>
+                        <p className="text-xs font-semibold">
+                          {reviewCall.duration_seconds ? `${Math.floor(reviewCall.duration_seconds / 60)}:${(reviewCall.duration_seconds % 60).toString().padStart(2, '0')}` : '—'}
+                        </p>
+                        <p className="text-[9px] text-muted-foreground uppercase">Duration</p>
+                      </div>
+                    </div>
+                    {reviewCall.compliance_score != null && (
+                      <div className="flex items-center gap-2">
+                        <Shield className="w-3.5 h-3.5 text-muted-foreground" />
+                        <div>
+                          <p className={cn("text-xs font-bold",
+                            reviewCall.compliance_score >= 80 ? "text-compliance-pass" : reviewCall.compliance_score >= 60 ? "text-compliance-review" : "text-destructive"
+                          )}>{reviewCall.compliance_score}%</p>
+                          <p className="text-[9px] text-muted-foreground uppercase">Compliance</p>
+                        </div>
+                      </div>
+                    )}
+                    {(reviewCall.talk_ratio_agent || reviewCall.talk_ratio_client) && (
+                      <div className="flex items-center gap-2 ml-auto">
+                        <div className="text-right">
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-[10px] text-muted-foreground">Agent</span>
+                            <span className="text-xs font-bold text-foreground">{reviewCall.talk_ratio_agent || 0}%</span>
+                            <span className="text-muted-foreground/30">|</span>
+                            <span className="text-xs font-bold text-foreground">{reviewCall.talk_ratio_client || 0}%</span>
+                            <span className="text-[10px] text-muted-foreground">Client</span>
+                          </div>
+                          <p className="text-[9px] text-muted-foreground uppercase text-right">Talk Ratio</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Flagged keywords */}
+                  {reviewAlerts.length > 0 && (
+                    <div className="space-y-2">
+                      <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+                        <AlertTriangle className="w-3 h-3 text-destructive" />
+                        Flagged Keywords
+                        <Badge variant="destructive" className="text-[9px] ml-1">{reviewAlerts.length}</Badge>
+                      </h2>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {reviewAlerts.map((alert: any) => {
+                          const aSev = (alert.severity as Severity) || 'medium';
+                          const aMeta = SEVERITY_META[aSev];
+                          const AIcon = aMeta.icon;
+                          return (
+                            <div key={alert.id} className={cn("p-2.5 rounded-lg border", aMeta.bg, aMeta.border)}>
+                              <div className="flex items-center gap-2 mb-1">
+                                <AIcon className={cn("w-3 h-3", aMeta.color)} />
+                                <Badge variant="destructive" className="text-[10px]">{alert.matched_text}</Badge>
+                                <span className={cn("text-[9px] font-bold uppercase", aMeta.color)}>{aMeta.label}</span>
+                                <span className="ml-auto text-[9px] text-muted-foreground">{alert.match_type}</span>
+                              </div>
+                              {alert.context && <p className="text-[10px] text-muted-foreground leading-relaxed line-clamp-2">{alert.context}</p>}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Compliance & Summary — agent view: request buttons */}
+                  {showSummary ? (
+                    (() => {
+                      const COMPLIANCE_CATEGORIES = [
+                        { key: 'legal', label: 'Legal & Regulatory', icon: '⚖️', maxDeduct: 30 },
+                        { key: 'compliance', label: 'Compliance', icon: '📋', maxDeduct: 25 },
+                        { key: 'pii', label: 'PII Protection', icon: '🔒', maxDeduct: 20 },
+                        { key: 'financial', label: 'Financial Disclosure', icon: '💰', maxDeduct: 15 },
+                        { key: 'profanity', label: 'Professionalism', icon: '🗣️', maxDeduct: 15 },
+                        { key: 'escalation', label: 'Escalation Handling', icon: '📢', maxDeduct: 10 },
+                        { key: 'safety', label: 'Safety & HIPAA', icon: '🏥', maxDeduct: 20 },
+                      ];
+                      const SEVERITY_WEIGHT: Record<string, number> = { critical: 15, high: 10, medium: 5, low: 2 };
+                      const categoryScores = COMPLIANCE_CATEGORIES.map(cat => {
+                        const catAlerts = reviewAlerts.filter((a: any) => {
+                          const kw = (a.keyword || '').toLowerCase();
+                          const ctx = (a.context || '').toLowerCase();
+                          return kw.includes(cat.key) || ctx.includes(cat.key);
+                        });
+                        const deduction = catAlerts.reduce((sum: number, a: any) => sum + (SEVERITY_WEIGHT[a.severity] || 5), 0);
+                        const score = Math.max(0, 100 - Math.min(deduction, 100));
+                        return { ...cat, score, flagCount: catAlerts.length };
+                      });
+                      const uncategorizedAlerts = reviewAlerts.filter((a: any) => {
+                        const kw = (a.keyword || '').toLowerCase();
+                        const ctx = (a.context || '').toLowerCase();
+                        return !COMPLIANCE_CATEGORIES.some(c => kw.includes(c.key) || ctx.includes(c.key));
+                      });
+                      const overallScore = reviewCall.compliance_score ?? (
+                        categoryScores.length > 0
+                          ? Math.round(categoryScores.reduce((s: number, c: any) => s + c.score, 0) / categoryScores.length)
+                          : 100
+                      );
+                      return (
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between">
+                            <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+                              <Shield className="w-3 h-3 text-primary" /> Compliance Scorecard
+                            </h2>
+                            <div className={cn("text-lg font-bold", overallScore >= 80 ? "text-compliance-pass" : overallScore >= 60 ? "text-compliance-review" : "text-destructive")}>
+                              {overallScore}%
+                              <span className="text-[9px] font-normal text-muted-foreground ml-1">overall</span>
+                            </div>
+                          </div>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            {categoryScores.map(cat => {
+                              const scoreColor = cat.score >= 80 ? 'text-compliance-pass' : cat.score >= 60 ? 'text-compliance-review' : 'text-destructive';
+                              const barColor = cat.score >= 80 ? 'bg-compliance-pass' : cat.score >= 60 ? 'bg-compliance-review' : 'bg-destructive';
+                              return (
+                                <div key={cat.key} className="p-3 rounded-lg border border-border bg-card/30">
+                                  <div className="flex items-center justify-between mb-1.5">
+                                    <span className="text-xs font-medium flex items-center gap-1.5">
+                                      <span className="text-sm">{cat.icon}</span> {cat.label}
+                                    </span>
+                                    <div className="flex items-center gap-2">
+                                      {cat.flagCount > 0 && <span className="text-[9px] text-destructive font-medium">{cat.flagCount} flag{cat.flagCount !== 1 ? 's' : ''}</span>}
+                                      <span className={cn("text-sm font-bold", scoreColor)}>{cat.score}%</span>
+                                    </div>
+                                  </div>
+                                  <div className="h-1.5 rounded-full bg-muted/50 overflow-hidden">
+                                    <div className={cn("h-full rounded-full transition-all", barColor)} style={{ width: `${cat.score}%` }} />
+                                  </div>
+                                  {cat.flagCount === 0 && (
+                                    <div className="flex items-center gap-1 mt-1.5">
+                                      <CheckCircle2 className="w-2.5 h-2.5 text-compliance-pass" />
+                                      <span className="text-[9px] text-compliance-pass font-medium">No issues detected</span>
+                                    </div>
+                                  )}
+                                </div>
+                              );
+                            })}
+                          </div>
+                          {uncategorizedAlerts.length > 0 && (
+                            <p className="text-[10px] text-muted-foreground">
+                              + {uncategorizedAlerts.length} additional flag{uncategorizedAlerts.length !== 1 ? 's' : ''} outside standard categories
+                            </p>
+                          )}
+                        </div>
+                      );
+                    })()
+                  ) : (
+                    <div className="space-y-3">
+                      <div className="rounded-xl border border-border bg-card/50 p-4 space-y-3">
+                        <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+                          <Shield className="w-3 h-3 text-primary" /> Compliance & Summary
+                        </h3>
+                        <p className="text-[11px] text-muted-foreground">
+                          AI summaries and compliance scorecards require manager or admin approval. Submit a request below.
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          <button
+                            disabled={requestingSummary}
+                            onClick={async () => {
+                              setRequestingSummary(true);
+                              try {
+                                const { data: { user } } = await supabase.auth.getUser();
+                                const { data: profile } = await supabase.from('profiles').select('display_name').eq('id', user?.id || '').maybeSingle();
+                                const agentName = profile?.display_name || user?.email || 'Agent';
+                                await supabase.from('support_tickets').insert({
+                                  name: agentName, email: user?.email || '',
+                                  subject: `AI Call Summary Request — ${reviewCall.agent_name} → ${reviewCall.client_name || 'Unknown'}`,
+                                  message: `Agent "${agentName}" is requesting an AI-generated call summary for:\n\nCall ID: ${reviewCall.id}\nAgent: ${reviewCall.agent_name}\nClient: ${reviewCall.client_name || 'Unknown'}\nDate: ${format(new Date(reviewCall.created_at), 'MMM d, yyyy h:mm a')}\nDuration: ${reviewCall.duration_seconds ? Math.floor(reviewCall.duration_seconds / 60) + 'm ' + (reviewCall.duration_seconds % 60) + 's' : 'N/A'}\nFlagged Keywords: ${(reviewCall.flagged_keywords || []).join(', ') || 'None'}`,
+                                  status: 'open',
+                                });
+                                toast.success('Summary request submitted for approval');
+                              } catch { toast.error('Failed to submit request'); } finally { setRequestingSummary(false); }
+                            }}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-primary/10 text-foreground text-[11px] font-semibold hover:bg-primary/20 transition-colors disabled:opacity-50"
+                          >
+                            {requestingSummary ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
+                            Request AI Summary
+                          </button>
+                          <button
+                            disabled={requestingScorecard}
+                            onClick={async () => {
+                              setRequestingScorecard(true);
+                              try {
+                                const { data: { user } } = await supabase.auth.getUser();
+                                const { data: profile } = await supabase.from('profiles').select('display_name').eq('id', user?.id || '').maybeSingle();
+                                const agentName = profile?.display_name || user?.email || 'Agent';
+                                await supabase.from('support_tickets').insert({
+                                  name: agentName, email: user?.email || '',
+                                  subject: `Compliance Scorecard Request — ${reviewCall.agent_name} → ${reviewCall.client_name || 'Unknown'}`,
+                                  message: `Agent "${agentName}" is requesting a compliance scorecard for:\n\nCall ID: ${reviewCall.id}\nAgent: ${reviewCall.agent_name}\nClient: ${reviewCall.client_name || 'Unknown'}\nDate: ${format(new Date(reviewCall.created_at), 'MMM d, yyyy h:mm a')}\nDuration: ${reviewCall.duration_seconds ? Math.floor(reviewCall.duration_seconds / 60) + 'm ' + (reviewCall.duration_seconds % 60) + 's' : 'N/A'}\nFlagged Keywords: ${(reviewCall.flagged_keywords || []).join(', ') || 'None'}\nAlerts: ${reviewAlerts.length} total`,
+                                  status: 'open',
+                                });
+                                toast.success('Scorecard request submitted for approval');
+                              } catch { toast.error('Failed to submit request'); } finally { setRequestingScorecard(false); }
+                            }}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-primary/10 text-foreground text-[11px] font-semibold hover:bg-primary/20 transition-colors disabled:opacity-50"
+                          >
+                            {requestingScorecard ? <Loader2 className="w-3 h-3 animate-spin" /> : <Shield className="w-3 h-3" />}
+                            Request Scorecard
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* AI Summary (manager view) */}
+                  {showSummary && (
+                    <div className="rounded-xl border border-border bg-card/50 p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+                          <Sparkles className="w-3 h-3 text-primary" /> AI Call Summary
+                        </h3>
+                        {!reviewCall.summary && reviewCall.transcript && (
+                          <button
+                            disabled={summaryGenerating}
+                            onClick={async () => {
+                              setSummaryGenerating(true);
+                              try {
+                                const { error } = await supabase.functions.invoke('pulse-call-summary', {
+                                  body: { call_id: reviewCall.id, transcript: reviewCall.transcript, flagged_keywords: reviewCall.flagged_keywords || [], agent_name: reviewCall.agent_name, client_name: reviewCall.client_name, duration_seconds: reviewCall.duration_seconds },
+                                });
+                                if (error) throw error;
+                                toast.success('Summary generated');
+                                openCallReview(reviewCall.id);
+                              } catch { toast.error('Failed to generate summary'); } finally { setSummaryGenerating(false); }
+                            }}
+                            className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-primary/10 text-primary text-[10px] font-semibold hover:bg-primary/20 transition-colors disabled:opacity-50"
+                          >
+                            {summaryGenerating ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
+                            Generate Summary
+                          </button>
+                        )}
+                      </div>
+                      {reviewCall.summary ? (
+                        <div className="prose prose-sm max-w-none text-foreground prose-headings:text-foreground prose-strong:text-foreground prose-li:text-foreground/90">
+                          <ReactMarkdown>{reviewCall.summary}</ReactMarkdown>
+                        </div>
+                      ) : (
+                        <p className="text-xs text-muted-foreground/50 italic">
+                          {summaryGenerating ? 'Generating summary…' : 'No summary yet — click Generate to create one'}
+                        </p>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Transcript */}
+                  <div className="space-y-2">
+                    <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+                      <FileText className="w-3 h-3 text-primary" /> Full Transcript
+                    </h2>
+                    <div className="rounded-lg bg-secondary/20 border border-border p-4">
+                      <div className="space-y-1 font-mono text-xs leading-relaxed whitespace-pre-wrap">
+                        {reviewCall.transcript ? reviewCall.transcript.split('\n').map((line: string, i: number) => (
+                          <div key={i} className={cn("py-1.5 px-2 rounded", line.includes('Agent:') ? 'bg-primary/5' : '')}>
+                            {highlightKeywords(line, reviewCall.flagged_keywords || [])}
+                          </div>
+                        )) : (
+                          <p className="text-muted-foreground/50 italic text-center py-8">No transcript recorded</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
+                  <AlertTriangle className="w-10 h-10 mb-3 opacity-30" />
+                  <p className="text-sm">Call not found</p>
+                </div>
+              )}
+            </div>
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
