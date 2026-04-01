@@ -3,7 +3,8 @@ import AgentShell from "@/components/layout/AgentShell";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Users, Mail, Phone, PhoneCall, MapPin, Calendar, ChevronRight, Search,
-  MessageSquare, FileText, CreditCard, Eye, MoreHorizontal, CheckCircle2, Clock, AlertCircle
+  MessageSquare, FileText, CreditCard, Eye, MoreHorizontal, CheckCircle2, Clock, AlertCircle,
+  Home, Package, Truck, DollarSign
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
