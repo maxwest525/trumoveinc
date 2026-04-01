@@ -292,9 +292,6 @@ const PulseAgent: React.FC<{ embedded?: boolean; showSummary?: boolean }> = ({ e
     return () => { supabase.removeChannel(channel); };
   }, []);
 
-  // Show call review panel or live transcription
-  const showingReview = selectedCallId && !callActive;
-
   const reviewModalOpen = !!selectedCallId && !callActive;
 
   return (
