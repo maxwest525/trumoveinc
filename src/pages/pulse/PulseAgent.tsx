@@ -313,21 +313,27 @@ const PulseAgent: React.FC<{ embedded?: boolean; showSummary?: boolean }> = ({ e
       )}
 
       <main className={cn("max-w-7xl mx-auto", embedded ? "" : "min-h-[calc(100vh-3.5rem)]")}>
-        {/* Compliance KPIs + Sentiment Strip */}
+        {/* Today's Shift KPIs */}
         <div className="px-6 pt-4 pb-2 space-y-3">
-          {/* KPI Cards */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {(() => {
-              const totalCalls = dbCalls.length || 1;
-              const avgScore = dbCalls.length ? Math.round(dbCalls.reduce((s, c) => s + (c.compliance_score || 100), 0) / totalCalls) : 100;
-              const totalFlags = dbCalls.reduce((s, c) => s + (c.flagged_keywords?.length || 0), 0);
-              const passRate = Math.round((dbCalls.filter(c => (c.compliance_score || 100) >= 80).length / totalCalls) * 100);
-              const flagsPer = dbCalls.length ? Math.round((totalFlags / dbCalls.length) * 10) / 10 : 0;
+              const today = new Date();
+              today.setHours(0, 0, 0, 0);
+              const todayCalls = dbCalls.filter(c => new Date(c.created_at) >= today);
+              const callsToday = todayCalls.length;
+              const todayFlags = todayCalls.reduce((s, c) => s + (c.flagged_keywords?.length || 0), 0);
+              const todayAvgDur = callsToday > 0
+                ? Math.round(todayCalls.reduce((s, c) => s + (c.duration_seconds || 0), 0) / callsToday)
+                : 0;
+              const todayPassRate = callsToday > 0
+                ? Math.round((todayCalls.filter(c => (c.compliance_score || 100) >= 80).length / callsToday) * 100)
+                : 100;
+              const durLabel = todayAvgDur > 0 ? `${Math.floor(todayAvgDur / 60)}:${(todayAvgDur % 60).toString().padStart(2, '0')}` : '—';
               return [
-                { label: 'Avg Score', value: `${avgScore}%`, icon: TrendingUp, color: avgScore >= 80 ? 'text-compliance-pass' : avgScore >= 60 ? 'text-compliance-review' : 'text-destructive' },
-                { label: 'Pass Rate', value: `${passRate}%`, icon: ShieldCheck, color: passRate >= 80 ? 'text-compliance-pass' : 'text-compliance-review' },
-                { label: 'Total Flags', value: `${totalFlags}`, icon: AlertTriangle, color: totalFlags === 0 ? 'text-compliance-pass' : 'text-destructive' },
-                { label: 'Flags/Call', value: `${flagsPer}`, icon: BarChart3, color: flagsPer <= 1 ? 'text-compliance-pass' : 'text-destructive' },
+                { label: 'Calls Today', value: `${callsToday}`, icon: Phone, color: 'text-primary' },
+                { label: 'Avg Duration', value: durLabel, icon: Clock, color: 'text-foreground' },
+                { label: 'Flags Today', value: `${todayFlags}`, icon: AlertTriangle, color: todayFlags === 0 ? 'text-compliance-pass' : 'text-destructive' },
+                { label: 'Pass Rate', value: `${todayPassRate}%`, icon: ShieldCheck, color: todayPassRate >= 80 ? 'text-compliance-pass' : todayPassRate >= 60 ? 'text-compliance-review' : 'text-destructive' },
               ].map((kpi, i) => {
                 const KIcon = kpi.icon;
                 return (
@@ -344,7 +350,6 @@ const PulseAgent: React.FC<{ embedded?: boolean; showSummary?: boolean }> = ({ e
               });
             })()}
           </div>
-
         </div>
 
         {/* Recent Calls Dropdown */}
