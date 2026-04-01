@@ -25,8 +25,17 @@ interface Customer {
   origin_address: string | null;
   destination_address: string | null;
   move_date: string | null;
+  estimated_value: number | null;
   status: string;
   created_at: string;
+}
+
+interface MoveDetail {
+  lead_id: string;
+  property_type: string;
+  bedrooms: number;
+  packing_service: boolean;
+  auto_transport: boolean;
 }
 
 interface SigningStatus {
