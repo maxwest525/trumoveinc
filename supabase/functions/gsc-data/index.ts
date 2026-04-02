@@ -131,7 +131,7 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ queries: data || [] }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
-    throw new Error("Invalid action. Use 'site-overview', 'fetch-page-queries', 'fetch-all-pages', or 'get-cached'.");
+    throw new Error(`Invalid action '${action}'. Use 'site-overview', 'fetch-page-queries', 'fetch-all-pages', or 'get-cached'.`);
   } catch (error) {
     console.error("gsc-data error:", error);
     return new Response(JSON.stringify({ error: error instanceof Error ? error.message : "Unknown error" }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
