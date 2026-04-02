@@ -70,6 +70,7 @@ import DispatchFleet from "./pages/dispatch/DispatchFleet";
 import DispatchDrivers from "./pages/dispatch/DispatchDrivers";
 import DispatchRoutes from "./pages/dispatch/DispatchRoutes";
 import DispatchJobs from "./pages/dispatch/DispatchJobs";
+import DispatchESign from "./pages/dispatch/DispatchESign";
 import Unsubscribe from "./pages/Unsubscribe";
 import AgentIncomingLeads from "./pages/AgentIncomingLeads";
 
@@ -162,6 +163,7 @@ const App = () => (
             <Route path="/dispatch/drivers" element={<RoleGuard allowedRoles={["agent", "manager"]}><DispatchDrivers /></RoleGuard>} />
             <Route path="/dispatch/routes" element={<RoleGuard allowedRoles={["agent", "manager"]}><DispatchRoutes /></RoleGuard>} />
             <Route path="/dispatch/jobs" element={<RoleGuard allowedRoles={["agent", "manager"]}><DispatchJobs /></RoleGuard>} />
+            <Route path="/dispatch/esign" element={<RoleGuard allowedRoles={["agent", "manager"]}><DispatchESign /></RoleGuard>} />
 
             {/* Auth & misc */}
             <Route path="/reset-password" element={<ResetPassword />} />

@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import {
   Home, Sun, Moon, Bell, LayoutDashboard,
   Truck, MapPin, Users, Route, ClipboardList,
-  MessageSquare, Menu, X,
+  FileSignature, MessageSquare, Menu, X,
 } from "lucide-react";
 import logoImg from "@/assets/logo.png";
 import { useTheme } from "next-themes";
@@ -18,6 +18,7 @@ const NAV_ITEMS = [
   { label: "Driver Assignments", icon: Users, href: "/dispatch/drivers" },
   { label: "Route Management", icon: Route, href: "/dispatch/routes" },
   { label: "Job Board", icon: ClipboardList, href: "/dispatch/jobs" },
+  { label: "E-Sign", icon: FileSignature, href: "/dispatch/esign" },
 ];
 
 interface DispatchShellProps {
