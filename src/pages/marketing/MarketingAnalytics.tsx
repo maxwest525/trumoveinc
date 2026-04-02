@@ -113,15 +113,8 @@ export default function MarketingAnalytics() {
       ga4Connected && ga4PropertyId
         ? supabase.functions.invoke("ga4-data", { body: { action: "overview", user_id: uid } }).then(({ data }) => { if (data && !data.error) setGa4Data(data); })
         : Promise.resolve(),
-      supabase.from("ppc_campaigns").select("budget_amount,spent,clicks,conversions,status").then(({ data }) => {
-        if (!data) return;
-        setPpcData({ totalSpend: data.reduce((s,c)=>s+(c.spent||0),0), totalClicks: data.reduce((s,c)=>s+(c.clicks||0),0), totalConversions: data.reduce((s,c)=>s+(c.conversions||0),0), activeCampaigns: data.filter(c=>c.status==="active").length });
-      }),
-      supabase.from("blog_posts").select("status,published_at").then(({ data }) => {
-        if (!data) return;
-        const pub = data.filter(p=>p.status==="published");
-        setBlogData({ published: pub.length, drafts: data.filter(p=>p.status==="draft").length, lastPublished: pub.sort((a,b)=>new Date(b.published_at||0).getTime()-new Date(a.published_at||0).getTime())[0]?.published_at||null });
-      }),
+      Promise.resolve().then(() => setPpcData({ totalSpend: 0, totalClicks: 0, totalConversions: 0, activeCampaigns: 0 })),
+      Promise.resolve().then(() => setBlogData({ published: 0, drafts: 0, lastPublished: null })),
     ]);
     setRefreshing(false);
     setLastRefreshed(new Date());
