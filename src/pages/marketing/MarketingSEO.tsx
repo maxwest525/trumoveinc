@@ -548,5 +548,6 @@ export default function MarketingSEO() {
         </TabsContent>
       </Tabs>
     </div>
+    </MarketingShell>
   );
 }
