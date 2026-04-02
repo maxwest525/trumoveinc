@@ -158,7 +158,8 @@ export default function MarketingSEO() {
   const totalKeywordVolume = quickWins.reduce((sum, k) => sum + k.volume, 0);
 
   return (
-    <div className="space-y-6 p-6">
+    <MarketingShell breadcrumbs={[{ label: "SEO Manager" }]}>
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
