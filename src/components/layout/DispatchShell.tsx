@@ -18,6 +18,7 @@ const NAV_ITEMS = [
   { label: "Driver Assignments", icon: Users, href: "/dispatch/drivers" },
   { label: "Route Management", icon: Route, href: "/dispatch/routes" },
   { label: "Job Board", icon: ClipboardList, href: "/dispatch/jobs" },
+  { label: "E-Sign", icon: FileSignature, href: "/dispatch/esign" },
 ];
 
 interface DispatchShellProps {
