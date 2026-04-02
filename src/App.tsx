@@ -11,7 +11,6 @@ import WorkspaceHub from "./pages/WorkspaceHub";
 import RoleGuard from "./components/RoleGuard";
 import AgentDashboard from "./pages/AgentDashboard";
 import AdminDeveloper from "./pages/AdminDeveloper";
-import ElevenLabsTrudyWidget from "./components/ElevenLabsTrudyWidget";
 import ScrollToTop from "./components/ScrollToTop";
 import { SeoOverrideProvider } from "./components/SeoOverrideProvider";
 import { captureUtmParams } from "./lib/leadEnrichment";
@@ -33,6 +32,10 @@ import SetPassword from "./pages/SetPassword";
 import MarketingTemplates from "./pages/marketing/MarketingTemplates";
 import MarketingSEO from "./pages/marketing/MarketingSEO";
 import MarketingDashboard from "./pages/marketing/MarketingDashboard";
+import MarketingPPC from "./pages/marketing/MarketingPPC";
+import MarketingBlog from "./pages/marketing/MarketingBlog";
+import MarketingAnalytics from "./pages/marketing/MarketingAnalytics";
+import MarketingCompetitorSEO from "./pages/marketing/MarketingCompetitorSEO";
 import AccountingDashboard from "./pages/AccountingDashboard";
 import AgentOperations from "./pages/AgentOperations";
 import AgentNewCustomer from "./pages/AgentNewCustomer";
@@ -72,7 +75,6 @@ import AgentIncomingLeads from "./pages/AgentIncomingLeads";
 
 const queryClient = new QueryClient();
 
-// Capture UTM params on initial load
 captureUtmParams();
 
 const App = () => (
@@ -86,24 +88,17 @@ const App = () => (
           <ScrollToTop />
           <SeoOverrideProvider>
           <Routes>
-            {/* ── Root: production domain → customer site; dev/preview → CRM login */}
-            {/* Root: production domain → customer site; dev/preview → /dashboard */}
             <Route path="/" element={<ProductionHomeRedirect />} />
             <Route path="/dashboard" element={<WorkspaceHub />} />
 
-            {/* Legacy redirects */}
             <Route path="/login" element={<Navigate to="/dashboard" replace />} />
             <Route path="/agent-login" element={<Navigate to="/dashboard" replace />} />
 
-            {/* ── Customer-facing website under /site ─────────────── */}
-            {/* On CRM/dev, all /site/* redirects to workspace hub; on production they render normally */}
             <Route path="/site" element={<SiteRouteGuard />} />
             <Route path="/site/*" element={<SiteRouteGuard />} />
 
-            {/* ── Public e-sign route (customer clicks from email) ── */}
             <Route path="/esign/:refNumber" element={<PublicESign />} />
 
-            {/* ── CRM / Backend routes ─────────────────────────────── */}
             {/* Agent routes */}
             <Route path="/agent/dashboard" element={<RoleGuard allowedRoles={["agent"]}><AgentDashboard /></RoleGuard>} />
             <Route path="/agent/pipeline" element={<RoleGuard allowedRoles={["agent"]}><AgentPipeline /></RoleGuard>} />
@@ -142,7 +137,7 @@ const App = () => (
             <Route path="/admin/pulse/call/:callId" element={<RoleGuard allowedRoles={["admin"]}><AdminPulseCallReview /></RoleGuard>} />
             <Route path="/admin/team-chat" element={<RoleGuard allowedRoles={["admin"]}><AdminTeamChat /></RoleGuard>} />
 
-            {/* Leads & KPI (agent + manager access) */}
+            {/* Leads & KPI */}
             <Route path="/leads/dashboard" element={<RoleGuard allowedRoles={["agent", "manager"]}><LeadsDashboard /></RoleGuard>} />
             <Route path="/leads/vendors" element={<RoleGuard allowedRoles={["admin"]}><AdminLeadVendors /></RoleGuard>} />
             <Route path="/leads/performance" element={<RoleGuard allowedRoles={["agent", "manager"]}><LeadsPerformance /></RoleGuard>} />
@@ -153,6 +148,10 @@ const App = () => (
             <Route path="/marketing/dashboard" element={<RoleGuard allowedRoles={["marketing"]}><MarketingDashboard /></RoleGuard>} />
             <Route path="/marketing/templates" element={<RoleGuard allowedRoles={["marketing"]}><MarketingTemplates /></RoleGuard>} />
             <Route path="/marketing/seo" element={<RoleGuard allowedRoles={["marketing"]}><MarketingSEO /></RoleGuard>} />
+            <Route path="/marketing/ppc" element={<RoleGuard allowedRoles={["marketing"]}><MarketingPPC /></RoleGuard>} />
+            <Route path="/marketing/blog" element={<RoleGuard allowedRoles={["marketing"]}><MarketingBlog /></RoleGuard>} />
+            <Route path="/marketing/analytics" element={<RoleGuard allowedRoles={["marketing"]}><MarketingAnalytics /></RoleGuard>} />
+            <Route path="/marketing/competitor-seo" element={<RoleGuard allowedRoles={["marketing"]}><MarketingCompetitorSEO /></RoleGuard>} />
 
             {/* Accounting */}
             <Route path="/accounting/dashboard" element={<RoleGuard allowedRoles={["admin", "accounting"]}><AccountingDashboard /></RoleGuard>} />
@@ -164,19 +163,17 @@ const App = () => (
             <Route path="/dispatch/routes" element={<RoleGuard allowedRoles={["agent", "manager"]}><DispatchRoutes /></RoleGuard>} />
             <Route path="/dispatch/jobs" element={<RoleGuard allowedRoles={["agent", "manager"]}><DispatchJobs /></RoleGuard>} />
 
-            {/* Auth & misc (no role guard needed) */}
+            {/* Auth & misc */}
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/set-password" element={<SetPassword />} />
             <Route path="/unsubscribe" element={<Unsubscribe />} />
             <Route path="/homepage-2" element={<HomepageV2 />} />
             <Route path="/customer-facing-sites" element={<CustomerFacingSites />} />
             <Route path="/tools/:tool" element={<IntegrationPlaceholder />} />
-            
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+
             <Route path="*" element={<NotFound />} />
           </Routes>
           </SeoOverrideProvider>
-          {/* <ElevenLabsTrudyWidget /> */}
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>

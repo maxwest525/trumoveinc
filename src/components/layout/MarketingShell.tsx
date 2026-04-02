@@ -2,21 +2,22 @@ import { useState, useEffect, type ReactNode } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   Home, Bell, Menu, X,
-  FileText, Search, Swords,
+  FileText, Search, Swords, Megaphone, PenTool, BarChart3,
 } from "lucide-react";
-import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { setPortalContext } from "@/hooks/usePortalContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import ShellBreadcrumbs, { type BreadcrumbSegment } from "@/components/layout/ShellBreadcrumbs";
-
 import logoImg from "@/assets/logo.png";
 
 const NAV_ITEMS = [
   { label: "Dashboard", icon: Home, href: "/marketing/dashboard" },
-  { label: "Email & SMS Templates", icon: FileText, href: "/marketing/templates" },
-  { label: "SEO Module", icon: Search, href: "/marketing/seo" },
-  { label: "Competitor SEO Analysis", icon: Swords, href: "/marketing/competitor-seo", beta: true },
+  { label: "SEO Manager", icon: Search, href: "/marketing/seo" },
+  { label: "PPC / Paid Ads", icon: Megaphone, href: "/marketing/ppc" },
+  { label: "Blog & Content", icon: PenTool, href: "/marketing/blog" },
+  { label: "Email & SMS", icon: FileText, href: "/marketing/templates" },
+  { label: "Competitor Intel", icon: Swords, href: "/marketing/competitor-seo" },
+  { label: "Analytics", icon: BarChart3, href: "/marketing/analytics" },
 ];
 
 interface MarketingShellProps {
@@ -58,19 +59,6 @@ export default function MarketingShell({ children, breadcrumb = "", breadcrumbs 
         {NAV_ITEMS.map((item) => {
           const Icon = item.icon;
           const active = location.pathname === item.href;
-          const isBeta = (item as any).beta;
-          if (isBeta) {
-            return (
-              <div
-                key={item.label}
-                className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-muted-foreground/50 cursor-not-allowed opacity-60"
-              >
-                <Icon className="w-4 h-4" />
-                <span>{item.label}</span>
-                <span className="ml-auto text-[9px] font-semibold uppercase tracking-wider bg-muted text-muted-foreground px-1.5 py-0.5 rounded">Beta</span>
-              </div>
-            );
-          }
           return (
             <Link
               key={item.label}
@@ -88,20 +76,17 @@ export default function MarketingShell({ children, breadcrumb = "", breadcrumbs 
           );
         })}
       </nav>
-
     </>
   );
 
   return (
     <div className="flex min-h-screen bg-background text-foreground">
-      {/* Desktop Sidebar */}
       {!isMobile && (
         <aside className="w-52 shrink-0 border-r border-border bg-card flex flex-col min-h-screen">
           {sidebarContent}
         </aside>
       )}
 
-      {/* Mobile Sidebar Overlay */}
       {isMobile && sidebarOpen && (
         <>
           <div className="fixed inset-0 bg-black/50 z-40" onClick={() => setSidebarOpen(false)} />
