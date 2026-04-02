@@ -113,8 +113,24 @@ export default function MarketingAnalytics() {
       ga4Connected && ga4PropertyId
         ? supabase.functions.invoke("ga4-data", { body: { action: "overview", user_id: uid } }).then(({ data }) => { if (data && !data.error) setGa4Data(data); })
         : Promise.resolve(),
-      Promise.resolve().then(() => setPpcData({ totalSpend: 0, totalClicks: 0, totalConversions: 0, activeCampaigns: 0 })),
-      Promise.resolve().then(() => setBlogData({ published: 0, drafts: 0, lastPublished: null })),
+      supabase.from("ppc_campaigns").select("spend,clicks,conversions,status").then(({ data }) => {
+        if (data) {
+          setPpcData({
+            totalSpend: data.reduce((s, c) => s + Number(c.spend || 0), 0),
+            totalClicks: data.reduce((s, c) => s + Number(c.clicks || 0), 0),
+            totalConversions: data.reduce((s, c) => s + Number(c.conversions || 0), 0),
+            activeCampaigns: data.filter(c => c.status === "active").length,
+          });
+        }
+      }),
+      supabase.from("blog_posts").select("status,published_at").then(({ data }) => {
+        if (data) {
+          const pub = data.filter(p => p.status === "published");
+          const drafts = data.filter(p => p.status === "draft");
+          const lastPub = pub.sort((a, b) => (b.published_at || "").localeCompare(a.published_at || ""))[0];
+          setBlogData({ published: pub.length, drafts: drafts.length, lastPublished: lastPub?.published_at || null });
+        }
+      }),
     ]);
     setRefreshing(false);
     setLastRefreshed(new Date());

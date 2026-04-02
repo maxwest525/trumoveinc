@@ -126,6 +126,60 @@ export type Database = {
         }
         Relationships: []
       }
+      blog_posts: {
+        Row: {
+          author_id: string | null
+          content: string | null
+          created_at: string
+          excerpt: string | null
+          featured_image_url: string | null
+          id: string
+          meta_description: string | null
+          meta_title: string | null
+          published_at: string | null
+          slug: string | null
+          status: string
+          tags: string[] | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          author_id?: string | null
+          content?: string | null
+          created_at?: string
+          excerpt?: string | null
+          featured_image_url?: string | null
+          id?: string
+          meta_description?: string | null
+          meta_title?: string | null
+          published_at?: string | null
+          slug?: string | null
+          status?: string
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          author_id?: string | null
+          content?: string | null
+          created_at?: string
+          excerpt?: string | null
+          featured_image_url?: string | null
+          id?: string
+          meta_description?: string | null
+          meta_title?: string | null
+          published_at?: string | null
+          slug?: string | null
+          status?: string
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       call_coaching_events: {
         Row: {
           agent_action: string | null
@@ -1252,6 +1306,60 @@ export type Database = {
           is_default?: boolean
           name?: string
           stage_key?: Database["public"]["Enums"]["deal_stage"]
+        }
+        Relationships: []
+      }
+      ppc_campaigns: {
+        Row: {
+          budget: number
+          clicks: number
+          conversions: number
+          cpc: number
+          created_at: string
+          end_date: string | null
+          id: string
+          impressions: number
+          name: string
+          platform: string
+          spend: number
+          start_date: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          budget?: number
+          clicks?: number
+          conversions?: number
+          cpc?: number
+          created_at?: string
+          end_date?: string | null
+          id?: string
+          impressions?: number
+          name: string
+          platform?: string
+          spend?: number
+          start_date?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          budget?: number
+          clicks?: number
+          conversions?: number
+          cpc?: number
+          created_at?: string
+          end_date?: string | null
+          id?: string
+          impressions?: number
+          name?: string
+          platform?: string
+          spend?: number
+          start_date?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
