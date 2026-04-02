@@ -6,6 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { ArrowUpRight, TrendingUp, Target, FileText, Search, Globe, AlertCircle, CheckCircle2, Clock, ExternalLink } from "lucide-react";
+import MarketingShell from "@/components/layout/MarketingShell";
 
 // ─── Static intelligence data from HyperSEO research (April 2026) ────────────
 
@@ -157,7 +158,8 @@ export default function MarketingSEO() {
   const totalKeywordVolume = quickWins.reduce((sum, k) => sum + k.volume, 0);
 
   return (
-    <div className="space-y-6 p-6">
+    <MarketingShell breadcrumbs={[{ label: "SEO Manager" }]}>
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -546,5 +548,6 @@ export default function MarketingSEO() {
         </TabsContent>
       </Tabs>
     </div>
+    </MarketingShell>
   );
 }
