@@ -70,6 +70,7 @@ import DispatchFleet from "./pages/dispatch/DispatchFleet";
 import DispatchDrivers from "./pages/dispatch/DispatchDrivers";
 import DispatchRoutes from "./pages/dispatch/DispatchRoutes";
 import DispatchJobs from "./pages/dispatch/DispatchJobs";
+import DispatchESign from "./pages/dispatch/DispatchESign";
 import Unsubscribe from "./pages/Unsubscribe";
 import AgentIncomingLeads from "./pages/AgentIncomingLeads";
 
