@@ -6,6 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { ArrowUpRight, TrendingUp, Target, FileText, Search, Globe, AlertCircle, CheckCircle2, Clock, ExternalLink } from "lucide-react";
+import MarketingShell from "@/components/layout/MarketingShell";
 
 // ─── Static intelligence data from HyperSEO research (April 2026) ────────────
 
