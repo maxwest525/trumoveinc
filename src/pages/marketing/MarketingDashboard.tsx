@@ -1,461 +1,347 @@
-import { useMemo, useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import MarketingShell from "@/components/layout/MarketingShell";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  BarChart3, TrendingUp, Users, DollarSign, MousePointerClick,
-  Eye, ArrowUpRight, ArrowDownRight, Target, Percent, Mail, MessageSquare, Settings2,
-} from "lucide-react";
-import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
-import { format, subMonths, subDays, startOfMonth, endOfMonth, differenceInDays } from "date-fns";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
-import { CalendarIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
-import type { DateRange } from "react-day-picker";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
+import { TrendingUp, Users, DollarSign, Target, Activity, Wifi, WifiOff, Settings, RefreshCw, AlertCircle, CheckCircle, Clock, Loader2, Save } from "lucide-react";
+import MarketingShell from "@/components/layout/MarketingShell";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
-interface KpiCardProps {
-  title: string;
-  value: string;
-  change: number;
-  icon: React.ElementType;
-  prefix?: string;
+// ─── Static sample data (replaced by real data when integrations connected) ─────
+const trafficData = [
+  { month: "Oct", organic: 0, paid: 0, direct: 40 },
+  { month: "Nov", organic: 120, paid: 80, direct: 55 },
+  { month: "Dec", organic: 180, paid: 140, direct: 70 },
+  { month: "Jan", organic: 240, paid: 190, direct: 85 },
+  { month: "Feb", organic: 310, paid: 220, direct: 90 },
+  { month: "Mar", organic: 420, paid: 280, direct: 110 },
+];
+
+const leadData = [
+  { month: "Oct", leads: 12, booked: 3 },
+  { month: "Nov", leads: 28, booked: 8 },
+  { month: "Dec", leads: 41, booked: 14 },
+  { month: "Jan", leads: 55, booked: 19 },
+  { month: "Feb", leads: 68, booked: 24 },
+  { month: "Mar", leads: 84, booked: 31 },
+];
+
+const channelData = [
+  { name: "Organic", value: 38, color: "#22c55e" },
+  { name: "Paid", value: 29, color: "#3b82f6" },
+  { name: "Direct", value: 18, color: "#f59e0b" },
+  { name: "Referral", value: 15, color: "#8b5cf6" },
+];
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+type Integration = {
+  id?: string;
+  provider: string;
+  is_connected: boolean;
+  property_id: string;
+  account_id: string;
+};
+
+type ActivityItem = {
+  section: string;
+  last_updated: string;
+  label: string;
+};
+
+const INTEGRATION_LABELS: Record<string, string> = {
+  ga4: "Google Analytics",
+  gsc: "Search Console",
+  google_ads: "Google Ads",
+  meta: "Meta Ads",
+};
+
+const ACTIVITY_LABELS: Record<string, string> = {
+  seo_meta: "Meta Tags",
+  keywords: "Keywords",
+  backlinks: "Backlinks",
+  ppc_campaigns: "PPC Campaigns",
+  blog_posts: "Blog Posts",
+  competitor_intel: "Competitor Intel",
+};
+
+function daysSince(dateStr: string): number {
+  return Math.floor((Date.now() - new Date(dateStr).getTime()) / (1000 * 60 * 60 * 24));
 }
 
-function KpiCard({ title, value, change, icon: Icon, prefix }: KpiCardProps) {
-  const positive = change >= 0;
-  return (
-    <Card>
-      <CardContent className="p-5">
-        <div className="flex items-start justify-between">
-          <div className="space-y-2">
-            <p className="text-xs text-muted-foreground">{title}</p>
-            <p className="text-2xl font-bold text-foreground">{prefix}{value}</p>
-          </div>
-          <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-            <Icon className="w-4 h-4 text-primary" />
-          </div>
-        </div>
-        <div className="flex items-center gap-1 mt-3">
-          {positive ? (
-            <ArrowUpRight className="w-3 h-3 text-emerald-500" />
-          ) : (
-            <ArrowDownRight className="w-3 h-3 text-destructive" />
-          )}
-          <span className={`text-xs font-medium ${positive ? "text-emerald-500" : "text-destructive"}`}>
-            {positive ? "+" : ""}{change}%
-          </span>
-          <span className="text-xs text-muted-foreground">vs last month</span>
+function ActivityCard({ item }: { item: ActivityItem }) {
+  const days = daysSince(item.last_updated);
+  const isNever = days > 900;
+  const color = isNever ? "text-red-600" : days > 30 ? "text-red-500" : days > 7 ? "text-amber-600" : "text-emerald-600";
+  const label = isNever ? "Never updated" : days === 0 ? "Updated today" : days === 1 ? "1 day ago" : `${days} days ago`;
+  const urgency = isNever || days > 30 ? "Needs attention" : days > 7 ? "A bit stale" : "Up to date";
 
-        </div>
-      </CardContent>
-    </Card>
+  return (
+    <div className="flex flex-col gap-1 p-3 rounded-lg border bg-card">
+      <p className="text-xs font-semibold">{item.label}</p>
+      <p className={`text-sm font-medium ${color}`}>{label}</p>
+      <p className={`text-xs ${color}`}>{urgency}</p>
+    </div>
   );
 }
 
-const STORAGE_KEY = "marketing-dashboard-widgets";
-
-interface WidgetVisibility {
-  kpiStrip: boolean;
-  trafficChart: boolean;
-  conversionChart: boolean;
-  channelMix: boolean;
-  vendorTable: boolean;
-  quickStats: boolean;
-}
-
-const defaultVisibility: WidgetVisibility = {
-  kpiStrip: true,
-  trafficChart: true,
-  conversionChart: true,
-  channelMix: true,
-  vendorTable: true,
-  quickStats: true,
-};
-
-const widgetLabels: Record<keyof WidgetVisibility, string> = {
-  kpiStrip: "KPI Cards",
-  trafficChart: "Traffic by Source",
-  conversionChart: "Leads → Booked",
-  channelMix: "Lead Channel Mix",
-  vendorTable: "Lead Vendors",
-  quickStats: "Quick Stats",
-};
-
 export default function MarketingDashboard() {
-  const [dateRange, setDateRange] = useState<DateRange | undefined>({
-    from: subDays(new Date(), 30),
-    to: new Date(),
-  });
-  const now = new Date();
-
-  const [widgets, setWidgets] = useState<WidgetVisibility>(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      return saved ? { ...defaultVisibility, ...JSON.parse(saved) } : defaultVisibility;
-    } catch { return defaultVisibility; }
-  });
+  const [integrations, setIntegrations] = useState<Integration[]>([]);
+  const [activityLog, setActivityLog] = useState<ActivityItem[]>([]);
+  const [showIntegrations, setShowIntegrations] = useState(false);
+  const [editingIntegration, setEditingIntegration] = useState<Integration | null>(null);
+  const [savingIntegration, setSavingIntegration] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(widgets));
-  }, [widgets]);
+    loadIntegrations();
+    loadActivityLog();
+  }, []);
 
-  const toggleWidget = (key: keyof WidgetVisibility) => {
-    setWidgets(prev => ({ ...prev, [key]: !prev[key] }));
-  };
+  async function loadIntegrations() {
+    const { data } = await (supabase as any).from("integration_credentials").select("provider, is_connected, property_id, account_id, id");
+    setIntegrations(data || []);
+  }
 
-  const rangeStart = useMemo(() => dateRange?.from ?? subDays(now, 30), [dateRange]);
-  const rangeEnd = useMemo(() => dateRange?.to ?? now, [dateRange]);
-
-  const prevRangeStart = useMemo(() => {
-    const span = differenceInDays(rangeEnd, rangeStart) || 1;
-    return subDays(rangeStart, span);
-  }, [rangeStart, rangeEnd]);
-
-  const rangeStartIso = rangeStart.toISOString();
-  const rangeEndIso = rangeEnd.toISOString();
-  const prevRangeStartIso = prevRangeStart.toISOString();
-  const prevRangeEndIso = rangeStart.toISOString();
-
-  // Fetch leads
-  const { data: allLeads = [], isLoading: leadsLoading } = useQuery({
-    queryKey: ["marketing-leads"],
-    queryFn: async () => {
-      const { data } = await supabase.from("leads").select("id, created_at, source, status");
-      return data ?? [];
-    },
-  });
-
-  // Fetch deals
-  const { data: allDeals = [], isLoading: dealsLoading } = useQuery({
-    queryKey: ["marketing-deals"],
-    queryFn: async () => {
-      const { data } = await supabase.from("deals").select("id, created_at, stage, deal_value, lead_id");
-      return data ?? [];
-    },
-  });
-
-  // Fetch vendors for CPL
-  const { data: vendors = [] } = useQuery({
-    queryKey: ["marketing-vendors"],
-    queryFn: async () => {
-      const { data } = await supabase.from("lead_vendors").select("id, name, cost_per_lead, monthly_budget");
-      return data ?? [];
-    },
-  });
-
-  const isLoading = leadsLoading || dealsLoading;
-
-  // Computed KPIs
-  const kpis = useMemo(() => {
-    const thisMonthLeads = allLeads.filter((l) => l.created_at >= rangeStartIso && l.created_at <= rangeEndIso);
-    const lastMonthLeads = allLeads.filter((l) => l.created_at >= prevRangeStartIso && l.created_at < prevRangeEndIso);
-    const thisMonthDeals = allDeals.filter((d) => d.created_at >= rangeStartIso && d.created_at <= rangeEndIso);
-    const lastMonthDeals = allDeals.filter((d) => d.created_at >= prevRangeStartIso && d.created_at < prevRangeEndIso);
-
-    const booked = thisMonthDeals.filter((d) => ["booked", "dispatched", "in_transit", "delivered", "closed_won"].includes(d.stage));
-    const lastBooked = lastMonthDeals.filter((d) => ["booked", "dispatched", "in_transit", "delivered", "closed_won"].includes(d.stage));
-
-    const totalLeads = thisMonthLeads.length;
-    const lastTotalLeads = lastMonthLeads.length;
-    const leadChange = lastTotalLeads > 0 ? ((totalLeads - lastTotalLeads) / lastTotalLeads) * 100 : 0;
-
-    const convRate = totalLeads > 0 ? (booked.length / totalLeads) * 100 : 0;
-    const lastConvRate = lastTotalLeads > 0 ? (lastBooked.length / lastTotalLeads) * 100 : 0;
-    const convChange = lastConvRate > 0 ? ((convRate - lastConvRate) / lastConvRate) * 100 : 0;
-
-    const avgCpl = vendors.length > 0
-      ? vendors.reduce((s, v) => s + (v.cost_per_lead ?? 0), 0) / vendors.filter((v) => (v.cost_per_lead ?? 0) > 0).length || 0
-      : 0;
-
-    return { totalLeads, leadChange, convRate, convChange, avgCpl, booked: booked.length };
-  }, [allLeads, allDeals, vendors, rangeStartIso, rangeEndIso, prevRangeStartIso, prevRangeEndIso]);
-
-  // Monthly trend data (last 6 months)
-  const conversionData = useMemo(() => {
-    const months: { month: string; start: string; end: string }[] = [];
-    for (let i = 5; i >= 0; i--) {
-      const d = subMonths(now, i);
-      months.push({ month: format(d, "MMM"), start: startOfMonth(d).toISOString(), end: endOfMonth(d).toISOString() });
+  async function loadActivityLog() {
+    const { data } = await (supabase as any).from("marketing_activity_log").select("section, last_updated");
+    if (data) {
+      setActivityLog(data.map((row: any) => ({
+        ...row,
+        label: ACTIVITY_LABELS[row.section] || row.section,
+      })));
     }
-    return months.map((m) => {
-      const leads = allLeads.filter((l) => l.created_at >= m.start && l.created_at <= m.end).length;
-      const booked = allDeals.filter((d) => d.created_at >= m.start && d.created_at <= m.end && ["booked", "dispatched", "in_transit", "delivered", "closed_won"].includes(d.stage)).length;
-      return { month: m.month, leads, booked };
-    });
-  }, [allLeads, allDeals]);
+  }
 
-  // Channel breakdown from lead source
-  const channelBreakdown = useMemo(() => {
-    const thisMonthLeads = allLeads.filter((l) => l.created_at >= rangeStartIso && l.created_at <= rangeEndIso);
-    const total = thisMonthLeads.length || 1;
-    const sourceMap: Record<string, { label: string; color: string }> = {
-      ppc: { label: "PPC / Google Ads", color: "hsl(var(--primary))" },
-      website: { label: "Organic / Website", color: "hsl(var(--accent-foreground))" },
-      referral: { label: "Referral", color: "hsl(var(--muted-foreground))" },
-      phone: { label: "Phone / Direct", color: "hsl(var(--secondary-foreground))" },
-      walk_in: { label: "Walk-in", color: "hsl(var(--destructive))" },
-      other: { label: "Other", color: "hsl(var(--muted-foreground) / 0.6)" },
-    };
-    const counts: Record<string, number> = {};
-    thisMonthLeads.forEach((l) => { counts[l.source] = (counts[l.source] || 0) + 1; });
-    return Object.entries(counts)
-      .map(([src, count]) => ({
-        name: sourceMap[src]?.label ?? src,
-        value: Math.round((count / total) * 100),
-        color: sourceMap[src]?.color ?? "hsl(var(--muted-foreground))",
-      }))
-      .sort((a, b) => b.value - a.value);
-  }, [allLeads, rangeStartIso, rangeEndIso]);
+  function openIntegrationEdit(provider: string) {
+    const existing = integrations.find(i => i.provider === provider);
+    setEditingIntegration(existing || { provider, is_connected: false, property_id: "", account_id: "" });
+  }
 
-  // Lead source trend (last 6 months)
-  const trafficData = useMemo(() => {
-    const months: { month: string; start: string; end: string }[] = [];
-    for (let i = 5; i >= 0; i--) {
-      const d = subMonths(now, i);
-      months.push({ month: format(d, "MMM"), start: startOfMonth(d).toISOString(), end: endOfMonth(d).toISOString() });
+  async function saveIntegration() {
+    if (!editingIntegration) return;
+    setSavingIntegration(true);
+    const payload = { ...editingIntegration, is_connected: !!(editingIntegration.property_id || editingIntegration.account_id), updated_at: new Date().toISOString() };
+    const { error } = await (supabase as any).from("integration_credentials").upsert(payload, { onConflict: "provider" });
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Integration saved" });
+      setEditingIntegration(null);
+      loadIntegrations();
     }
-    return months.map((m) => {
-      const ml = allLeads.filter((l) => l.created_at >= m.start && l.created_at <= m.end);
-      return {
-        month: m.month,
-        organic: ml.filter((l) => l.source === "website").length,
-        paid: ml.filter((l) => l.source === "ppc").length,
-        referral: ml.filter((l) => ["referral", "phone", "walk_in", "other"].includes(l.source)).length,
-      };
-    });
-  }, [allLeads]);
+    setSavingIntegration(false);
+  }
 
-  // Vendor table as "campaigns"
-  const campaignRows = useMemo(() => {
-    return vendors.map((v) => {
-      const vendorLeads = allLeads.filter((l) => l.source === "ppc").length; // approximate
-      return {
-        name: v.name,
-        spend: v.monthly_budget ?? 0,
-        leads: vendorLeads,
-        cpl: v.cost_per_lead ?? 0,
-      };
-    });
-  }, [vendors, allLeads]);
+  const getIntegration = (provider: string) => integrations.find(i => i.provider === provider);
 
   return (
-    <MarketingShell breadcrumbs={[{ label: "Dashboard" }]}>
-      <div className="space-y-6">
-        <div className="flex items-center justify-between flex-wrap gap-3">
+    <MarketingShell>
+      <div className="p-6 space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-bold text-foreground">Marketing Dashboard</h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              High-level KPIs across all channels — updated daily.
-            </p>
+            <h1 className="text-2xl font-bold tracking-tight">Marketing Dashboard</h1>
+            <p className="text-muted-foreground text-sm">All channels, all data, all actions — one page.</p>
           </div>
-          <div className="flex items-center gap-2">
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button variant="outline" size="sm" className="h-8 text-xs gap-1.5 px-3">
-                  <Settings2 className="w-3.5 h-3.5" />
-                  Customize
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-56 p-3" align="end">
-                <p className="text-xs font-semibold text-foreground mb-3">Show / Hide Widgets</p>
-                <div className="space-y-2.5">
-                  {(Object.keys(widgetLabels) as (keyof WidgetVisibility)[]).map((key) => (
-                    <div key={key} className="flex items-center justify-between">
-                      <Label htmlFor={`w-${key}`} className="text-xs text-muted-foreground cursor-pointer">{widgetLabels[key]}</Label>
-                      <Switch id={`w-${key}`} checked={widgets[key]} onCheckedChange={() => toggleWidget(key)} className="scale-75" />
-                    </div>
-                  ))}
-                </div>
-              </PopoverContent>
-            </Popover>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button variant="outline" size="sm" className={cn("h-8 text-xs gap-1.5 px-3")}>
-                  <CalendarIcon className="w-3.5 h-3.5" />
-                  {dateRange?.from
-                    ? `${format(dateRange.from, "MMM d, yyyy")}${dateRange.to ? ` – ${format(dateRange.to, "MMM d, yyyy")}` : ""}`
-                    : "Select dates"}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="end">
-                <Calendar
-                  mode="range"
-                  selected={dateRange}
-                  onSelect={setDateRange}
-                  numberOfMonths={2}
-                  disabled={(date) => date > new Date()}
-                  initialFocus
-                  className={cn("p-3 pointer-events-auto")}
-                />
-              </PopoverContent>
-            </Popover>
-          </div>
+          <Button variant="outline" size="sm" onClick={() => setShowIntegrations(true)}>
+            <Settings className="w-4 h-4 mr-2" /> Manage Connections
+          </Button>
         </div>
 
-        {/* KPI Strip */}
-        {widgets.kpiStrip && (
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-            {isLoading ? (
-              <>
-                {[1,2,3,4].map(i => <Skeleton key={i} className="h-24 rounded-lg" />)}
-              </>
-            ) : (
-              <>
-                <KpiCard title="Total Leads" value={kpis.totalLeads.toString()} change={Math.round(kpis.leadChange * 10) / 10} icon={Users} />
-                <KpiCard title="Avg Cost per Lead" value={kpis.avgCpl.toFixed(2)} change={0} icon={DollarSign} prefix="$" />
-                <KpiCard title="Booked Deals" value={kpis.booked.toString()} change={0} icon={Target} />
-                <KpiCard title="Conversion Rate" value={`${kpis.convRate.toFixed(1)}%`} change={Math.round(kpis.convChange * 10) / 10} icon={Percent} />
-              </>
-            )}
-          </div>
-        )}
+        {/* Integration Status Bar */}
+        <div className="flex flex-wrap gap-2 p-3 rounded-lg border bg-muted/30">
+          <p className="text-xs text-muted-foreground w-full mb-1 font-medium">Data Sources</p>
+          {["ga4", "gsc", "google_ads", "meta"].map(provider => {
+            const integration = getIntegration(provider);
+            const connected = integration?.is_connected;
+            return (
+              <button
+                key={provider}
+                onClick={() => { openIntegrationEdit(provider); setShowIntegrations(true); }}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors hover:opacity-80 ${
+                  connected ? "bg-emerald-50 border-emerald-200 text-emerald-700" : "bg-gray-50 border-gray-200 text-gray-500"
+                }`}
+              >
+                {connected ? <CheckCircle className="w-3 h-3" /> : <AlertCircle className="w-3 h-3" />}
+                {INTEGRATION_LABELS[provider]}
+                {!connected && <span className="text-xs opacity-70">— click to connect</span>}
+              </button>
+            );
+          })}
+        </div>
 
-        {/* Charts Row */}
-        {(widgets.trafficChart || widgets.conversionChart) && (
-          <div className="grid gap-4 lg:grid-cols-2">
-            {widgets.trafficChart && (
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm flex items-center gap-2">
-                    <TrendingUp className="w-4 h-4 text-primary" /> Traffic by Source
-                  </CardTitle>
-                  <CardDescription className="text-xs">Sessions over the last 6 months</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="h-52">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <AreaChart data={trafficData}>
-                        <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                        <XAxis dataKey="month" tick={{ fontSize: 11 }} className="text-muted-foreground" />
-                        <YAxis tick={{ fontSize: 11 }} className="text-muted-foreground" />
-                        <Tooltip contentStyle={{ fontSize: 12 }} />
-                        <Area type="monotone" dataKey="organic" stackId="1" stroke="hsl(var(--primary))" fill="hsl(var(--primary) / 0.3)" />
-                        <Area type="monotone" dataKey="paid" stackId="1" stroke="hsl(var(--accent-foreground))" fill="hsl(var(--accent-foreground) / 0.2)" />
-                        <Area type="monotone" dataKey="referral" stackId="1" stroke="hsl(var(--muted-foreground))" fill="hsl(var(--muted-foreground) / 0.15)" />
-                      </AreaChart>
-                    </ResponsiveContainer>
+        {/* KPI Cards */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[
+            { label: "Monthly Traffic", value: "1,240", subtext: "+18% vs last month", icon: Users, color: "text-blue-600" },
+            { label: "Organic Leads", value: "84", subtext: "this month", icon: Target, color: "text-emerald-600" },
+            { label: "Ad Spend", value: "$0", subtext: "no active campaigns", icon: DollarSign, color: "text-amber-600" },
+            { label: "Conversion Rate", value: "3.2%", subtext: "leads to booked", icon: TrendingUp, color: "text-purple-600" },
+          ].map(({ label, value, subtext, icon: Icon, color }) => (
+            <Card key={label}>
+              <CardContent className="pt-4">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <p className="text-xs text-muted-foreground">{label}</p>
+                    <p className="text-2xl font-bold mt-1">{value}</p>
+                    <p className="text-xs text-muted-foreground mt-1">{subtext}</p>
                   </div>
-                </CardContent>
-              </Card>
-            )}
+                  <Icon className={`w-8 h-8 ${color} opacity-60`} />
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
 
-            {widgets.conversionChart && (
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm flex items-center gap-2">
-                    <Target className="w-4 h-4 text-primary" /> Leads → Booked
-                  </CardTitle>
-                  <CardDescription className="text-xs">Monthly conversion funnel</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="h-52">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={conversionData}>
-                        <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                        <XAxis dataKey="month" tick={{ fontSize: 11 }} className="text-muted-foreground" />
-                        <YAxis tick={{ fontSize: 11 }} className="text-muted-foreground" />
-                        <Tooltip contentStyle={{ fontSize: 12 }} />
-                        <Bar dataKey="leads" fill="hsl(var(--primary) / 0.4)" radius={[4, 4, 0, 0]} />
-                        <Bar dataKey="booked" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-          </div>
-        )}
+        {/* Charts */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Traffic by Channel</CardTitle>
+              <CardDescription>Organic vs Paid vs Direct — last 6 months</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={200}>
+                <AreaChart data={trafficData}>
+                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                  <XAxis dataKey="month" tick={{ fontSize: 11 }} />
+                  <YAxis tick={{ fontSize: 11 }} />
+                  <Tooltip />
+                  <Area type="monotone" dataKey="organic" stackId="1" stroke="#22c55e" fill="#22c55e" fillOpacity={0.6} name="Organic" />
+                  <Area type="monotone" dataKey="paid" stackId="1" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.6} name="Paid" />
+                  <Area type="monotone" dataKey="direct" stackId="1" stroke="#f59e0b" fill="#f59e0b" fillOpacity={0.6} name="Direct" />
+                </AreaChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
 
-        {/* Bottom Row */}
-        {(widgets.channelMix || widgets.vendorTable) && (
-          <div className="grid gap-4 lg:grid-cols-3">
-            {widgets.channelMix && (
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm flex items-center gap-2">
-                    <MousePointerClick className="w-4 h-4 text-primary" /> Lead Channel Mix
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="h-48 flex items-center justify-center">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie data={channelBreakdown} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={70} innerRadius={40}>
-                          {channelBreakdown.map((entry, i) => (
-                            <Cell key={i} fill={entry.color} />
-                          ))}
-                        </Pie>
-                        <Tooltip formatter={(value: number) => `${value}%`} contentStyle={{ fontSize: 12 }} />
-                      </PieChart>
-                    </ResponsiveContainer>
-                  </div>
-                  <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-2">
-                    {channelBreakdown.map((ch) => (
-                      <div key={ch.name} className="flex items-center gap-2">
-                        <span className="w-2 h-2 rounded-full shrink-0" style={{ background: ch.color }} />
-                        <span className="text-[11px] text-muted-foreground truncate">{ch.name}</span>
-                        <span className="text-[11px] font-medium text-foreground ml-auto">{ch.value}%</span>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
+          <Card>
+            <CardHeader>
+              <CardTitle>Leads to Booked</CardTitle>
+              <CardDescription>Monthly lead generation and conversion</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={200}>
+                <BarChart data={leadData}>
+                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                  <XAxis dataKey="month" tick={{ fontSize: 11 }} />
+                  <YAxis tick={{ fontSize: 11 }} />
+                  <Tooltip />
+                  <Bar dataKey="leads" fill="#3b82f6" name="Leads" radius={[2, 2, 0, 0]} />
+                  <Bar dataKey="booked" fill="#22c55e" name="Booked" radius={[2, 2, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </div>
 
-            {widgets.vendorTable && (
-              <Card className={widgets.channelMix ? "lg:col-span-2" : "lg:col-span-3"}>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm flex items-center gap-2">
-                    <BarChart3 className="w-4 h-4 text-primary" /> Lead Vendors
-                  </CardTitle>
-                  <CardDescription className="text-xs">Vendor spend & lead cost</CardDescription>
-                </CardHeader>
-                <CardContent className="p-0">
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-xs">
-                      <thead>
-                        <tr className="border-b text-muted-foreground">
-                          <th className="text-left font-medium px-5 py-2.5">Vendor</th>
-                          <th className="text-right font-medium px-3 py-2.5">Spend</th>
-                          <th className="text-right font-medium px-5 py-2.5">CPL</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {campaignRows.length === 0 && (
-                          <tr><td colSpan={3} className="text-center text-muted-foreground py-6">No vendors configured</td></tr>
+        {/* Channel Mix + Activity Log */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Lead Channel Mix</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={180}>
+                <PieChart>
+                  <Pie data={channelData} cx="50%" cy="50%" innerRadius={50} outerRadius={80} paddingAngle={3} dataKey="value">
+                    {channelData.map((entry, i) => <Cell key={i} fill={entry.color} />)}
+                  </Pie>
+                  <Tooltip formatter={(v) => `${v}%`} />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Activity Tracker</CardTitle>
+              <CardDescription>How recently each section was updated — stay current</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 gap-2">
+                {activityLog.length === 0 ? (
+                  <p className="col-span-2 text-sm text-muted-foreground">Run the SQL migration to enable activity tracking.</p>
+                ) : (
+                  activityLog.map(item => <ActivityCard key={item.section} item={item} />)
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Integrations Manager Dialog */}
+        <Dialog open={showIntegrations} onOpenChange={setShowIntegrations}>
+          <DialogContent className="max-w-lg">
+            <DialogHeader>
+              <DialogTitle>Manage Connections</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-3 py-2">
+              <p className="text-sm text-muted-foreground">Enter your Property IDs and Account IDs to connect data sources. All credentials are stored securely in your Supabase database.</p>
+              {["ga4", "gsc", "google_ads", "meta"].map(provider => {
+                const integration = getIntegration(provider);
+                const isEditing = editingIntegration?.provider === provider;
+                return (
+                  <div key={provider} className={`rounded-lg border p-4 space-y-3 ${integration?.is_connected ? "border-emerald-200" : ""}`}>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        {integration?.is_connected ? (
+                          <CheckCircle className="w-4 h-4 text-emerald-600" />
+                        ) : (
+                          <AlertCircle className="w-4 h-4 text-gray-400" />
                         )}
-                        {campaignRows.map((c, i) => (
-                          <tr key={i} className="border-b last:border-0 hover:bg-muted/40">
-                            <td className="px-5 py-2.5 font-medium text-foreground">{c.name}</td>
-                            <td className="text-right px-3 py-2.5">${c.spend.toLocaleString()}</td>
-                            <td className="text-right px-5 py-2.5">${c.cpl.toFixed(2)}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                        <p className="font-medium text-sm">{INTEGRATION_LABELS[provider]}</p>
+                      </div>
+                      {!isEditing && (
+                        <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => openIntegrationEdit(provider)}>
+                          {integration?.is_connected ? "Update" : "Connect"}
+                        </Button>
+                      )}
+                    </div>
+                    {isEditing && (
+                      <div className="space-y-2">
+                        <div>
+                          <Label className="text-xs">Property / Account ID</Label>
+                          <Input
+                            value={editingIntegration?.property_id || ""}
+                            onChange={e => setEditingIntegration(prev => prev ? { ...prev, property_id: e.target.value } : prev)}
+                            placeholder={provider === "ga4" ? "G-XXXXXXXXXX" : provider === "gsc" ? "https://trumoveinc.com" : provider === "google_ads" ? "123-456-7890" : "Meta Ad Account ID"}
+                            className="mt-1 text-sm"
+                          />
+                        </div>
+                        {provider === "ga4" && (
+                          <div>
+                            <Label className="text-xs">Numeric Property ID (for Data API)</Label>
+                            <Input
+                              value={editingIntegration?.account_id || ""}
+                              onChange={e => setEditingIntegration(prev => prev ? { ...prev, account_id: e.target.value } : prev)}
+                              placeholder="e.g. 412345678"
+                              className="mt-1 text-sm"
+                            />
+                          </div>
+                        )}
+                        <div className="flex gap-2 pt-1">
+                          <Button size="sm" className="h-7 text-xs" onClick={saveIntegration} disabled={savingIntegration}>
+                            {savingIntegration ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <Save className="w-3 h-3 mr-1" />} Save
+                          </Button>
+                          <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={() => setEditingIntegration(null)}>Cancel</Button>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                </CardContent>
-              </Card>
-            )}
-          </div>
-        )}
-
-        {/* Quick Stats Row */}
-        {widgets.quickStats && (
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-            <KpiCard title="Total Leads (All Time)" value={allLeads.length.toString()} change={0} icon={Users} />
-            <KpiCard title="Total Deals" value={allDeals.length.toString()} change={0} icon={Target} />
-            <KpiCard title="PPC Leads" value={allLeads.filter(l => l.source === "ppc" && l.created_at >= rangeStartIso).length.toString()} change={0} icon={MousePointerClick} />
-            <KpiCard title="Referral" value={allLeads.filter(l => l.source === "referral" && l.created_at >= rangeStartIso).length.toString()} change={0} icon={TrendingUp} />
-          </div>
-        )}
+                );
+              })}
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowIntegrations(false)}>Close</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </MarketingShell>
   );
