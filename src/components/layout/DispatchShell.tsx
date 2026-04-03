@@ -98,6 +98,15 @@ export default function DispatchShell({ children, breadcrumb = "", breadcrumbs }
                 <Menu className="w-4 h-4 text-muted-foreground" />
               </button>
             )}
+            <Link
+              to="/dispatch/team-chat"
+              className={cn(
+                "p-1.5 rounded-lg transition-colors relative",
+                location.pathname === "/dispatch/team-chat" ? "bg-primary/10 text-primary" : "hover:bg-muted text-muted-foreground"
+              )}
+            >
+              <MessageSquare className="w-4 h-4" />
+            </Link>
             <Link to="/" className="p-1.5 rounded-lg hover:bg-muted transition-colors">
               <Home className="w-4 h-4 text-muted-foreground" />
             </Link>

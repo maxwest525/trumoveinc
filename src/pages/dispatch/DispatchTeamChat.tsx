@@ -1,41 +1,37 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
-  Home, Bell, LayoutDashboard,
-  Trophy, Activity, MessageSquare, Menu, X,
+  Home, Bell, LayoutDashboard, MapPin, Users, Route,
+  ClipboardList, FileSignature, MessageSquare, Menu, X, Truck,
 } from "lucide-react";
 import logoImg from "@/assets/logo.png";
 import { cn } from "@/lib/utils";
 import { setPortalContext } from "@/hooks/usePortalContext";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useNotifications } from "@/hooks/useNotifications";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import NotificationsPanel from "@/components/agent/NotificationsPanel";
-import { Badge } from "@/components/ui/badge";
 import AgentTeamChat from "@/pages/AgentTeamChat";
 
 const NAV_ITEMS = [
-  { label: "Dashboard", icon: LayoutDashboard, href: "/manager/dashboard" },
-  { label: "Leaderboard", icon: Trophy, href: "/leaderboard" },
-  { label: "Pulse Dashboard", icon: Activity, href: "/manager/pulse" },
+  { label: "Dashboard", icon: LayoutDashboard, href: "/dispatch/dashboard" },
+  { label: "Fleet Tracker", icon: MapPin, href: "/dispatch/fleet" },
+  { label: "Driver Assignments", icon: Users, href: "/dispatch/drivers" },
+  { label: "Route Management", icon: Route, href: "/dispatch/routes" },
+  { label: "Job Board", icon: ClipboardList, href: "/dispatch/jobs" },
+  { label: "E-Sign", icon: FileSignature, href: "/dispatch/esign" },
 ];
 
-export default function ManagerTeamChat() {
+export default function DispatchTeamChat() {
   const location = useLocation();
   const isMobile = useIsMobile();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { notifications, unreadCount, markAsRead, markAllAsRead, deleteNotification } = useNotifications();
 
-  useEffect(() => {
-    setPortalContext("manager");
-  }, []);
+  useEffect(() => { setPortalContext("dispatch"); }, []);
   useEffect(() => { setSidebarOpen(false); }, [location.pathname]);
 
   const sidebarContent = (
     <>
       <div className="px-4 py-4 flex items-center gap-2">
         <img src={logoImg} alt="TruMove" className="h-6" />
-        <span className="text-[10px] text-muted-foreground ml-1">Manager</span>
+        <span className="text-[10px] text-muted-foreground ml-1">Dispatch</span>
         {isMobile && (
           <button onClick={() => setSidebarOpen(false)} className="ml-auto p-1 rounded-lg hover:bg-muted">
             <X className="w-4 h-4 text-muted-foreground" />
@@ -83,7 +79,7 @@ export default function ManagerTeamChat() {
               </button>
             )}
             <Link
-              to="/manager/team-chat"
+              to="/dispatch/team-chat"
               className="p-1.5 rounded-lg bg-primary/10 text-primary transition-colors relative"
             >
               <MessageSquare className="w-4 h-4" />
@@ -91,32 +87,15 @@ export default function ManagerTeamChat() {
             <Link to="/" className="p-1.5 rounded-lg hover:bg-muted transition-colors">
               <Home className="w-4 h-4 text-muted-foreground" />
             </Link>
-            <span className="text-sm text-muted-foreground truncate">Management / Team Chat</span>
+            <span className="text-sm text-muted-foreground truncate">Dispatch / Team Chat</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <Popover>
-              <PopoverTrigger asChild>
-                <button className="p-1.5 rounded-lg hover:bg-muted transition-colors relative">
-                  <Bell className="w-4 h-4 text-muted-foreground" />
-                  {unreadCount > 0 && (
-                    <Badge variant="destructive" className="absolute -top-1 -right-1 h-4 min-w-[16px] px-1 text-[10px] leading-none flex items-center justify-center">
-                      {unreadCount > 99 ? "99+" : unreadCount}
-                    </Badge>
-                  )}
-                </button>
-              </PopoverTrigger>
-              <PopoverContent align="end" className="w-80 p-0">
-                <NotificationsPanel
-                  notifications={notifications}
-                  unreadCount={unreadCount}
-                  loading={false}
-                  onMarkAsRead={markAsRead}
-                  onMarkAllAsRead={markAllAsRead}
-                  onDelete={deleteNotification}
-                />
-              </PopoverContent>
-            </Popover>
-            <div className="w-7 h-7 rounded-full bg-muted flex items-center justify-center text-xs font-medium text-foreground ml-1">MW</div>
+            <button className="p-1.5 rounded-lg hover:bg-muted transition-colors relative">
+              <Bell className="w-4 h-4 text-muted-foreground" />
+            </button>
+            <div className="w-7 h-7 rounded-full bg-muted flex items-center justify-center text-xs font-medium text-foreground ml-1">
+              <Truck className="w-3.5 h-3.5" />
+            </div>
           </div>
         </header>
         <main className="flex-1 overflow-hidden">
