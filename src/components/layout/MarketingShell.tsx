@@ -1,7 +1,7 @@
 import { useState, useEffect, type ReactNode } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
-  Home, Bell, Menu, X,
+  Home, Bell, Menu, X, MessageSquare,
   FileText, Search, Swords, Megaphone, PenTool, BarChart3,
   Link2, Shield,
 } from "lucide-react";
@@ -107,6 +107,16 @@ export default function MarketingShell({ children, breadcrumb = "", breadcrumbs 
                 <Menu className="w-4 h-4 text-muted-foreground" />
               </button>
             )}
+            <Link
+              to="/marketing/team-chat"
+              className={cn(
+                "p-1.5 rounded-lg transition-colors relative",
+                location.pathname === "/marketing/team-chat" ? "bg-primary/10 text-primary" : "hover:bg-muted text-muted-foreground"
+              )}
+            >
+              <MessageSquare className="w-4 h-4" />
+            </Link>
+            <div className="w-px h-5 bg-border" />
             <Link to="/" className="p-1.5 rounded-lg hover:bg-muted transition-colors shrink-0">
               <Home className="w-4 h-4 text-muted-foreground" />
             </Link>
