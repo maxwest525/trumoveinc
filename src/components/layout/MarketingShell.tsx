@@ -1,7 +1,7 @@
 import { useState, useEffect, type ReactNode } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
-  Home, Bell, Menu, X,
+  Home, Bell, Menu, X, MessageSquare,
   FileText, Search, Swords, Megaphone, PenTool, BarChart3,
   Link2, Shield,
 } from "lucide-react";
