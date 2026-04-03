@@ -82,18 +82,18 @@ export default function ManagerTeamChat() {
                 <Menu className="w-4 h-4 text-muted-foreground" />
               </button>
             )}
-            <Link to="/" className="p-1.5 rounded-lg hover:bg-muted transition-colors">
-              <Home className="w-4 h-4 text-muted-foreground" />
-            </Link>
-            <span className="text-sm text-muted-foreground truncate">Management / Team Chat</span>
-          </div>
-          <div className="flex items-center gap-1.5">
             <Link
               to="/manager/team-chat"
               className="p-1.5 rounded-lg bg-primary/10 text-primary transition-colors relative"
             >
               <MessageSquare className="w-4 h-4" />
             </Link>
+            <Link to="/" className="p-1.5 rounded-lg hover:bg-muted transition-colors">
+              <Home className="w-4 h-4 text-muted-foreground" />
+            </Link>
+            <span className="text-sm text-muted-foreground truncate">Management / Team Chat</span>
+          </div>
+          <div className="flex items-center gap-1.5">
             <Popover>
               <PopoverTrigger asChild>
                 <button className="p-1.5 rounded-lg hover:bg-muted transition-colors relative">
