@@ -62,7 +62,7 @@ export default function MarketingBacklinks() {
 
   const load = async () => {
     setLoading(true);
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from("backlinks")
       .select("*")
       .order("domain_authority", { ascending: false });
