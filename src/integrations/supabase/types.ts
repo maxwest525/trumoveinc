@@ -126,6 +126,57 @@ export type Database = {
         }
         Relationships: []
       }
+      backlinks: {
+        Row: {
+          anchor_text: string | null
+          created_at: string
+          domain_authority: number
+          first_seen: string | null
+          follow_type: string
+          id: string
+          last_verified: string | null
+          notes: string | null
+          page_authority: number
+          source_domain: string
+          source_url: string | null
+          status: string
+          target_url: string
+          updated_at: string
+        }
+        Insert: {
+          anchor_text?: string | null
+          created_at?: string
+          domain_authority?: number
+          first_seen?: string | null
+          follow_type?: string
+          id?: string
+          last_verified?: string | null
+          notes?: string | null
+          page_authority?: number
+          source_domain: string
+          source_url?: string | null
+          status?: string
+          target_url?: string
+          updated_at?: string
+        }
+        Update: {
+          anchor_text?: string | null
+          created_at?: string
+          domain_authority?: number
+          first_seen?: string | null
+          follow_type?: string
+          id?: string
+          last_verified?: string | null
+          notes?: string | null
+          page_authority?: number
+          source_domain?: string
+          source_url?: string | null
+          status?: string
+          target_url?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       blog_posts: {
         Row: {
           author_id: string | null
@@ -530,6 +581,51 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      domain_authority_history: {
+        Row: {
+          citation_flow: number | null
+          created_at: string
+          domain_authority: number
+          id: string
+          notes: string | null
+          page_authority: number | null
+          recorded_at: string
+          referring_domains: number | null
+          source_tool: string | null
+          total_backlinks: number | null
+          trust_flow: number | null
+          updated_at: string
+        }
+        Insert: {
+          citation_flow?: number | null
+          created_at?: string
+          domain_authority?: number
+          id?: string
+          notes?: string | null
+          page_authority?: number | null
+          recorded_at?: string
+          referring_domains?: number | null
+          source_tool?: string | null
+          total_backlinks?: number | null
+          trust_flow?: number | null
+          updated_at?: string
+        }
+        Update: {
+          citation_flow?: number | null
+          created_at?: string
+          domain_authority?: number
+          id?: string
+          notes?: string | null
+          page_authority?: number | null
+          recorded_at?: string
+          referring_domains?: number | null
+          source_tool?: string | null
+          total_backlinks?: number | null
+          trust_flow?: number | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       email_send_log: {
         Row: {
