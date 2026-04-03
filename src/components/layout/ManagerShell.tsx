@@ -144,12 +144,14 @@ export default function ManagerShell({ children, breadcrumb = "", breadcrumbs }:
             )}
             <Link
               to="/manager/team-chat"
-              className={`p-1.5 rounded-lg transition-colors relative ${
+              className={cn(
+                "p-1.5 rounded-lg transition-colors relative",
                 location.pathname === "/manager/team-chat" ? "bg-primary/10 text-primary" : "hover:bg-muted text-muted-foreground"
-              }`}
+              )}
             >
               <MessageSquare className="w-4 h-4" />
             </Link>
+            <div className="w-px h-5 bg-border" />
             <Link to="/" className="p-1.5 rounded-lg hover:bg-muted transition-colors">
               <Home className="w-4 h-4 text-muted-foreground" />
             </Link>

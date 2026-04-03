@@ -114,6 +114,7 @@ export default function AgentShell({ children, breadcrumb = "", breadcrumbs }: A
             >
               <MessagesSquare className="w-4 h-4" />
             </Link>
+            <div className="w-px h-5 bg-border" />
             <Link to="/" className="p-1.5 rounded-lg hover:bg-muted transition-colors">
               <Home className="w-4 h-4 text-muted-foreground" />
             </Link>
