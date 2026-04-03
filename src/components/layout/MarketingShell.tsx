@@ -24,7 +24,7 @@ const NAV_ITEMS = [
   { label: "Backlinks", icon: Link2, href: "/marketing/backlinks" },
   { label: "Domain Authority", icon: Shield, href: "/marketing/domain-authority" },
   { label: "Analytics", icon: BarChart3, href: "/marketing/analytics" },
-  { label: "Integrations", icon: Link2, href: "/marketing/integrations" },
+  { label: "Integrations", icon: Plug, href: "/marketing/integrations" },
 ];
 
 interface MarketingShellProps {
