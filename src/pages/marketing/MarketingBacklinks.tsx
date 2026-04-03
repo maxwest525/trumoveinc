@@ -118,9 +118,9 @@ export default function MarketingBacklinks() {
     const payload = { ...form, source_domain: form.source_domain.trim() };
     let error;
     if (editTarget) {
-      ({ error } = await supabase.from("backlinks").update(payload).eq("id", editTarget.id));
+      ({ error } = await (supabase as any).from("backlinks").update(payload).eq("id", editTarget.id));
     } else {
-      ({ error } = await supabase.from("backlinks").insert([payload]));
+      ({ error } = await (supabase as any).from("backlinks").insert([payload]));
     }
     setSaving(false);
     if (error) {
