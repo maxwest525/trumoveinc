@@ -38,6 +38,7 @@ import MarketingAnalytics from "./pages/marketing/MarketingAnalytics";
 import MarketingCompetitorSEO from "./pages/marketing/MarketingCompetitorSEO";
 import MarketingBacklinks from "./pages/marketing/MarketingBacklinks";
 import MarketingDomainAuthority from "./pages/marketing/MarketingDomainAuthority";
+import MarketingCRO from "./pages/marketing/MarketingCRO";
 import AccountingDashboard from "./pages/AccountingDashboard";
 import AgentOperations from "./pages/AgentOperations";
 import AgentNewCustomer from "./pages/AgentNewCustomer";
