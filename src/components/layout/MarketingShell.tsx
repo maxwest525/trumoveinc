@@ -16,6 +16,7 @@ const NAV_ITEMS = [
   { label: "SEO Manager", icon: Search, href: "/marketing/seo" },
   { label: "PPC / Paid Ads", icon: Megaphone, href: "/marketing/ppc" },
   { label: "Blog & Content", icon: PenTool, href: "/marketing/blog" },
+  { label: "Content Center", icon: FileText, href: "/marketing/content-center" },
   { label: "Email & SMS", icon: FileText, href: "/marketing/templates" },
   { label: "Competitor Intel", icon: Swords, href: "/marketing/competitor-seo" },
   { label: "CRO & Optimization", icon: Target, href: "/marketing/cro" },

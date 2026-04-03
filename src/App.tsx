@@ -40,6 +40,7 @@ import MarketingBacklinks from "./pages/marketing/MarketingBacklinks";
 import MarketingDomainAuthority from "./pages/marketing/MarketingDomainAuthority";
 import MarketingCRO from "./pages/marketing/MarketingCRO";
 import MarketingRecommendations from "./pages/marketing/MarketingRecommendations";
+import MarketingContentCenter from "./pages/marketing/MarketingContentCenter";
 import AccountingDashboard from "./pages/AccountingDashboard";
 import AgentOperations from "./pages/AgentOperations";
 import AgentNewCustomer from "./pages/AgentNewCustomer";
