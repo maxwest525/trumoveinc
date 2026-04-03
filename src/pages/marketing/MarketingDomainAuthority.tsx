@@ -50,7 +50,7 @@ export default function MarketingDomainAuthority() {
 
   const load = async () => {
     setLoading(true);
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from("domain_authority_history")
       .select("*")
       .order("recorded_at", { ascending: true })
