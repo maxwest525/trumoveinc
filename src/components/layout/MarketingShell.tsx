@@ -19,6 +19,7 @@ const NAV_ITEMS = [
   { label: "Email & SMS", icon: FileText, href: "/marketing/templates" },
   { label: "Competitor Intel", icon: Swords, href: "/marketing/competitor-seo" },
   { label: "CRO & Optimization", icon: Target, href: "/marketing/cro" },
+  { label: "Recommendations", icon: Sparkles, href: "/marketing/recommendations" },
   { label: "Backlinks", icon: Link2, href: "/marketing/backlinks" },
   { label: "Domain Authority", icon: Shield, href: "/marketing/domain-authority" },
   { label: "Analytics", icon: BarChart3, href: "/marketing/analytics" },
