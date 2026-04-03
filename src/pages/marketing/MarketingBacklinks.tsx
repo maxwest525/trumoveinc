@@ -62,7 +62,7 @@ export default function MarketingBacklinks() {
 
   const load = async () => {
     setLoading(true);
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from("backlinks")
       .select("*")
       .order("domain_authority", { ascending: false });
@@ -118,9 +118,9 @@ export default function MarketingBacklinks() {
     const payload = { ...form, source_domain: form.source_domain.trim() };
     let error;
     if (editTarget) {
-      ({ error } = await supabase.from("backlinks").update(payload).eq("id", editTarget.id));
+      ({ error } = await (supabase as any).from("backlinks").update(payload).eq("id", editTarget.id));
     } else {
-      ({ error } = await supabase.from("backlinks").insert([payload]));
+      ({ error } = await (supabase as any).from("backlinks").insert([payload]));
     }
     setSaving(false);
     if (error) {
@@ -133,7 +133,7 @@ export default function MarketingBacklinks() {
   };
 
   const handleDelete = async (id: string) => {
-    const { error } = await supabase.from("backlinks").delete().eq("id", id);
+    const { error } = await (supabase as any).from("backlinks").delete().eq("id", id);
     if (error) {
       toast({ title: "Delete failed", description: error.message, variant: "destructive" });
     } else {

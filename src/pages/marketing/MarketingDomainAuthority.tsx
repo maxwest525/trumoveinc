@@ -50,7 +50,7 @@ export default function MarketingDomainAuthority() {
 
   const load = async () => {
     setLoading(true);
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from("domain_authority_history")
       .select("*")
       .order("recorded_at", { ascending: true })
@@ -82,7 +82,7 @@ export default function MarketingDomainAuthority() {
       return;
     }
     setSaving(true);
-    const { error } = await supabase.from("domain_authority_history").insert([{
+    const { error } = await (supabase as any).from("domain_authority_history").insert([{
       domain_authority: Number(form.domain_authority),
       page_authority: form.page_authority ? Number(form.page_authority) : null,
       trust_flow: form.trust_flow ? Number(form.trust_flow) : null,
