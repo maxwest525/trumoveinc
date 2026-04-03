@@ -5,6 +5,7 @@ import {
   Truck, MapPin, Users, Route, ClipboardList,
   FileSignature, MessageSquare, Menu, X,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import logoImg from "@/assets/logo.png";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
