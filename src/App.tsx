@@ -158,6 +158,7 @@ const App = () => (
             <Route path="/marketing/competitor-seo" element={<RoleGuard allowedRoles={["marketing"]}><MarketingCompetitorSEO /></RoleGuard>} />
             <Route path="/marketing/backlinks" element={<RoleGuard allowedRoles={["marketing"]}><MarketingBacklinks /></RoleGuard>} />
             <Route path="/marketing/domain-authority" element={<RoleGuard allowedRoles={["marketing"]}><MarketingDomainAuthority /></RoleGuard>} />
+            <Route path="/marketing/cro" element={<RoleGuard allowedRoles={["marketing"]}><MarketingCRO /></RoleGuard>} />
 
             {/* Accounting */}
             <Route path="/accounting/dashboard" element={<RoleGuard allowedRoles={["admin", "accounting"]}><AccountingDashboard /></RoleGuard>} />
