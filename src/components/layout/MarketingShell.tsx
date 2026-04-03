@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import {
   Home, Bell, Menu, X,
   FileText, Search, Swords, Megaphone, PenTool, BarChart3,
+  Link2, Shield,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { setPortalContext } from "@/hooks/usePortalContext";
@@ -17,6 +18,8 @@ const NAV_ITEMS = [
   { label: "Blog & Content", icon: PenTool, href: "/marketing/blog" },
   { label: "Email & SMS", icon: FileText, href: "/marketing/templates" },
   { label: "Competitor Intel", icon: Swords, href: "/marketing/competitor-seo" },
+  { label: "Backlinks", icon: Link2, href: "/marketing/backlinks" },
+  { label: "Domain Authority", icon: Shield, href: "/marketing/domain-authority" },
   { label: "Analytics", icon: BarChart3, href: "/marketing/analytics" },
 ];
 
