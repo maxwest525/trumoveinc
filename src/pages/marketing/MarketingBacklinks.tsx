@@ -133,7 +133,7 @@ export default function MarketingBacklinks() {
   };
 
   const handleDelete = async (id: string) => {
-    const { error } = await supabase.from("backlinks").delete().eq("id", id);
+    const { error } = await (supabase as any).from("backlinks").delete().eq("id", id);
     if (error) {
       toast({ title: "Delete failed", description: error.message, variant: "destructive" });
     } else {
