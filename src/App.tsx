@@ -71,6 +71,7 @@ import DispatchDrivers from "./pages/dispatch/DispatchDrivers";
 import DispatchRoutes from "./pages/dispatch/DispatchRoutes";
 import DispatchJobs from "./pages/dispatch/DispatchJobs";
 import DispatchESign from "./pages/dispatch/DispatchESign";
+import DispatchTeamChat from "./pages/dispatch/DispatchTeamChat";
 import Unsubscribe from "./pages/Unsubscribe";
 import AgentIncomingLeads from "./pages/AgentIncomingLeads";
 
