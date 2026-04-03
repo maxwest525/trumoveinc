@@ -165,6 +165,7 @@ const App = () => (
             <Route path="/dispatch/routes" element={<RoleGuard allowedRoles={["agent", "manager"]}><DispatchRoutes /></RoleGuard>} />
             <Route path="/dispatch/jobs" element={<RoleGuard allowedRoles={["agent", "manager"]}><DispatchJobs /></RoleGuard>} />
             <Route path="/dispatch/esign" element={<RoleGuard allowedRoles={["agent", "manager"]}><DispatchESign /></RoleGuard>} />
+            <Route path="/dispatch/team-chat" element={<RoleGuard allowedRoles={["agent", "manager"]}><DispatchTeamChat /></RoleGuard>} />
 
             {/* Auth & misc */}
             <Route path="/reset-password" element={<ResetPassword />} />
