@@ -153,6 +153,10 @@ export default function MarketingDashboard() {
           </Button>
         </div>
 
+
+        {/* Morning Ops Tracker */}
+        <MorningOpsTracker activityLog={activityLog} />
+
         {/* Integration Status Bar */}
         <div className="flex flex-wrap gap-2 p-3 rounded-lg border bg-muted/30">
           <p className="text-xs text-muted-foreground w-full mb-1 font-medium">Data Sources</p>
