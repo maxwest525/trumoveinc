@@ -73,7 +73,7 @@ export default function MarketingImplementation() {
     { label: "Rolled Back", value: changes.filter((c) => c.status === "rolled_back").length, color: "text-orange-600" },
   ];
 
-  const renderChangeRow = (change: Change) => {
+  const renderChangeRow = (change: ImplementationChange) => {
     const statusCfg = STATUS_CONFIG[change.status];
     const catCfg = CATEGORY_CONFIG[change.category];
     const StatusIcon = statusCfg.icon;
