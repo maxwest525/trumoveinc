@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import {
   Home, Bell, Menu, X, MessageSquare,
   FileText, Search, Swords, Megaphone, PenTool, BarChart3,
-  Link2, Shield, Target, Sparkles,
+  Link2, Shield, Target, Sparkles, Rocket, Plug,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { setPortalContext } from "@/hooks/usePortalContext";
