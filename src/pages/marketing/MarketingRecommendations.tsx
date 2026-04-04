@@ -270,6 +270,7 @@ function RecommendationCard({ rec, onAction }: { rec: Recommendation; onAction: 
 }
 
 function ActionedCard({ rec, onUndo }: { rec: Recommendation; onUndo: (id: number) => void }) {
+  const navigate = useNavigate();
   const isApproved = rec.status === "approved";
   const isScheduled = rec.status === "scheduled";
   return (
@@ -282,9 +283,17 @@ function ActionedCard({ rec, onUndo }: { rec: Recommendation; onUndo: (id: numbe
           {rec.title}
         </span>
         <div className="text-[10px] text-muted-foreground">
-          {isApproved && "Approved — queued for implementation"}
+          {isApproved && (
+            <span>
+              Approved — <button className="text-primary underline" onClick={() => navigate("/marketing/implementation")}>view in Implementation Center</button>
+            </span>
+          )}
           {rec.status === "dismissed" && "Dismissed"}
-          {isScheduled && "Scheduled for next sprint"}
+          {isScheduled && (
+            <span>
+              Scheduled — <button className="text-primary underline" onClick={() => navigate("/marketing/implementation")}>view in Implementation Center</button>
+            </span>
+          )}
         </div>
       </div>
       <Button variant="ghost" size="sm" className="text-xs h-7 gap-1" onClick={() => onUndo(rec.id)}>
