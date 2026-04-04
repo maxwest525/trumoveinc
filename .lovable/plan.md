@@ -1,30 +1,52 @@
 
 
-## Plan: Unify Phases, Connectors & Integration Status
+# Morning Ops Tracker — Marketing Dashboard
 
-### Problem
-1. **Redundant UI**: The "Connectors" row and the "Phase Status" card in the overview strip show the same information as the phase tabs — three separate places displaying connection status.
-2. **GSC/GA4 shown as disconnected**: The `gscConnected` state starts as `false` and only updates when the SearchConsoleTab checks the database. GA4 is hardcoded to `"not_connected"`. Both should check `gsc_connections` and `integration_connections` tables on page load.
+## What We're Building
 
-### Changes
+A prominent **Morning Operations Tracker** pinned to the top of the Marketing Dashboard. This is an ordered workflow checklist that tells you exactly what needs attention when you open the dashboard each day — pending changes, stale data, alerts, recommendations awaiting action, and completed items with timestamps.
 
-**1. Remove redundant connector row and merge status into phase tabs** (`MarketingSEO.tsx`)
-- Delete the "Connectors:" row (lines 569-580) entirely.
-- Remove the `connectorCards` useMemo since it duplicates `phases`.
-- The phase tab cards already show status badges — these become the single source of truth.
+## How It Works
 
-**2. Remove "Phase Status" card from overview strip** (`SeoOverviewStrip.tsx`)
-- Replace the 4th card (Phase Status listing) with a simpler "Last Audit" or keep only 3 KPI cards (URLs Crawled, Total Issues, Integrations count). The phase tabs themselves now carry all status info.
+The tracker aggregates signals from across the marketing system into a single ordered checklist:
 
-**3. Auto-detect GSC connection on mount** (`MarketingSEO.tsx`)
-- Add a `useEffect` that queries `gsc_connections` for the current user on page load. If a row exists with a `refresh_token`, set `gscConnected = true` immediately, so the phase tab shows "Connected" without needing to click into Phase 2 first.
+1. **Critical Alerts** — Implementation Center items needing approval, rolled-back changes
+2. **AI Recommendations** — Pending high-priority recommendations from the engine
+3. **Content Updates** — Blog posts needing refresh, scheduled content going live
+4. **Data Freshness** — Stale integrations, sections not updated recently (from activity log)
+5. **Routine Checks** — Ad performance review, SEO rank checks, CRO experiment status
 
-**4. Auto-detect GA4 connection on mount** (`MarketingSEO.tsx`)
-- Add a `useEffect` that queries `integration_connections` where `integration_id = 'ga4'` and `connected = true`. If found, update Phase 3 status to "connected".
-- Update GA4Tab to also check this on mount rather than always showing "not connected".
+Each item shows:
+- Status indicator (pending / done / alert / skipped)
+- Title and source module
+- Timestamp when completed (or "awaiting action")
+- Direct link to the relevant page
 
-### Result
-- One place for status: the phase tab cards (Phase 1-4), each with a badge.
-- No duplicate connector row or overview strip phase listing.
-- GSC and GA4 correctly show as connected based on database state.
+A progress bar at the top shows "6 of 11 items complete" so you can see at a glance how far through your morning ops you are.
+
+## Technical Approach
+
+### New Component: `MorningOpsTracker.tsx`
+- Created in `src/components/marketing/MorningOpsTracker.tsx`
+- Consumes `useImplementationQueue()` context to pull pending/approved changes
+- Reads the activity log data already loaded in the dashboard
+- Generates a deterministic ordered checklist combining:
+  - Implementation queue items with `pending` or `approved` status
+  - Seed workflow steps (review ads, check SEO rankings, review CRO experiments, check content calendar, verify integrations)
+  - Activity log staleness warnings
+- Each item can be marked "done" (stored in component state for the session) or links out to the relevant module page
+- Collapsible design — expanded by default, can minimize to a summary bar
+
+### Dashboard Integration
+- Import and render `MorningOpsTracker` at the very top of `MarketingDashboard.tsx`, immediately after the header and before the integration status bar
+- Pass activity log data and implementation queue data as props
+
+### UI Design
+- Card with a gradient accent border (subtle premium feel)
+- Header: "Morning Ops" with a sun/clipboard icon, date stamp, and progress indicator
+- Ordered list with step numbers, checkboxes, category badges, timestamps
+- Items link to their respective pages (Implementation Center, Recommendations, Content Center, etc.)
+- Completed items show a green check + timestamp; pending items pulse subtly
+
+No database changes required — this aggregates existing data sources client-side.
 
