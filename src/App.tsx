@@ -165,6 +165,8 @@ const App = () => (
             <Route path="/marketing/cro" element={<RoleGuard allowedRoles={["marketing"]}><MarketingCRO /></RoleGuard>} />
             <Route path="/marketing/recommendations" element={<RoleGuard allowedRoles={["marketing"]}><MarketingRecommendations /></RoleGuard>} />
             <Route path="/marketing/content-center" element={<RoleGuard allowedRoles={["marketing"]}><MarketingContentCenter /></RoleGuard>} />
+            <Route path="/marketing/implementation" element={<RoleGuard allowedRoles={["marketing"]}><MarketingImplementation /></RoleGuard>} />
+            <Route path="/marketing/integrations" element={<RoleGuard allowedRoles={["marketing"]}><MarketingIntegrations /></RoleGuard>} />
 
             {/* Accounting */}
             <Route path="/accounting/dashboard" element={<RoleGuard allowedRoles={["admin", "accounting"]}><AccountingDashboard /></RoleGuard>} />
