@@ -41,8 +41,8 @@ import MarketingDomainAuthority from "./pages/marketing/MarketingDomainAuthority
 import MarketingCRO from "./pages/marketing/MarketingCRO";
 import MarketingRecommendations from "./pages/marketing/MarketingRecommendations";
 import MarketingContentCenter from "./pages/marketing/MarketingContentCenter";
-import MarketingIntegrations from "./pages/marketing/MarketingIntegrations";
 import MarketingImplementation from "./pages/marketing/MarketingImplementation";
+import MarketingIntegrations from "./pages/marketing/MarketingIntegrations";
 import AccountingDashboard from "./pages/AccountingDashboard";
 import AgentOperations from "./pages/AgentOperations";
 import AgentNewCustomer from "./pages/AgentNewCustomer";
@@ -165,8 +165,8 @@ const App = () => (
             <Route path="/marketing/cro" element={<RoleGuard allowedRoles={["marketing"]}><MarketingCRO /></RoleGuard>} />
             <Route path="/marketing/recommendations" element={<RoleGuard allowedRoles={["marketing"]}><MarketingRecommendations /></RoleGuard>} />
             <Route path="/marketing/content-center" element={<RoleGuard allowedRoles={["marketing"]}><MarketingContentCenter /></RoleGuard>} />
-            <Route path="/marketing/integrations" element={<RoleGuard allowedRoles={["marketing"]}><MarketingIntegrations /></RoleGuard>} />
             <Route path="/marketing/implementation" element={<RoleGuard allowedRoles={["marketing"]}><MarketingImplementation /></RoleGuard>} />
+            <Route path="/marketing/integrations" element={<RoleGuard allowedRoles={["marketing"]}><MarketingIntegrations /></RoleGuard>} />
 
             {/* Accounting */}
             <Route path="/accounting/dashboard" element={<RoleGuard allowedRoles={["admin", "accounting"]}><AccountingDashboard /></RoleGuard>} />
