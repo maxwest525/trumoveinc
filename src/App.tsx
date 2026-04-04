@@ -95,6 +95,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <ScrollToTop />
+          <ImplementationQueueProvider>
           <SeoOverrideProvider>
           <Routes>
             <Route path="/" element={<ProductionHomeRedirect />} />
