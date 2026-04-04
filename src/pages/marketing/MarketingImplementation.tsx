@@ -9,7 +9,7 @@ import {
   Rocket, CheckCircle2, XCircle, Clock, RotateCcw,
   Eye, ArrowRight, AlertTriangle, Code, FileText, Search, Target
 } from "lucide-react";
-import { useImplementationQueue, type ChangeStatus, type ChangeCategory } from "@/contexts/ImplementationQueueContext";
+import { useImplementationQueue, type ChangeStatus, type ChangeCategory, type ImplementationChange } from "@/contexts/ImplementationQueueContext";
 
 const STATUS_CONFIG: Record<ChangeStatus, { label: string; color: string; icon: typeof CheckCircle2 }> = {
   pending: { label: "Pending Review", color: "bg-amber-500/10 text-amber-600 border-amber-500/20", icon: Clock },
