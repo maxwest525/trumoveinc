@@ -192,6 +192,7 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Routes>
           </SeoOverrideProvider>
+          </ImplementationQueueProvider>
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>
