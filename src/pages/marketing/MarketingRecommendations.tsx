@@ -294,13 +294,40 @@ function ActionedCard({ rec, onUndo }: { rec: Recommendation; onUndo: (id: numbe
   );
 }
 
+const CATEGORY_MAP: Record<Category, ChangeCategory> = {
+  seo: "seo",
+  ads: "ads",
+  cro: "cro",
+  content: "content",
+  technical: "technical",
+  backlinks: "seo",
+};
+
 export default function MarketingRecommendations() {
   const [recs, setRecs] = useState<Recommendation[]>(RECOMMENDATIONS);
   const [activeTab, setActiveTab] = useState("all");
   const [filterCategory, setFilterCategory] = useState<Category | "all">("all");
+  const { addChange } = useImplementationQueue();
+  const navigate = useNavigate();
 
   const handleAction = (id: number, action: Status) => {
+    const rec = recs.find((r) => r.id === id);
     setRecs(prev => prev.map(r => r.id === id ? { ...r, status: action } : r));
+
+    if (rec && (action === "approved" || action === "scheduled")) {
+      addChange({
+        id: `rec-${rec.id}`,
+        title: rec.title,
+        description: rec.description,
+        category: CATEGORY_MAP[rec.category] || "technical",
+        status: action === "approved" ? "pending" : "scheduled",
+        source: "Recommendations Engine",
+        priority: rec.priority === "critical" ? "high" : rec.priority === "low" ? "low" : rec.priority as "high" | "medium" | "low",
+        createdAt: new Date().toISOString(),
+        scheduledFor: action === "scheduled" ? new Date(Date.now() + 86400000).toISOString() : undefined,
+        author: "AI Engine",
+      });
+    }
   };
 
   const handleUndo = (id: number) => {
