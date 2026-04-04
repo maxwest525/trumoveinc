@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { ThemeProvider } from "next-themes";
+import { ImplementationQueueProvider } from "./contexts/ImplementationQueueContext";
 import NotFound from "./pages/NotFound";
 import PublicESign from "./pages/PublicESign";
 import WorkspaceHub from "./pages/WorkspaceHub";
@@ -94,6 +95,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <ScrollToTop />
+          <ImplementationQueueProvider>
           <SeoOverrideProvider>
           <Routes>
             <Route path="/" element={<ProductionHomeRedirect />} />
@@ -190,6 +192,7 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Routes>
           </SeoOverrideProvider>
+          </ImplementationQueueProvider>
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>

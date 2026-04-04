@@ -1,6 +1,8 @@
 import { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import MarketingShell from "@/components/layout/MarketingShell";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { useImplementationQueue, type ChangeCategory } from "@/contexts/ImplementationQueueContext";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -268,6 +270,7 @@ function RecommendationCard({ rec, onAction }: { rec: Recommendation; onAction: 
 }
 
 function ActionedCard({ rec, onUndo }: { rec: Recommendation; onUndo: (id: number) => void }) {
+  const navigate = useNavigate();
   const isApproved = rec.status === "approved";
   const isScheduled = rec.status === "scheduled";
   return (
@@ -280,9 +283,17 @@ function ActionedCard({ rec, onUndo }: { rec: Recommendation; onUndo: (id: numbe
           {rec.title}
         </span>
         <div className="text-[10px] text-muted-foreground">
-          {isApproved && "Approved — queued for implementation"}
+          {isApproved && (
+            <span>
+              Approved — <button className="text-primary underline" onClick={() => navigate("/marketing/implementation")}>view in Implementation Center</button>
+            </span>
+          )}
           {rec.status === "dismissed" && "Dismissed"}
-          {isScheduled && "Scheduled for next sprint"}
+          {isScheduled && (
+            <span>
+              Scheduled — <button className="text-primary underline" onClick={() => navigate("/marketing/implementation")}>view in Implementation Center</button>
+            </span>
+          )}
         </div>
       </div>
       <Button variant="ghost" size="sm" className="text-xs h-7 gap-1" onClick={() => onUndo(rec.id)}>
@@ -292,13 +303,40 @@ function ActionedCard({ rec, onUndo }: { rec: Recommendation; onUndo: (id: numbe
   );
 }
 
+const CATEGORY_MAP: Record<Category, ChangeCategory> = {
+  seo: "seo",
+  ads: "ads",
+  cro: "cro",
+  content: "content",
+  technical: "technical",
+  backlinks: "seo",
+};
+
 export default function MarketingRecommendations() {
   const [recs, setRecs] = useState<Recommendation[]>(RECOMMENDATIONS);
   const [activeTab, setActiveTab] = useState("all");
   const [filterCategory, setFilterCategory] = useState<Category | "all">("all");
+  const { addChange } = useImplementationQueue();
+  const navigate = useNavigate();
 
   const handleAction = (id: number, action: Status) => {
+    const rec = recs.find((r) => r.id === id);
     setRecs(prev => prev.map(r => r.id === id ? { ...r, status: action } : r));
+
+    if (rec && (action === "approved" || action === "scheduled")) {
+      addChange({
+        id: `rec-${rec.id}`,
+        title: rec.title,
+        description: rec.description,
+        category: CATEGORY_MAP[rec.category] || "technical",
+        status: action === "approved" ? "pending" : "scheduled",
+        source: "Recommendations Engine",
+        priority: rec.priority === "critical" ? "high" : rec.priority === "low" ? "low" : rec.priority as "high" | "medium" | "low",
+        createdAt: new Date().toISOString(),
+        scheduledFor: action === "scheduled" ? new Date(Date.now() + 86400000).toISOString() : undefined,
+        author: "AI Engine",
+      });
+    }
   };
 
   const handleUndo = (id: number) => {

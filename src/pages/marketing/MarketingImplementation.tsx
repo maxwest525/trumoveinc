@@ -9,111 +9,7 @@ import {
   Rocket, CheckCircle2, XCircle, Clock, RotateCcw,
   Eye, ArrowRight, AlertTriangle, Code, FileText, Search, Target
 } from "lucide-react";
-
-type ChangeStatus = "pending" | "approved" | "scheduled" | "deployed" | "rejected" | "rolled_back";
-type Category = "seo" | "ads" | "content" | "cro" | "technical";
-
-interface Change {
-  id: string;
-  title: string;
-  description: string;
-  category: Category;
-  status: ChangeStatus;
-  source: string;
-  priority: "high" | "medium" | "low";
-  createdAt: string;
-  deployedAt?: string;
-  scheduledFor?: string;
-  author: string;
-  diff?: string;
-}
-
-const INITIAL_CHANGES: Change[] = [
-  {
-    id: "ch-001",
-    title: "Update homepage meta title & description",
-    description: "Optimized meta tags based on keyword research — targets 'long distance movers' cluster.",
-    category: "seo",
-    status: "pending",
-    source: "Recommendations Engine",
-    priority: "high",
-    createdAt: "2026-04-03T14:30:00Z",
-    author: "AI Engine",
-    diff: '<title>TruMove — #1 Long Distance Movers | Free Instant Quote</title>\n<meta name="description" content="Trusted long distance moving company..." />',
-  },
-  {
-    id: "ch-002",
-    title: "Swap hero CTA copy on /get-quote",
-    description: "A/B test winner — 'Get My Free Quote' outperformed 'Request Estimate' by 18%.",
-    category: "cro",
-    status: "pending",
-    source: "CRO Dashboard",
-    priority: "high",
-    createdAt: "2026-04-03T10:15:00Z",
-    author: "AI Engine",
-    diff: '- <Button>Request Estimate</Button>\n+ <Button>Get My Free Quote</Button>',
-  },
-  {
-    id: "ch-003",
-    title: "Add FAQ schema to /services page",
-    description: "Structured data for 8 FAQ items to improve SERP visibility.",
-    category: "seo",
-    status: "approved",
-    source: "SEO Audit",
-    priority: "medium",
-    createdAt: "2026-04-02T09:00:00Z",
-    author: "Marketing Team",
-    diff: '<script type="application/ld+json">\n{"@type":"FAQPage","mainEntity":[...]}\n</script>',
-  },
-  {
-    id: "ch-004",
-    title: "Pause underperforming Google Ads group",
-    description: "Ad group 'local-movers-generic' has $42 CPA vs $18 target. Recommend pause.",
-    category: "ads",
-    status: "scheduled",
-    scheduledFor: "2026-04-05T08:00:00Z",
-    source: "PPC Dashboard",
-    priority: "high",
-    createdAt: "2026-04-01T16:00:00Z",
-    author: "AI Engine",
-  },
-  {
-    id: "ch-005",
-    title: "Publish refreshed 'Moving Checklist' blog post",
-    description: "Updated content with 2026 data, new internal links, and refreshed images.",
-    category: "content",
-    status: "deployed",
-    deployedAt: "2026-04-01T12:00:00Z",
-    source: "Content Center",
-    priority: "medium",
-    createdAt: "2026-03-29T11:00:00Z",
-    author: "Content AI",
-  },
-  {
-    id: "ch-006",
-    title: "Redirect /old-services to /services",
-    description: "301 redirect to consolidate link equity from deprecated URL.",
-    category: "technical",
-    status: "deployed",
-    deployedAt: "2026-03-28T09:00:00Z",
-    source: "SEO Audit",
-    priority: "low",
-    createdAt: "2026-03-27T14:00:00Z",
-    author: "Marketing Team",
-  },
-  {
-    id: "ch-007",
-    title: "Update Google Ads bid strategy to tCPA",
-    description: "Switch from manual CPC to target CPA bidding at $22.",
-    category: "ads",
-    status: "rolled_back",
-    deployedAt: "2026-03-25T10:00:00Z",
-    source: "PPC Dashboard",
-    priority: "high",
-    createdAt: "2026-03-24T08:00:00Z",
-    author: "AI Engine",
-  },
-];
+import { useImplementationQueue, type ChangeStatus, type ChangeCategory, type ImplementationChange } from "@/contexts/ImplementationQueueContext";
 
 const STATUS_CONFIG: Record<ChangeStatus, { label: string; color: string; icon: typeof CheckCircle2 }> = {
   pending: { label: "Pending Review", color: "bg-amber-500/10 text-amber-600 border-amber-500/20", icon: Clock },
@@ -124,7 +20,7 @@ const STATUS_CONFIG: Record<ChangeStatus, { label: string; color: string; icon: 
   rolled_back: { label: "Rolled Back", color: "bg-orange-500/10 text-orange-600 border-orange-500/20", icon: RotateCcw },
 };
 
-const CATEGORY_CONFIG: Record<Category, { label: string; icon: typeof Search }> = {
+const CATEGORY_CONFIG: Record<ChangeCategory, { label: string; icon: typeof Search }> = {
   seo: { label: "SEO", icon: Search },
   ads: { label: "Ads", icon: Target },
   content: { label: "Content", icon: FileText },
@@ -133,37 +29,36 @@ const CATEGORY_CONFIG: Record<Category, { label: string; icon: typeof Search }> 
 };
 
 export default function MarketingImplementation() {
-  const [changes, setChanges] = useState<Change[]>(INITIAL_CHANGES);
+  const { changes, updateChange } = useImplementationQueue();
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [filterCategory, setFilterCategory] = useState<Category | "all">("all");
+  const [filterCategory, setFilterCategory] = useState<ChangeCategory | "all">("all");
 
   const handleAction = (id: string, action: "approve" | "reject" | "schedule" | "deploy" | "rollback") => {
-    setChanges((prev) =>
-      prev.map((c) => {
-        if (c.id !== id) return c;
-        switch (action) {
-          case "approve":
-            toast.success(`Approved: ${c.title}`);
-            return { ...c, status: "approved" as ChangeStatus };
-          case "reject":
-            toast.error(`Rejected: ${c.title}`);
-            return { ...c, status: "rejected" as ChangeStatus };
-          case "schedule":
-            toast.info(`Scheduled: ${c.title} for tomorrow 8 AM`);
-            return { ...c, status: "scheduled" as ChangeStatus, scheduledFor: new Date(Date.now() + 86400000).toISOString() };
-          case "deploy":
-            toast.success(`Deployed: ${c.title}`);
-            return { ...c, status: "deployed" as ChangeStatus, deployedAt: new Date().toISOString() };
-          case "rollback":
-            toast.warning(`Rolled back: ${c.title}`);
-            return { ...c, status: "rolled_back" as ChangeStatus };
-          default:
-            return c;
-        }
-      })
-    );
+    const change = changes.find((c) => c.id === id);
+    if (!change) return;
+    switch (action) {
+      case "approve":
+        toast.success(`Approved: ${change.title}`);
+        updateChange(id, { status: "approved" });
+        break;
+      case "reject":
+        toast.error(`Rejected: ${change.title}`);
+        updateChange(id, { status: "rejected" });
+        break;
+      case "schedule":
+        toast.info(`Scheduled: ${change.title} for tomorrow 8 AM`);
+        updateChange(id, { status: "scheduled", scheduledFor: new Date(Date.now() + 86400000).toISOString() });
+        break;
+      case "deploy":
+        toast.success(`Deployed: ${change.title}`);
+        updateChange(id, { status: "deployed", deployedAt: new Date().toISOString() });
+        break;
+      case "rollback":
+        toast.warning(`Rolled back: ${change.title}`);
+        updateChange(id, { status: "rolled_back" });
+        break;
+    }
   };
-
   const queue = changes.filter((c) => ["pending", "approved", "scheduled"].includes(c.status));
   const history = changes.filter((c) => ["deployed", "rejected", "rolled_back"].includes(c.status));
   const selected = changes.find((c) => c.id === selectedId);
@@ -178,7 +73,7 @@ export default function MarketingImplementation() {
     { label: "Rolled Back", value: changes.filter((c) => c.status === "rolled_back").length, color: "text-orange-600" },
   ];
 
-  const renderChangeRow = (change: Change) => {
+  const renderChangeRow = (change: ImplementationChange) => {
     const statusCfg = STATUS_CONFIG[change.status];
     const catCfg = CATEGORY_CONFIG[change.category];
     const StatusIcon = statusCfg.icon;
