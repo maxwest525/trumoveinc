@@ -130,6 +130,19 @@ export default function AdminUsersRoles() {
     }
   };
 
+  const handleResendInvite = async (targetUserId: string) => {
+    setChangingRole(targetUserId);
+    const { data, error } = await supabase.functions.invoke("invite-user", {
+      body: { action: "resend_invite", user_id: targetUserId },
+    });
+    setChangingRole(null);
+    if (error || data?.error) {
+      toast({ title: "Resend failed", description: data?.error || error?.message, variant: "destructive" });
+    } else {
+      toast({ title: "Invite resent", description: "A new invitation email has been sent." });
+    }
+  };
+
   const handleSaveName = async (targetUserId: string) => {
     if (!editNameValue.trim()) return;
     setChangingRole(targetUserId);
