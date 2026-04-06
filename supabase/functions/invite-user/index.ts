@@ -215,6 +215,46 @@ Deno.serve(async (req) => {
       });
     }
 
+    // RESEND INVITE: Re-send invitation email to existing user
+    if (action === "resend_invite") {
+      const { user_id } = body;
+      if (!user_id) {
+        return new Response(JSON.stringify({ error: "user_id is required" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      // Get user email from profiles
+      const { data: profile } = await adminClient
+        .from("profiles")
+        .select("email")
+        .eq("id", user_id)
+        .single();
+
+      if (!profile?.email) {
+        return new Response(JSON.stringify({ error: "User email not found" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const { error: resendError } = await adminClient.auth.admin.inviteUserByEmail(profile.email, {
+        redirectTo: `${req.headers.get("origin") || "https://trumoveinc.lovable.app"}/set-password`,
+      });
+
+      if (resendError) {
+        return new Response(JSON.stringify({ error: resendError.message }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      return new Response(JSON.stringify({ success: true }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     // UPDATE DISPLAY NAME
     if (action === "update_name") {
       const { user_id, display_name } = body;

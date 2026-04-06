@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useUserRole } from "@/hooks/useUserRole";
-import { Users, Plus, Shield, Crown, BarChart3, UserCheck, Loader2, Mail, X, Sparkles, DollarSign, Pencil, Trash2, Check } from "lucide-react";
+import { Users, Plus, Shield, Crown, BarChart3, UserCheck, Loader2, Mail, X, Sparkles, DollarSign, Pencil, Trash2, Check, Send } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type AppRole = "owner" | "admin" | "manager" | "agent" | "marketing" | "accounting";
@@ -127,6 +127,19 @@ export default function AdminUsersRoles() {
     } else {
       toast({ title: "User deleted" });
       fetchUsers();
+    }
+  };
+
+  const handleResendInvite = async (targetUserId: string) => {
+    setChangingRole(targetUserId);
+    const { data, error } = await supabase.functions.invoke("invite-user", {
+      body: { action: "resend_invite", user_id: targetUserId },
+    });
+    setChangingRole(null);
+    if (error || data?.error) {
+      toast({ title: "Resend failed", description: data?.error || error?.message, variant: "destructive" });
+    } else {
+      toast({ title: "Invite resent", description: "A new invitation email has been sent." });
     }
   };
 
@@ -303,6 +316,13 @@ export default function AdminUsersRoles() {
                           <option key={r} value={r}>{ROLE_CONFIG[r].label}</option>
                         ))}
                       </select>
+                      <button
+                        onClick={() => handleResendInvite(user.id)}
+                        className="p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+                        title="Resend invite email"
+                      >
+                        <Send className="w-3.5 h-3.5" />
+                      </button>
                       <button
                         onClick={() => { setEditingName(user.id); setEditNameValue(user.display_name || ""); }}
                         className="p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
