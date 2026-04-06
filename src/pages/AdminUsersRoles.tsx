@@ -317,6 +317,13 @@ export default function AdminUsersRoles() {
                         ))}
                       </select>
                       <button
+                        onClick={() => handleResendInvite(user.id)}
+                        className="p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+                        title="Resend invite email"
+                      >
+                        <Send className="w-3.5 h-3.5" />
+                      </button>
+                      <button
                         onClick={() => { setEditingName(user.id); setEditNameValue(user.display_name || ""); }}
                         className="p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
                         title="Edit name"
