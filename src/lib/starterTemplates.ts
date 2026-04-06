@@ -143,6 +143,34 @@ export const EMAIL_STARTERS: StarterEmailTemplate[] = [
     channel: "email",
     body: `Dear {customer_name},\n\nWe hope your move went smoothly!\n\nThank you for choosing TruMove!\n\nWarm regards,\nThe TruMove Team`,
   },
+  {
+    id: "starter-team-invite",
+    name: "Team Invite",
+    subject: "You've Been Invited to Join TruMove, {first_name}!",
+    channel: "email",
+    body: `<div style="font-family: 'Inter', Arial, sans-serif; max-width: 520px; margin: 0 auto; background: #ffffff;">
+  <div style="text-align: center; padding: 40px 25px 0;">
+    <p style="font-size: 28px; font-weight: bold; color: #22c55e; margin: 0; letter-spacing: -0.5px;">TruMove</p>
+  </div>
+  <div style="padding: 30px 25px;">
+    <h1 style="font-size: 24px; font-weight: bold; color: #020817; margin: 0 0 16px; text-align: center;">Welcome to the Team</h1>
+    <p style="font-size: 15px; color: #64748b; line-height: 1.6; margin: 0 0 16px;">Hi {first_name},</p>
+    <p style="font-size: 15px; color: #64748b; line-height: 1.6; margin: 0 0 16px;">You've been invited to join <strong>TruMove</strong>. To get started, you'll need to set up your username and password.</p>
+    <p style="font-size: 15px; color: #64748b; line-height: 1.6; margin: 0 0 28px;">Click the button below to create your login credentials and access the platform.</p>
+    <div style="text-align: center; margin: 0 0 28px;">
+      <a href="{tracking_link}" style="display: inline-block; background: #22c55e; color: #ffffff; font-size: 15px; font-weight: 600; border-radius: 8px; padding: 14px 28px; text-decoration: none;">Set Up Your Account</a>
+    </div>
+    <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;" />
+    <p style="font-size: 14px; font-weight: 600; color: #020817; margin: 0 0 10px;">What to expect:</p>
+    <p style="font-size: 14px; color: #64748b; line-height: 1.5; margin: 0 0 6px; padding-left: 4px;">1. Click the button above to open the setup page</p>
+    <p style="font-size: 14px; color: #64748b; line-height: 1.5; margin: 0 0 6px; padding-left: 4px;">2. Create your password</p>
+    <p style="font-size: 14px; color: #64748b; line-height: 1.5; margin: 0 0 0; padding-left: 4px;">3. You're in — start using the platform right away</p>
+    <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;" />
+    <p style="font-size: 12px; color: #94a3b8; margin: 0 0 8px; line-height: 1.5;">If you weren't expecting this invitation, you can safely ignore this email. This link will expire in 24 hours.</p>
+    <p style="font-size: 12px; color: #cbd5e1; margin: 0; text-align: center;">© 2025 TruMove Inc. All rights reserved.</p>
+  </div>
+</div>`,
+  },
 ];
 
 export const SMS_STARTERS: StarterSmsTemplate[] = [
@@ -152,4 +180,5 @@ export const SMS_STARTERS: StarterSmsTemplate[] = [
   { id: "starter-sms-quote", name: "Quote Ready", channel: "sms", body: "TruMove: Hi {first_name}, your moving quote is ready! Estimated cost: {estimated_value}. View details: {tracking_link}" },
   { id: "starter-sms-payment", name: "Payment Reminder", channel: "sms", body: "TruMove: Hi {first_name}, reminder: your deposit for booking #{booking_id} is due. Questions? Reply or call (800) 555-MOVE." },
   { id: "starter-sms-arrived", name: "Crew Arrived", channel: "sms", body: "TruMove: Your crew has arrived at {origin_address}. Please meet them at the entrance." },
+  { id: "starter-sms-team-invite", name: "Team Invite", channel: "sms", body: "TruMove: Hi {first_name}, you've been invited to join the team! Set up your account here: {tracking_link}" },
 ];
