@@ -7,7 +7,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Mail, MessageSquare, Send, FileText, Loader2, ArrowUpRight, ArrowDownLeft, Plus, Trash2, Pencil, Inbox, Reply, Clock, ExternalLink } from "lucide-react";
+import { Mail, MessageSquare, Send, FileText, Loader2, ArrowUpRight, ArrowDownLeft, Plus, Trash2, Pencil, Inbox, Reply, Clock, ExternalLink, RotateCw } from "lucide-react";
 import { openInOutlook } from "@/lib/openInOutlook";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -453,7 +453,7 @@ export function CustomerCommunicationTab({ leadId, customerName, customerEmail, 
                     {parseEmailMessage(selectedMessage).body}
                   </div>
                 </ScrollArea>
-                <div className="px-4 py-2 border-t border-border bg-muted/20">
+                <div className="px-4 py-2 border-t border-border bg-muted/20 flex items-center gap-2">
                   <Button
                     variant="outline"
                     size="sm"
@@ -469,6 +469,23 @@ export function CustomerCommunicationTab({ leadId, customerName, customerEmail, 
                   >
                     <Reply className="w-3.5 h-3.5" /> Reply
                   </Button>
+                  {selectedMessage.sender_type === "agent" && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="gap-1.5 text-xs"
+                      onClick={() => {
+                        const { subject, body } = parseEmailMessage(selectedMessage);
+                        setComposing(true);
+                        setSelectedEmailId(null);
+                        setEmailSubject(subject);
+                        setMessageBody(body);
+                        setRecipient(customerEmail);
+                      }}
+                    >
+                      <RotateCw className="w-3.5 h-3.5" /> Resend
+                    </Button>
+                  )}
                 </div>
               </div>
             ) : (
