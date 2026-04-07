@@ -161,7 +161,7 @@ const SMS_STARTERS = [
 
 export default function MarketingTemplates() {
   const [channel, setChannel] = useState<"email" | "sms">("email");
-  const [editorMode, setEditorMode] = useState<"builder" | "code" | "preview">("builder");
+  const [editorMode, setEditorMode] = useState<"builder" | "code" | "preview">("preview");
   const [showPreview, setShowPreview] = useState(false);
   const [emailBlocks, setEmailBlocks] = useState<EmailBlock[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -221,17 +221,17 @@ export default function MarketingTemplates() {
   });
 
   const resetForm = () => {
-    setTplName(""); setTplSubject(""); setTplBody(""); setEditingId(null); setEmailBlocks([]); setEditorMode("builder");
+    setTplName(""); setTplSubject(""); setTplBody(""); setEditingId(null); setEmailBlocks([]); setEditorMode("preview");
   };
 
   const loadTemplate = (t: any) => {
     setTplName(t.name); setTplSubject(t.subject || ""); setTplBody(t.body); setEditingId(t.id || null); setEmailBlocks([]);
-    if (channel === "email") setEditorMode("code");
+    if (channel === "email") setEditorMode("preview");
   };
 
   const loadStarter = (s: any) => {
     setTplName(s.name); setTplSubject(s.subject || ""); setTplBody(s.body); setEditingId(null); setEmailBlocks([]);
-    if (channel === "email") setEditorMode("code");
+    if (channel === "email") setEditorMode("preview");
   };
 
   const loadBlankBranded = () => {
