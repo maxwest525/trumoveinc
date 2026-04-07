@@ -226,7 +226,7 @@ export default function MarketingTemplates() {
 
   const loadTemplate = (t: any) => {
     setTplName(t.name); setTplSubject(t.subject || ""); setTplBody(t.body); setEditingId(t.id || null); setEmailBlocks([]);
-    if (channel === "email") setEditorMode("code");
+    if (channel === "email") setEditorMode("preview");
   };
 
   const loadStarter = (s: any) => {
