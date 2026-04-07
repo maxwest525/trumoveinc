@@ -231,7 +231,7 @@ export default function MarketingTemplates() {
 
   const loadStarter = (s: any) => {
     setTplName(s.name); setTplSubject(s.subject || ""); setTplBody(s.body); setEditingId(null); setEmailBlocks([]);
-    if (channel === "email") setEditorMode("code");
+    if (channel === "email") setEditorMode("preview");
   };
 
   const loadBlankBranded = () => {
