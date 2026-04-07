@@ -161,7 +161,7 @@ const SMS_STARTERS = [
 
 export default function MarketingTemplates() {
   const [channel, setChannel] = useState<"email" | "sms">("email");
-  const [editorMode, setEditorMode] = useState<"builder" | "code" | "preview">("builder");
+  const [editorMode, setEditorMode] = useState<"builder" | "code" | "preview">("preview");
   const [showPreview, setShowPreview] = useState(false);
   const [emailBlocks, setEmailBlocks] = useState<EmailBlock[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
