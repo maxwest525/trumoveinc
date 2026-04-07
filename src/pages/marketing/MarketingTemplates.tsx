@@ -221,7 +221,7 @@ export default function MarketingTemplates() {
   });
 
   const resetForm = () => {
-    setTplName(""); setTplSubject(""); setTplBody(""); setEditingId(null); setEmailBlocks([]); setEditorMode("builder");
+    setTplName(""); setTplSubject(""); setTplBody(""); setEditingId(null); setEmailBlocks([]); setEditorMode("preview");
   };
 
   const loadTemplate = (t: any) => {
