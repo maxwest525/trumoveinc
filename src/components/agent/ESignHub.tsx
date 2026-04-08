@@ -161,7 +161,27 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
   };
  
    const handleResend = async (doc: DocumentRecord) => {
-     toast.success(`Resent ${DOCUMENT_LABELS[doc.type]} to ${doc.customerName}`);
+     try {
+       const signingUrl = `${getEsignBaseUrl()}/esign/${doc.refNumber}`;
+       const { error } = await supabase.functions.invoke('send-esign-document', {
+         body: {
+           documentType: doc.type,
+           customerName: doc.customerName,
+           customerEmail: doc.customerEmail,
+           customerPhone: doc.customerPhone,
+           refNumber: doc.refNumber,
+           deliveryMethod: doc.deliveryMethod,
+           signingUrl,
+         },
+       });
+       if (error) throw error;
+       toast.success(`Resent ${DOCUMENT_LABELS[doc.type]} to ${doc.customerName}`, {
+         description: `via ${doc.deliveryMethod === "sms" ? "SMS" : "Email"}`,
+       });
+     } catch (err) {
+       console.error("Resend error:", err);
+       toast.error("Failed to resend document");
+     }
    };
  
    const startScreenshare = async (doc: DocumentRecord) => {

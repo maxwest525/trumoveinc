@@ -538,7 +538,7 @@ export function CustomerCommunicationTab({ leadId, customerName, customerEmail, 
                 return (
                   <div key={msg.id} className={cn("flex", isAgent ? "justify-end" : "justify-start")}>
                     <div className={cn(
-                      "max-w-[75%] rounded-xl px-3 py-2 text-sm",
+                      "max-w-[75%] rounded-xl px-3 py-2 text-sm group relative",
                       isAgent
                         ? "bg-primary text-primary-foreground rounded-br-sm"
                         : "bg-muted border border-border rounded-bl-sm"
@@ -548,9 +548,22 @@ export function CustomerCommunicationTab({ leadId, customerName, customerEmail, 
                         <span className="text-[9px] font-medium opacity-70">{isAgent ? "You" : customerName}</span>
                       </div>
                       <p className="text-xs whitespace-pre-wrap leading-relaxed">{cleanContent}</p>
-                      <p className={cn("text-[9px] mt-1 text-right", isAgent ? "opacity-50" : "text-muted-foreground/60")}>
-                        {new Date(msg.created_at).toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
-                      </p>
+                      <div className="flex items-center justify-between mt-1">
+                        <p className={cn("text-[9px]", isAgent ? "opacity-50" : "text-muted-foreground/60")}>
+                          {new Date(msg.created_at).toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
+                        </p>
+                        {isAgent && (
+                          <button
+                            onClick={() => {
+                              setMessageBody(cleanContent);
+                              setRecipient(customerPhone);
+                            }}
+                            className="text-[9px] opacity-0 group-hover:opacity-70 hover:!opacity-100 transition-opacity flex items-center gap-0.5 text-primary-foreground"
+                          >
+                            <RotateCw className="w-2.5 h-2.5" /> Resend
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </div>
                 );
