@@ -14,6 +14,8 @@ import ScanRoom from "@/pages/ScanRoom";
 import Classic from "@/pages/Classic";
 import LiveTracking from "@/pages/LiveTracking";
 import CustomerService from "@/pages/CustomerService";
+import BlogListing from "@/pages/BlogListing";
+import BlogPostPage from "@/pages/BlogPost";
 import SiteCanonicalLayout from "./SiteCanonicalLayout";
 
 const SITE_ROUTES: Record<string, React.ComponentType> = {
@@ -33,6 +35,7 @@ const SITE_ROUTES: Record<string, React.ComponentType> = {
   "/site/classic": Classic,
   "/site/track": LiveTracking,
   "/site/customer-service": CustomerService,
+  "/site/blog": BlogListing,
 };
 
 /**
@@ -52,6 +55,16 @@ export default function SiteRouteGuard() {
 
   if (isCrmOrDev) {
     return <Navigate to="/dashboard" replace />;
+  }
+
+  // Handle /site/blog/:slug dynamic route
+  const blogPostMatch = location.pathname.match(/^\/site\/blog\/(.+)$/);
+  if (blogPostMatch) {
+    return (
+      <SiteCanonicalLayout>
+        <BlogPostPage />
+      </SiteCanonicalLayout>
+    );
   }
 
   const Page = SITE_ROUTES[location.pathname];
