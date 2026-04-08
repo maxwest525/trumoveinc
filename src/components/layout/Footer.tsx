@@ -19,6 +19,9 @@ export default function Footer() {
           <Link className="footer-link" to="/site/faq">
             FAQ
           </Link>
+          <Link className="footer-link" to="/site/blog">
+            Blog
+          </Link>
           <Link className="footer-link" to="/site/privacy">
             Privacy
           </Link>
