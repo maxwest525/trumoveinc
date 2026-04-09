@@ -1,5 +1,5 @@
 import { useState, useEffect, type ReactNode } from "react";
-import CrmFooter from "./CrmFooter";
+
 import { Link, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useOpenRequestCount } from "@/hooks/useOpenRequestCount";
