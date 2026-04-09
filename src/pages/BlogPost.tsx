@@ -51,13 +51,21 @@ export default function BlogPostPage() {
   const wordCount = post?.content?.split(/\s+/).length || 0;
   const readTime = Math.max(1, Math.ceil(wordCount / 200));
 
+  const shareUrl = typeof window !== "undefined" ? window.location.href : "";
+  const shareTitle = post?.title || "";
+
   const handleShare = async () => {
-    const url = window.location.href;
     if (navigator.share) {
-      await navigator.share({ title: post?.title, url });
+      await navigator.share({ title: shareTitle, url: shareUrl });
     } else {
-      await navigator.clipboard.writeText(url);
+      await navigator.clipboard.writeText(shareUrl);
     }
+  };
+
+  const socialLinks = {
+    twitter: `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareTitle)}`,
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`,
+    linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`,
   };
 
   if (loading) {
