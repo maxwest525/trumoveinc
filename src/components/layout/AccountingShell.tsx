@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from "react";
-import CrmFooter from "./CrmFooter";
+
 import { Link, useLocation } from "react-router-dom";
 import {
   Home, Sun, Moon, Bell, LayoutDashboard, DollarSign, Receipt,
