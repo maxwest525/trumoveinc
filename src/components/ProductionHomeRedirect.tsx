@@ -10,6 +10,12 @@ import SiteCanonicalLayout from "./SiteCanonicalLayout";
  */
 export default function ProductionHomeRedirect() {
   const host = window.location.hostname;
+  const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+  const isRecoveryLink = hashParams.get("type") === "recovery" && Boolean(hashParams.get("access_token"));
+
+  if (isRecoveryLink) {
+    return <Navigate to={{ pathname: "/reset-password", hash: window.location.hash }} replace />;
+  }
 
   const isDev =
     host === "localhost" ||
