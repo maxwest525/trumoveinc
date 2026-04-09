@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import CustomerPortalShell from "@/components/layout/CustomerPortalShell";
 import { Loader2, CheckCircle2, Circle, Upload, Send, FileText, Truck, Package, MapPin, PenTool, Clock } from "lucide-react";
+import { PortalPaymentTab } from "@/components/portal/PortalPaymentTab";
 import { useToast } from "@/hooks/use-toast";
 
 const DEAL_STAGES = [
@@ -242,6 +243,16 @@ export default function CustomerPortalDashboard() {
                 </div>
               </div>
             </div>
+          )}
+
+          {/* PAYMENT */}
+          {activeTab === "payment" && (
+            <PortalPaymentTab
+              dealValue={deal?.deal_value}
+              customerName={customerName}
+              moveDate={lead?.move_date}
+              dealStage={deal?.stage}
+            />
           )}
 
           {/* E-SIGNS */}
