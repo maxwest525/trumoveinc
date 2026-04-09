@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from "react";
-import CrmFooter from "./CrmFooter";
+
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Home, Sun, Moon, Bell, MessagesSquare, Settings, LogOut, User, ChevronDown, Menu, X } from "lucide-react";
 import { useTheme } from "next-themes";
@@ -194,7 +194,7 @@ export default function AgentShell({ children, breadcrumb = "", breadcrumbs }: A
         <main className="flex-1 overflow-y-auto">
           {typeof children === "function" ? children({ openDialer: (num?: string) => { setDialerPrefill(num); setDialerOpen(true); } }) : children}
         </main>
-        <CrmFooter />
+        
       </div>
       <FloatingDialer open={dialerOpen} onOpenChange={setDialerOpen} prefillNumber={dialerPrefill} />
     </div>

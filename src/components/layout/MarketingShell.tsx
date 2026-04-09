@@ -1,5 +1,5 @@
 import { useState, useEffect, type ReactNode } from "react";
-import CrmFooter from "./CrmFooter";
+
 import { Link, useLocation } from "react-router-dom";
 import {
   Home, Bell, Menu, X, MessageSquare,
@@ -143,7 +143,7 @@ export default function MarketingShell({ children, breadcrumb = "", breadcrumbs 
         <main className="flex-1 overflow-y-auto p-3 sm:p-6 max-w-[1400px] mx-auto w-full">
           {children}
         </main>
-        <CrmFooter />
+        
       </div>
     </div>
   );
