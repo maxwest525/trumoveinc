@@ -39,7 +39,7 @@ export default function ContactHumanTabs() {
               className="inline-flex items-center gap-2 bg-foreground text-background px-6 py-2.5 rounded-full text-sm font-semibold hover:opacity-90 transition-opacity"
             >
               <Phone className="w-4 h-4" />
-              (609) 727-7647
+              (833) 693-1695
             </a>
             <p className="text-xs text-muted-foreground">
               or email{" "}
