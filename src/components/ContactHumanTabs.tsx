@@ -35,7 +35,7 @@ export default function ContactHumanTabs() {
             <p className="text-sm font-semibold text-foreground">Speak with our team directly</p>
             <p className="text-xs text-muted-foreground">Mon–Sat, 8 AM – 8 PM EST</p>
             <a
-              href="tel:+16097277647"
+              href="tel:+18336931695"
               className="inline-flex items-center gap-2 bg-foreground text-background px-6 py-2.5 rounded-full text-sm font-semibold hover:opacity-90 transition-opacity"
             >
               <Phone className="w-4 h-4" />

@@ -32,7 +32,7 @@ export function ContactHub({
   }, [bookingCode]);
 
   const handleVoiceCall = () => {
-    window.location.href = "tel:+18005551234";
+    window.location.href = "tel:+18336931695";
   };
 
   const handleEmail = () => {
@@ -40,7 +40,7 @@ export function ContactHub({
   };
 
   const handleText = () => {
-    window.location.href = "sms:+18005551234";
+    window.location.href = "sms:+18336931695";
   };
 
   return (
