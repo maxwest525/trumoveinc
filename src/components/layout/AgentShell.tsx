@@ -194,6 +194,7 @@ export default function AgentShell({ children, breadcrumb = "", breadcrumbs }: A
         <main className="flex-1 overflow-y-auto">
           {typeof children === "function" ? children({ openDialer: (num?: string) => { setDialerPrefill(num); setDialerOpen(true); } }) : children}
         </main>
+        <CrmFooter />
       </div>
       <FloatingDialer open={dialerOpen} onOpenChange={setDialerOpen} prefillNumber={dialerPrefill} />
     </div>

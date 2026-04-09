@@ -163,6 +163,7 @@ export default function GrowthEngineShell({ children }: GrowthEngineShellProps) 
             {children}
           </div>
         </main>
+        <CrmFooter />
       </div>
     </div>
   );
