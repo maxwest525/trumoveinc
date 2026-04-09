@@ -245,6 +245,16 @@ export default function CustomerPortalDashboard() {
             </div>
           )}
 
+          {/* PAYMENT */}
+          {activeTab === "payment" && (
+            <PortalPaymentTab
+              dealValue={deal?.deal_value}
+              customerName={customerName}
+              moveDate={lead?.move_date}
+              dealStage={deal?.stage}
+            />
+          )}
+
           {/* E-SIGNS */}
           {activeTab === "esigns" && (
             <div className="space-y-6">
