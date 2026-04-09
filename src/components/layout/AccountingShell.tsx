@@ -139,7 +139,7 @@ export default function AccountingShell({ children, breadcrumb = "", breadcrumbs
         <main className="flex-1 overflow-y-auto p-3 sm:p-6 max-w-[1400px] mx-auto w-full">
           {children}
         </main>
-        <CrmFooter />
+        
       </div>
     </div>
   );
