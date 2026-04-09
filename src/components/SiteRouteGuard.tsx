@@ -53,7 +53,10 @@ export default function SiteRouteGuard() {
     host.endsWith(".lovableproject.com") ||
     host.startsWith("crm.");
 
-  if (isCrmOrDev) {
+  // Allow blog routes on all domains (CRM, dev, production)
+  const isBlogRoute = location.pathname === "/site/blog" || location.pathname.startsWith("/site/blog/");
+
+  if (isCrmOrDev && !isBlogRoute) {
     return <Navigate to="/dashboard" replace />;
   }
 

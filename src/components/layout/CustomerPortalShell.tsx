@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import CrmFooter from "./CrmFooter";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { LogOut, Package, FileText, MessageCircle, Upload, Home, PenTool } from "lucide-react";
@@ -73,6 +74,7 @@ export default function CustomerPortalShell({ children, activeTab, onTabChange, 
       <main className="flex-1 p-4 md:p-6 max-w-4xl mx-auto w-full">
         {children}
       </main>
+      <CrmFooter />
     </div>
   );
 }
