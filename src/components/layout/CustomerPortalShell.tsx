@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import CrmFooter from "./CrmFooter";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { LogOut, Package, FileText, MessageCircle, Upload, Home, PenTool } from "lucide-react";
