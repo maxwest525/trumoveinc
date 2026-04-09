@@ -9,6 +9,7 @@ import { DocumentTabs, type DocumentType } from "@/components/esign/DocumentTabs
 import { Card, CardContent } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import ESignVerificationGate from "@/components/esign/ESignVerificationGate";
 
 type SignatureField = "initial1" | "initial2" | "initial3" | "signature";
 
@@ -16,20 +17,18 @@ export default function PublicESign() {
   const { refNumber: urlRef } = useParams();
   const [searchParams] = useSearchParams();
 
-  // Fallback to query params for backward compat, but prefer DB lookup
   const refNumber = urlRef || searchParams.get("ref") || "DOC-2026-0001";
-  const qpName = searchParams.get("name") || "";
-  const qpEmail = searchParams.get("email") || "";
-  const qpDocType = searchParams.get("type") || "estimate";
-  const qpLeadId = searchParams.get("leadId") || "";
 
-  const [customerName, setCustomerName] = useState(qpName);
-  const [customerEmail, setCustomerEmail] = useState(qpEmail);
-  const [leadId, setLeadId] = useState(qpLeadId);
-  const [docTypeFromDb, setDocTypeFromDb] = useState(qpDocType);
+  // Verification gate state
+  const [verified, setVerified] = useState(false);
 
-  const [typedName, setTypedName] = useState(qpName);
-  const [activeDocument, setActiveDocument] = useState<DocumentType>(qpDocType as DocumentType);
+  const [customerName, setCustomerName] = useState("");
+  const [customerEmail, setCustomerEmail] = useState("");
+  const [leadId, setLeadId] = useState("");
+  const [docTypeFromDb, setDocTypeFromDb] = useState("estimate");
+
+  const [typedName, setTypedName] = useState("");
+  const [activeDocument, setActiveDocument] = useState<DocumentType>("estimate");
   const [signatures, setSignatures] = useState<Record<SignatureField, boolean>>({
     initial1: false, initial2: false, initial3: false, signature: false,
   });
@@ -42,40 +41,20 @@ export default function PublicESign() {
 
   useEffect(() => { window.scrollTo(0, 0); }, []);
 
-  // Fetch customer data via secure edge function (no direct anon DB access)
-  useEffect(() => {
-    if (!refNumber || refNumber === "DOC-2026-0001") return;
-    const fetchDocData = async () => {
-      try {
-        const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-        const resp = await fetch(
-          `https://${projectId}.supabase.co/functions/v1/get-esign-public?ref=${encodeURIComponent(refNumber)}`
-        );
-        if (!resp.ok) return;
-        const result = await resp.json();
-
-        if (result.document?.lead_id) {
-          setLeadId(result.document.lead_id);
-          if (result.document.document_type) setDocTypeFromDb(result.document.document_type);
-          if (!qpDocType || qpDocType === "estimate") {
-            setActiveDocument((result.document.document_type || "estimate") as DocumentType);
-          }
-        }
-
-        if (result.lead) {
-          const fullName = `${result.lead.first_name} ${result.lead.last_name}`.trim();
-          if (fullName && !qpName) {
-            setCustomerName(fullName);
-            setTypedName(fullName);
-          }
-          if (result.lead.email && !qpEmail) setCustomerEmail(result.lead.email);
-        }
-      } catch (e) {
-        console.error("Failed to fetch esign data:", e);
-      }
-    };
-    fetchDocData();
-  }, [refNumber]);
+  // Handle successful verification
+  const handleVerified = (data: {
+    lead: { first_name: string; last_name: string; email: string; phone: string; origin_address: string };
+    document: { lead_id: string; document_type: string; status: string; ref_number: string };
+  }) => {
+    const fullName = `${data.lead.first_name} ${data.lead.last_name}`.trim();
+    setCustomerName(fullName);
+    setTypedName(fullName);
+    setCustomerEmail(data.lead.email || "");
+    setLeadId(data.document.lead_id || "");
+    setDocTypeFromDb(data.document.document_type || "estimate");
+    setActiveDocument((data.document.document_type || "estimate") as DocumentType);
+    setVerified(true);
+  };
 
   const typedInitials = typedName
     .split(" ").filter(Boolean).map((w) => w[0]).join("").toUpperCase().slice(0, 3);
@@ -166,6 +145,15 @@ export default function PublicESign() {
       toast.success("Document downloaded as PDF");
     } finally { setIsDownloading(false); }
   };
+
+  // Show verification gate before documents
+  if (!verified) {
+    return (
+      <SiteShell hideHeader hideTrustStrip>
+        <ESignVerificationGate refNumber={refNumber} onVerified={handleVerified} />
+      </SiteShell>
+    );
+  }
 
   return (
     <SiteShell hideHeader hideTrustStrip>

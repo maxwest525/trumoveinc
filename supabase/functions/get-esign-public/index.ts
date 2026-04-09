@@ -11,6 +11,10 @@ function isValidRef(ref: unknown): ref is string {
   return typeof ref === "string" && ref.length > 0 && ref.length <= 50 && /^[A-Za-z0-9\-_]+$/.test(ref);
 }
 
+function normalize(value: string): string {
+  return value.trim().toLowerCase().replace(/\s+/g, " ");
+}
+
 serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -22,7 +26,7 @@ serve(async (req: Request) => {
   );
 
   try {
-    // GET: fetch document + lead data for public signing page
+    // GET: return only document metadata (no PII until verified)
     if (req.method === "GET") {
       const url = new URL(req.url);
       const refNumber = url.searchParams.get("ref");
@@ -47,16 +51,7 @@ serve(async (req: Request) => {
         );
       }
 
-      let lead = null;
-      if (doc.lead_id) {
-        const { data: leadData } = await supabase
-          .from("leads")
-          .select("first_name, last_name, email, phone, origin_address")
-          .eq("id", doc.lead_id)
-          .maybeSingle();
-        lead = leadData;
-      }
-
+      // Only return non-sensitive document metadata; lead PII requires verification
       return new Response(
         JSON.stringify({
           document: {
@@ -65,21 +60,100 @@ serve(async (req: Request) => {
             status: doc.status,
             ref_number: doc.ref_number,
           },
-          lead: lead ? {
-            first_name: lead.first_name,
-            last_name: lead.last_name,
-            email: lead.email,
-            phone: lead.phone,
-            origin_address: lead.origin_address,
-          } : null,
+          requires_verification: true,
         }),
         { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
 
-    // POST: update document status
+    // POST: verify identity OR update document status
     if (req.method === "POST") {
       const body = await req.json();
+      const { action } = body;
+
+      // ── Identity verification ──
+      if (action === "verify") {
+        const { ref_number, first_name, last_name } = body;
+
+        if (!isValidRef(ref_number)) {
+          return new Response(
+            JSON.stringify({ error: "Invalid ref_number" }),
+            { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+          );
+        }
+
+        if (
+          typeof first_name !== "string" || first_name.trim().length === 0 ||
+          typeof last_name !== "string" || last_name.trim().length === 0
+        ) {
+          return new Response(
+            JSON.stringify({ error: "First and last name are required" }),
+            { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+          );
+        }
+
+        // Look up document
+        const { data: doc } = await supabase
+          .from("esign_documents")
+          .select("lead_id, document_type, status, ref_number")
+          .eq("ref_number", ref_number)
+          .maybeSingle();
+
+        if (!doc || !doc.lead_id) {
+          return new Response(
+            JSON.stringify({ verified: false, error: "Document not found" }),
+            { status: 404, headers: { "Content-Type": "application/json", ...corsHeaders } }
+          );
+        }
+
+        // Look up lead
+        const { data: lead } = await supabase
+          .from("leads")
+          .select("first_name, last_name, email, phone, origin_address")
+          .eq("id", doc.lead_id)
+          .maybeSingle();
+
+        if (!lead) {
+          return new Response(
+            JSON.stringify({ verified: false, error: "Record not found" }),
+            { status: 404, headers: { "Content-Type": "application/json", ...corsHeaders } }
+          );
+        }
+
+        // Case-insensitive comparison
+        const firstMatch = normalize(first_name) === normalize(lead.first_name);
+        const lastMatch = normalize(last_name) === normalize(lead.last_name);
+
+        if (!firstMatch || !lastMatch) {
+          return new Response(
+            JSON.stringify({ verified: false, error: "Name does not match our records" }),
+            { status: 403, headers: { "Content-Type": "application/json", ...corsHeaders } }
+          );
+        }
+
+        // Verified — return full data
+        return new Response(
+          JSON.stringify({
+            verified: true,
+            document: {
+              lead_id: doc.lead_id,
+              document_type: doc.document_type,
+              status: doc.status,
+              ref_number: doc.ref_number,
+            },
+            lead: {
+              first_name: lead.first_name,
+              last_name: lead.last_name,
+              email: lead.email,
+              phone: lead.phone,
+              origin_address: lead.origin_address,
+            },
+          }),
+          { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        );
+      }
+
+      // ── Update document status (existing flow) ──
       const { ref_number, status } = body;
 
       if (!isValidRef(ref_number)) {
