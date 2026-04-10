@@ -434,134 +434,123 @@ export function CCACHAuthorizationForm({
               <div className="px-10 py-6 space-y-6 text-sm leading-relaxed text-foreground">
                 
                 {/* Customer & Payment Info Section */}
+                {/* Customer Contact Info */}
                 <section className="border border-foreground/10 rounded-lg p-5 bg-muted/5">
-                  <h2 className="font-bold text-xs text-foreground mb-4 uppercase tracking-wide flex items-center gap-2">
-                    <Shield className="w-4 h-4" />
-                    Payment Information
+                  <h2 className="font-bold text-xs text-foreground mb-4 uppercase tracking-wide">
+                    Customer Information
                   </h2>
-                  
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div className="space-y-3">
-                      <div>
-                        <label className="text-[10px] text-muted-foreground uppercase tracking-wide block mb-1">Email Address</label>
-                        <Input
-                          value={formData.email}
-                          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                          placeholder="email@example.com"
-                          className="h-9 text-sm"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-[10px] text-muted-foreground uppercase tracking-wide block mb-1">Phone Number</label>
-                        <Input
-                          value={formData.phone}
-                          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                          placeholder="(555) 123-4567"
-                          className="h-9 text-sm"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-[10px] text-muted-foreground uppercase tracking-wide block mb-1">Billing Address</label>
-                        <Input
-                          value={formData.address}
-                          onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                          placeholder="Full billing address"
-                          className="h-9 text-sm"
-                        />
-                      </div>
+                  <div className="grid md:grid-cols-3 gap-4">
+                    <div>
+                      <label className="text-[10px] text-muted-foreground uppercase tracking-wide block mb-1">Email Address</label>
+                      <Input
+                        value={formData.email}
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        placeholder="email@example.com"
+                        className="h-9 text-sm"
+                      />
                     </div>
-
-                    <div className="space-y-3">
-                      <div>
-                        <label className="text-[10px] text-muted-foreground uppercase tracking-wide block mb-1">Payment Method</label>
-                        <Select
-                          value={formData.paymentMethod}
-                          onValueChange={(v) => setFormData({ ...formData, paymentMethod: v })}
-                        >
-                          <SelectTrigger className="h-9 text-sm">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="card">
-                              <span className="flex items-center gap-2">
-                                <CreditCard className="w-3.5 h-3.5" />
-                                Credit/Debit Card
-                              </span>
-                            </SelectItem>
-                            <SelectItem value="ach">
-                              <span className="flex items-center gap-2">
-                                <Building className="w-3.5 h-3.5" />
-                                ACH Bank Transfer
-                              </span>
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      {formData.paymentMethod === "card" ? (
-                        <div className="border border-foreground/10 rounded-lg p-4 bg-muted/5 space-y-3">
-                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                            <Lock className="w-3.5 h-3.5" />
-                            <span>Card details are collected through our secure payment portal</span>
-                          </div>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            className="w-full gap-2 h-10 border-foreground/20 hover:bg-foreground hover:text-background transition-all"
-                            onClick={() => {
-                              toast.info("Secure payment portal will open after document submission");
-                            }}
-                          >
-                            <Shield className="w-4 h-4" />
-                            Open Secure Payment Portal
-                          </Button>
-                          <p className="text-[10px] text-muted-foreground text-center leading-relaxed">
-                            <strong className="text-foreground">No charges will be processed at this time.</strong> This step only verifies your payment method is valid and on file. Payment will not be collected until services are confirmed and authorized.
-                          </p>
-                          <p className="text-[10px] text-muted-foreground text-center leading-relaxed">
-                            For your protection, please do not share card details over phone, email, or chat.
-                            All payment information is entered directly into our PCI-compliant secure portal.
-                          </p>
-                        </div>
-                      ) : (
-                        <div className="border border-foreground/10 rounded-lg p-4 bg-muted/5 space-y-3">
-                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                            <Lock className="w-3.5 h-3.5" />
-                            <span>Bank details are collected through our secure payment portal</span>
-                          </div>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            className="w-full gap-2 h-10 border-foreground/20 hover:bg-foreground hover:text-background transition-all"
-                            onClick={() => {
-                              toast.info("Secure payment portal will open after document submission");
-                            }}
-                          >
-                            <Building className="w-4 h-4" />
-                            Open Secure Payment Portal
-                          </Button>
-                          <p className="text-[10px] text-muted-foreground text-center leading-relaxed">
-                            <strong className="text-foreground">No charges will be processed at this time.</strong> This step only verifies your payment method is valid and on file. Payment will not be collected until services are confirmed and authorized.
-                          </p>
-                          <p className="text-[10px] text-muted-foreground text-center leading-relaxed">
-                            For your protection, please do not share bank details over phone, email, or chat.
-                            All payment information is entered directly into our PCI-compliant secure portal.
-                          </p>
-                        </div>
-                      )}
+                    <div>
+                      <label className="text-[10px] text-muted-foreground uppercase tracking-wide block mb-1">Phone Number</label>
+                      <Input
+                        value={formData.phone}
+                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                        placeholder="(555) 123-4567"
+                        className="h-9 text-sm"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] text-muted-foreground uppercase tracking-wide block mb-1">Billing Address</label>
+                      <Input
+                        value={formData.address}
+                        onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                        placeholder="Full billing address"
+                        className="h-9 text-sm"
+                      />
                     </div>
                   </div>
+                </section>
 
-                  {/* Authorization Amount */}
-                  <div className="mt-4 pt-4 border-t border-foreground/10">
-                    <div className="flex items-center justify-between">
-                      <span className="text-[10px] text-muted-foreground uppercase tracking-wide">Authorization Amount</span>
-                      <div className="flex items-center gap-1">
-                        <span className="text-muted-foreground">$</span>
+                {/* Payment Method Section - Premium Card */}
+                <section className="rounded-xl border border-foreground/10 overflow-hidden">
+                  <div className="px-5 py-3 bg-muted/30 border-b border-foreground/10">
+                    <h2 className="font-bold text-[10px] text-muted-foreground uppercase tracking-[0.15em]">
+                      Payment Method
+                    </h2>
+                  </div>
+
+                  <div className="p-5 space-y-4">
+                    <Select
+                      value={formData.paymentMethod}
+                      onValueChange={(v) => setFormData({ ...formData, paymentMethod: v })}
+                    >
+                      <SelectTrigger className="h-10 text-sm border-foreground/15">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="card">
+                          <span className="flex items-center gap-2">
+                            <CreditCard className="w-3.5 h-3.5" />
+                            Credit/Debit Card
+                          </span>
+                        </SelectItem>
+                        <SelectItem value="ach">
+                          <span className="flex items-center gap-2">
+                            <Building className="w-3.5 h-3.5" />
+                            ACH Bank Transfer
+                          </span>
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+
+                    {/* Secure Portal Card */}
+                    <div className="rounded-lg border border-foreground/8 bg-gradient-to-b from-muted/20 to-muted/5 p-5 space-y-4">
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <Lock className="w-3.5 h-3.5 flex-shrink-0" />
+                        <span>
+                          {formData.paymentMethod === "card" 
+                            ? "Card details are collected through our secure payment portal"
+                            : "Bank details are collected through our secure payment portal"
+                          }
+                        </span>
+                      </div>
+
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="w-full gap-2.5 h-11 text-sm font-medium border-foreground/20 hover:bg-foreground hover:text-background transition-all"
+                        onClick={() => {
+                          toast.info("Secure payment portal will open after document submission");
+                        }}
+                      >
+                        <Shield className="w-4 h-4" />
+                        Open Secure Payment Portal
+                      </Button>
+
+                      <div className="space-y-2">
+                        <p className="text-[11px] leading-relaxed text-center">
+                          <span className="font-semibold text-foreground">No charges will be processed at this time.</span>{" "}
+                          <span className="text-muted-foreground">
+                            This step only verifies your payment method is valid and on file. Payment will not be 
+                            collected until services are confirmed and authorized.
+                          </span>
+                        </p>
+                        <p className="text-[10px] text-muted-foreground/70 text-center leading-relaxed">
+                          For your protection, please do not share {formData.paymentMethod === "card" ? "card" : "bank"} details over phone, 
+                          email, or chat. All payment information is entered directly into our PCI-compliant secure portal.
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Authorization Amount */}
+                    <Separator className="bg-foreground/8" />
+                    <div className="flex items-center justify-between pt-1">
+                      <span className="text-xs text-muted-foreground font-medium">Authorization Amount</span>
+                      <div className="flex items-center border border-foreground/15 rounded-md overflow-hidden">
+                        <span className="px-3 py-2 bg-muted/30 text-muted-foreground text-sm border-r border-foreground/10">$</span>
                         <Input
                           value={formData.amount}
                           onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-                          className="h-9 w-32 text-right font-bold text-lg"
+                          className="h-9 w-32 text-right font-bold text-base border-0 focus-visible:ring-0 shadow-none"
                         />
                       </div>
                     </div>
