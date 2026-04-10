@@ -6,7 +6,8 @@ import { EstimateAuthDocument } from "@/components/esign/EstimateAuthDocument";
 import { CCACHDocumentWrapper } from "@/components/esign/CCACHDocumentWrapper";
 import { BOLDocumentWrapper } from "@/components/esign/BOLDocumentWrapper";
 import { ESignConsentBanner } from "@/components/esign/ESignConsentBanner";
-import { DocumentTabs, type DocumentType } from "@/components/esign/DocumentTabs";
+import { ESignStepTracker } from "@/components/esign/ESignStepTracker";
+import { type DocumentType } from "@/components/esign/DocumentTabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -45,7 +46,6 @@ export default function ESignViewPage() {
   const [customerPhone, setCustomerPhone] = useState("");
   const [customerAddress, setCustomerAddress] = useState("");
 
-  // Fetch lead phone and address if leadId is available
   useEffect(() => {
     if (!leadId) return;
     supabase
@@ -83,55 +83,41 @@ export default function ESignViewPage() {
     try {
       await supabase.functions.invoke("capture-esign-event", {
         body: {
-          refNumber,
-          documentType: activeDocument,
-          customerName: typedName,
-          customerEmail,
-          eventType,
-          eventData: eventData || {},
-          documentHash: generateDocHash(),
-          consentGiven,
+          refNumber, documentType: activeDocument, customerName: typedName,
+          customerEmail, eventType, eventData: eventData || {},
+          documentHash: generateDocHash(), consentGiven,
           consentText: consentGiven
             ? "I consent to conduct this transaction electronically and agree that my electronic signature is legally binding under the ESIGN Act and UETA."
             : undefined,
           leadId: leadId || undefined,
         },
       });
-    } catch (e) {
-      console.error("Audit log failed:", e);
-    }
+    } catch (e) { console.error("Audit log failed:", e); }
   }, [refNumber, activeDocument, typedName, customerEmail, generateDocHash, consentGiven, leadId]);
 
-  // Log document_opened on mount
   useState(() => {
     logAuditEvent("document_opened", { documentType: docTypeParam });
   });
 
-  // Helper to update esign_documents status
   const updateDocumentStatus = useCallback(async (status: string, docType: string) => {
     if (!leadId) return;
     try {
       const updateData: Record<string, any> = { status };
       if (status === "completed") updateData.completed_at = new Date().toISOString();
       if (status === "opened") updateData.opened_at = new Date().toISOString();
-
       await supabase
         .from("esign_documents")
         .update(updateData)
         .eq("lead_id", leadId)
         .eq("ref_number", refNumber);
-    } catch (e) {
-      console.error("Failed to update document status:", e);
-    }
+    } catch (e) { console.error("Failed to update document status:", e); }
   }, [leadId, refNumber]);
 
   const handleSign = (field: SignatureField) => {
     if (field === "signature" && typedName.length < 2) return;
     if (field !== "signature" && typedInitials.length < 1) return;
-
     setSignatures((prev) => ({ ...prev, [field]: true }));
     logAuditEvent("field_signed", { field, value: field === "signature" ? typedName : typedInitials });
-
     const fieldOrder: SignatureField[] = ["initial1", "initial2", "initial3", "signature"];
     const currentIndex = fieldOrder.indexOf(field);
     if (currentIndex < fieldOrder.length - 1) {
@@ -145,8 +131,11 @@ export default function ESignViewPage() {
       logAuditEvent("document_signed", { documentType: "estimate", documentHash: generateDocHash() });
       updateDocumentStatus("completed", "estimate");
       toast.success("Estimate Authorization submitted successfully");
+      // Reset signatures for next document
+      setSignatures({ initial1: false, initial2: false, initial3: false, signature: false });
+      setCurrentField("initial1");
       setActiveDocument("ccach");
-      window.scrollTo(0, 0);
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
@@ -168,14 +157,14 @@ export default function ESignViewPage() {
   const handleContinueToNext = () => {
     if (activeDocument === "estimate") {
       setActiveDocument("ccach");
-      window.scrollTo(0, 0);
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
   const handleDocumentChange = (doc: DocumentType) => {
     setActiveDocument(doc);
     logAuditEvent("document_viewed", { documentType: doc });
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleDownloadPdf = async () => {
@@ -184,9 +173,7 @@ export default function ESignViewPage() {
       await new Promise((r) => setTimeout(r, 1500));
       logAuditEvent("document_downloaded", { documentType: activeDocument });
       toast.success("Document downloaded as PDF");
-    } finally {
-      setIsDownloading(false);
-    }
+    } finally { setIsDownloading(false); }
   };
 
   const handleConsentChange = (given: boolean) => {
@@ -202,7 +189,7 @@ export default function ESignViewPage() {
     <AgentShell breadcrumbs={[
       { label: "My Customers", href: "/agent/customers" },
       ...(leadId ? [{ label: customerName, href: `/agent/customers/${leadId}` }] : []),
-      { label: "E-Sign" , href: leadId ? `/agent/esign?leadId=${leadId}` : "/agent/customers" },
+      { label: "E-Sign", href: leadId ? `/agent/esign?leadId=${leadId}` : "/agent/customers" },
       { label: "View Document" },
     ]}>
       <div className="min-h-screen bg-muted/30 py-6 md:py-8 px-3 md:px-4">
@@ -218,7 +205,6 @@ export default function ESignViewPage() {
           </button>
 
           {isCompleted ? (
-            /* ─── Read-only completed document view ─── */
             <div className="max-w-2xl mx-auto space-y-6">
               <Card className="border border-border bg-card">
                 <CardContent className="p-6 space-y-6">
@@ -231,7 +217,6 @@ export default function ESignViewPage() {
                       <p className="text-sm text-muted-foreground">This document has been signed and completed</p>
                     </div>
                   </div>
-
                   <div className="rounded-lg border border-border bg-muted/30 p-5 space-y-3">
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-muted-foreground">Document Type</span>
@@ -258,8 +243,6 @@ export default function ESignViewPage() {
                       </Badge>
                     </div>
                   </div>
-
-                  {/* Document preview placeholder */}
                   <div className="rounded-lg border border-border bg-background p-8 min-h-[400px] flex flex-col items-center justify-center text-center space-y-4">
                     <FileText className="w-16 h-16 text-muted-foreground/20" />
                     <div>
@@ -269,7 +252,6 @@ export default function ESignViewPage() {
                       </p>
                     </div>
                   </div>
-
                   <div className="flex gap-3">
                     <Button variant="outline" className="flex-1 gap-2" onClick={handleDownloadPdf} disabled={isDownloading}>
                       {isDownloading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
@@ -280,77 +262,73 @@ export default function ESignViewPage() {
               </Card>
             </div>
           ) : (
-            /* ─── Signing flow (unchanged) ─── */
-            <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 mt-4">
+            <>
+              {/* Step Tracker - top of page */}
               {!isBol && (
-                <ESignSidebar
-                  typedName={typedName}
-                  onTypedNameChange={setTypedName}
-                  typedInitials={typedInitials}
-                  signatures={signatures}
-                  activeDocument={activeDocument}
-                  onDocumentChange={handleDocumentChange}
-                  completedDocuments={completedDocuments}
-                  allSigned={allSigned}
-                  recipientEmail={customerEmail}
-                  refNumber={refNumber}
-                  onDownloadPdf={handleDownloadPdf}
-                  isDownloading={isDownloading}
-                />
+                <div className="max-w-md mx-auto mb-8">
+                  <ESignStepTracker
+                    activeDocument={activeDocument}
+                    completedDocuments={completedDocuments}
+                    onStepClick={handleDocumentChange}
+                  />
+                </div>
               )}
 
-              <div className="flex-1 max-w-full lg:max-w-[8.5in]">
-                {isBol ? (
-                  <BOLDocumentWrapper
+              <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
+                {!isBol && (
+                  <ESignSidebar
                     typedName={typedName}
                     onTypedNameChange={setTypedName}
-                    isSubmitted={false}
-                    onSubmit={handleSubmitBOL}
-                  />
-                ) : activeDocument === "estimate" ? (
-                  <EstimateAuthDocument
-                    typedName={typedName}
                     typedInitials={typedInitials}
                     signatures={signatures}
-                    currentField={currentField}
-                    onSign={handleSign}
-                    onSubmit={handleSubmitEstimate}
-                    onContinueToNext={handleContinueToNext}
-                    isSubmitted={completedDocuments.estimate}
+                    activeDocument={activeDocument}
+                    onDocumentChange={handleDocumentChange}
+                    completedDocuments={completedDocuments}
+                    allSigned={allSigned}
+                    recipientEmail={customerEmail}
                     refNumber={refNumber}
-                    today={today}
-                    consentGiven={consentGiven}
-                    onConsentChange={handleConsentChange}
-                  />
-                ) : (
-                  <CCACHDocumentWrapper
-                    typedName={typedName}
-                    onTypedNameChange={setTypedName}
-                    isSubmitted={completedDocuments.ccach}
-                    onSubmit={handleSubmitCCACH}
-                    customerEmail={customerEmail}
-                    customerPhone={customerPhone}
-                    customerAddress={customerAddress}
+                    onDownloadPdf={handleDownloadPdf}
+                    isDownloading={isDownloading}
                   />
                 )}
 
-                {/* Documents to Sign — bottom of page */}
-                {!isBol && (
-                  <div className="mt-6">
-                    <Card className="border border-border bg-background shadow-sm">
-                      <CardContent className="p-4 space-y-3">
-                        <h3 className="font-medium text-[10px] uppercase tracking-wider text-muted-foreground">Documents to Sign</h3>
-                        <DocumentTabs
-                          activeDocument={activeDocument}
-                          onDocumentChange={handleDocumentChange}
-                          completedDocuments={completedDocuments}
-                        />
-                      </CardContent>
-                    </Card>
-                  </div>
-                )}
+                <div className="flex-1 max-w-full lg:max-w-[8.5in]">
+                  {isBol ? (
+                    <BOLDocumentWrapper
+                      typedName={typedName}
+                      onTypedNameChange={setTypedName}
+                      isSubmitted={false}
+                      onSubmit={handleSubmitBOL}
+                    />
+                  ) : activeDocument === "estimate" ? (
+                    <EstimateAuthDocument
+                      typedName={typedName}
+                      typedInitials={typedInitials}
+                      signatures={signatures}
+                      currentField={currentField}
+                      onSign={handleSign}
+                      onSubmit={handleSubmitEstimate}
+                      onContinueToNext={handleContinueToNext}
+                      isSubmitted={completedDocuments.estimate}
+                      refNumber={refNumber}
+                      today={today}
+                      consentGiven={consentGiven}
+                      onConsentChange={handleConsentChange}
+                    />
+                  ) : (
+                    <CCACHDocumentWrapper
+                      typedName={typedName}
+                      onTypedNameChange={setTypedName}
+                      isSubmitted={completedDocuments.ccach}
+                      onSubmit={handleSubmitCCACH}
+                      customerEmail={customerEmail}
+                      customerPhone={customerPhone}
+                      customerAddress={customerAddress}
+                    />
+                  )}
+                </div>
               </div>
-            </div>
+            </>
           )}
         </div>
       </div>

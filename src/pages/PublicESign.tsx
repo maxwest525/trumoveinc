@@ -5,8 +5,8 @@ import { ESignSidebar } from "@/components/esign/ESignSidebar";
 import { EstimateAuthDocument } from "@/components/esign/EstimateAuthDocument";
 import { CCACHDocumentWrapper } from "@/components/esign/CCACHDocumentWrapper";
 import { ESignConsentBanner } from "@/components/esign/ESignConsentBanner";
-import { DocumentTabs, type DocumentType } from "@/components/esign/DocumentTabs";
-import { Card, CardContent } from "@/components/ui/card";
+import { ESignStepTracker } from "@/components/esign/ESignStepTracker";
+import { type DocumentType } from "@/components/esign/DocumentTabs";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import ESignVerificationGate from "@/components/esign/ESignVerificationGate";
@@ -19,9 +19,7 @@ export default function PublicESign() {
 
   const refNumber = urlRef || searchParams.get("ref") || "DOC-2026-0001";
 
-  // Verification gate state
   const [verified, setVerified] = useState(false);
-
   const [customerName, setCustomerName] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
   const [leadId, setLeadId] = useState("");
@@ -41,7 +39,6 @@ export default function PublicESign() {
 
   useEffect(() => { window.scrollTo(0, 0); }, []);
 
-  // Handle successful verification
   const handleVerified = (data: {
     lead: { first_name: string; last_name: string; email: string; phone: string; origin_address: string };
     document: { lead_id: string; document_type: string; status: string; ref_number: string };
@@ -108,8 +105,11 @@ export default function PublicESign() {
     logAuditEvent("document_signed", { documentType: "estimate" });
     updateDocumentStatus("completed");
     toast.success("Estimate Authorization submitted successfully");
+    // Reset signatures for next document
+    setSignatures({ initial1: false, initial2: false, initial3: false, signature: false });
+    setCurrentField("initial1");
     setActiveDocument("ccach");
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleSubmitCCACH = () => {
@@ -122,14 +122,14 @@ export default function PublicESign() {
   const handleContinueToNext = () => {
     if (activeDocument === "estimate") {
       setActiveDocument("ccach");
-      window.scrollTo(0, 0);
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
   const handleDocumentChange = (doc: DocumentType) => {
     setActiveDocument(doc);
     logAuditEvent("document_viewed", { documentType: doc });
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleConsentChange = (given: boolean) => {
@@ -146,7 +146,6 @@ export default function PublicESign() {
     } finally { setIsDownloading(false); }
   };
 
-  // Show verification gate before documents
   if (!verified) {
     return (
       <SiteShell hideHeader hideTrustStrip>
@@ -155,76 +154,90 @@ export default function PublicESign() {
     );
   }
 
+  const allComplete = completedDocuments.estimate && completedDocuments.ccach;
+
   return (
     <SiteShell hideHeader hideTrustStrip>
       <div className="min-h-screen bg-muted/30 py-4 sm:py-6 md:py-8 px-2 sm:px-3 md:px-4">
         <div className="max-w-[1200px] mx-auto">
-          <div className="text-center mb-4 sm:mb-6 md:mb-8">
+          {/* Header */}
+          <div className="text-center mb-6 md:mb-8">
             <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-foreground">Document Signing</h1>
-            <p className="text-muted-foreground mt-1 text-xs sm:text-sm md:text-base">
-              Please review and sign your documents below. Reference: {refNumber}
+            <p className="text-muted-foreground mt-1 text-xs sm:text-sm">
+              Reference: <span className="font-mono">{refNumber}</span>
             </p>
           </div>
 
-          <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
-            <div className="w-full lg:w-72 shrink-0">
-              <ESignSidebar
-                typedName={typedName}
-                onTypedNameChange={setTypedName}
-                typedInitials={typedInitials}
-                signatures={signatures}
-                activeDocument={activeDocument}
-                onDocumentChange={handleDocumentChange}
-                completedDocuments={completedDocuments}
-                allSigned={allSigned}
-                recipientEmail={customerEmail}
-                refNumber={refNumber}
-                onDownloadPdf={handleDownloadPdf}
-                isDownloading={isDownloading}
-                isPublic
-              />
-            </div>
+          {/* Step Tracker */}
+          <div className="max-w-sm mx-auto mb-8">
+            <ESignStepTracker
+              activeDocument={activeDocument}
+              completedDocuments={completedDocuments}
+              onStepClick={handleDocumentChange}
+            />
+          </div>
 
-            <div className="flex-1 min-w-0 max-w-full lg:max-w-[8.5in] overflow-hidden">
-              {activeDocument === "estimate" ? (
-                <EstimateAuthDocument
-                  typedName={typedName}
-                  typedInitials={typedInitials}
-                  signatures={signatures}
-                  currentField={currentField}
-                  onSign={handleSign}
-                  onSubmit={handleSubmitEstimate}
-                  onContinueToNext={handleContinueToNext}
-                  isSubmitted={completedDocuments.estimate}
-                  refNumber={refNumber}
-                  today={today}
-                  consentGiven={consentGiven}
-                  onConsentChange={handleConsentChange}
-                />
-              ) : (
-                <CCACHDocumentWrapper
+          {allComplete ? (
+            /* All documents signed */
+            <div className="max-w-md mx-auto text-center py-12 space-y-4">
+              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                  <polyline points="22 4 12 14.01 9 11.01" />
+                </svg>
+              </div>
+              <h2 className="text-xl font-bold text-foreground">All Documents Signed</h2>
+              <p className="text-sm text-muted-foreground">
+                Thank you, {customerName}. All your documents have been signed successfully. You will receive a confirmation email shortly.
+              </p>
+            </div>
+          ) : (
+            <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
+              <div className="w-full lg:w-72 shrink-0">
+                <ESignSidebar
                   typedName={typedName}
                   onTypedNameChange={setTypedName}
-                  isSubmitted={completedDocuments.ccach}
-                  onSubmit={handleSubmitCCACH}
+                  typedInitials={typedInitials}
+                  signatures={signatures}
+                  activeDocument={activeDocument}
+                  onDocumentChange={handleDocumentChange}
+                  completedDocuments={completedDocuments}
+                  allSigned={allSigned}
+                  recipientEmail={customerEmail}
+                  refNumber={refNumber}
+                  onDownloadPdf={handleDownloadPdf}
+                  isDownloading={isDownloading}
+                  isPublic
                 />
-              )}
+              </div>
 
-              {/* Documents to Sign — bottom of page */}
-              <div className="mt-6">
-                <Card className="border border-border bg-background shadow-sm">
-                  <CardContent className="p-4 space-y-3">
-                    <h3 className="font-medium text-[10px] uppercase tracking-wider text-muted-foreground">Documents to Sign</h3>
-                    <DocumentTabs
-                      activeDocument={activeDocument}
-                      onDocumentChange={handleDocumentChange}
-                      completedDocuments={completedDocuments}
-                    />
-                  </CardContent>
-                </Card>
+              <div className="flex-1 min-w-0 max-w-full lg:max-w-[8.5in] overflow-hidden">
+                {activeDocument === "estimate" ? (
+                  <EstimateAuthDocument
+                    typedName={typedName}
+                    typedInitials={typedInitials}
+                    signatures={signatures}
+                    currentField={currentField}
+                    onSign={handleSign}
+                    onSubmit={handleSubmitEstimate}
+                    onContinueToNext={handleContinueToNext}
+                    isSubmitted={completedDocuments.estimate}
+                    refNumber={refNumber}
+                    today={today}
+                    consentGiven={consentGiven}
+                    onConsentChange={handleConsentChange}
+                  />
+                ) : (
+                  <CCACHDocumentWrapper
+                    typedName={typedName}
+                    onTypedNameChange={setTypedName}
+                    isSubmitted={completedDocuments.ccach}
+                    onSubmit={handleSubmitCCACH}
+                  />
+                )}
               </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </SiteShell>
