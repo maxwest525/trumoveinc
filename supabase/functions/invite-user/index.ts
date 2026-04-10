@@ -37,6 +37,8 @@ Deno.serve(async (req) => {
     }
 
     const adminClient = createClient(supabaseUrl, serviceRoleKey);
+    const publicClient = createClient(supabaseUrl, anonKey);
+    const appOrigin = req.headers.get("origin") || "https://trumoveinc.lovable.app";
 
     // Check caller is owner or admin
     const { data: callerRoles } = await adminClient
@@ -87,7 +89,7 @@ Deno.serve(async (req) => {
       // Invite user via admin API — redirects to /set-password so they must create credentials
       const { data: inviteData, error: inviteError } = await adminClient.auth.admin.inviteUserByEmail(email, {
         data: { display_name: display_name || email.split("@")[0] },
-        redirectTo: `${req.headers.get("origin") || "https://trumoveinc.lovable.app"}/set-password`,
+        redirectTo: `${appOrigin}/set-password`,
       });
 
       if (inviteError) {
@@ -240,11 +242,50 @@ Deno.serve(async (req) => {
       }
 
       const { error: resendError } = await adminClient.auth.admin.inviteUserByEmail(profile.email, {
-        redirectTo: `${req.headers.get("origin") || "https://trumoveinc.lovable.app"}/set-password`,
+        redirectTo: `${appOrigin}/set-password`,
       });
 
       if (resendError) {
         return new Response(JSON.stringify({ error: resendError.message }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      return new Response(JSON.stringify({ success: true }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // RESET PASSWORD: Send a password reset email to an existing user
+    if (action === "reset_password") {
+      const { user_id } = body;
+      if (!user_id) {
+        return new Response(JSON.stringify({ error: "user_id is required" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const { data: profile } = await adminClient
+        .from("profiles")
+        .select("email")
+        .eq("id", user_id)
+        .single();
+
+      if (!profile?.email) {
+        return new Response(JSON.stringify({ error: "User email not found" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const { error: resetError } = await publicClient.auth.resetPasswordForEmail(profile.email, {
+        redirectTo: `${appOrigin}/reset-password`,
+      });
+
+      if (resetError) {
+        return new Response(JSON.stringify({ error: resetError.message }), {
           status: 400,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
