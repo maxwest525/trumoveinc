@@ -1,14 +1,7 @@
 import MarketingShell from "@/components/layout/MarketingShell";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Settings, Plug, Mail, Users } from "lucide-react";
-
-// Re-use existing Integrations and Templates page content as embedded tabs
-import MarketingIntegrations from "./MarketingIntegrations";
-import MarketingTemplates from "./MarketingTemplates";
-
-// Since both pages wrap in MarketingShell, we need lightweight inner versions.
-// For the initial restructure, we'll create simple wrapper components.
 import IntegrationsContent from "@/components/marketing/settings/IntegrationsContent";
 import TemplatesContent from "@/components/marketing/settings/TemplatesContent";
 
