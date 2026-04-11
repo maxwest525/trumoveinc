@@ -94,17 +94,17 @@ export default function ImplementationContent() {
                 <div className="flex gap-2 flex-wrap">
                   {preview.status === "pending" && (
                     <>
-                      <Button size="sm" className="h-7 text-xs" onClick={() => { updateStatus(preview.id, "approved"); toast.success("Approved"); }}>Approve</Button>
-                      <Button size="sm" variant="destructive" className="h-7 text-xs" onClick={() => { updateStatus(preview.id, "rejected"); toast.info("Rejected"); }}>Reject</Button>
+                      <Button size="sm" className="h-7 text-xs" onClick={() => { updateChange(preview.id, { status: "approved" }); toast.success("Approved"); }}>Approve</Button>
+                      <Button size="sm" variant="destructive" className="h-7 text-xs" onClick={() => { updateChange(preview.id, { status: "rejected" }); toast.info("Rejected"); }}>Reject</Button>
                     </>
                   )}
                   {preview.status === "approved" && (
-                    <Button size="sm" className="h-7 text-xs" onClick={() => { updateStatus(preview.id, "deployed"); toast.success("Deployed"); }}>
+                    <Button size="sm" className="h-7 text-xs" onClick={() => { updateChange(preview.id, { status: "deployed" }); toast.success("Deployed"); }}>
                       <Rocket className="w-3 h-3 mr-1" />Deploy
                     </Button>
                   )}
                   {preview.status === "deployed" && (
-                    <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => { updateStatus(preview.id, "rolled_back"); toast.info("Rolled back"); }}>
+                    <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => { updateChange(preview.id, { status: "rolled_back" }); toast.info("Rolled back"); }}>
                       <RotateCcw className="w-3 h-3 mr-1" />Roll Back
                     </Button>
                   )}
