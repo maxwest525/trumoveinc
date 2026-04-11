@@ -1,30 +1,37 @@
 
 
-# Fix: Remove Client-Side Token Exposure on gsc_connections
+## Add Redirect Banners to Legacy Marketing Routes
 
-## Problem
-The `gsc_connections` table has a SELECT policy (`Users can view own GSC connection`) that returns **all columns** — including `access_token` and `refresh_token` — to authenticated users via the client API. Even though no client code currently queries this table directly (all token access goes through edge functions using `service_role`), the policy is an open door. Any future client-side query or browser dev tools could read raw OAuth tokens.
+**What**: When a user lands on any of the old/legacy marketing URLs (like `/marketing/integrations`, `/marketing/seo`, `/marketing/blog`, etc.), show a clear banner at the top of the page telling them this page has been consolidated and directing them to the new location.
 
-A `gsc_connections_safe` view (without token columns) already exists but isn't enforced as the sole read path.
+**How**:
 
-## What Changes
+1. **Create a `LegacyPageBanner` component** - A styled alert/banner that says something like:
+   - "This page has moved to [New Page Name]" with a link button to navigate there
+   - Styled with a subtle amber/yellow background to stand out without being alarming
+   - Includes a "Go to [New Page]" button
 
-### 1. Database Migration — Drop the Authenticated SELECT Policy
-Remove the `Users can view own GSC connection` SELECT policy from the base table. This ensures tokens are **only** readable server-side via `service_role`.
+2. **Add the banner to each legacy page** by mapping old routes to their new destinations:
 
-```sql
-DROP POLICY IF EXISTS "Users can view own GSC connection" ON public.gsc_connections;
-```
+| Legacy Route | Redirects To |
+|---|---|
+| `/marketing/integrations` | Settings (Integrations tab) |
+| `/marketing/seo` | Content & SEO |
+| `/marketing/blog` | Content & SEO (Pipeline tab) |
+| `/marketing/analytics` | Dashboard |
+| `/marketing/backlinks` | Content & SEO (Backlinks tab) |
+| `/marketing/domain-authority` | Content & SEO (Backlinks tab) |
+| `/marketing/cro` | Conversion Lab |
+| `/marketing/recommendations` | Action Items |
+| `/marketing/content-center` | Content & SEO (Pipeline tab) |
+| `/marketing/implementation` | Action Items (Implementation tab) |
+| `/marketing/ppc` | Advertising |
+| `/marketing/competitor-seo` | Competitors |
+| `/marketing/templates` | Content & SEO |
 
-The `service_role` ALL policy remains, so edge functions (`gsc-auth`, `gsc-data`) continue working unchanged.
+3. **Implementation approach**: Rather than editing every legacy page file, replace the legacy route elements in `App.tsx` with a simple wrapper component that renders the old page content with the banner injected at the top via the `MarketingShell`. This keeps it DRY - one component handles all legacy routes.
 
-### 2. No Code Changes Needed
-- Edge functions (`gsc-auth/index.ts`, `gsc-data/index.ts`) use `SUPABASE_SERVICE_ROLE_KEY` — unaffected by this policy change.
-- No client-side `.tsx`/`.ts` code queries the `gsc_connections` base table. The safe view is available if client reads are ever needed.
-- The INSERT, UPDATE, and DELETE policies remain scoped to `user_id = auth.uid()` for user-initiated operations (connecting, selecting property, disconnecting).
-
-## Impact
-- Tokens become completely inaccessible from the client API
-- All existing functionality (connect, disconnect, list properties, fetch data) continues working through edge functions
-- The `gsc_connections_safe` view remains available for any future client-side status checks
+**Files touched**:
+- Create: `src/components/marketing/LegacyPageBanner.tsx`
+- Edit: `src/App.tsx` (wrap legacy route elements with banner)
 
