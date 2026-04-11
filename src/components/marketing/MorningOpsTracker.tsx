@@ -59,7 +59,7 @@ export default function MorningOpsTracker({ activityLog }: { activityLog: Activi
           category: "critical",
           status: c.status === "rolled_back" ? "alert" : "pending",
           source: "Implementation Center",
-          link: "/marketing/implementation",
+          link: "/marketing/action-items",
           description: c.description,
         });
       });
@@ -71,7 +71,7 @@ export default function MorningOpsTracker({ activityLog }: { activityLog: Activi
       category: "recommendations",
       status: "pending",
       source: "Recommendations Engine",
-      link: "/marketing/recommendations",
+      link: "/marketing/action-items",
       description: "Check for new high-priority opportunities and quick wins.",
     });
 
@@ -82,7 +82,7 @@ export default function MorningOpsTracker({ activityLog }: { activityLog: Activi
       category: "content",
       status: "pending",
       source: "Content Center",
-      link: "/marketing/content",
+      link: "/marketing/content-seo",
       description: "Verify upcoming publish dates and review drafts.",
     });
 
@@ -105,10 +105,10 @@ export default function MorningOpsTracker({ activityLog }: { activityLog: Activi
 
     // 5 — Routine checks
     const routines: Omit<OpsItem, "status">[] = [
-      { id: "routine-ads", title: "Review ad performance & spend", category: "routine", source: "PPC Dashboard", link: "/marketing/seo", description: "Check CTR, CPA, and budget pacing." },
-      { id: "routine-seo", title: "Check SEO rankings & crawl health", category: "routine", source: "SEO Module", link: "/marketing/seo", description: "Verify keyword positions and crawl status." },
-      { id: "routine-cro", title: "Review CRO experiments & conversion rates", category: "routine", source: "CRO Dashboard", link: "/marketing/cro", description: "Check running A/B tests and funnel metrics." },
-      { id: "routine-integrations", title: "Verify integration sync health", category: "routine", source: "Integrations Hub", link: "/marketing/integrations", description: "Ensure all data sources are syncing." },
+      { id: "routine-ads", title: "Review ad performance & spend", category: "routine", source: "Advertising", link: "/marketing/advertising", description: "Check CTR, CPA, and budget pacing." },
+      { id: "routine-seo", title: "Check SEO rankings & crawl health", category: "routine", source: "Content & SEO", link: "/marketing/content-seo", description: "Verify keyword positions and crawl status." },
+      { id: "routine-cro", title: "Review CRO experiments & conversion rates", category: "routine", source: "Conversion Lab", link: "/marketing/conversion-lab", description: "Check running A/B tests and funnel metrics." },
+      { id: "routine-integrations", title: "Verify integration sync health", category: "routine", source: "Settings", link: "/marketing/settings", description: "Ensure all data sources are syncing." },
     ];
     routines.forEach((r) => list.push({ ...r, status: "pending" } as OpsItem));
 
