@@ -27,7 +27,7 @@ const CATEGORY_CONFIG: Record<ChangeCategory, { label: string; icon: typeof Sear
 };
 
 export default function ImplementationContent() {
-  const { changes, updateStatus, removeChange } = useImplementationQueue();
+  const { changes, updateChange } = useImplementationQueue();
   const [previewId, setPreviewId] = useState<string | null>(null);
   const preview = changes.find((c) => c.id === previewId);
 

@@ -55,10 +55,15 @@ export default function RecommendationsContent() {
 
   function approve(rec: Recommendation) {
     addChange({
+      id: `rec-${rec.id}-${Date.now()}`,
       title: rec.title,
       description: rec.description,
       category: rec.category === "ads" ? "ads" : rec.category === "cro" ? "cro" : rec.category === "technical" ? "technical" : rec.category === "content" ? "content" : "seo",
       status: "pending",
+      source: "AI Recommendations",
+      priority: rec.priority === "critical" ? "high" : rec.priority === "high" ? "high" : rec.priority === "medium" ? "medium" : "low",
+      createdAt: new Date().toISOString(),
+      author: "AI Engine",
     });
     setRecs((prev) => prev.map((r) => (r.id === rec.id ? { ...r, status: "approved" as const } : r)));
   }
