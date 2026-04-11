@@ -81,6 +81,7 @@ import DispatchJobs from "./pages/dispatch/DispatchJobs";
 import DispatchESign from "./pages/dispatch/DispatchESign";
 import Unsubscribe from "./pages/Unsubscribe";
 import AgentIncomingLeads from "./pages/AgentIncomingLeads";
+import CreativeStudio from "./pages/creative/CreativeStudio";
 
 const queryClient = new QueryClient();
 
@@ -169,6 +170,9 @@ const App = () => (
             <Route path="/marketing/content-center" element={<RoleGuard allowedRoles={["marketing"]}><MarketingContentCenter /></RoleGuard>} />
             <Route path="/marketing/implementation" element={<RoleGuard allowedRoles={["marketing"]}><MarketingImplementation /></RoleGuard>} />
             <Route path="/marketing/integrations" element={<RoleGuard allowedRoles={["marketing"]}><MarketingIntegrations /></RoleGuard>} />
+
+            {/* Creative Studio */}
+            <Route path="/creative/studio" element={<RoleGuard allowedRoles={["marketing", "admin"]}><CreativeStudio /></RoleGuard>} />
 
             {/* Accounting */}
             <Route path="/accounting/dashboard" element={<RoleGuard allowedRoles={["admin", "accounting"]}><AccountingDashboard /></RoleGuard>} />
