@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import SiteShell from "@/components/layout/SiteShell";
 import PortalAuthForm from "@/components/auth/PortalAuthForm";
-import { LogOut, Bell, Headset, Users, Shield, Sparkles, Truck, Megaphone } from "lucide-react";
+import { LogOut, Bell, Headset, Users, Shield, Sparkles, Truck, Megaphone, Palette } from "lucide-react";
 import logoImg from "@/assets/logo.png";
 import PortalCard from "@/components/portal/PortalCard";
 import { useAgentProfile } from "@/hooks/useAgentProfile";
@@ -72,6 +72,15 @@ const PORTALS: { key: string; label: string; description: string; href: string; 
     icon: Megaphone,
     accentHsl: "330 81% 60%",
     requiredRoles: ["marketing"],
+  },
+  {
+    key: "creative",
+    label: "Creative Studio",
+    description: "Website builder, landing pages, AI images & media library",
+    href: "/creative/studio",
+    icon: Palette,
+    accentHsl: "280 70% 55%",
+    requiredRoles: ["marketing", "admin"],
   },
 ];
 
