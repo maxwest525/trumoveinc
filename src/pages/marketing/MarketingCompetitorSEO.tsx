@@ -1,5 +1,6 @@
 import MarketingShell from "@/components/layout/MarketingShell";
-import { Swords, TrendingUp, Globe, AlertTriangle } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Swords, TrendingUp, Globe, AlertTriangle, Eye } from "lucide-react";
 
 const competitors = [
   { name: "move.org", domain: "move.org", organicTraffic: "2.1M", paidTraffic: "320K", keywords: "14,200", threat: "High" },
@@ -19,15 +20,15 @@ const threatColors: Record<string, string> = {
 
 export default function MarketingCompetitorSEO() {
   return (
-    <MarketingShell breadcrumb="Competitor Intel">
+    <MarketingShell breadcrumb="Competitors">
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-xl font-bold flex items-center gap-2">
-              <Swords className="w-5 h-5 text-primary" />
-              Competitor Intelligence
+              <Eye className="w-5 h-5 text-primary" />
+              Competitors
             </h1>
-            <p className="text-sm text-muted-foreground mt-0.5">SEO and paid traffic analysis for TruMove's top competitors</p>
+            <p className="text-sm text-muted-foreground mt-0.5">Tracking, gaps & market intel</p>
           </div>
           <button className="px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors">
             + Add Competitor
@@ -75,6 +76,36 @@ export default function MarketingCompetitorSEO() {
             </tbody>
           </table>
         </div>
+
+        {/* Changes This Week */}
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm">Changes This Week</CardTitle>
+            <CardDescription>Detected changes in competitor strategies</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="py-6 text-center text-muted-foreground">
+              <AlertTriangle className="w-5 h-5 mx-auto mb-2 opacity-40" />
+              <p className="text-sm">No changes detected this week</p>
+              <p className="text-xs mt-1">Competitor monitoring will surface ranking changes, new content, and ad activity here.</p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Keyword Gaps */}
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm">Keyword Gaps</CardTitle>
+            <CardDescription>Keywords competitors rank for that TruMove doesn't</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="py-6 text-center text-muted-foreground">
+              <Globe className="w-5 h-5 mx-auto mb-2 opacity-40" />
+              <p className="text-sm">Connect SEO tools to identify keyword gaps</p>
+              <p className="text-xs mt-1">This section will show high-value keywords where competitors outrank TruMove.</p>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </MarketingShell>
   );
