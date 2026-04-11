@@ -44,6 +44,10 @@ import MarketingRecommendations from "./pages/marketing/MarketingRecommendations
 import MarketingContentCenter from "./pages/marketing/MarketingContentCenter";
 import MarketingImplementation from "./pages/marketing/MarketingImplementation";
 import MarketingIntegrations from "./pages/marketing/MarketingIntegrations";
+import MarketingContentSEO from "./pages/marketing/MarketingContentSEO";
+import MarketingActionItems from "./pages/marketing/MarketingActionItems";
+import MarketingLeadSources from "./pages/marketing/MarketingLeadSources";
+import MarketingSettings from "./pages/marketing/MarketingSettings";
 import AccountingDashboard from "./pages/AccountingDashboard";
 import AgentOperations from "./pages/AgentOperations";
 import AgentNewCustomer from "./pages/AgentNewCustomer";
@@ -157,6 +161,14 @@ const App = () => (
 
             {/* Marketing routes */}
             <Route path="/marketing/dashboard" element={<RoleGuard allowedRoles={["marketing"]}><MarketingDashboard /></RoleGuard>} />
+            <Route path="/marketing/content-seo" element={<RoleGuard allowedRoles={["marketing"]}><MarketingContentSEO /></RoleGuard>} />
+            <Route path="/marketing/advertising" element={<RoleGuard allowedRoles={["marketing"]}><MarketingPPC /></RoleGuard>} />
+            <Route path="/marketing/conversion-lab" element={<RoleGuard allowedRoles={["marketing"]}><MarketingCRO /></RoleGuard>} />
+            <Route path="/marketing/action-items" element={<RoleGuard allowedRoles={["marketing"]}><MarketingActionItems /></RoleGuard>} />
+            <Route path="/marketing/lead-sources" element={<RoleGuard allowedRoles={["marketing"]}><MarketingLeadSources /></RoleGuard>} />
+            <Route path="/marketing/competitors" element={<RoleGuard allowedRoles={["marketing"]}><MarketingCompetitorSEO /></RoleGuard>} />
+            <Route path="/marketing/settings" element={<RoleGuard allowedRoles={["marketing"]}><MarketingSettings /></RoleGuard>} />
+            {/* Legacy routes — keep old URLs working */}
             <Route path="/marketing/templates" element={<RoleGuard allowedRoles={["marketing"]}><MarketingTemplates /></RoleGuard>} />
             <Route path="/marketing/seo" element={<RoleGuard allowedRoles={["marketing"]}><MarketingSEO /></RoleGuard>} />
             <Route path="/marketing/ppc" element={<RoleGuard allowedRoles={["marketing"]}><MarketingPPC /></RoleGuard>} />
