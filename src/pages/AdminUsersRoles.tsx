@@ -382,6 +382,43 @@ export default function AdminUsersRoles() {
           )}
         </div>
       )}
+
+      {/* Set Password Dialog */}
+      {passwordUserId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-card border border-border rounded-xl p-6 w-full max-w-sm shadow-lg animate-in fade-in zoom-in-95 duration-200">
+            <h3 className="text-sm font-semibold text-foreground mb-1">Set User Password</h3>
+            <p className="text-xs text-muted-foreground mb-4">
+              Enter a new password for {users.find(u => u.id === passwordUserId)?.email || "this user"}.
+            </p>
+            <input
+              type="password"
+              placeholder="New password (min 8 chars)"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSetPassword()}
+              className="w-full h-9 px-3 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring mb-4"
+              autoFocus
+            />
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => { setPasswordUserId(null); setNewPassword(""); }}
+                className="px-4 py-2 rounded-lg text-xs font-medium text-muted-foreground hover:bg-muted transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSetPassword}
+                disabled={settingPassword || newPassword.length < 8}
+                className="px-4 py-2 rounded-lg bg-foreground text-background text-xs font-medium hover:opacity-90 disabled:opacity-50 flex items-center gap-2"
+              >
+                {settingPassword && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                Set Password
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
