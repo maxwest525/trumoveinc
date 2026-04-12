@@ -353,6 +353,13 @@ export default function AdminUsersRoles() {
                       >
                         <Pencil className="w-3.5 h-3.5" />
                       </button>
+                      <button
+                        onClick={() => { setPasswordUserId(user.id); setNewPassword(""); }}
+                        className="p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+                        title="Set password"
+                      >
+                        <KeyRound className="w-3.5 h-3.5" />
+                      </button>
                       {isOwner && (
                         <button
                           onClick={() => handleDeleteUser(user.id)}
