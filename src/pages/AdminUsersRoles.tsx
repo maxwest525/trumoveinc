@@ -424,6 +424,23 @@ export default function AdminUsersRoles() {
           </div>
         </div>
       )}
+
+      <AlertDialog open={!!inviteConfirmUser} onOpenChange={(open) => !open && setInviteConfirmUser(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Send CRM Access Link?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will send an email to <span className="font-medium text-foreground">{inviteConfirmUser?.email}</span> with a link to set their password and access the CRM. Continue?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => { if (inviteConfirmUser) { handleResendInvite(inviteConfirmUser.id); setInviteConfirmUser(null); } }}>
+              Send Link
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
