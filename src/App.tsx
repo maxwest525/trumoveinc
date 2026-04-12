@@ -30,20 +30,11 @@ import LeadsPerformance from "./pages/LeadsPerformance";
 import KpiDashboard from "./pages/KpiDashboard";
 import ResetPassword from "./pages/ResetPassword";
 import SetPassword from "./pages/SetPassword";
-import MarketingTemplates from "./pages/marketing/MarketingTemplates";
-import MarketingSEO from "./pages/marketing/MarketingSEO";
 import MarketingDashboard from "./pages/marketing/MarketingDashboard";
 import MarketingPPC from "./pages/marketing/MarketingPPC";
-import MarketingBlog from "./pages/marketing/MarketingBlog";
-import MarketingAnalytics from "./pages/marketing/MarketingAnalytics";
-import MarketingCompetitorSEO from "./pages/marketing/MarketingCompetitorSEO";
-import MarketingBacklinks from "./pages/marketing/MarketingBacklinks";
-import MarketingDomainAuthority from "./pages/marketing/MarketingDomainAuthority";
 import MarketingCRO from "./pages/marketing/MarketingCRO";
-import MarketingRecommendations from "./pages/marketing/MarketingRecommendations";
-import MarketingContentCenter from "./pages/marketing/MarketingContentCenter";
-import MarketingImplementation from "./pages/marketing/MarketingImplementation";
-import MarketingIntegrations from "./pages/marketing/MarketingIntegrations";
+import MarketingCompetitorSEO from "./pages/marketing/MarketingCompetitorSEO";
+import MarketingContentSEO from "./pages/marketing/MarketingContentSEO";
 import MarketingContentSEO from "./pages/marketing/MarketingContentSEO";
 import MarketingActionItems from "./pages/marketing/MarketingActionItems";
 import MarketingLeadSources from "./pages/marketing/MarketingLeadSources";
@@ -86,7 +77,7 @@ import DispatchESign from "./pages/dispatch/DispatchESign";
 import Unsubscribe from "./pages/Unsubscribe";
 import AgentIncomingLeads from "./pages/AgentIncomingLeads";
 import CreativeStudio from "./pages/creative/CreativeStudio";
-import LegacyPageWrapper from "./components/marketing/LegacyPageWrapper";
+
 
 const queryClient = new QueryClient();
 
