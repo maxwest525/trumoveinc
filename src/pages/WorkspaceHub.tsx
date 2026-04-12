@@ -86,6 +86,7 @@ const PORTALS: { key: string; label: string; description: string; href: string; 
 
 export default function AgentLogin() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   
