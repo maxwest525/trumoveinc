@@ -342,7 +342,7 @@ export default function AdminUsersRoles() {
                       <button
                         onClick={() => handleResendInvite(user.id)}
                         className="p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
-                        title="Resend invite email"
+                        title="Send CRM access link (user sets their own password)"
                       >
                         <Send className="w-3.5 h-3.5" />
                       </button>
