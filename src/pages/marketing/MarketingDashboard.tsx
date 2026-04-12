@@ -155,7 +155,7 @@ export default function MarketingDashboard() {
 
 
         {/* Morning Ops Tracker */}
-        <MorningOpsTracker activityLog={activityLog} />
+        <DailyMarketingReview activityLog={activityLog} />
 
         {/* Integration Status Bar */}
         <div className="flex flex-wrap gap-2 p-3 rounded-lg border bg-muted/30">
