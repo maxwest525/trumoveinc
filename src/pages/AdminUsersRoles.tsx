@@ -162,6 +162,26 @@ export default function AdminUsersRoles() {
     }
   };
 
+  const handleSetPassword = async () => {
+    if (!passwordUserId || !newPassword.trim()) return;
+    if (newPassword.length < 8) {
+      toast({ title: "Password too short", description: "Must be at least 8 characters", variant: "destructive" });
+      return;
+    }
+    setSettingPassword(true);
+    const { data, error } = await supabase.functions.invoke("invite-user", {
+      body: { action: "set_password", user_id: passwordUserId, password: newPassword },
+    });
+    setSettingPassword(false);
+    if (error || data?.error) {
+      toast({ title: "Failed", description: data?.error || error?.message, variant: "destructive" });
+    } else {
+      toast({ title: "Password updated", description: "The user's password has been changed." });
+      setPasswordUserId(null);
+      setNewPassword("");
+    }
+  };
+
   const availableRoles: AppRole[] = isOwner
     ? ["owner", "admin", "manager", "agent", "marketing", "accounting"]
     : ["admin", "manager", "agent", "marketing", "accounting"];
