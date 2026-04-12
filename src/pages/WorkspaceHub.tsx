@@ -108,7 +108,16 @@ export default function AgentLogin() {
     return () => subscription.unsubscribe();
   }, []);
 
-  const handleSignOut = async () => {
+  // After login + roles resolve, restore the page the user was trying to reach
+  useEffect(() => {
+    if (loading || rolesLoading || !session) return;
+    const state = location.state as { from?: { pathname: string; search?: string } } | null;
+    const target = state?.from?.pathname;
+    if (target && target !== "/dashboard") {
+      navigate(target + (state?.from?.search || ""), { replace: true });
+    }
+  }, [loading, rolesLoading, session, location.state, navigate]);
+
     await supabase.auth.signOut();
     localStorage.removeItem(STORAGE_KEY);
   };
