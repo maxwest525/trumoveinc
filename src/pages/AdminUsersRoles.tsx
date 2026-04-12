@@ -4,6 +4,10 @@ import { useToast } from "@/hooks/use-toast";
 import { useUserRole } from "@/hooks/useUserRole";
 import { Users, Plus, Shield, Crown, BarChart3, UserCheck, Loader2, Mail, X, Sparkles, DollarSign, Pencil, Trash2, Check, Send, KeyRound } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction,
+} from "@/components/ui/alert-dialog";
 
 type AppRole = "owner" | "admin" | "manager" | "agent" | "marketing" | "accounting";
 
