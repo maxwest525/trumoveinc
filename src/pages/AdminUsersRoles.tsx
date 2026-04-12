@@ -39,6 +39,9 @@ export default function AdminUsersRoles() {
   const [editingName, setEditingName] = useState<string | null>(null);
   const [editNameValue, setEditNameValue] = useState("");
   const [deletingUser, setDeletingUser] = useState<string | null>(null);
+  const [passwordUserId, setPasswordUserId] = useState<string | null>(null);
+  const [newPassword, setNewPassword] = useState("");
+  const [settingPassword, setSettingPassword] = useState(false);
 
   const fetchUsers = async () => {
     setLoading(true);
