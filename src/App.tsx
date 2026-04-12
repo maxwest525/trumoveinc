@@ -30,20 +30,10 @@ import LeadsPerformance from "./pages/LeadsPerformance";
 import KpiDashboard from "./pages/KpiDashboard";
 import ResetPassword from "./pages/ResetPassword";
 import SetPassword from "./pages/SetPassword";
-import MarketingTemplates from "./pages/marketing/MarketingTemplates";
-import MarketingSEO from "./pages/marketing/MarketingSEO";
 import MarketingDashboard from "./pages/marketing/MarketingDashboard";
 import MarketingPPC from "./pages/marketing/MarketingPPC";
-import MarketingBlog from "./pages/marketing/MarketingBlog";
-import MarketingAnalytics from "./pages/marketing/MarketingAnalytics";
-import MarketingCompetitorSEO from "./pages/marketing/MarketingCompetitorSEO";
-import MarketingBacklinks from "./pages/marketing/MarketingBacklinks";
-import MarketingDomainAuthority from "./pages/marketing/MarketingDomainAuthority";
 import MarketingCRO from "./pages/marketing/MarketingCRO";
-import MarketingRecommendations from "./pages/marketing/MarketingRecommendations";
-import MarketingContentCenter from "./pages/marketing/MarketingContentCenter";
-import MarketingImplementation from "./pages/marketing/MarketingImplementation";
-import MarketingIntegrations from "./pages/marketing/MarketingIntegrations";
+import MarketingCompetitorSEO from "./pages/marketing/MarketingCompetitorSEO";
 import MarketingContentSEO from "./pages/marketing/MarketingContentSEO";
 import MarketingActionItems from "./pages/marketing/MarketingActionItems";
 import MarketingLeadSources from "./pages/marketing/MarketingLeadSources";
@@ -86,7 +76,7 @@ import DispatchESign from "./pages/dispatch/DispatchESign";
 import Unsubscribe from "./pages/Unsubscribe";
 import AgentIncomingLeads from "./pages/AgentIncomingLeads";
 import CreativeStudio from "./pages/creative/CreativeStudio";
-import LegacyPageWrapper from "./components/marketing/LegacyPageWrapper";
+
 
 const queryClient = new QueryClient();
 
@@ -169,20 +159,20 @@ const App = () => (
             <Route path="/marketing/lead-sources" element={<RoleGuard allowedRoles={["marketing"]}><MarketingLeadSources /></RoleGuard>} />
             <Route path="/marketing/competitors" element={<RoleGuard allowedRoles={["marketing"]}><MarketingCompetitorSEO /></RoleGuard>} />
             <Route path="/marketing/settings" element={<RoleGuard allowedRoles={["marketing"]}><MarketingSettings /></RoleGuard>} />
-            {/* Legacy routes — keep old URLs working, with redirect banners */}
-            <Route path="/marketing/templates" element={<RoleGuard allowedRoles={["marketing"]}><LegacyPageWrapper newPath="/marketing/content-seo" newPageName="Content & SEO"><MarketingTemplates /></LegacyPageWrapper></RoleGuard>} />
-            <Route path="/marketing/seo" element={<RoleGuard allowedRoles={["marketing"]}><LegacyPageWrapper newPath="/marketing/content-seo" newPageName="Content & SEO"><MarketingSEO /></LegacyPageWrapper></RoleGuard>} />
-            <Route path="/marketing/ppc" element={<RoleGuard allowedRoles={["marketing"]}><LegacyPageWrapper newPath="/marketing/advertising" newPageName="Advertising"><MarketingPPC /></LegacyPageWrapper></RoleGuard>} />
-            <Route path="/marketing/blog" element={<RoleGuard allowedRoles={["marketing"]}><LegacyPageWrapper newPath="/marketing/content-seo" newPageName="Content & SEO"><MarketingBlog /></LegacyPageWrapper></RoleGuard>} />
-            <Route path="/marketing/analytics" element={<RoleGuard allowedRoles={["marketing"]}><LegacyPageWrapper newPath="/marketing/dashboard" newPageName="Dashboard"><MarketingAnalytics /></LegacyPageWrapper></RoleGuard>} />
-            <Route path="/marketing/competitor-seo" element={<RoleGuard allowedRoles={["marketing"]}><LegacyPageWrapper newPath="/marketing/competitors" newPageName="Competitors"><MarketingCompetitorSEO /></LegacyPageWrapper></RoleGuard>} />
-            <Route path="/marketing/backlinks" element={<RoleGuard allowedRoles={["marketing"]}><LegacyPageWrapper newPath="/marketing/content-seo" newPageName="Content & SEO"><MarketingBacklinks /></LegacyPageWrapper></RoleGuard>} />
-            <Route path="/marketing/domain-authority" element={<RoleGuard allowedRoles={["marketing"]}><LegacyPageWrapper newPath="/marketing/content-seo" newPageName="Content & SEO"><MarketingDomainAuthority /></LegacyPageWrapper></RoleGuard>} />
-            <Route path="/marketing/cro" element={<RoleGuard allowedRoles={["marketing"]}><LegacyPageWrapper newPath="/marketing/conversion-lab" newPageName="Conversion Lab"><MarketingCRO /></LegacyPageWrapper></RoleGuard>} />
-            <Route path="/marketing/recommendations" element={<RoleGuard allowedRoles={["marketing"]}><LegacyPageWrapper newPath="/marketing/action-items" newPageName="Action Items"><MarketingRecommendations /></LegacyPageWrapper></RoleGuard>} />
-            <Route path="/marketing/content-center" element={<RoleGuard allowedRoles={["marketing"]}><LegacyPageWrapper newPath="/marketing/content-seo" newPageName="Content & SEO"><MarketingContentCenter /></LegacyPageWrapper></RoleGuard>} />
-            <Route path="/marketing/implementation" element={<RoleGuard allowedRoles={["marketing"]}><LegacyPageWrapper newPath="/marketing/action-items" newPageName="Action Items"><MarketingImplementation /></LegacyPageWrapper></RoleGuard>} />
-            <Route path="/marketing/integrations" element={<RoleGuard allowedRoles={["marketing"]}><LegacyPageWrapper newPath="/marketing/settings" newPageName="Settings"><MarketingIntegrations /></LegacyPageWrapper></RoleGuard>} />
+            {/* Legacy marketing routes — redirect to new locations */}
+            <Route path="/marketing/templates" element={<Navigate to="/marketing/content-seo" replace />} />
+            <Route path="/marketing/seo" element={<Navigate to="/marketing/content-seo" replace />} />
+            <Route path="/marketing/ppc" element={<Navigate to="/marketing/advertising" replace />} />
+            <Route path="/marketing/blog" element={<Navigate to="/marketing/content-seo" replace />} />
+            <Route path="/marketing/analytics" element={<Navigate to="/marketing/dashboard" replace />} />
+            <Route path="/marketing/competitor-seo" element={<Navigate to="/marketing/competitors" replace />} />
+            <Route path="/marketing/backlinks" element={<Navigate to="/marketing/content-seo" replace />} />
+            <Route path="/marketing/domain-authority" element={<Navigate to="/marketing/content-seo" replace />} />
+            <Route path="/marketing/cro" element={<Navigate to="/marketing/conversion-lab" replace />} />
+            <Route path="/marketing/recommendations" element={<Navigate to="/marketing/action-items" replace />} />
+            <Route path="/marketing/content-center" element={<Navigate to="/marketing/content-seo" replace />} />
+            <Route path="/marketing/implementation" element={<Navigate to="/marketing/action-items" replace />} />
+            <Route path="/marketing/integrations" element={<Navigate to="/marketing/settings" replace />} />
 
             {/* Creative Studio */}
             <Route path="/creative/studio" element={<RoleGuard allowedRoles={["marketing", "admin"]}><CreativeStudio /></RoleGuard>} />
