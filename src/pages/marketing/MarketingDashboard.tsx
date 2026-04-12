@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
 import { TrendingUp, Users, DollarSign, Target, Activity, Wifi, WifiOff, Settings, RefreshCw, AlertCircle, CheckCircle, Clock, Loader2, Save } from "lucide-react";
 import MarketingShell from "@/components/layout/MarketingShell";
-import MorningOpsTracker from "@/components/marketing/MorningOpsTracker";
+import DailyMarketingReview from "@/components/marketing/DailyMarketingReview";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -155,7 +155,7 @@ export default function MarketingDashboard() {
 
 
         {/* Morning Ops Tracker */}
-        <MorningOpsTracker activityLog={activityLog} />
+        <DailyMarketingReview activityLog={activityLog} />
 
         {/* Integration Status Bar */}
         <div className="flex flex-wrap gap-2 p-3 rounded-lg border bg-muted/30">
