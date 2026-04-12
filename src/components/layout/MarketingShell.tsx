@@ -118,24 +118,23 @@ export default function MarketingShell({ children, breadcrumb = "", breadcrumbs 
         <NavGroup items={GROUP_ENGINES} collapsed={collapsed} pathname={location.pathname} />
         <div className="h-4" />
         <NavGroup items={GROUP_INTEL} collapsed={collapsed} pathname={location.pathname} />
+        <div className="h-4" />
+        <div className="px-0">
+          <Link
+            to="/marketing/settings"
+            className={cn(
+              "flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors",
+              location.pathname === "/marketing/settings"
+                ? "bg-[#f0fdf4] text-foreground border-l-[3px] border-[#16a34a] pl-[9px]"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+            )}
+            title={collapsed ? "Settings" : undefined}
+          >
+            <Settings className="w-4 h-4 shrink-0" />
+            {!collapsed && <span>Settings</span>}
+          </Link>
+        </div>
       </nav>
-
-      {/* Settings pinned to bottom */}
-      <div className="px-2 pb-3 mt-auto">
-        <Link
-          to="/marketing/settings"
-          className={cn(
-            "flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors",
-            location.pathname === "/marketing/settings"
-              ? "bg-[#f0fdf4] text-foreground border-l-[3px] border-[#16a34a] pl-[9px]"
-              : "text-muted-foreground hover:bg-muted hover:text-foreground"
-          )}
-          title={collapsed ? "Settings" : undefined}
-        >
-          <Settings className="w-4 h-4 shrink-0" />
-          {!collapsed && <span>Settings</span>}
-        </Link>
-      </div>
     </div>
   );
 
