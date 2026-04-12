@@ -46,6 +46,7 @@ export default function AdminUsersRoles() {
   const [passwordUserId, setPasswordUserId] = useState<string | null>(null);
   const [newPassword, setNewPassword] = useState("");
   const [settingPassword, setSettingPassword] = useState(false);
+  const [inviteConfirmUser, setInviteConfirmUser] = useState<UserWithRole | null>(null);
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -344,7 +345,7 @@ export default function AdminUsersRoles() {
                         ))}
                       </select>
                       <button
-                        onClick={() => handleResendInvite(user.id)}
+                        onClick={() => setInviteConfirmUser(user)}
                         className="p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
                         title="Send CRM access link (user sets their own password)"
                       >
