@@ -118,6 +118,7 @@ export default function AgentLogin() {
     }
   }, [loading, rolesLoading, session, location.state, navigate]);
 
+  const handleSignOut = async () => {
     await supabase.auth.signOut();
     localStorage.removeItem(STORAGE_KEY);
   };
