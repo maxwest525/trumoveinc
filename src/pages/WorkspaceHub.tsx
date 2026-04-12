@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import SiteShell from "@/components/layout/SiteShell";
 import PortalAuthForm from "@/components/auth/PortalAuthForm";
@@ -86,6 +86,7 @@ const PORTALS: { key: string; label: string; description: string; href: string; 
 
 export default function AgentLogin() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   
@@ -106,6 +107,16 @@ export default function AgentLogin() {
     });
     return () => subscription.unsubscribe();
   }, []);
+
+  // After login + roles resolve, restore the page the user was trying to reach
+  useEffect(() => {
+    if (loading || rolesLoading || !session) return;
+    const state = location.state as { from?: { pathname: string; search?: string } } | null;
+    const target = state?.from?.pathname;
+    if (target && target !== "/dashboard") {
+      navigate(target + (state?.from?.search || ""), { replace: true });
+    }
+  }, [loading, rolesLoading, session, location.state, navigate]);
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
