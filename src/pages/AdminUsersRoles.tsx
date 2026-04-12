@@ -4,6 +4,10 @@ import { useToast } from "@/hooks/use-toast";
 import { useUserRole } from "@/hooks/useUserRole";
 import { Users, Plus, Shield, Crown, BarChart3, UserCheck, Loader2, Mail, X, Sparkles, DollarSign, Pencil, Trash2, Check, Send, KeyRound } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction,
+} from "@/components/ui/alert-dialog";
 
 type AppRole = "owner" | "admin" | "manager" | "agent" | "marketing" | "accounting";
 
@@ -42,6 +46,7 @@ export default function AdminUsersRoles() {
   const [passwordUserId, setPasswordUserId] = useState<string | null>(null);
   const [newPassword, setNewPassword] = useState("");
   const [settingPassword, setSettingPassword] = useState(false);
+  const [inviteConfirmUser, setInviteConfirmUser] = useState<UserWithRole | null>(null);
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -340,7 +345,7 @@ export default function AdminUsersRoles() {
                         ))}
                       </select>
                       <button
-                        onClick={() => handleResendInvite(user.id)}
+                        onClick={() => setInviteConfirmUser(user)}
                         className="p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
                         title="Send CRM access link (user sets their own password)"
                       >
@@ -419,6 +424,23 @@ export default function AdminUsersRoles() {
           </div>
         </div>
       )}
+
+      <AlertDialog open={!!inviteConfirmUser} onOpenChange={(open) => !open && setInviteConfirmUser(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Send CRM Access Link?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will send an email to <span className="font-medium text-foreground">{inviteConfirmUser?.email}</span> with a link to set their password and access the CRM. Continue?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => { if (inviteConfirmUser) { handleResendInvite(inviteConfirmUser.id); setInviteConfirmUser(null); } }}>
+              Send Link
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
