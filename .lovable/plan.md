@@ -1,37 +1,48 @@
 
+Fix the preview/login loop by correcting auth state + route restore behavior.
 
-## Add Redirect Banners to Legacy Marketing Routes
+What’s actually happening
+- This does not look like a broken preview renderer.
+- On preview domains, `/` intentionally goes to `/dashboard`.
+- Protected marketing routes like `/marketing/content-seo` use `RoleGuard`. If you are logged out, it immediately redirects you to `/dashboard`, so the page you were trying to preview is lost.
+- After sign-in, `WorkspaceHub` and `RoleGuard` both rely on `useUserRoles()`, but that hook only fetches roles once on mount. If login happens after mount, roles stay empty until a hard refresh.
+- Result: you get bounced away from the page, and after login the app can still behave like you have no access.
 
-**What**: When a user lands on any of the old/legacy marketing URLs (like `/marketing/integrations`, `/marketing/seo`, `/marketing/blog`, etc.), show a clear banner at the top of the page telling them this page has been consolidated and directing them to the new location.
+Plan
+1. Make role loading reactive
+   - Update `useUserRoles` to listen for auth changes and re-fetch roles whenever the session/user changes.
+   - Keep loading true until auth is resolved for the current user, so guards do not decide too early.
 
-**How**:
+2. Preserve the page you were trying to open
+   - Update `RoleGuard` so:
+     - not signed in → redirect to `/dashboard` with a saved `from` route
+     - signed in but wrong role → show a clear access state instead of silently bouncing back
+   - This keeps deep links like `/marketing/content-seo` intact through login.
 
-1. **Create a `LegacyPageBanner` component** - A styled alert/banner that says something like:
-   - "This page has moved to [New Page Name]" with a link button to navigate there
-   - Styled with a subtle amber/yellow background to stand out without being alarming
-   - Includes a "Go to [New Page]" button
+3. Send users back to the preview after login
+   - Update `WorkspaceHub` to read the saved `from` route and navigate there once auth + roles are ready.
+   - Keep the current workspace chooser for normal `/dashboard` visits.
 
-2. **Add the banner to each legacy page** by mapping old routes to their new destinations:
+4. Make the failure state understandable
+   - If the account truly lacks `owner`/`marketing` access in `user_roles`, show an explicit “no access to Marketing” state with a path back to the workspace hub.
+   - No more “disappearing preview” behavior.
 
-| Legacy Route | Redirects To |
-|---|---|
-| `/marketing/integrations` | Settings (Integrations tab) |
-| `/marketing/seo` | Content & SEO |
-| `/marketing/blog` | Content & SEO (Pipeline tab) |
-| `/marketing/analytics` | Dashboard |
-| `/marketing/backlinks` | Content & SEO (Backlinks tab) |
-| `/marketing/domain-authority` | Content & SEO (Backlinks tab) |
-| `/marketing/cro` | Conversion Lab |
-| `/marketing/recommendations` | Action Items |
-| `/marketing/content-center` | Content & SEO (Pipeline tab) |
-| `/marketing/implementation` | Action Items (Implementation tab) |
-| `/marketing/ppc` | Advertising |
-| `/marketing/competitor-seo` | Competitors |
-| `/marketing/templates` | Content & SEO |
+5. Validate the real flows
+   - Logged out → open `/marketing/content-seo` → sign in → return to `/marketing/content-seo`
+   - Logged in owner/marketing user → deep link works without refresh
+   - Logged in non-marketing user → clear access message, no redirect loop
+   - Sign out and sign back in on mobile preview
 
-3. **Implementation approach**: Rather than editing every legacy page file, replace the legacy route elements in `App.tsx` with a simple wrapper component that renders the old page content with the banner injected at the top via the `MarketingShell`. This keeps it DRY - one component handles all legacy routes.
+Files likely affected
+- `src/hooks/useUserRoles.ts`
+- `src/components/RoleGuard.tsx`
+- `src/pages/WorkspaceHub.tsx`
+- Possibly `src/components/auth/PortalAuthForm.tsx`
 
-**Files touched**:
-- Create: `src/components/marketing/LegacyPageBanner.tsx`
-- Edit: `src/App.tsx` (wrap legacy route elements with banner)
-
+Technical details
+- Current root causes are in:
+  - `RoleGuard.tsx` redirecting all failures to `/dashboard`
+  - `useUserRoles.ts` fetching once only, with no auth subscription
+  - `WorkspaceHub.tsx` having no “return to requested page” logic after login
+- I would also verify that your account really has the expected role in `user_roles`; if the role is missing, the app should still deny access, but it should do so clearly instead of looking like the preview vanished.
+- I would not change auth provider settings or preview domain config first; the main issue is client-side auth/routing flow.
