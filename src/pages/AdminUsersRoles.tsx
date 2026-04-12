@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useUserRole } from "@/hooks/useUserRole";
-import { Users, Plus, Shield, Crown, BarChart3, UserCheck, Loader2, Mail, X, Sparkles, DollarSign, Pencil, Trash2, Check, Send } from "lucide-react";
+import { Users, Plus, Shield, Crown, BarChart3, UserCheck, Loader2, Mail, X, Sparkles, DollarSign, Pencil, Trash2, Check, Send, KeyRound } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type AppRole = "owner" | "admin" | "manager" | "agent" | "marketing" | "accounting";
@@ -39,6 +39,9 @@ export default function AdminUsersRoles() {
   const [editingName, setEditingName] = useState<string | null>(null);
   const [editNameValue, setEditNameValue] = useState("");
   const [deletingUser, setDeletingUser] = useState<string | null>(null);
+  const [passwordUserId, setPasswordUserId] = useState<string | null>(null);
+  const [newPassword, setNewPassword] = useState("");
+  const [settingPassword, setSettingPassword] = useState(false);
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -156,6 +159,26 @@ export default function AdminUsersRoles() {
     } else {
       toast({ title: "Name updated" });
       fetchUsers();
+    }
+  };
+
+  const handleSetPassword = async () => {
+    if (!passwordUserId || !newPassword.trim()) return;
+    if (newPassword.length < 8) {
+      toast({ title: "Password too short", description: "Must be at least 8 characters", variant: "destructive" });
+      return;
+    }
+    setSettingPassword(true);
+    const { data, error } = await supabase.functions.invoke("invite-user", {
+      body: { action: "set_password", user_id: passwordUserId, password: newPassword },
+    });
+    setSettingPassword(false);
+    if (error || data?.error) {
+      toast({ title: "Failed", description: data?.error || error?.message, variant: "destructive" });
+    } else {
+      toast({ title: "Password updated", description: "The user's password has been changed." });
+      setPasswordUserId(null);
+      setNewPassword("");
     }
   };
 
@@ -330,6 +353,13 @@ export default function AdminUsersRoles() {
                       >
                         <Pencil className="w-3.5 h-3.5" />
                       </button>
+                      <button
+                        onClick={() => { setPasswordUserId(user.id); setNewPassword(""); }}
+                        className="p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+                        title="Set password"
+                      >
+                        <KeyRound className="w-3.5 h-3.5" />
+                      </button>
                       {isOwner && (
                         <button
                           onClick={() => handleDeleteUser(user.id)}
@@ -350,6 +380,43 @@ export default function AdminUsersRoles() {
               No users found. Invite your first team member above.
             </div>
           )}
+        </div>
+      )}
+
+      {/* Set Password Dialog */}
+      {passwordUserId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-card border border-border rounded-xl p-6 w-full max-w-sm shadow-lg animate-in fade-in zoom-in-95 duration-200">
+            <h3 className="text-sm font-semibold text-foreground mb-1">Set User Password</h3>
+            <p className="text-xs text-muted-foreground mb-4">
+              Enter a new password for {users.find(u => u.id === passwordUserId)?.email || "this user"}.
+            </p>
+            <input
+              type="password"
+              placeholder="New password (min 8 chars)"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSetPassword()}
+              className="w-full h-9 px-3 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring mb-4"
+              autoFocus
+            />
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => { setPasswordUserId(null); setNewPassword(""); }}
+                className="px-4 py-2 rounded-lg text-xs font-medium text-muted-foreground hover:bg-muted transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSetPassword}
+                disabled={settingPassword || newPassword.length < 8}
+                className="px-4 py-2 rounded-lg bg-foreground text-background text-xs font-medium hover:opacity-90 disabled:opacity-50 flex items-center gap-2"
+              >
+                {settingPassword && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                Set Password
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

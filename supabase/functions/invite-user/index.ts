@@ -296,6 +296,39 @@ Deno.serve(async (req) => {
       });
     }
 
+    // SET PASSWORD: Admin directly sets a user's password
+    if (action === "set_password") {
+      const { user_id, password } = body;
+      if (!user_id || !password) {
+        return new Response(JSON.stringify({ error: "user_id and password are required" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      if (password.length < 8) {
+        return new Response(JSON.stringify({ error: "Password must be at least 8 characters" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      if (user_id === caller.id) {
+        return new Response(JSON.stringify({ error: "Use account settings to change your own password" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      const { error: pwError } = await adminClient.auth.admin.updateUserById(user_id, { password });
+      if (pwError) {
+        return new Response(JSON.stringify({ error: pwError.message }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      return new Response(JSON.stringify({ success: true }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     // UPDATE DISPLAY NAME
     if (action === "update_name") {
       const { user_id, display_name } = body;
