@@ -292,6 +292,47 @@ export default function AdminUsersRoles() {
     toast({ title: "Permissions saved", description: "Role permissions have been updated for all affected users." });
   };
 
+  const openEditProfile = (user: UserWithRole) => {
+    const names = (user.display_name || "").split(" ");
+    setProfileForm({
+      first_name: names[0] || "",
+      last_name: names.slice(1).join(" ") || "",
+      username: user.username || "",
+      company_email: user.company_email || "",
+      personal_email: user.personal_email || user.email || "",
+      phone: user.phone || "",
+      address: user.address || "",
+    });
+    setEditProfileUser(user);
+  };
+
+  const handleSaveProfile = async () => {
+    if (!editProfileUser) return;
+    setSavingProfile(true);
+    const displayName = `${profileForm.first_name.trim()} ${profileForm.last_name.trim()}`.trim();
+
+    const { error } = await supabase
+      .from("profiles")
+      .update({
+        display_name: displayName || null,
+        username: profileForm.username.trim() || null,
+        company_email: profileForm.company_email.trim() || null,
+        personal_email: profileForm.personal_email.trim() || null,
+        phone: profileForm.phone.trim() || null,
+        address: profileForm.address.trim() || null,
+      } as any)
+      .eq("id", editProfileUser.id);
+
+    setSavingProfile(false);
+    if (error) {
+      toast({ title: "Update failed", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Profile updated" });
+      setEditProfileUser(null);
+      fetchUsers();
+    }
+  };
+
   const availableRoles: AppRole[] = isOwner
     ? ["owner", "admin", "manager", "agent", "marketing", "accounting"]
     : ["admin", "manager", "agent", "marketing", "accounting"];
