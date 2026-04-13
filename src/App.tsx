@@ -16,7 +16,7 @@ import ScrollToTop from "./components/ScrollToTop";
 import { SeoOverrideProvider } from "./components/SeoOverrideProvider";
 import { captureUtmParams } from "./lib/leadEnrichment";
 import ProductionHomeRedirect from "./components/ProductionHomeRedirect";
-import SiteRouteGuard from "./components/SiteRouteGuard";
+import UnderConstruction from "./pages/UnderConstruction";
 import AdminSupportTickets from "./pages/AdminSupportTickets";
 import ManagerEmployeeRequests from "./pages/ManagerEmployeeRequests";
 import AgentPipeline from "./pages/AgentPipeline";
@@ -100,8 +100,8 @@ const App = () => (
             <Route path="/login" element={<Navigate to="/dashboard" replace />} />
             <Route path="/agent-login" element={<Navigate to="/dashboard" replace />} />
 
-            <Route path="/site" element={<SiteRouteGuard />} />
-            <Route path="/site/*" element={<SiteRouteGuard />} />
+            <Route path="/site" element={<UnderConstruction />} />
+            <Route path="/site/*" element={<UnderConstruction />} />
 
             <Route path="/esign/:refNumber" element={<PublicESign />} />
 
@@ -192,8 +192,8 @@ const App = () => (
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/set-password" element={<SetPassword />} />
             <Route path="/unsubscribe" element={<Unsubscribe />} />
-            <Route path="/homepage-2" element={<HomepageV2 />} />
-            <Route path="/customer-facing-sites" element={<CustomerFacingSites />} />
+            <Route path="/homepage-2" element={<UnderConstruction />} />
+            <Route path="/customer-facing-sites" element={<UnderConstruction />} />
             <Route path="/tools/:tool" element={<IntegrationPlaceholder />} />
 
             <Route path="*" element={<NotFound />} />

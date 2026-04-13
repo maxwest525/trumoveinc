@@ -19,7 +19,7 @@ const NAV = [
   { label: "Landing Pages", icon: FileText, href: "/marketing/landing-pages" },
   { label: "Integrations", icon: Plug, href: "/marketing/integrations" },
   { label: "Routing", icon: Zap, href: "/marketing/routing" },
-  { label: "Customer Sites", icon: Globe, href: "/customer-facing-sites" },
+  
 ];
 
 interface GrowthEngineShellProps {
