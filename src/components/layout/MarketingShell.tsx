@@ -171,10 +171,12 @@ export default function MarketingShell({ children, breadcrumb = "", breadcrumbs 
               )}
             >
               <MessageSquare className="w-4 h-4" />
+              <span className="text-xs font-medium">Chat</span>
             </Link>
             <div className="w-px h-5 bg-border" />
-            <Link to="/" className="p-1.5 rounded-lg hover:bg-muted transition-colors shrink-0">
+            <Link to="/" className="p-1.5 rounded-lg hover:bg-muted transition-colors shrink-0 flex items-center gap-1">
               <Home className="w-4 h-4 text-muted-foreground" />
+              <span className="text-xs font-medium text-muted-foreground">Home</span>
             </Link>
             <ShellBreadcrumbs
               root={{ label: "Marketing", href: "/marketing/dashboard" }}
