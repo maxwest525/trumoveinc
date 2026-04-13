@@ -437,7 +437,7 @@ export default function MarketingCRO() {
             <TabsTrigger value="experiments" className="text-xs">Experiments</TabsTrigger>
             <TabsTrigger value="pages" className="text-xs">Pages</TabsTrigger>
             <TabsTrigger value="recommendations" className="text-xs">Recommendations</TabsTrigger>
-          </TabsList>
+            <TabsTrigger value="journey" className="text-xs">Customer Journey</TabsTrigger>
 
           <TabsContent value="overview" className="space-y-4 mt-4">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
