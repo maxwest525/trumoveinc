@@ -1,6 +1,7 @@
 import MarketingShell from "@/components/layout/MarketingShell";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Swords, TrendingUp, Globe, AlertTriangle, Eye } from "lucide-react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Globe, AlertTriangle, Eye, Bell, Search } from "lucide-react";
 
 const competitors = [
   { name: "move.org", domain: "move.org", organicTraffic: "2.1M", paidTraffic: "320K", keywords: "14,200", threat: "High" },
@@ -21,7 +22,7 @@ const threatColors: Record<string, string> = {
 export default function MarketingCompetitorSEO() {
   return (
     <MarketingShell breadcrumb="Competitors">
-      <div className="space-y-6">
+      <div className="space-y-5">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-xl font-bold flex items-center gap-2">
@@ -35,6 +36,7 @@ export default function MarketingCompetitorSEO() {
           </button>
         </div>
 
+        {/* Tracked Competitors */}
         <div className="bg-card border border-border rounded-xl overflow-hidden">
           <div className="px-4 py-3 border-b border-border">
             <h2 className="text-sm font-semibold">Tracked Competitors</h2>
@@ -80,14 +82,30 @@ export default function MarketingCompetitorSEO() {
         {/* Changes This Week */}
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm">Changes This Week</CardTitle>
-            <CardDescription>Detected changes in competitor strategies</CardDescription>
+            <CardTitle className="text-sm flex items-center gap-2">
+              <Bell className="w-4 h-4 text-primary" /> Changes This Week
+            </CardTitle>
+            <CardDescription className="text-xs">Competitor changes will appear here when automated monitoring is active. Connect HyperFX to activate.</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="py-6 text-center text-muted-foreground">
-              <AlertTriangle className="w-5 h-5 mx-auto mb-2 opacity-40" />
-              <p className="text-sm">No changes detected this week</p>
-              <p className="text-xs mt-1">Competitor monitoring will surface ranking changes, new content, and ad activity here.</p>
+            <div className="space-y-2">
+              {/* Grayed out example */}
+              <div className="p-3 rounded-lg border border-dashed border-border/60 bg-muted/20 opacity-50">
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <Globe className="w-3.5 h-3.5" />
+                  <span className="font-medium">BudgetVanLines</span>
+                  <span>published 2 new state pages</span>
+                  <span className="text-[10px] ml-auto">Example</span>
+                </div>
+              </div>
+              <div className="p-3 rounded-lg border border-dashed border-border/60 bg-muted/20 opacity-50">
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <Globe className="w-3.5 h-3.5" />
+                  <span className="font-medium">move.org</span>
+                  <span>increased Google Ads spend by 18%</span>
+                  <span className="text-[10px] ml-auto">Example</span>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -95,15 +113,43 @@ export default function MarketingCompetitorSEO() {
         {/* Keyword Gaps */}
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm">Keyword Gaps</CardTitle>
-            <CardDescription>Keywords competitors rank for that TruMove doesn't</CardDescription>
+            <CardTitle className="text-sm flex items-center gap-2">
+              <Search className="w-4 h-4 text-primary" /> Keyword Gaps
+            </CardTitle>
+            <CardDescription className="text-xs">Keywords your competitors rank for that you don't. Connect a keyword data source to activate.</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="py-6 text-center text-muted-foreground">
-              <Globe className="w-5 h-5 mx-auto mb-2 opacity-40" />
-              <p className="text-sm">Connect SEO tools to identify keyword gaps</p>
-              <p className="text-xs mt-1">This section will show high-value keywords where competitors outrank TruMove.</p>
-            </div>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-xs">Keyword</TableHead>
+                  <TableHead className="text-xs text-right">Volume</TableHead>
+                  <TableHead className="text-xs text-right">Difficulty</TableHead>
+                  <TableHead className="text-xs">Competitors Ranking</TableHead>
+                  <TableHead className="text-xs text-right">Your Position</TableHead>
+                  <TableHead className="text-xs">Action</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                <TableRow className="opacity-40">
+                  <TableCell className="text-xs text-muted-foreground">long distance movers near me</TableCell>
+                  <TableCell className="text-xs text-right text-muted-foreground">8,100</TableCell>
+                  <TableCell className="text-xs text-right text-muted-foreground">72</TableCell>
+                  <TableCell className="text-xs text-muted-foreground">move.org, uShip</TableCell>
+                  <TableCell className="text-xs text-right text-muted-foreground">—</TableCell>
+                  <TableCell className="text-xs text-primary">Create page</TableCell>
+                </TableRow>
+                <TableRow className="opacity-40">
+                  <TableCell className="text-xs text-muted-foreground">cheapest way to move cross country</TableCell>
+                  <TableCell className="text-xs text-right text-muted-foreground">5,400</TableCell>
+                  <TableCell className="text-xs text-right text-muted-foreground">58</TableCell>
+                  <TableCell className="text-xs text-muted-foreground">Bellhop, Billy.com</TableCell>
+                  <TableCell className="text-xs text-right text-muted-foreground">—</TableCell>
+                  <TableCell className="text-xs text-primary">Create page</TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+            <p className="text-[10px] text-muted-foreground text-center mt-3">Example data shown. Connect a keyword data source to populate with real gaps.</p>
           </CardContent>
         </Card>
       </div>
