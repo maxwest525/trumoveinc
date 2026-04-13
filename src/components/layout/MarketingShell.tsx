@@ -178,6 +178,7 @@ export default function MarketingShell({ children, breadcrumb = "", breadcrumbs 
               <Home className="w-4 h-4 text-muted-foreground" />
               <span className="text-xs font-medium text-muted-foreground">Home</span>
             </Link>
+            <div className="w-px h-5 bg-border" />
             <ShellBreadcrumbs
               root={{ label: "Marketing", href: "/marketing/dashboard" }}
               segments={breadcrumbs}
