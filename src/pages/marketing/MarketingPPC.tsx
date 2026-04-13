@@ -207,6 +207,36 @@ export default function MarketingPPC() {
           </CardContent>
         </Card>
 
+        {/* Waste Detection */}
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm">Waste Detection</CardTitle>
+            <CardDescription className="text-xs">Keywords with high spend and zero conversions</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="py-6 text-center text-muted-foreground">
+              <AlertCircle className="w-5 h-5 mx-auto mb-2 opacity-40" />
+              <p className="text-sm">Connect Google Ads to activate waste detection.</p>
+              <p className="text-xs mt-1">This section will flag keywords burning budget with no results.</p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Budget Pacing */}
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm">Budget Pacing</CardTitle>
+            <CardDescription className="text-xs">Daily spend vs target visualization</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="py-6 text-center text-muted-foreground">
+              <Target className="w-5 h-5 mx-auto mb-2 opacity-40" />
+              <p className="text-sm">Budget pacing will appear here once campaigns are active.</p>
+              <p className="text-xs mt-1">Track daily spend against your target to avoid over/under-delivery.</p>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Campaign Dialog */}
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogContent className="max-w-lg">

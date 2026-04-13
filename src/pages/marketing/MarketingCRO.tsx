@@ -10,7 +10,8 @@ import {
   Target, TrendingUp, TrendingDown, ArrowRight, AlertTriangle,
   Lightbulb, FlaskConical, BarChart3, MousePointerClick, FormInput,
   Layout, Eye, Zap, CheckCircle2, XCircle, Clock, ChevronRight,
-  ArrowUpRight, ArrowDownRight, Play, Pause, Plus, Sparkles
+  ArrowUpRight, ArrowDownRight, Play, Pause, Plus, Sparkles,
+  Mail, MessageSquare, Bot, ArrowRightCircle,
 } from "lucide-react";
 
 // --- Mock Data ---
