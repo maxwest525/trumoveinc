@@ -1,11 +1,11 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useUserRole } from "@/hooks/useUserRole";
 import {
   Users, Plus, Shield, Crown, BarChart3, UserCheck, Loader2, Mail, X, Sparkles,
-  DollarSign, Pencil, Trash2, Check, Send, KeyRound, ChevronDown, Settings2,
-  Truck, Palette, Bot, CreditCard, BarChart2, FolderOpen, Lock,
+  DollarSign, Pencil, Trash2, Check, Send, KeyRound, ChevronDown,
+  Truck, Palette, Bot, Lock, Phone,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Switch } from "@/components/ui/switch";
@@ -21,67 +21,41 @@ interface UserWithRole {
   email: string | null;
   display_name: string | null;
   avatar_url: string | null;
+  phone: string | null;
   created_at: string | null;
   role: AppRole | null;
+  is_active: boolean;
 }
 
-// ─── Role config ──────────────────────────────────────────────────
 const ROLE_CONFIG: Record<AppRole, { label: string; icon: React.ElementType; color: string }> = {
-  owner: { label: "Owner", icon: Crown, color: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400" },
-  admin: { label: "Admin", icon: Shield, color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400" },
-  manager: { label: "Manager", icon: BarChart3, color: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400" },
-  agent: { label: "Agent", icon: UserCheck, color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" },
-  marketing: { label: "Marketing", icon: Sparkles, color: "bg-pink-100 text-pink-800 dark:bg-pink-900/30 dark:text-pink-400" },
-  accounting: { label: "Accounting", icon: DollarSign, color: "bg-teal-100 text-teal-800 dark:bg-teal-900/30 dark:text-teal-400" },
+  owner: { label: "Owner", icon: Crown, color: "text-amber-700 dark:text-amber-400" },
+  admin: { label: "Admin", icon: Shield, color: "text-blue-700 dark:text-blue-400" },
+  manager: { label: "Manager", icon: BarChart3, color: "text-purple-700 dark:text-purple-400" },
+  agent: { label: "Agent", icon: UserCheck, color: "text-green-700 dark:text-green-400" },
+  marketing: { label: "Marketing", icon: Sparkles, color: "text-pink-700 dark:text-pink-400" },
+  accounting: { label: "Accounting", icon: DollarSign, color: "text-teal-700 dark:text-teal-400" },
 };
 
-// ─── Permission areas ─────────────────────────────────────────────
-const PERMISSION_AREAS = [
-  { key: "leads", label: "Leads", icon: Users },
-  { key: "carrier_network", label: "Carrier Network", icon: Truck },
-  { key: "bookings", label: "Bookings", icon: FolderOpen },
-  { key: "reports", label: "Reports & Analytics", icon: BarChart2 },
-  { key: "billing", label: "Billing", icon: CreditCard },
-  { key: "creative", label: "Creative Assets", icon: Palette },
-  { key: "ai_tools", label: "AI Tools (Trudy)", icon: Bot },
-  { key: "settings", label: "Settings", icon: Settings2 },
-  { key: "user_management", label: "User Management", icon: Lock },
+// The 6 dashboard portal cards that permissions toggle on/off
+const PERMISSION_CARDS = [
+  { key: "agent", label: "Agent", icon: UserCheck },
+  { key: "manager", label: "Manager", icon: BarChart3 },
+  { key: "owner_admin", label: "Owner / Admin", icon: Crown },
+  { key: "dispatch", label: "Dispatch", icon: Truck },
+  { key: "marketing", label: "Marketing", icon: Sparkles },
+  { key: "creative_studio", label: "Creative Studio", icon: Palette },
 ] as const;
 
-type PermKey = (typeof PERMISSION_AREAS)[number]["key"];
+type PermKey = (typeof PERMISSION_CARDS)[number]["key"];
 
-// Default permission matrix per role
 const DEFAULT_PERMISSIONS: Record<AppRole, Record<PermKey, boolean>> = {
-  owner: Object.fromEntries(PERMISSION_AREAS.map((p) => [p.key, true])) as Record<PermKey, boolean>,
-  admin: Object.fromEntries(PERMISSION_AREAS.map((p) => [p.key, true])) as Record<PermKey, boolean>,
-  manager: {
-    leads: true, carrier_network: true, bookings: true, reports: true,
-    billing: false, creative: true, ai_tools: true, settings: false, user_management: false,
-  },
-  agent: {
-    leads: true, carrier_network: false, bookings: true, reports: false,
-    billing: false, creative: false, ai_tools: true, settings: false, user_management: false,
-  },
-  marketing: {
-    leads: true, carrier_network: false, bookings: false, reports: true,
-    billing: false, creative: true, ai_tools: true, settings: false, user_management: false,
-  },
-  accounting: {
-    leads: false, carrier_network: false, bookings: true, reports: true,
-    billing: true, creative: false, ai_tools: false, settings: false, user_management: false,
-  },
+  owner: { agent: true, manager: true, owner_admin: true, dispatch: true, marketing: true, creative_studio: true },
+  admin: { agent: true, manager: true, owner_admin: true, dispatch: true, marketing: true, creative_studio: true },
+  manager: { agent: true, manager: true, owner_admin: false, dispatch: true, marketing: false, creative_studio: false },
+  agent: { agent: true, manager: false, owner_admin: false, dispatch: false, marketing: false, creative_studio: false },
+  marketing: { agent: false, manager: false, owner_admin: false, dispatch: false, marketing: true, creative_studio: true },
+  accounting: { agent: false, manager: false, owner_admin: false, dispatch: true, marketing: false, creative_studio: false },
 };
-
-// Invite-modal role options (display labels that map to actual AppRole or "custom")
-const INVITE_ROLE_OPTIONS = [
-  { value: "agent" as const, label: "Agent" },
-  { value: "manager" as const, label: "Manager" },
-  { value: "admin" as const, label: "Admin / Owner" },
-  { value: "accounting" as const, label: "Dispatch" },
-  { value: "marketing" as const, label: "Marketing" },
-  { value: "accounting" as const, label: "Creative Studio" },
-  // "custom" handled separately
-] as const;
 
 export default function AdminUsersRoles() {
   const { toast } = useToast();
@@ -91,12 +65,11 @@ export default function AdminUsersRoles() {
 
   // Invite modal
   const [inviteOpen, setInviteOpen] = useState(false);
+  const [inviteFirstName, setInviteFirstName] = useState("");
+  const [inviteLastName, setInviteLastName] = useState("");
   const [inviteEmail, setInviteEmail] = useState("");
-  const [inviteName, setInviteName] = useState("");
-  const [inviteRole, setInviteRole] = useState<AppRole | "custom">("agent");
-  const [customPerms, setCustomPerms] = useState<Record<PermKey, boolean>>(
-    () => ({ ...DEFAULT_PERMISSIONS.agent })
-  );
+  const [invitePhone, setInvitePhone] = useState("");
+  const [inviteRole, setInviteRole] = useState<AppRole>("agent");
   const [inviting, setInviting] = useState(false);
 
   // Inline editing
@@ -109,13 +82,15 @@ export default function AdminUsersRoles() {
   const [settingPassword, setSettingPassword] = useState(false);
   const [inviteConfirmUser, setInviteConfirmUser] = useState<UserWithRole | null>(null);
 
-  // Roles & Permissions section
+  // Roles & Permissions
   const [rolePerms, setRolePerms] = useState<Record<AppRole, Record<PermKey, boolean>>>(() =>
     JSON.parse(JSON.stringify(DEFAULT_PERMISSIONS))
   );
-  const [defaultRole, setDefaultRole] = useState<AppRole>("agent");
   const [pendingRoleChanges, setPendingRoleChanges] = useState(false);
   const [confirmSaveRoles, setConfirmSaveRoles] = useState(false);
+
+  // Delete confirmation
+  const [deleteConfirmUser, setDeleteConfirmUser] = useState<UserWithRole | null>(null);
 
   // ─── Fetch users ──────────────────────────────────────────────
   const fetchUsers = async () => {
@@ -131,8 +106,10 @@ export default function AdminUsersRoles() {
       email: p.email,
       display_name: p.display_name,
       avatar_url: p.avatar_url,
+      phone: p.phone ?? null,
       created_at: p.created_at,
       role: roleMap.get(p.id) ?? null,
+      is_active: !!roleMap.get(p.id),
     }));
 
     const order: Record<string, number> = { owner: 0, admin: 1, manager: 2, agent: 3, marketing: 4, accounting: 5 };
@@ -144,31 +121,64 @@ export default function AdminUsersRoles() {
 
   useEffect(() => { fetchUsers(); }, []);
 
-  // ─── User status helper ───────────────────────────────────────
-  const getUserStatus = (user: UserWithRole) => {
-    if (!user.role) return { label: "Disabled", color: "text-muted-foreground bg-muted" };
-    return { label: "Active", color: "text-emerald-700 bg-emerald-100 dark:text-emerald-400 dark:bg-emerald-900/30" };
+  // ─── Toggle active/inactive ───────────────────────────────────
+  const handleToggleActive = async (user: UserWithRole) => {
+    if (user.id === userId) return;
+    setChangingRole(user.id);
+
+    if (user.is_active) {
+      // Deactivate: remove role
+      const { data, error } = await supabase.functions.invoke("invite-user", {
+        body: { action: "remove_role", user_id: user.id },
+      });
+      if (error || data?.error) {
+        toast({ title: "Failed", description: data?.error || error?.message, variant: "destructive" });
+      } else {
+        toast({ title: "User deactivated", description: `${user.display_name || user.email} can no longer log in.` });
+      }
+    } else {
+      // Reactivate: assign agent role by default
+      const { data, error } = await supabase.functions.invoke("invite-user", {
+        body: { action: "assign_role", user_id: user.id, role: "agent" },
+      });
+      if (error || data?.error) {
+        toast({ title: "Failed", description: data?.error || error?.message, variant: "destructive" });
+      } else {
+        toast({ title: "User activated", description: `${user.display_name || user.email} is now active as Agent.` });
+      }
+    }
+
+    setChangingRole(null);
+    fetchUsers();
   };
 
   // ─── Handlers ─────────────────────────────────────────────────
   const handleInvite = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!inviteEmail.trim()) return;
+    if (!inviteEmail.trim() || !inviteFirstName.trim() || !inviteLastName.trim()) return;
     setInviting(true);
 
-    const finalRole: AppRole = inviteRole === "custom" ? "agent" : inviteRole;
+    const displayName = `${inviteFirstName.trim()} ${inviteLastName.trim()}`;
 
     const { data, error } = await supabase.functions.invoke("invite-user", {
-      body: { action: "invite", email: inviteEmail.trim(), role: finalRole, display_name: inviteName.trim() || undefined },
+      body: {
+        action: "invite",
+        email: inviteEmail.trim(),
+        role: inviteRole,
+        display_name: displayName,
+        phone: invitePhone.trim() || undefined,
+      },
     });
 
     setInviting(false);
     if (error || data?.error) {
       toast({ title: "Invite failed", description: data?.error || error?.message, variant: "destructive" });
     } else {
-      toast({ title: "Invite sent", description: `${inviteEmail} invited as ${ROLE_CONFIG[finalRole].label}` });
+      toast({ title: "Invite sent", description: `${displayName} invited as ${ROLE_CONFIG[inviteRole].label}` });
+      setInviteFirstName("");
+      setInviteLastName("");
       setInviteEmail("");
-      setInviteName("");
+      setInvitePhone("");
       setInviteRole("agent");
       setInviteOpen(false);
       fetchUsers();
@@ -212,7 +222,7 @@ export default function AdminUsersRoles() {
     if (error || data?.error) {
       toast({ title: "Resend failed", description: data?.error || error?.message, variant: "destructive" });
     } else {
-      toast({ title: "Invite resent", description: "A new invitation email has been sent." });
+      toast({ title: "Invite resent", description: "A branded email has been sent to set their password." });
     }
   };
 
@@ -253,7 +263,7 @@ export default function AdminUsersRoles() {
   };
 
   const handleToggleRolePerm = (role: AppRole, perm: PermKey) => {
-    if (role === "owner" || role === "admin") return; // Cannot restrict
+    if (role === "owner" || role === "admin") return;
     setRolePerms((prev) => ({
       ...prev,
       [role]: { ...prev[role], [perm]: !prev[role][perm] },
@@ -262,7 +272,6 @@ export default function AdminUsersRoles() {
   };
 
   const handleSaveRolePerms = () => {
-    // In a real app this would persist to DB. For now just confirm.
     setPendingRoleChanges(false);
     setConfirmSaveRoles(false);
     toast({ title: "Permissions saved", description: "Role permissions have been updated for all affected users." });
@@ -274,14 +283,9 @@ export default function AdminUsersRoles() {
 
   const editableRoles: AppRole[] = ["manager", "agent", "marketing", "accounting"];
 
-  // ─── Delete confirmation state ────────────────────────────────
-  const [deleteConfirmUser, setDeleteConfirmUser] = useState<UserWithRole | null>(null);
-
   return (
     <div className="space-y-8">
-      {/* ═══════════════════════════════════════════════════════════ */}
-      {/* USERS SECTION                                              */}
-      {/* ═══════════════════════════════════════════════════════════ */}
+      {/* ═══════════════ USERS SECTION ═══════════════ */}
       <section>
         <div className="flex items-center justify-between mb-4">
           <div>
@@ -299,15 +303,13 @@ export default function AdminUsersRoles() {
           </button>
         </div>
 
-        {/* Users Table */}
         {loading ? (
           <div className="flex items-center justify-center py-20">
             <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
           </div>
         ) : (
           <div className="rounded-xl border border-border bg-card overflow-hidden">
-            {/* Header */}
-            <div className="hidden sm:grid grid-cols-[1fr_100px_140px_180px] items-center gap-4 px-5 py-2.5 border-b border-border bg-muted/30">
+            <div className="hidden sm:grid grid-cols-[1fr_120px_140px_180px] items-center gap-4 px-5 py-2.5 border-b border-border bg-muted/30">
               <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">User</span>
               <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Status</span>
               <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Role</span>
@@ -318,11 +320,13 @@ export default function AdminUsersRoles() {
               const roleConfig = user.role ? ROLE_CONFIG[user.role] : null;
               const RoleIcon = roleConfig?.icon;
               const isEditing = editingName === user.id;
-              const status = getUserStatus(user);
               return (
                 <div
                   key={user.id}
-                  className="grid grid-cols-1 sm:grid-cols-[1fr_100px_140px_180px] items-center gap-3 sm:gap-4 px-5 py-3 border-b border-border/50 last:border-0 hover:bg-muted/20 transition-colors"
+                  className={cn(
+                    "grid grid-cols-1 sm:grid-cols-[1fr_120px_140px_180px] items-center gap-3 sm:gap-4 px-5 py-3 border-b border-border/50 last:border-0 transition-colors",
+                    user.is_active ? "hover:bg-muted/20" : "opacity-60 bg-muted/10"
+                  )}
                 >
                   {/* User info */}
                   <div className="flex items-center gap-3 min-w-0">
@@ -353,47 +357,67 @@ export default function AdminUsersRoles() {
                     </div>
                   </div>
 
-                  {/* Status */}
+                  {/* Status dropdown */}
                   <div>
-                    <span className={cn("inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium", status.color)}>
-                      {status.label}
-                    </span>
+                    {isSelf ? (
+                      <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-700 dark:text-emerald-400">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                        Active
+                      </span>
+                    ) : (changingRole === user.id) ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin text-muted-foreground" />
+                    ) : (
+                      <button
+                        onClick={() => handleToggleActive(user)}
+                        className={cn(
+                          "inline-flex items-center gap-1.5 text-xs font-medium rounded-md px-2.5 py-1 border transition-colors cursor-pointer",
+                          user.is_active
+                            ? "border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20"
+                            : "border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+                        )}
+                      >
+                        <span className={cn("w-1.5 h-1.5 rounded-full", user.is_active ? "bg-emerald-500" : "bg-red-400")} />
+                        {user.is_active ? "Active" : "Inactive"}
+                        <ChevronDown className="w-3 h-3 ml-0.5" />
+                      </button>
+                    )}
                   </div>
 
-                  {/* Role badge */}
+                  {/* Role dropdown (no pill) */}
                   <div>
-                    {roleConfig && RoleIcon ? (
-                      <span className={cn("inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium", roleConfig.color)}>
-                        <RoleIcon className="w-3 h-3" />
-                        {roleConfig.label}
+                    {isSelf ? (
+                      <span className={cn("flex items-center gap-1.5 text-xs font-medium", roleConfig?.color)}>
+                        {RoleIcon && <RoleIcon className="w-3 h-3" />}
+                        {roleConfig?.label ?? "No role"}
                       </span>
+                    ) : (changingRole === user.id) ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin text-muted-foreground" />
                     ) : (
-                      <span className="text-xs text-muted-foreground/50 italic">No role</span>
+                      <select
+                        value={user.role ?? ""}
+                        onChange={(e) => {
+                          const val = e.target.value as AppRole;
+                          if (val) handleChangeRole(user.id, val);
+                        }}
+                        className="h-7 px-2 rounded border border-border bg-background text-xs font-medium focus:outline-none focus:ring-1 focus:ring-ring"
+                      >
+                        <option value="" disabled>Assign…</option>
+                        {availableRoles.map((r) => (
+                          <option key={r} value={r}>{ROLE_CONFIG[r].label}</option>
+                        ))}
+                      </select>
                     )}
                   </div>
 
                   {/* Actions */}
                   <div className="flex items-center justify-end gap-1">
-                    {(changingRole === user.id || deletingUser === user.id) ? (
+                    {(deletingUser === user.id) ? (
                       <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
                     ) : isSelf ? (
                       <span className="text-[11px] text-muted-foreground">—</span>
                     ) : (
                       <>
-                        <select
-                          value={user.role ?? ""}
-                          onChange={(e) => {
-                            const val = e.target.value as AppRole;
-                            if (val) handleChangeRole(user.id, val);
-                          }}
-                          className="h-7 px-2 rounded border border-border bg-background text-[11px] focus:outline-none focus:ring-1 focus:ring-ring"
-                        >
-                          <option value="" disabled>Assign…</option>
-                          {availableRoles.map((r) => (
-                            <option key={r} value={r}>{ROLE_CONFIG[r].label}</option>
-                          ))}
-                        </select>
-                        <button onClick={() => setInviteConfirmUser(user)} className="p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors" title="Send CRM access link">
+                        <button onClick={() => setInviteConfirmUser(user)} className="p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors" title="Send password setup email">
                           <Send className="w-3.5 h-3.5" />
                         </button>
                         <button onClick={() => { setEditingName(user.id); setEditNameValue(user.display_name || ""); }} className="p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors" title="Edit name">
@@ -426,16 +450,14 @@ export default function AdminUsersRoles() {
         )}
       </section>
 
-      {/* ═══════════════════════════════════════════════════════════ */}
-      {/* ROLES & PERMISSIONS SECTION                                */}
-      {/* ═══════════════════════════════════════════════════════════ */}
+      {/* ═══════════════ ROLES & PERMISSIONS ═══════════════ */}
       <section>
         <div className="flex items-center justify-between mb-4">
           <div>
             <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
               <Shield className="w-5 h-5" /> Roles & Permissions
             </h2>
-            <p className="text-sm text-muted-foreground mt-0.5">Customize access for each role. Changes apply to all users with that role.</p>
+            <p className="text-sm text-muted-foreground mt-0.5">Control which dashboard portals each role can access.</p>
           </div>
           {pendingRoleChanges && (
             <button
@@ -448,33 +470,19 @@ export default function AdminUsersRoles() {
           )}
         </div>
 
-        {/* Default role dropdown */}
-        <div className="flex items-center gap-3 mb-5 p-4 rounded-xl border border-border bg-card">
-          <label className="text-sm font-medium text-foreground whitespace-nowrap">Default role for new invites:</label>
-          <select
-            value={defaultRole}
-            onChange={(e) => setDefaultRole(e.target.value as AppRole)}
-            className="h-8 px-3 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-          >
-            {availableRoles.filter((r) => r !== "owner").map((r) => (
-              <option key={r} value={r}>{ROLE_CONFIG[r].label}</option>
-            ))}
-          </select>
-        </div>
-
         {/* Permissions grid */}
         <div className="rounded-xl border border-border bg-card overflow-hidden">
-          {/* Header row */}
-          <div className="grid items-center gap-0 border-b border-border bg-muted/30" style={{ gridTemplateColumns: `160px repeat(${PERMISSION_AREAS.length}, 1fr)` }}>
+          {/* Header */}
+          <div className="grid items-center gap-0 border-b border-border bg-muted/30" style={{ gridTemplateColumns: `160px repeat(${PERMISSION_CARDS.length}, 1fr)` }}>
             <div className="px-4 py-3">
               <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Role</span>
             </div>
-            {PERMISSION_AREAS.map((area) => {
-              const Icon = area.icon;
+            {PERMISSION_CARDS.map((card) => {
+              const Icon = card.icon;
               return (
-                <div key={area.key} className="px-2 py-3 text-center">
+                <div key={card.key} className="px-2 py-3 text-center">
                   <Icon className="w-3.5 h-3.5 mx-auto mb-1 text-muted-foreground" />
-                  <span className="text-[10px] font-medium text-muted-foreground leading-tight block">{area.label}</span>
+                  <span className="text-[10px] font-medium text-muted-foreground leading-tight block">{card.label}</span>
                 </div>
               );
             })}
@@ -492,25 +500,24 @@ export default function AdminUsersRoles() {
               <div
                 key={role}
                 className="grid items-center gap-0 border-b border-border/50 last:border-0 hover:bg-muted/10 transition-colors"
-                style={{ gridTemplateColumns: `160px repeat(${PERMISSION_AREAS.length}, 1fr)` }}
+                style={{ gridTemplateColumns: `160px repeat(${PERMISSION_CARDS.length}, 1fr)` }}
               >
                 <div className="px-4 py-3 flex items-center gap-2">
-                  <span className={cn("inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium", config.color)}>
-                    <RIcon className="w-3 h-3" />
-                    {config.label}
-                  </span>
+                  <RIcon className={cn("w-4 h-4", config.color)} />
+                  <span className={cn("text-sm font-semibold", config.color)}>{config.label}</span>
                   <span className="text-[10px] text-muted-foreground">({userCount})</span>
+                  {isLocked && <Lock className="w-3 h-3 text-muted-foreground" />}
                 </div>
-                {PERMISSION_AREAS.map((area) => (
-                  <div key={area.key} className="flex justify-center py-3">
+                {PERMISSION_CARDS.map((card) => (
+                  <div key={card.key} className="flex justify-center py-3">
                     {isLocked ? (
                       <div className="w-9 h-5 rounded-full bg-primary/20 flex items-center justify-center">
                         <Check className="w-3 h-3 text-primary" />
                       </div>
                     ) : (
                       <Switch
-                        checked={perms[area.key]}
-                        onCheckedChange={() => handleToggleRolePerm(role, area.key)}
+                        checked={perms[card.key]}
+                        onCheckedChange={() => handleToggleRolePerm(role, card.key)}
                       />
                     )}
                   </div>
@@ -521,9 +528,7 @@ export default function AdminUsersRoles() {
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════════ */}
-      {/* INVITE MODAL                                               */}
-      {/* ═══════════════════════════════════════════════════════════ */}
+      {/* ═══════════════ INVITE MODAL ═══════════════ */}
       {inviteOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => setInviteOpen(false)}>
           <div className="bg-card border border-border rounded-xl p-6 w-full max-w-md shadow-2xl animate-in fade-in zoom-in-95 duration-200" onClick={(e) => e.stopPropagation()}>
@@ -534,80 +539,67 @@ export default function AdminUsersRoles() {
               <button onClick={() => setInviteOpen(false)} className="p-1 rounded hover:bg-muted"><X className="w-4 h-4 text-muted-foreground" /></button>
             </div>
             <form onSubmit={handleInvite} className="space-y-4">
-              <div>
-                <label className="text-xs font-medium text-muted-foreground mb-1 block">Full Name</label>
-                <input
-                  type="text"
-                  placeholder="e.g. John Doe"
-                  value={inviteName}
-                  onChange={(e) => setInviteName(e.target.value)}
-                  className="w-full h-9 px-3 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                />
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground mb-1 block">First Name</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="John"
+                    value={inviteFirstName}
+                    onChange={(e) => setInviteFirstName(e.target.value)}
+                    className="w-full h-9 px-3 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground mb-1 block">Last Name</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Doe"
+                    value={inviteLastName}
+                    onChange={(e) => setInviteLastName(e.target.value)}
+                    className="w-full h-9 px-3 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                  />
+                </div>
               </div>
               <div>
-                <label className="text-xs font-medium text-muted-foreground mb-1 block">Email Address</label>
+                <label className="text-xs font-medium text-muted-foreground mb-1 block">Personal Email</label>
                 <input
                   type="email"
                   required
-                  placeholder="user@company.com"
+                  placeholder="john@personal.com"
                   value={inviteEmail}
                   onChange={(e) => setInviteEmail(e.target.value)}
                   className="w-full h-9 px-3 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                 />
               </div>
               <div>
-                <label className="text-xs font-medium text-muted-foreground mb-1 block">Role</label>
-                <div className="grid grid-cols-2 gap-2">
-                  {[
-                    { value: "agent" as const, label: "Agent" },
-                    { value: "manager" as const, label: "Manager" },
-                    { value: "admin" as const, label: "Admin / Owner" },
-                    { value: "accounting" as const, label: "Dispatch" },
-                    { value: "marketing" as const, label: "Marketing" },
-                    { value: "custom" as const, label: "Custom" },
-                  ].map((opt) => (
-                    <button
-                      key={opt.value}
-                      type="button"
-                      onClick={() => setInviteRole(opt.value)}
-                      className={cn(
-                        "px-3 py-2 rounded-lg border text-xs font-medium transition-all",
-                        inviteRole === opt.value
-                          ? "border-primary bg-primary/10 text-primary"
-                          : "border-border bg-background text-muted-foreground hover:border-foreground/20"
-                      )}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                <label className="text-xs font-medium text-muted-foreground mb-1 block">Phone Number</label>
+                <input
+                  type="tel"
+                  placeholder="(555) 123-4567"
+                  value={invitePhone}
+                  onChange={(e) => setInvitePhone(e.target.value)}
+                  className="w-full h-9 px-3 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                />
               </div>
-
-              {/* Custom permission toggles */}
-              {inviteRole === "custom" && (
-                <div className="border border-border rounded-lg p-3 space-y-2 bg-muted/20 animate-in fade-in slide-in-from-top-1 duration-200">
-                  <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2">Custom Permissions</p>
-                  {PERMISSION_AREAS.map((area) => {
-                    const Icon = area.icon;
-                    return (
-                      <div key={area.key} className="flex items-center justify-between py-1">
-                        <div className="flex items-center gap-2">
-                          <Icon className="w-3.5 h-3.5 text-muted-foreground" />
-                          <span className="text-xs text-foreground">{area.label}</span>
-                        </div>
-                        <Switch
-                          checked={customPerms[area.key]}
-                          onCheckedChange={() => setCustomPerms((prev) => ({ ...prev, [area.key]: !prev[area.key] }))}
-                        />
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
+              <div>
+                <label className="text-xs font-medium text-muted-foreground mb-1 block">Role</label>
+                <select
+                  value={inviteRole}
+                  onChange={(e) => setInviteRole(e.target.value as AppRole)}
+                  className="w-full h-9 px-3 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                >
+                  {availableRoles.map((r) => (
+                    <option key={r} value={r}>{ROLE_CONFIG[r].label}</option>
+                  ))}
+                </select>
+              </div>
 
               <button
                 type="submit"
-                disabled={inviting || !inviteEmail.trim()}
+                disabled={inviting || !inviteEmail.trim() || !inviteFirstName.trim() || !inviteLastName.trim()}
                 className="w-full h-10 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {inviting && <Loader2 className="w-4 h-4 animate-spin" />}
@@ -618,9 +610,7 @@ export default function AdminUsersRoles() {
         </div>
       )}
 
-      {/* ═══════════════════════════════════════════════════════════ */}
-      {/* SET PASSWORD DIALOG                                        */}
-      {/* ═══════════════════════════════════════════════════════════ */}
+      {/* ═══════════════ SET PASSWORD DIALOG ═══════════════ */}
       {passwordUserId && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <div className="bg-card border border-border rounded-xl p-6 w-full max-w-sm shadow-2xl animate-in fade-in zoom-in-95 duration-200">
@@ -648,29 +638,24 @@ export default function AdminUsersRoles() {
         </div>
       )}
 
-      {/* ═══════════════════════════════════════════════════════════ */}
-      {/* DIALOGS                                                    */}
-      {/* ═══════════════════════════════════════════════════════════ */}
-
-      {/* Resend invite confirmation */}
+      {/* ═══════════════ DIALOGS ═══════════════ */}
       <AlertDialog open={!!inviteConfirmUser} onOpenChange={(open) => !open && setInviteConfirmUser(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Send CRM Access Link?</AlertDialogTitle>
+            <AlertDialogTitle>Send Password Setup Email?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will send an email to <span className="font-medium text-foreground">{inviteConfirmUser?.email}</span> with a link to set their password and access the CRM.
+              This will send a branded TruMove email to <span className="font-medium text-foreground">{inviteConfirmUser?.email}</span> prompting them to set up their password.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={() => { if (inviteConfirmUser) { handleResendInvite(inviteConfirmUser.id); setInviteConfirmUser(null); } }}>
-              Send Link
+              Send Email
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Delete user confirmation */}
       <AlertDialog open={!!deleteConfirmUser} onOpenChange={(open) => !open && setDeleteConfirmUser(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -691,13 +676,12 @@ export default function AdminUsersRoles() {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Save role permissions confirmation */}
       <AlertDialog open={confirmSaveRoles} onOpenChange={setConfirmSaveRoles}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Save Permission Changes?</AlertDialogTitle>
             <AlertDialogDescription>
-              Updated permissions will apply to all users assigned to the modified roles. Continue?
+              Updated permissions will apply to all users assigned to the modified roles.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
