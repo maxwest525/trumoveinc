@@ -5,7 +5,7 @@ import { useUserRole } from "@/hooks/useUserRole";
 import {
   Users, Plus, Shield, Crown, BarChart3, UserCheck, Loader2, Mail, X, Sparkles,
   DollarSign, Pencil, Trash2, Check, Send, KeyRound, ChevronDown,
-  Truck, Palette, Bot, Lock, Phone,
+  Truck, Palette, Bot, Lock, Phone, MapPin, AtSign, Building2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Switch } from "@/components/ui/switch";
