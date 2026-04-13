@@ -1,48 +1,48 @@
 
-Fix the preview/login loop by correcting auth state + route restore behavior.
 
-What’s actually happening
-- This does not look like a broken preview renderer.
-- On preview domains, `/` intentionally goes to `/dashboard`.
-- Protected marketing routes like `/marketing/content-seo` use `RoleGuard`. If you are logged out, it immediately redirects you to `/dashboard`, so the page you were trying to preview is lost.
-- After sign-in, `WorkspaceHub` and `RoleGuard` both rely on `useUserRoles()`, but that hook only fetches roles once on mount. If login happens after mount, roles stay empty until a hard refresh.
-- Result: you get bounced away from the page, and after login the app can still behave like you have no access.
+## Under Construction Gate for Non-Business Pages
 
-Plan
-1. Make role loading reactive
-   - Update `useUserRoles` to listen for auth changes and re-fetch roles whenever the session/user changes.
-   - Keep loading true until auth is resolved for the current user, so guards do not decide too early.
+### Problem
+Customer-facing pages and unused routes are accessible in the CRM environment, causing blank screens and confusion, especially on mobile.
 
-2. Preserve the page you were trying to open
-   - Update `RoleGuard` so:
-     - not signed in → redirect to `/dashboard` with a saved `from` route
-     - signed in but wrong role → show a clear access state instead of silently bouncing back
-   - This keeps deep links like `/marketing/content-seo` intact through login.
+### What counts as "non-business" (needs the gate)
+These routes are customer-facing or not actively used by the business CRM:
 
-3. Send users back to the preview after login
-   - Update `WorkspaceHub` to read the saved `from` route and navigate there once auth + roles are ready.
-   - Keep the current workspace chooser for normal `/dashboard` visits.
+| Route | What it is |
+|---|---|
+| `/site` and `/site/*` | Customer website (all pages) |
+| `/homepage-2` | Alternate homepage design |
+| `/customer-facing-sites` | Site preview launcher |
 
-4. Make the failure state understandable
-   - If the account truly lacks `owner`/`marketing` access in `user_roles`, show an explicit “no access to Marketing” state with a path back to the workspace hub.
-   - No more “disappearing preview” behavior.
+The `/` root route already redirects to `/dashboard` on CRM/dev, so it stays as-is.
 
-5. Validate the real flows
-   - Logged out → open `/marketing/content-seo` → sign in → return to `/marketing/content-seo`
-   - Logged in owner/marketing user → deep link works without refresh
-   - Logged in non-marketing user → clear access message, no redirect loop
-   - Sign out and sign back in on mobile preview
+### What stays untouched
+All `/agent/*`, `/manager/*`, `/admin/*`, `/marketing/*`, `/dispatch/*`, `/leads/*`, `/kpi`, `/leaderboard`, `/accounting/*`, `/creative/*`, `/dashboard`, `/esign/:refNumber`, `/reset-password`, `/set-password`, `/unsubscribe`, `/tools/:tool`, and auth routes remain fully functional.
 
-Files likely affected
-- `src/hooks/useUserRoles.ts`
-- `src/components/RoleGuard.tsx`
-- `src/pages/WorkspaceHub.tsx`
-- Possibly `src/components/auth/PortalAuthForm.tsx`
+### Plan
 
-Technical details
-- Current root causes are in:
-  - `RoleGuard.tsx` redirecting all failures to `/dashboard`
-  - `useUserRoles.ts` fetching once only, with no auth subscription
-  - `WorkspaceHub.tsx` having no “return to requested page” logic after login
-- I would also verify that your account really has the expected role in `user_roles`; if the role is missing, the app should still deny access, but it should do so clearly instead of looking like the preview vanished.
-- I would not change auth provider settings or preview domain config first; the main issue is client-side auth/routing flow.
+**1. Create an `UnderConstruction` page component**
+- Displays a clean, on-brand message: "Looks like this page is under construction. Looks like TruMove is helping you move back home."
+- Detects the hostname:
+  - If on `crm.trumoveinc.com` (or dev/preview): show a button linking back to `/dashboard`
+  - If on `trumoveinc.com` (production customer domain): auto-redirect to `/` (homepage)
+- Premium styling consistent with the rest of the platform
+
+**2. Update `App.tsx` routing**
+- Replace the `/site` and `/site/*` route elements with the new `UnderConstruction` component (instead of `SiteRouteGuard`)
+- Replace `/homepage-2` route element with `UnderConstruction`
+- Replace `/customer-facing-sites` route element with `UnderConstruction`
+
+**3. Clean up nav references**
+- Remove the "Customer Sites" link from `GrowthEngineShell.tsx` sidebar (points to `/customer-facing-sites`)
+- Remove any other nav items that link to gated routes so users don't land on the construction page from internal navigation
+
+**4. Keep existing code intact**
+- Do NOT delete any page files (Index, HomepageV2, SiteRouteGuard, etc.) so they can be restored later
+- Simply swap the route elements to point to the construction page
+
+### Files changed
+- `src/pages/UnderConstruction.tsx` (new)
+- `src/App.tsx` (swap route elements)
+- `src/components/layout/GrowthEngineShell.tsx` (remove Customer Sites nav item)
+
