@@ -438,6 +438,7 @@ export default function MarketingCRO() {
             <TabsTrigger value="pages" className="text-xs">Pages</TabsTrigger>
             <TabsTrigger value="recommendations" className="text-xs">Recommendations</TabsTrigger>
             <TabsTrigger value="journey" className="text-xs">Customer Journey</TabsTrigger>
+          </TabsList>
 
           <TabsContent value="overview" className="space-y-4 mt-4">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -460,6 +461,48 @@ export default function MarketingCRO() {
 
           <TabsContent value="recommendations" className="space-y-4 mt-4">
             <RecommendationsPanel />
+          </TabsContent>
+
+          <TabsContent value="journey" className="space-y-4 mt-4">
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <ArrowRightCircle className="w-4 h-4 text-primary" /> Customer Journey
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  Visualize your automated SMS, email, and Trudy AI sequences per lead source. Coming soon.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center justify-center gap-0 py-6 overflow-x-auto">
+                  {[
+                    { label: "New Lead", icon: Target, time: "" },
+                    { label: "SMS", icon: MessageSquare, time: "90s" },
+                    { label: "Email", icon: Mail, time: "2min" },
+                    { label: "Follow-up", icon: MessageSquare, time: "4hr" },
+                    { label: "Follow-up", icon: Mail, time: "24hr" },
+                    { label: "Final", icon: Bot, time: "48hr" },
+                  ].map((step, i) => {
+                    const Icon = step.icon;
+                    return (
+                      <div key={i} className="flex items-center">
+                        <div className="flex flex-col items-center px-3">
+                          <div className="w-10 h-10 rounded-full border-2 border-primary/30 bg-primary/5 flex items-center justify-center mb-1.5">
+                            <Icon className="w-4 h-4 text-primary" />
+                          </div>
+                          <span className="text-[10px] font-medium text-foreground">{step.label}</span>
+                          {step.time && <span className="text-[9px] text-muted-foreground">{step.time}</span>}
+                        </div>
+                        {i < 5 && <ArrowRight className="w-4 h-4 text-muted-foreground/40 shrink-0" />}
+                      </div>
+                    );
+                  })}
+                </div>
+                <p className="text-[10px] text-muted-foreground text-center mt-2">
+                  This flow will be configurable per lead source with branching logic and AI-powered messaging.
+                </p>
+              </CardContent>
+            </Card>
           </TabsContent>
         </Tabs>
       </div>
