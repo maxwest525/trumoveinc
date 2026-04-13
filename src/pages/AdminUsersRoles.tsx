@@ -86,6 +86,13 @@ export default function AdminUsersRoles() {
   const [settingPassword, setSettingPassword] = useState(false);
   const [inviteConfirmUser, setInviteConfirmUser] = useState<UserWithRole | null>(null);
 
+  // Edit profile modal
+  const [editProfileUser, setEditProfileUser] = useState<UserWithRole | null>(null);
+  const [profileForm, setProfileForm] = useState({
+    first_name: "", last_name: "", username: "", company_email: "", personal_email: "", phone: "", address: "",
+  });
+  const [savingProfile, setSavingProfile] = useState(false);
+
   // Roles & Permissions
   const [rolePerms, setRolePerms] = useState<Record<AppRole, Record<PermKey, boolean>>>(() =>
     JSON.parse(JSON.stringify(DEFAULT_PERMISSIONS))
