@@ -99,12 +99,17 @@ Deno.serve(async (req) => {
         });
       }
 
-      // Assign role
+      // Assign role and store phone if provided
       if (inviteData?.user) {
         await adminClient.from("user_roles").upsert(
           { user_id: inviteData.user.id, role },
           { onConflict: "user_id,role" }
         );
+        // Store phone number on profile if provided
+        const { phone } = body;
+        if (phone) {
+          await adminClient.from("profiles").update({ phone }).eq("id", inviteData.user.id);
+        }
       }
 
       return new Response(JSON.stringify({ success: true, user: inviteData.user }), {
