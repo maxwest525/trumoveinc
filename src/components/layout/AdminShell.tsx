@@ -1,41 +1,17 @@
 import { useState, useEffect, type ReactNode } from "react";
-
 import { Link, useLocation } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { useOpenRequestCount } from "@/hooks/useOpenRequestCount";
 import {
-  Home, Sun, Moon, Bell, LayoutDashboard, Users, Link2, Package,
-  Zap, ScrollText, Gauge, Sparkles, DollarSign,
-  FileText, BookOpen, CreditCard, Settings2, MessageSquare, Trophy,
-  Menu, X,
+  Home, Bell, Menu, MessageSquare,
 } from "lucide-react";
-import logoImg from "@/assets/logo.png";
-import { toast } from "sonner";
-import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 import { setPortalContext } from "@/hooks/usePortalContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import ShellBreadcrumbs, { type BreadcrumbSegment } from "@/components/layout/ShellBreadcrumbs";
+import SharedSidebar from "@/components/layout/SharedSidebar";
 import { useNotifications } from "@/hooks/useNotifications";
 import NotificationsPanel from "@/components/agent/NotificationsPanel";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
-
-
-const NAV_ITEMS: { label: string; icon: any; href: string; beta?: boolean }[] = [
-  { label: "Dashboard", icon: LayoutDashboard, href: "/admin/dashboard" },
-  { label: "Users & Roles", icon: Users, href: "/admin/users" },
-  { label: "Employee Requests", icon: FileText, href: "/admin/employee-requests" },
-  
-  { label: "Products & Pricing", icon: DollarSign, href: "/admin/pricing" },
-  { label: "Accounting", icon: CreditCard, href: "/accounting/dashboard", beta: true },
-  { label: "Developer", icon: Link2, href: "/admin/developer", beta: true },
-  { label: "Pulse Compliance", icon: Settings2, href: "/admin/pulse" },
-];
-
-const ADVANCED_ITEMS = [
-  { label: "Audit Log", icon: ScrollText },
-];
 
 interface AdminShellProps {
   children: ReactNode;
@@ -44,14 +20,12 @@ interface AdminShellProps {
 }
 
 export default function AdminShell({ children, breadcrumb = "", breadcrumbs }: AdminShellProps) {
-  const { theme, setTheme } = useTheme();
   const location = useLocation();
   const isMobile = useIsMobile();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const { notifications, unreadCount, loading: notifLoading, markAsRead, markAllAsRead, deleteNotification } = useNotifications();
-
-  const openRequestCount = useOpenRequestCount();
 
   useEffect(() => {
     setPortalContext("admin");
@@ -60,82 +34,25 @@ export default function AdminShell({ children, breadcrumb = "", breadcrumbs }: A
 
   useEffect(() => { setSidebarOpen(false); }, [location.pathname]);
 
-  const sidebarContent = (
-    <>
-      <div className="px-4 py-4 flex items-center gap-2">
-        <img src={logoImg} alt="TruMove" className="h-6" />
-        <span className="text-[10px] text-muted-foreground ml-1">Admin</span>
-        {isMobile && (
-          <button onClick={() => setSidebarOpen(false)} className="ml-auto p-1 rounded-lg hover:bg-muted">
-            <X className="w-4 h-4 text-muted-foreground" />
-          </button>
-        )}
-      </div>
-
-      <nav className="flex-1 px-2 py-2 space-y-0.5 overflow-y-auto">
-        {NAV_ITEMS.map((item) => {
-          const Icon = item.icon;
-          const active = location.pathname === item.href;
-          return (
-            <Link
-              key={item.label}
-              to={item.href}
-              className={cn(
-                "flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors",
-                active ? "bg-foreground text-background" : "text-muted-foreground hover:bg-muted hover:text-foreground"
-              )}
-            >
-              <Icon className="w-4 h-4" />
-              <span>{item.label}</span>
-              {item.label === 'Employee Requests' && openRequestCount > 0 && (
-                <Badge className="ml-auto h-4 min-w-4 px-1 text-[9px] leading-none bg-destructive text-destructive-foreground">
-                  {openRequestCount > 99 ? '99+' : openRequestCount}
-                </Badge>
-              )}
-              {item.beta && (
-                <span className="ml-auto text-[9px] font-semibold uppercase tracking-wider text-muted-foreground bg-muted px-1.5 py-0.5 rounded">Beta</span>
-              )}
-            </Link>
-          );
-        })}
-
-        {ADVANCED_ITEMS.map((item) => {
-          const Icon = item.icon;
-          return (
-            <button
-              key={item.label}
-              onClick={() => toast.info(`${item.label} coming soon`)}
-              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-            >
-              <Icon className="w-4 h-4" />
-              <span>{item.label}</span>
-            </button>
-          );
-        })}
-      </nav>
-    </>
-  );
+  const sidebarWidth = collapsed ? "w-14" : "w-56";
 
   return (
     <div className="flex min-h-screen bg-background text-foreground">
-      {/* Desktop sidebar */}
       {!isMobile && (
-        <aside className="w-52 shrink-0 border-r border-border bg-card flex flex-col min-h-screen">
-          {sidebarContent}
+        <aside className={cn("shrink-0 border-r border-border flex flex-col min-h-screen transition-all duration-200", sidebarWidth)}>
+          <SharedSidebar title="Admin" collapsed={collapsed} onToggleCollapse={() => setCollapsed((c) => !c)} isMobile={false} />
         </aside>
       )}
 
-      {/* Mobile sidebar overlay */}
       {isMobile && sidebarOpen && (
         <>
           <div className="fixed inset-0 bg-black/50 z-40" onClick={() => setSidebarOpen(false)} />
-          <aside className="fixed inset-y-0 left-0 w-52 z-50 bg-card border-r border-border flex flex-col">
-            {sidebarContent}
+          <aside className="fixed inset-y-0 left-0 w-56 z-50 border-r border-border flex flex-col">
+            <SharedSidebar title="Admin" collapsed={false} onToggleCollapse={() => {}} onClose={() => setSidebarOpen(false)} isMobile={true} />
           </aside>
         </>
       )}
 
-      {/* Main area */}
       <div className="flex-1 flex flex-col min-h-screen min-w-0">
         <header className="h-12 border-b border-border bg-card flex items-center justify-between px-3 sm:px-4 shrink-0">
           <div className="flex items-center gap-2 sm:gap-3 min-w-0">
@@ -146,9 +63,10 @@ export default function AdminShell({ children, breadcrumb = "", breadcrumbs }: A
             )}
             <Link
               to="/admin/team-chat"
-              className={`p-1.5 rounded-lg transition-colors relative flex items-center gap-1 ${
+              className={cn(
+                "p-1.5 rounded-lg transition-colors relative flex items-center gap-1",
                 location.pathname === "/admin/team-chat" ? "bg-primary/10 text-primary" : "hover:bg-muted text-muted-foreground"
-              }`}
+              )}
             >
               <MessageSquare className="w-4 h-4" />
               <span className="text-xs font-medium">Chat</span>
@@ -196,7 +114,6 @@ export default function AdminShell({ children, breadcrumb = "", breadcrumbs }: A
         <main className="flex-1 overflow-y-auto p-3 sm:p-6 max-w-[1400px] mx-auto w-full">
           {children}
         </main>
-        
       </div>
     </div>
   );
