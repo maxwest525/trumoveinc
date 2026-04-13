@@ -404,10 +404,13 @@ export default function AdminUsersRoles() {
                           <button onClick={() => setEditingName(null)} className="p-0.5 rounded hover:bg-muted"><X className="w-3.5 h-3.5 text-muted-foreground" /></button>
                         </div>
                       ) : (
-                        <p className="text-sm font-medium text-foreground truncate">
+                        <button
+                          onClick={() => openEditProfile(user)}
+                          className="text-sm font-medium text-foreground truncate hover:text-primary hover:underline underline-offset-2 transition-colors text-left"
+                        >
                           {user.display_name || "Unnamed"}
                           {isSelf && <span className="text-[10px] text-muted-foreground ml-1.5">(you)</span>}
-                        </p>
+                        </button>
                       )}
                       <p className="text-xs text-muted-foreground truncate">{user.email}</p>
                     </div>
