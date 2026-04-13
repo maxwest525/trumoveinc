@@ -146,15 +146,17 @@ export default function ManagerShell({ children, breadcrumb = "", breadcrumbs }:
             <Link
               to="/manager/team-chat"
               className={cn(
-                "p-1.5 rounded-lg transition-colors relative",
+                "p-1.5 rounded-lg transition-colors relative flex items-center gap-1",
                 location.pathname === "/manager/team-chat" ? "bg-primary/10 text-primary" : "hover:bg-muted text-muted-foreground"
               )}
             >
               <MessageSquare className="w-4 h-4" />
+              <span className="text-xs font-medium">Chat</span>
             </Link>
             <div className="w-px h-5 bg-border" />
-            <Link to="/" className="p-1.5 rounded-lg hover:bg-muted transition-colors">
+            <Link to="/" className="p-1.5 rounded-lg hover:bg-muted transition-colors flex items-center gap-1">
               <Home className="w-4 h-4 text-muted-foreground" />
+              <span className="text-xs font-medium text-muted-foreground">Home</span>
             </Link>
             <ShellBreadcrumbs
               root={{ label: "Management", href: "/manager/dashboard" }}
