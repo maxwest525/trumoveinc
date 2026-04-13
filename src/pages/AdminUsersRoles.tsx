@@ -22,6 +22,10 @@ interface UserWithRole {
   display_name: string | null;
   avatar_url: string | null;
   phone: string | null;
+  username: string | null;
+  company_email: string | null;
+  personal_email: string | null;
+  address: string | null;
   created_at: string | null;
   role: AppRole | null;
   is_active: boolean;
