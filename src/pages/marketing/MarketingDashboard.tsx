@@ -1,18 +1,20 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
-import { TrendingUp, Users, DollarSign, Target, Activity, Wifi, WifiOff, Settings, RefreshCw, AlertCircle, CheckCircle, Clock, Loader2, Save } from "lucide-react";
+import {
+  TrendingUp, TrendingDown, Users, DollarSign, Target, Settings, Loader2, Save,
+  AlertCircle, CheckCircle, ArrowRight, Zap, ArrowUpRight, ArrowDownRight, Percent, BarChart3,
+} from "lucide-react";
 import MarketingShell from "@/components/layout/MarketingShell";
-import DailyMarketingReview from "@/components/marketing/DailyMarketingReview";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { Link } from "react-router-dom";
 
-// ─── Static sample data (replaced by real data when integrations connected) ─────
+// ─── Static sample data ─────
 const trafficData = [
   { month: "Oct", organic: 0, paid: 0, direct: 40 },
   { month: "Nov", organic: 120, paid: 80, direct: 55 },
@@ -38,19 +40,25 @@ const channelData = [
   { name: "Referral", value: 15, color: "#8b5cf6" },
 ];
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+const sourceQualityPie = [
+  { name: "Owned", value: 38, color: "#16a34a" },
+  { name: "Bought", value: 62, color: "#3b82f6" },
+];
+
+const costPerBookedSource = [
+  { source: "Organic", cost: 42 },
+  { source: "Google Ads", cost: 185 },
+  { source: "Meta", cost: 210 },
+  { source: "Vendors", cost: 290 },
+  { source: "Referral", cost: 18 },
+];
+
 type Integration = {
   id?: string;
   provider: string;
   is_connected: boolean;
   property_id: string;
   account_id: string;
-};
-
-type ActivityItem = {
-  section: string;
-  last_updated: string;
-  label: string;
 };
 
 const INTEGRATION_LABELS: Record<string, string> = {
@@ -60,61 +68,59 @@ const INTEGRATION_LABELS: Record<string, string> = {
   meta: "Meta Ads",
 };
 
-const ACTIVITY_LABELS: Record<string, string> = {
-  seo_meta: "Meta Tags",
-  keywords: "Keywords",
-  backlinks: "Backlinks",
-  ppc_campaigns: "PPC Campaigns",
-  blog_posts: "Blog Posts",
-  competitor_intel: "Competitor Intel",
-};
+const TOP_ACTIONS = [
+  { title: "Refresh 3 stale meta descriptions", type: "SEO", impact: "Medium", link: "/marketing/content-seo" },
+  { title: "Review 2 pending A/B test results", type: "CRO", impact: "High", link: "/marketing/conversion-lab" },
+  { title: "Approve keyword brief for 'cross country movers'", type: "Content", impact: "High", link: "/marketing/content-seo" },
+];
 
-function daysSince(dateStr: string): number {
-  return Math.floor((Date.now() - new Date(dateStr).getTime()) / (1000 * 60 * 60 * 24));
-}
-
-function ActivityCard({ item }: { item: ActivityItem }) {
-  const days = daysSince(item.last_updated);
-  const isNever = days > 900;
-  const color = isNever ? "text-red-600" : days > 30 ? "text-red-500" : days > 7 ? "text-amber-600" : "text-emerald-600";
-  const label = isNever ? "Never updated" : days === 0 ? "Updated today" : days === 1 ? "1 day ago" : `${days} days ago`;
-  const urgency = isNever || days > 30 ? "Needs attention" : days > 7 ? "A bit stale" : "Up to date";
+function MetricCardRow() {
+  const metrics = [
+    { label: "Booked Jobs (7d)", value: "31", change: "+12%", up: true, icon: CheckCircle },
+    { label: "Revenue (7d)", value: "$48,200", change: "+8%", up: true, icon: DollarSign },
+    { label: "Cost / Booked Job", value: "$142", change: "-6%", up: true, icon: Target },
+    { label: "ROAS", value: "3.4x", change: "+0.3x", up: true, icon: TrendingUp },
+    { label: "Owned Lead %", value: "38%", change: "+2%", up: true, icon: Percent },
+  ];
 
   return (
-    <div className="flex flex-col gap-1 p-3 rounded-lg border bg-card">
-      <p className="text-xs font-semibold">{item.label}</p>
-      <p className={`text-sm font-medium ${color}`}>{label}</p>
-      <p className={`text-xs ${color}`}>{urgency}</p>
+    <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+      {metrics.map((m) => {
+        const Icon = m.icon;
+        return (
+          <Card key={m.label}>
+            <CardContent className="p-3.5">
+              <div className="flex items-start justify-between mb-1.5">
+                <div className="p-1.5 rounded-lg bg-primary/10">
+                  <Icon className="w-3.5 h-3.5 text-primary" />
+                </div>
+                <span className={`text-[10px] font-semibold flex items-center gap-0.5 ${m.up ? "text-emerald-600" : "text-red-500"}`}>
+                  {m.up ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
+                  {m.change}
+                </span>
+              </div>
+              <div className="text-xl font-bold text-foreground">{m.value}</div>
+              <div className="text-[10px] text-muted-foreground mt-0.5">{m.label}</div>
+            </CardContent>
+          </Card>
+        );
+      })}
     </div>
   );
 }
 
 export default function MarketingDashboard() {
   const [integrations, setIntegrations] = useState<Integration[]>([]);
-  const [activityLog, setActivityLog] = useState<ActivityItem[]>([]);
   const [showIntegrations, setShowIntegrations] = useState(false);
   const [editingIntegration, setEditingIntegration] = useState<Integration | null>(null);
   const [savingIntegration, setSavingIntegration] = useState(false);
   const { toast } = useToast();
 
-  useEffect(() => {
-    loadIntegrations();
-    loadActivityLog();
-  }, []);
+  useEffect(() => { loadIntegrations(); }, []);
 
   async function loadIntegrations() {
     const { data } = await (supabase as any).from("integration_credentials").select("provider, is_connected, property_id, account_id, id");
     setIntegrations(data || []);
-  }
-
-  async function loadActivityLog() {
-    const { data } = await (supabase as any).from("marketing_activity_log").select("section, last_updated");
-    if (data) {
-      setActivityLog(data.map((row: any) => ({
-        ...row,
-        label: ACTIVITY_LABELS[row.section] || row.section,
-      })));
-    }
   }
 
   function openIntegrationEdit(provider: string) {
@@ -141,73 +147,72 @@ export default function MarketingDashboard() {
 
   return (
     <MarketingShell>
-      <div className="p-6 space-y-6">
+      <div className="space-y-5">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Marketing Dashboard</h1>
-            <p className="text-muted-foreground text-sm">All channels, all data, all actions — one page.</p>
+            <h1 className="text-xl font-bold tracking-tight">Marketing Dashboard</h1>
+            <p className="text-muted-foreground text-xs">Performance, alerts & daily actions</p>
           </div>
           <Button variant="outline" size="sm" onClick={() => setShowIntegrations(true)}>
-            <Settings className="w-4 h-4 mr-2" /> Manage Connections
+            <Settings className="w-3.5 h-3.5 mr-1.5" /> Manage Connections
           </Button>
         </div>
 
+        {/* Top Metric Cards */}
+        <MetricCardRow />
 
-        {/* Morning Ops Tracker */}
-        <DailyMarketingReview activityLog={activityLog} />
+        {/* Daily Marketing Review Placeholder */}
+        <Card className="border-primary/20 bg-primary/[0.02]">
+          <CardContent className="p-5 flex items-center justify-between">
+            <div>
+              <h2 className="text-sm font-bold text-foreground flex items-center gap-2">
+                <BarChart3 className="w-4 h-4 text-primary" />
+                Daily Marketing Review
+              </h2>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Walk through your channels, performance, and action items in a guided 7-step flow.
+              </p>
+            </div>
+            <Button size="sm" className="gap-1.5 text-xs shrink-0">
+              Start Daily Review <ArrowRight className="w-3.5 h-3.5" />
+            </Button>
+          </CardContent>
+        </Card>
 
-        {/* Integration Status Bar */}
-        <div className="flex flex-wrap gap-2 p-3 rounded-lg border bg-muted/30">
-          <p className="text-xs text-muted-foreground w-full mb-1 font-medium">Data Sources</p>
-          {["ga4", "gsc", "google_ads", "meta"].map(provider => {
-            const integration = getIntegration(provider);
-            const connected = integration?.is_connected;
-            return (
-              <button
-                key={provider}
-                onClick={() => { openIntegrationEdit(provider); setShowIntegrations(true); }}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors hover:opacity-80 ${
-                  connected ? "bg-emerald-50 border-emerald-200 text-emerald-700" : "bg-gray-50 border-gray-200 text-gray-500"
-                }`}
+        {/* Top Action Items */}
+        <Card>
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-sm flex items-center gap-2">
+                <Zap className="w-4 h-4 text-primary" /> Top Action Items
+              </CardTitle>
+              <Link to="/marketing/action-items" className="text-xs text-primary hover:underline font-medium">View all →</Link>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {TOP_ACTIONS.map((a, i) => (
+              <Link
+                key={i}
+                to={a.link}
+                className="flex items-center justify-between p-3 rounded-lg border border-border hover:border-primary/30 hover:bg-muted/30 transition-colors"
               >
-                {connected ? <CheckCircle className="w-3 h-3" /> : <AlertCircle className="w-3 h-3" />}
-                {INTEGRATION_LABELS[provider]}
-                {!connected && <span className="text-xs opacity-70">— click to connect</span>}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* KPI Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {[
-            { label: "Monthly Traffic", value: "1,240", subtext: "+18% vs last month", icon: Users, color: "text-blue-600" },
-            { label: "Organic Leads", value: "84", subtext: "this month", icon: Target, color: "text-emerald-600" },
-            { label: "Ad Spend", value: "$0", subtext: "no active campaigns", icon: DollarSign, color: "text-amber-600" },
-            { label: "Conversion Rate", value: "3.2%", subtext: "leads to booked", icon: TrendingUp, color: "text-purple-600" },
-          ].map(({ label, value, subtext, icon: Icon, color }) => (
-            <Card key={label}>
-              <CardContent className="pt-4">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <p className="text-xs text-muted-foreground">{label}</p>
-                    <p className="text-2xl font-bold mt-1">{value}</p>
-                    <p className="text-xs text-muted-foreground mt-1">{subtext}</p>
-                  </div>
-                  <Icon className={`w-8 h-8 ${color} opacity-60`} />
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${a.impact === "High" ? "bg-red-500" : "bg-amber-400"}`} />
+                  <span className="text-xs font-medium text-foreground truncate">{a.title}</span>
                 </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                <span className="text-[10px] text-muted-foreground shrink-0 ml-3">{a.type}</span>
+              </Link>
+            ))}
+          </CardContent>
+        </Card>
 
         {/* Charts */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Card>
-            <CardHeader>
-              <CardTitle>Traffic by Channel</CardTitle>
-              <CardDescription>Organic vs Paid vs Direct — last 6 months</CardDescription>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm">Traffic by Channel</CardTitle>
+              <CardDescription className="text-xs">Organic vs Paid vs Direct — last 6 months</CardDescription>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={200}>
@@ -225,9 +230,9 @@ export default function MarketingDashboard() {
           </Card>
 
           <Card>
-            <CardHeader>
-              <CardTitle>Leads to Booked</CardTitle>
-              <CardDescription>Monthly lead generation and conversion</CardDescription>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm">Leads to Booked</CardTitle>
+              <CardDescription className="text-xs">Monthly lead generation and conversion</CardDescription>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={200}>
@@ -244,11 +249,11 @@ export default function MarketingDashboard() {
           </Card>
         </div>
 
-        {/* Channel Mix + Activity Log */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Channel Mix + Source Quality */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Card>
-            <CardHeader>
-              <CardTitle>Lead Channel Mix</CardTitle>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm">Lead Channel Mix</CardTitle>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={180}>
@@ -264,20 +269,62 @@ export default function MarketingDashboard() {
           </Card>
 
           <Card>
-            <CardHeader>
-              <CardTitle>Activity Tracker</CardTitle>
-              <CardDescription>How recently each section was updated — stay current</CardDescription>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm">Owned vs Bought</CardTitle>
+              <CardDescription className="text-xs">Lead source dependency split</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 gap-2">
-                {activityLog.length === 0 ? (
-                  <p className="col-span-2 text-sm text-muted-foreground">Run the SQL migration to enable activity tracking.</p>
-                ) : (
-                  activityLog.map(item => <ActivityCard key={item.section} item={item} />)
-                )}
-              </div>
+              <ResponsiveContainer width="100%" height={180}>
+                <PieChart>
+                  <Pie data={sourceQualityPie} cx="50%" cy="50%" innerRadius={50} outerRadius={75} paddingAngle={3} dataKey="value">
+                    {sourceQualityPie.map((entry, i) => <Cell key={i} fill={entry.color} />)}
+                  </Pie>
+                  <Tooltip formatter={(v) => `${v}%`} />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
             </CardContent>
           </Card>
+
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm">Cost per Booked Job</CardTitle>
+              <CardDescription className="text-xs">By source — placeholder data</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={180}>
+                <BarChart data={costPerBookedSource} layout="vertical">
+                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                  <XAxis type="number" tick={{ fontSize: 10 }} tickFormatter={(v) => `$${v}`} />
+                  <YAxis dataKey="source" type="category" tick={{ fontSize: 10 }} width={70} />
+                  <Tooltip formatter={(v: number) => `$${v}`} />
+                  <Bar dataKey="cost" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Data Sources */}
+        <div className="flex flex-wrap gap-2 p-3 rounded-lg border bg-muted/30">
+          <p className="text-xs text-muted-foreground w-full mb-1 font-medium">Data Sources</p>
+          {["ga4", "gsc", "google_ads", "meta"].map(provider => {
+            const integration = getIntegration(provider);
+            const connected = integration?.is_connected;
+            return (
+              <button
+                key={provider}
+                onClick={() => { openIntegrationEdit(provider); setShowIntegrations(true); }}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors hover:opacity-80 ${
+                  connected ? "bg-emerald-50 border-emerald-200 text-emerald-700" : "bg-muted border-border text-muted-foreground"
+                }`}
+              >
+                {connected ? <CheckCircle className="w-3 h-3" /> : <AlertCircle className="w-3 h-3" />}
+                {INTEGRATION_LABELS[provider]}
+                {!connected && <span className="text-xs opacity-70">— click to connect</span>}
+              </button>
+            );
+          })}
         </div>
 
         {/* Integrations Manager Dialog */}
@@ -287,7 +334,7 @@ export default function MarketingDashboard() {
               <DialogTitle>Manage Connections</DialogTitle>
             </DialogHeader>
             <div className="space-y-3 py-2">
-              <p className="text-sm text-muted-foreground">Enter your Property IDs and Account IDs to connect data sources. All credentials are stored securely in your Supabase database.</p>
+              <p className="text-sm text-muted-foreground">Enter your Property IDs and Account IDs to connect data sources.</p>
               {["ga4", "gsc", "google_ads", "meta"].map(provider => {
                 const integration = getIntegration(provider);
                 const isEditing = editingIntegration?.provider === provider;
@@ -295,11 +342,7 @@ export default function MarketingDashboard() {
                   <div key={provider} className={`rounded-lg border p-4 space-y-3 ${integration?.is_connected ? "border-emerald-200" : ""}`}>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        {integration?.is_connected ? (
-                          <CheckCircle className="w-4 h-4 text-emerald-600" />
-                        ) : (
-                          <AlertCircle className="w-4 h-4 text-gray-400" />
-                        )}
+                        {integration?.is_connected ? <CheckCircle className="w-4 h-4 text-emerald-600" /> : <AlertCircle className="w-4 h-4 text-muted-foreground" />}
                         <p className="font-medium text-sm">{INTEGRATION_LABELS[provider]}</p>
                       </div>
                       {!isEditing && (
