@@ -4,7 +4,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   Home, Sun, Moon, Bell, Menu, X,
   LayoutDashboard, Rocket, FileText, Plug,
-  Zap, RotateCcw, TrendingUp, Globe,
+  Zap, RotateCcw, TrendingUp,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useTheme } from "next-themes";
