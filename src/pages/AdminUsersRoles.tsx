@@ -5,7 +5,7 @@ import { useUserRole } from "@/hooks/useUserRole";
 import {
   Users, Plus, Shield, Crown, BarChart3, UserCheck, Loader2, Mail, X, Sparkles,
   DollarSign, Pencil, Trash2, Check, Send, KeyRound, ChevronDown,
-  Truck, Palette, Bot, Lock, Phone,
+  Truck, Palette, Bot, Lock, Phone, MapPin, AtSign, Building2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Switch } from "@/components/ui/switch";
@@ -22,6 +22,10 @@ interface UserWithRole {
   display_name: string | null;
   avatar_url: string | null;
   phone: string | null;
+  username: string | null;
+  company_email: string | null;
+  personal_email: string | null;
+  address: string | null;
   created_at: string | null;
   role: AppRole | null;
   is_active: boolean;
@@ -82,6 +86,13 @@ export default function AdminUsersRoles() {
   const [settingPassword, setSettingPassword] = useState(false);
   const [inviteConfirmUser, setInviteConfirmUser] = useState<UserWithRole | null>(null);
 
+  // Edit profile modal
+  const [editProfileUser, setEditProfileUser] = useState<UserWithRole | null>(null);
+  const [profileForm, setProfileForm] = useState({
+    first_name: "", last_name: "", username: "", company_email: "", personal_email: "", phone: "", address: "",
+  });
+  const [savingProfile, setSavingProfile] = useState(false);
+
   // Roles & Permissions
   const [rolePerms, setRolePerms] = useState<Record<AppRole, Record<PermKey, boolean>>>(() =>
     JSON.parse(JSON.stringify(DEFAULT_PERMISSIONS))
@@ -107,6 +118,10 @@ export default function AdminUsersRoles() {
       display_name: p.display_name,
       avatar_url: p.avatar_url,
       phone: p.phone ?? null,
+      username: p.username ?? null,
+      company_email: p.company_email ?? null,
+      personal_email: p.personal_email ?? null,
+      address: p.address ?? null,
       created_at: p.created_at,
       role: roleMap.get(p.id) ?? null,
       is_active: !!roleMap.get(p.id),
@@ -277,6 +292,47 @@ export default function AdminUsersRoles() {
     toast({ title: "Permissions saved", description: "Role permissions have been updated for all affected users." });
   };
 
+  const openEditProfile = (user: UserWithRole) => {
+    const names = (user.display_name || "").split(" ");
+    setProfileForm({
+      first_name: names[0] || "",
+      last_name: names.slice(1).join(" ") || "",
+      username: user.username || "",
+      company_email: user.company_email || "",
+      personal_email: user.personal_email || user.email || "",
+      phone: user.phone || "",
+      address: user.address || "",
+    });
+    setEditProfileUser(user);
+  };
+
+  const handleSaveProfile = async () => {
+    if (!editProfileUser) return;
+    setSavingProfile(true);
+    const displayName = `${profileForm.first_name.trim()} ${profileForm.last_name.trim()}`.trim();
+
+    const { error } = await supabase
+      .from("profiles")
+      .update({
+        display_name: displayName || null,
+        username: profileForm.username.trim() || null,
+        company_email: profileForm.company_email.trim() || null,
+        personal_email: profileForm.personal_email.trim() || null,
+        phone: profileForm.phone.trim() || null,
+        address: profileForm.address.trim() || null,
+      } as any)
+      .eq("id", editProfileUser.id);
+
+    setSavingProfile(false);
+    if (error) {
+      toast({ title: "Update failed", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Profile updated" });
+      setEditProfileUser(null);
+      fetchUsers();
+    }
+  };
+
   const availableRoles: AppRole[] = isOwner
     ? ["owner", "admin", "manager", "agent", "marketing", "accounting"]
     : ["admin", "manager", "agent", "marketing", "accounting"];
@@ -348,10 +404,13 @@ export default function AdminUsersRoles() {
                           <button onClick={() => setEditingName(null)} className="p-0.5 rounded hover:bg-muted"><X className="w-3.5 h-3.5 text-muted-foreground" /></button>
                         </div>
                       ) : (
-                        <p className="text-sm font-medium text-foreground truncate">
+                        <button
+                          onClick={() => openEditProfile(user)}
+                          className="text-sm font-medium text-foreground truncate hover:text-primary hover:underline underline-offset-2 transition-colors text-left"
+                        >
                           {user.display_name || "Unnamed"}
                           {isSelf && <span className="text-[10px] text-muted-foreground ml-1.5">(you)</span>}
-                        </p>
+                        </button>
                       )}
                       <p className="text-xs text-muted-foreground truncate">{user.email}</p>
                     </div>
@@ -690,6 +749,128 @@ export default function AdminUsersRoles() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* ═══════════════ EDIT PROFILE MODAL ═══════════════ */}
+      {editProfileUser && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => setEditProfileUser(null)}>
+          <div className="bg-card border border-border rounded-xl p-6 w-full max-w-lg shadow-2xl animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-5">
+              <h2 className="text-base font-semibold text-foreground flex items-center gap-2">
+                <Users className="w-4 h-4" /> Edit Profile
+              </h2>
+              <button onClick={() => setEditProfileUser(null)} className="p-1 rounded hover:bg-muted"><X className="w-4 h-4 text-muted-foreground" /></button>
+            </div>
+
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground mb-1 block">First Name</label>
+                  <input
+                    type="text"
+                    value={profileForm.first_name}
+                    onChange={(e) => setProfileForm((p) => ({ ...p, first_name: e.target.value }))}
+                    className="w-full h-9 px-3 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                    placeholder="John"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground mb-1 block">Last Name</label>
+                  <input
+                    type="text"
+                    value={profileForm.last_name}
+                    onChange={(e) => setProfileForm((p) => ({ ...p, last_name: e.target.value }))}
+                    className="w-full h-9 px-3 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                    placeholder="Doe"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-xs font-medium text-muted-foreground mb-1 flex items-center gap-1.5">
+                  <AtSign className="w-3 h-3" /> Username
+                </label>
+                <input
+                  type="text"
+                  value={profileForm.username}
+                  onChange={(e) => setProfileForm((p) => ({ ...p, username: e.target.value }))}
+                  className="w-full h-9 px-3 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                  placeholder="johndoe"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-medium text-muted-foreground mb-1 flex items-center gap-1.5">
+                  <Building2 className="w-3 h-3" /> Company Email
+                </label>
+                <input
+                  type="email"
+                  value={profileForm.company_email}
+                  onChange={(e) => setProfileForm((p) => ({ ...p, company_email: e.target.value }))}
+                  className="w-full h-9 px-3 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                  placeholder="john@trumoveinc.com"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-medium text-muted-foreground mb-1 flex items-center gap-1.5">
+                  <Mail className="w-3 h-3" /> Personal Email
+                </label>
+                <input
+                  type="email"
+                  value={profileForm.personal_email}
+                  onChange={(e) => setProfileForm((p) => ({ ...p, personal_email: e.target.value }))}
+                  className="w-full h-9 px-3 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                  placeholder="john@gmail.com"
+                />
+                <p className="text-[10px] text-muted-foreground mt-1">Invite & password setup links are sent here</p>
+              </div>
+
+              <div>
+                <label className="text-xs font-medium text-muted-foreground mb-1 flex items-center gap-1.5">
+                  <Phone className="w-3 h-3" /> Phone Number
+                </label>
+                <input
+                  type="tel"
+                  value={profileForm.phone}
+                  onChange={(e) => setProfileForm((p) => ({ ...p, phone: e.target.value }))}
+                  className="w-full h-9 px-3 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                  placeholder="(555) 123-4567"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-medium text-muted-foreground mb-1 flex items-center gap-1.5">
+                  <MapPin className="w-3 h-3" /> Address
+                </label>
+                <input
+                  type="text"
+                  value={profileForm.address}
+                  onChange={(e) => setProfileForm((p) => ({ ...p, address: e.target.value }))}
+                  className="w-full h-9 px-3 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                  placeholder="123 Main St, City, State 12345"
+                />
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2">
+                <button
+                  onClick={() => setEditProfileUser(null)}
+                  className="px-4 py-2 rounded-lg text-xs font-medium text-muted-foreground hover:bg-muted transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSaveProfile}
+                  disabled={savingProfile}
+                  className="px-5 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-semibold hover:opacity-90 disabled:opacity-50 flex items-center gap-2"
+                >
+                  {savingProfile && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                  Save Changes
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
