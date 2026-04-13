@@ -166,7 +166,7 @@ export default function MarketingShell({ children, breadcrumb = "", breadcrumbs 
             <Link
               to="/marketing/team-chat"
               className={cn(
-                "p-1.5 rounded-lg transition-colors relative",
+                "p-1.5 rounded-lg transition-colors relative flex items-center gap-1",
                 location.pathname === "/marketing/team-chat" ? "bg-primary/10 text-primary" : "hover:bg-muted text-muted-foreground"
               )}
             >

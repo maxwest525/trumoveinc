@@ -146,7 +146,7 @@ export default function AdminShell({ children, breadcrumb = "", breadcrumbs }: A
             )}
             <Link
               to="/admin/team-chat"
-              className={`p-1.5 rounded-lg transition-colors relative ${
+              className={`p-1.5 rounded-lg transition-colors relative flex items-center gap-1 ${
                 location.pathname === "/admin/team-chat" ? "bg-primary/10 text-primary" : "hover:bg-muted text-muted-foreground"
               }`}
             >
