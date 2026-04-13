@@ -107,14 +107,22 @@ export default function MarketingPPC() {
   const avgCPA = totalConversions > 0 ? totalSpend / totalConversions : 0;
 
   return (
-    <MarketingShell>
-      <div className="p-6 space-y-6">
+    <MarketingShell breadcrumb="Advertising">
+      <div className="space-y-5">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">PPC Manager</h1>
-            <p className="text-muted-foreground text-sm">Google Ads, Meta Ads — all campaigns in one place. Edit and track performance.</p>
+            <h1 className="text-xl font-bold tracking-tight">Advertising</h1>
+            <p className="text-muted-foreground text-xs">Google Ads, Meta, budgets & spend</p>
           </div>
-          <Button onClick={openNew}><Plus className="w-4 h-4 mr-2" /> New Campaign</Button>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 text-xs border border-border rounded-lg px-3 py-1.5">
+              <span className="text-muted-foreground">Mode:</span>
+              <span className="font-medium text-foreground">Manual</span>
+              <span className="text-muted-foreground">/</span>
+              <span className="text-muted-foreground cursor-not-allowed">Automated</span>
+            </div>
+            <Button onClick={openNew}><Plus className="w-4 h-4 mr-2" /> New Campaign</Button>
+          </div>
         </div>
 
         {/* KPI Row */}
