@@ -89,7 +89,7 @@ const NotFound = () => {
           The page you're looking for is under construction.
         </p>
         <p className="text-base sm:text-lg text-[#64748b] mb-8 leading-relaxed">
-          It looks like TruMove is moving you{" "}
+          It looks like TruMove is moving you already{" "}
           <span className="inline-block animate-bounce">🚚</span>
         </p>
 
