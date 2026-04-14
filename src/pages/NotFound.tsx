@@ -62,7 +62,7 @@ const NotFound = () => {
   }, []);
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-[#f0f4f8] via-[#e8ecf1] to-[#dfe3e8]">
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-[#0a0a0a] via-[#111111] to-[#0a0a0a]">
       <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none" />
 
       <div className="relative z-10 flex flex-col items-center text-center px-6 max-w-lg">
@@ -80,23 +80,18 @@ const NotFound = () => {
         </div>
 
         {/* Heading */}
-        <h1 className="text-3xl sm:text-4xl font-bold text-[#020817] mb-3 tracking-tight">
+        <h1 className="text-3xl sm:text-4xl font-bold text-white mb-3 tracking-tight">
           Under Construction
         </h1>
 
         {/* Message */}
-        <p className="text-base sm:text-lg text-[#64748b] mb-2 leading-relaxed">
+        <p className="text-base sm:text-lg text-[#94a3b8] mb-2 leading-relaxed">
           The page you're looking for is under construction.
         </p>
-        <p className="text-base sm:text-lg text-[#64748b] mb-8 leading-relaxed">
+        <p className="text-base sm:text-lg text-[#94a3b8] mb-8 leading-relaxed">
           It looks like TruMove is moving you already{" "}
           <span className="inline-block animate-bounce">🚚</span>
         </p>
-
-        {/* Path badge */}
-        <div className="mb-8 px-4 py-2 rounded-lg bg-white/60 backdrop-blur-md border border-foreground/10 shadow-sm">
-          <code className="text-xs text-muted-foreground font-mono">{location.pathname}</code>
-        </div>
 
         {/* Back button */}
         <Link
