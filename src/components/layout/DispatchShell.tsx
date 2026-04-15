@@ -37,7 +37,7 @@ export default function DispatchShell({ children, breadcrumb = "", breadcrumbs }
     <div className="flex min-h-screen bg-background text-foreground">
       {!isMobile && (
         <aside className={cn("shrink-0 border-r border-border flex flex-col min-h-screen transition-all duration-200", sidebarWidth)}>
-          <SharedSidebar title="Dispatch" collapsed={collapsed} onToggleCollapse={() => setCollapsed((c) => !c)} isMobile={false} />
+          <SharedSidebar title="Dispatch" role="dispatch" collapsed={collapsed} onToggleCollapse={() => setCollapsed((c) => !c)} isMobile={false} />
         </aside>
       )}
 
@@ -45,7 +45,7 @@ export default function DispatchShell({ children, breadcrumb = "", breadcrumbs }
         <>
           <div className="fixed inset-0 bg-black/50 z-40" onClick={() => setSidebarOpen(false)} />
           <aside className="fixed inset-y-0 left-0 w-56 z-50 border-r border-border flex flex-col">
-            <SharedSidebar title="Dispatch" collapsed={false} onToggleCollapse={() => {}} onClose={() => setSidebarOpen(false)} isMobile={true} />
+            <SharedSidebar title="Dispatch" role="dispatch" collapsed={false} onToggleCollapse={() => {}} onClose={() => setSidebarOpen(false)} isMobile={true} />
           </aside>
         </>
       )}
