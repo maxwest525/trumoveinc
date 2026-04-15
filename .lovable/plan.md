@@ -1,48 +1,77 @@
 
-Fix the preview/login loop by correcting auth state + route restore behavior.
 
-What’s actually happening
-- This does not look like a broken preview renderer.
-- On preview domains, `/` intentionally goes to `/dashboard`.
-- Protected marketing routes like `/marketing/content-seo` use `RoleGuard`. If you are logged out, it immediately redirects you to `/dashboard`, so the page you were trying to preview is lost.
-- After sign-in, `WorkspaceHub` and `RoleGuard` both rely on `useUserRoles()`, but that hook only fetches roles once on mount. If login happens after mount, roles stay empty until a hard refresh.
-- Result: you get bounced away from the page, and after login the app can still behave like you have no access.
+# Fix SharedSidebar: Restore Role-Based Navigation
 
-Plan
-1. Make role loading reactive
-   - Update `useUserRoles` to listen for auth changes and re-fetch roles whenever the session/user changes.
-   - Keep loading true until auth is resolved for the current user, so guards do not decide too early.
+## Problem
+`SharedSidebar.tsx` hardcodes Marketing nav items for all roles. Every portal sees Marketing links instead of their own.
 
-2. Preserve the page you were trying to open
-   - Update `RoleGuard` so:
-     - not signed in → redirect to `/dashboard` with a saved `from` route
-     - signed in but wrong role → show a clear access state instead of silently bouncing back
-   - This keeps deep links like `/marketing/content-seo` intact through login.
+## Source of truth
+The correct nav items per role are already defined in the codebase's TeamChat pages and App.tsx routes. These are the last known working items:
 
-3. Send users back to the preview after login
-   - Update `WorkspaceHub` to read the saved `from` route and navigate there once auth + roles are ready.
-   - Keep the current workspace chooser for normal `/dashboard` visits.
+### Admin (from `AdminTeamChat.tsx`)
+- Dashboard → `/admin/dashboard`
+- Users & Roles → `/admin/users`
+- Employee Requests → `/admin/employee-requests`
+- Products & Pricing → `/admin/pricing`
+- Developer → `/admin/developer`
+- Pulse Settings → `/admin/pulse`
 
-4. Make the failure state understandable
-   - If the account truly lacks `owner`/`marketing` access in `user_roles`, show an explicit “no access to Marketing” state with a path back to the workspace hub.
-   - No more “disappearing preview” behavior.
+### Manager (from `ManagerTeamChat.tsx`)
+- Dashboard → `/manager/dashboard`
+- Leaderboard → `/leaderboard`
+- Pulse Dashboard → `/manager/pulse`
 
-5. Validate the real flows
-   - Logged out → open `/marketing/content-seo` → sign in → return to `/marketing/content-seo`
-   - Logged in owner/marketing user → deep link works without refresh
-   - Logged in non-marketing user → clear access message, no redirect loop
-   - Sign out and sign back in on mobile preview
+### Agent (from App.tsx routes - main sidebar pages)
+- Dashboard → `/agent/dashboard`
+- Pipeline → `/agent/pipeline`
+- Incoming Leads → `/agent/incoming`
+- My Customers → `/agent/customers`
+- Operations → `/agent/operations`
+- E-Sign → `/agent/esign`
+- Dialer → `/agent/dialer`
+- Messages → `/agent/messages`
+- Pulse → `/agent/pulse`
 
-Files likely affected
-- `src/hooks/useUserRoles.ts`
-- `src/components/RoleGuard.tsx`
-- `src/pages/WorkspaceHub.tsx`
-- Possibly `src/components/auth/PortalAuthForm.tsx`
+### Dispatch (from `DispatchTeamChat.tsx`)
+- Dashboard → `/dispatch/dashboard`
+- Fleet Tracker → `/dispatch/fleet`
+- Driver Assignments → `/dispatch/drivers`
+- Route Management → `/dispatch/routes`
+- Job Board → `/dispatch/jobs`
+- E-Sign → `/dispatch/esign`
 
-Technical details
-- Current root causes are in:
-  - `RoleGuard.tsx` redirecting all failures to `/dashboard`
-  - `useUserRoles.ts` fetching once only, with no auth subscription
-  - `WorkspaceHub.tsx` having no “return to requested page” logic after login
-- I would also verify that your account really has the expected role in `user_roles`; if the role is missing, the app should still deny access, but it should do so clearly instead of looking like the preview vanished.
-- I would not change auth provider settings or preview domain config first; the main issue is client-side auth/routing flow.
+### Marketing (current SharedSidebar - unchanged)
+- Dashboard, Content & SEO, Advertising, Conversion Lab, Action Items, Lead Sources, Competitors, Settings
+
+### Creative Studio
+Stays as standalone tabbed layout (no sidebar change needed).
+
+## GitHub note
+The repo at `github.com/maxwest525/trumovetransport-247b4200` returns a 404 (private or removed). All nav items above are sourced from the existing codebase files in this project.
+
+## Changes
+
+### 1. `SharedSidebar.tsx`
+- Add `role` prop: `"agent" | "manager" | "admin" | "marketing" | "dispatch"`
+- Define nav item arrays per role matching the items listed above, with matching icons
+- Marketing keeps its 3-group layout (HQ, Engines, Intel); other roles use a flat list
+- Wrap logo in `<Link to="/dashboard">` with `cursor-pointer`
+- Replace subtitle `truncate` with `line-clamp-2`
+
+### 2. Shell files (pass `role` prop)
+- `AdminShell.tsx` → `role="admin"`
+- `ManagerShell.tsx` → `role="manager"`
+- `MarketingShell.tsx` → `role="marketing"`
+- `DispatchShell.tsx` → `role="dispatch"`
+- `GrowthEngineShell.tsx` → `role="marketing"`
+- `AgentSidebar.tsx` → `role="agent"`
+
+### Files modified
+1. `src/components/layout/SharedSidebar.tsx`
+2. `src/components/layout/AdminShell.tsx`
+3. `src/components/layout/ManagerShell.tsx`
+4. `src/components/layout/MarketingShell.tsx`
+5. `src/components/layout/DispatchShell.tsx`
+6. `src/components/layout/GrowthEngineShell.tsx`
+7. `src/components/agent/AgentSidebar.tsx`
+
