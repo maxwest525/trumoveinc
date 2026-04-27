@@ -94,7 +94,7 @@ const App = () => (
           <ImplementationQueueProvider>
           <SeoOverrideProvider>
           <Routes>
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/" element={<ProductionHomeRedirect />} />
             <Route path="/dashboard" element={<WorkspaceHub />} />
 
             <Route path="/login" element={<Navigate to="/dashboard" replace />} />
