@@ -7,69 +7,18 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { CheckCircle2, XCircle, AlertTriangle, RefreshCw, Trash2, Copy, Activity } from "lucide-react";
 import { toast } from "sonner";
 import { Helmet } from "react-helmet-async";
+import {
+  installGlobalErrorCapture,
+  readCapturedErrors,
+  clearCapturedErrors,
+  type CapturedError,
+} from "@/lib/errorCapture";
 
 type CheckStatus = "pending" | "ok" | "warn" | "fail";
 interface Check {
   name: string;
   status: CheckStatus;
   detail?: string;
-}
-
-interface CapturedError {
-  ts: string;
-  type: "error" | "unhandledrejection" | "console.error";
-  message: string;
-  source?: string;
-  stack?: string;
-}
-
-const ERROR_LOG_KEY = "trumove_error_log";
-
-// Install global error capture once (runs at module load on diagnostics page mount via effect)
-function installErrorCapture() {
-  if ((window as any).__trumoveErrCapInstalled) return;
-  (window as any).__trumoveErrCapInstalled = true;
-
-  const push = (entry: CapturedError) => {
-    try {
-      const raw = localStorage.getItem(ERROR_LOG_KEY);
-      const list: CapturedError[] = raw ? JSON.parse(raw) : [];
-      list.unshift(entry);
-      localStorage.setItem(ERROR_LOG_KEY, JSON.stringify(list.slice(0, 200)));
-    } catch {}
-  };
-
-  window.addEventListener("error", (e) => {
-    push({
-      ts: new Date().toISOString(),
-      type: "error",
-      message: e.message || String(e.error),
-      source: `${e.filename}:${e.lineno}:${e.colno}`,
-      stack: e.error?.stack,
-    });
-  });
-
-  window.addEventListener("unhandledrejection", (e) => {
-    const reason: any = e.reason;
-    push({
-      ts: new Date().toISOString(),
-      type: "unhandledrejection",
-      message: reason?.message || String(reason),
-      stack: reason?.stack,
-    });
-  });
-
-  const origErr = console.error;
-  console.error = (...args) => {
-    try {
-      push({
-        ts: new Date().toISOString(),
-        type: "console.error",
-        message: args.map((a) => (typeof a === "string" ? a : JSON.stringify(a, null, 0))).join(" "),
-      });
-    } catch {}
-    origErr(...args);
-  };
 }
 
 function StatusIcon({ status }: { status: CheckStatus }) {
