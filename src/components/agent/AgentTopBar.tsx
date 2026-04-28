@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ChevronRight, Home, LogOut, User, Settings, Bell, Sun, Moon, Monitor, Globe } from "lucide-react";
+import { ChevronRight, Home, LogOut, User, Settings, Bell, Sun, Moon, Monitor, Globe, MessageSquare } from "lucide-react";
 import logoImg from "@/assets/logo.png";
 import { Button } from "@/components/ui/button";
 import {
@@ -82,6 +82,17 @@ export default function AgentTopBar({ crumbs, onLogout }: AgentTopBarProps) {
 
         {/* Agent dropdown + notifications */}
         <div className="flex items-center gap-2 shrink-0">
+          {/* Team Chat */}
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-8 w-8 p-0"
+            onClick={() => navigate("/agent/team-chat")}
+            aria-label="Team Chat"
+          >
+            <MessageSquare className="w-4 h-4 text-muted-foreground" />
+          </Button>
+
           {/* Notifications popover */}
           <Popover open={notifOpen} onOpenChange={setNotifOpen}>
             <PopoverTrigger asChild>
