@@ -66,6 +66,7 @@ import ManagerPulseCallReview from "./pages/ManagerPulseCallReview";
 import AdminPulseCallReview from "./pages/AdminPulseCallReview";
 import ManagerTeamChat from "./pages/ManagerTeamChat";
 import AdminTeamChat from "./pages/AdminTeamChat";
+import MarketingTeamChat from "./pages/MarketingTeamChat";
 import Leaderboard from "./pages/Leaderboard";
 import DispatchDashboard from "./pages/DispatchDashboard";
 import DispatchFleet from "./pages/dispatch/DispatchFleet";
@@ -73,6 +74,7 @@ import DispatchDrivers from "./pages/dispatch/DispatchDrivers";
 import DispatchRoutes from "./pages/dispatch/DispatchRoutes";
 import DispatchJobs from "./pages/dispatch/DispatchJobs";
 import DispatchESign from "./pages/dispatch/DispatchESign";
+import DispatchTeamChat from "./pages/dispatch/DispatchTeamChat";
 import Unsubscribe from "./pages/Unsubscribe";
 import AgentIncomingLeads from "./pages/AgentIncomingLeads";
 import CreativeStudio from "./pages/creative/CreativeStudio";
@@ -159,6 +161,7 @@ const App = () => (
             <Route path="/marketing/lead-sources" element={<RoleGuard allowedRoles={["marketing"]}><MarketingLeadSources /></RoleGuard>} />
             <Route path="/marketing/competitors" element={<RoleGuard allowedRoles={["marketing"]}><MarketingCompetitorSEO /></RoleGuard>} />
             <Route path="/marketing/settings" element={<RoleGuard allowedRoles={["marketing"]}><MarketingSettings /></RoleGuard>} />
+            <Route path="/marketing/team-chat" element={<RoleGuard allowedRoles={["marketing"]}><MarketingTeamChat /></RoleGuard>} />
             {/* Legacy marketing routes — redirect to new locations */}
             <Route path="/marketing/templates" element={<Navigate to="/marketing/content-seo" replace />} />
             <Route path="/marketing/seo" element={<Navigate to="/marketing/content-seo" replace />} />
@@ -187,6 +190,7 @@ const App = () => (
             <Route path="/dispatch/routes" element={<RoleGuard allowedRoles={["agent", "manager"]}><DispatchRoutes /></RoleGuard>} />
             <Route path="/dispatch/jobs" element={<RoleGuard allowedRoles={["agent", "manager"]}><DispatchJobs /></RoleGuard>} />
             <Route path="/dispatch/esign" element={<RoleGuard allowedRoles={["agent", "manager"]}><DispatchESign /></RoleGuard>} />
+            <Route path="/dispatch/team-chat" element={<RoleGuard allowedRoles={["agent", "manager"]}><DispatchTeamChat /></RoleGuard>} />
 
             {/* Auth & misc */}
             <Route path="/reset-password" element={<ResetPassword />} />

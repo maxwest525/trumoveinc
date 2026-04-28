@@ -947,6 +947,39 @@ export type Database = {
         }
         Relationships: []
       }
+      integration_credentials: {
+        Row: {
+          account_id: string | null
+          created_at: string
+          credentials: Json | null
+          id: string
+          is_connected: boolean | null
+          property_id: string | null
+          provider: string
+          updated_at: string
+        }
+        Insert: {
+          account_id?: string | null
+          created_at?: string
+          credentials?: Json | null
+          id?: string
+          is_connected?: boolean | null
+          property_id?: string | null
+          provider: string
+          updated_at?: string
+        }
+        Update: {
+          account_id?: string | null
+          created_at?: string
+          credentials?: Json | null
+          id?: string
+          is_connected?: boolean | null
+          property_id?: string | null
+          provider?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       lead_inventory: {
         Row: {
           created_at: string
@@ -1194,6 +1227,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      marketing_activity_log: {
+        Row: {
+          created_at: string
+          id: string
+          last_updated: string
+          section: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_updated?: string
+          section: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_updated?: string
+          section?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
       }
       message_templates: {
         Row: {
