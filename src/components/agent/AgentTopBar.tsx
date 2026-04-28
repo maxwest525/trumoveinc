@@ -88,13 +88,13 @@ export default function AgentTopBar({ crumbs, onLogout }: AgentTopBarProps) {
           <Button
             variant="ghost"
             size="sm"
-            className={`h-8 px-2 gap-1 ${isChatActive ? "bg-primary/10 text-primary hover:bg-primary/15 hover:text-primary" : ""}`}
+            className={`h-8 px-2 gap-1 ${isChatActive ? "bg-primary/10 text-primary hover:bg-primary/15 hover:text-primary" : "text-muted-foreground"}`}
             onClick={() => navigate("/agent/team-chat")}
             aria-label="Team Chat"
             aria-current={isChatActive ? "page" : undefined}
           >
-            <MessageSquare className={`w-4 h-4 ${isChatActive ? "text-primary" : "text-muted-foreground"}`} />
-            <span className={`text-xs font-medium ${isChatActive ? "text-primary" : "text-muted-foreground"}`}>Chat</span>
+            <MessageSquare className="w-4 h-4" />
+            <span className="text-xs font-medium">Chat</span>
           </Button>
           <div className="w-px h-4 bg-border" />
 
