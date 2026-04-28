@@ -12,6 +12,7 @@ import WorkspaceHub from "./pages/WorkspaceHub";
 import RoleGuard from "./components/RoleGuard";
 import AgentDashboard from "./pages/AgentDashboard";
 import AdminDeveloper from "./pages/AdminDeveloper";
+import Diagnostics from "./pages/Diagnostics";
 import ScrollToTop from "./components/ScrollToTop";
 import { SeoOverrideProvider } from "./components/SeoOverrideProvider";
 import { captureUtmParams } from "./lib/leadEnrichment";
