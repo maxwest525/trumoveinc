@@ -140,7 +140,7 @@ export default function Diagnostics() {
   };
 
   const clearErrors = () => {
-    localStorage.removeItem(ERROR_LOG_KEY);
+    clearCapturedErrors();
     setErrors([]);
     toast.success("Error log cleared");
   };
