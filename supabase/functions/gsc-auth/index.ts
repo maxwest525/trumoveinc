@@ -5,11 +5,35 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-function getSupabase() {
+function getServiceClient() {
   return createClient(
     Deno.env.get("SUPABASE_URL")!,
     Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
   );
+}
+
+async function authenticateCaller(req: Request): Promise<{ userId: string } | { error: Response }> {
+  const authHeader = req.headers.get("Authorization");
+  if (!authHeader?.startsWith("Bearer ")) {
+    return {
+      error: new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      }),
+    };
+  }
+  const token = authHeader.replace("Bearer ", "");
+  const anon = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_ANON_KEY")!);
+  const { data, error } = await anon.auth.getUser(token);
+  if (error || !data?.user) {
+    return {
+      error: new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      }),
+    };
+  }
+  return { userId: data.user.id };
 }
 
 async function refreshAccessToken(refreshToken: string): Promise<{ access_token: string; expires_in: number }> {
@@ -31,7 +55,7 @@ async function refreshAccessToken(refreshToken: string): Promise<{ access_token:
 }
 
 async function getValidToken(userId: string): Promise<{ accessToken: string; connection: any }> {
-  const sb = getSupabase();
+  const sb = getServiceClient();
   const { data: conn } = await sb
     .from("gsc_connections")
     .select("*")
@@ -43,7 +67,6 @@ async function getValidToken(userId: string): Promise<{ accessToken: string; con
   const expiresAt = new Date(conn.token_expires_at);
   const now = new Date();
 
-  // Refresh if token expires within 5 minutes
   if (expiresAt.getTime() - now.getTime() < 5 * 60 * 1000) {
     const refreshed = await refreshAccessToken(conn.refresh_token);
     const newExpiry = new Date(Date.now() + refreshed.expires_in * 1000);
@@ -72,9 +95,11 @@ Deno.serve(async (req) => {
       throw new Error("Google OAuth credentials not configured. Add GSC_CLIENT_ID and GSC_CLIENT_SECRET.");
     }
 
-    const { action, code, redirect_uri, user_id, property, state } = await req.json();
+    const body = await req.json();
+    const { action, code, redirect_uri, property, state } = body;
 
-    // ACTION: get-auth-url — generate OAuth URL
+    // get-auth-url is the only action that does NOT require an authenticated user
+    // (it just builds a public Google OAuth URL with no user-specific data).
     if (action === "get-auth-url") {
       if (!redirect_uri) throw new Error("redirect_uri required");
       const params = new URLSearchParams({
@@ -92,9 +117,14 @@ Deno.serve(async (req) => {
       });
     }
 
-    // ACTION: exchange-code — exchange auth code for tokens
+    // All other actions require a verified caller. The user_id is derived from
+    // the JWT — never trusted from the request body.
+    const auth = await authenticateCaller(req);
+    if ("error" in auth) return auth.error;
+    const userId = auth.userId;
+
     if (action === "exchange-code") {
-      if (!code || !redirect_uri || !user_id) throw new Error("code, redirect_uri, and user_id required");
+      if (!code || !redirect_uri) throw new Error("code and redirect_uri required");
 
       const tokenRes = await fetch("https://oauth2.googleapis.com/token", {
         method: "POST",
@@ -117,14 +147,12 @@ Deno.serve(async (req) => {
       const tokens = await tokenRes.json();
       const expiresAt = new Date(Date.now() + (tokens.expires_in || 3600) * 1000);
 
-      const sb = getSupabase();
+      const sb = getServiceClient();
 
-      // Delete existing connection for this user
-      await sb.from("gsc_connections").delete().eq("user_id", user_id);
+      await sb.from("gsc_connections").delete().eq("user_id", userId);
 
-      // Insert new connection
       await sb.from("gsc_connections").insert({
-        user_id,
+        user_id: userId,
         access_token: tokens.access_token,
         refresh_token: tokens.refresh_token,
         token_expires_at: expiresAt.toISOString(),
@@ -135,10 +163,8 @@ Deno.serve(async (req) => {
       });
     }
 
-    // ACTION: list-properties — get available GSC properties
     if (action === "list-properties") {
-      if (!user_id) throw new Error("user_id required");
-      const { accessToken } = await getValidToken(user_id);
+      const { accessToken } = await getValidToken(userId);
 
       const res = await fetch("https://www.googleapis.com/webmasters/v3/sites", {
         headers: { Authorization: `Bearer ${accessToken}` },
@@ -158,28 +184,25 @@ Deno.serve(async (req) => {
       });
     }
 
-    // ACTION: select-property — save selected property
     if (action === "select-property") {
-      if (!user_id || !property) throw new Error("user_id and property required");
-      const sb = getSupabase();
+      if (!property) throw new Error("property required");
+      const sb = getServiceClient();
       await sb.from("gsc_connections").update({
         selected_property: property,
         updated_at: new Date().toISOString(),
-      }).eq("user_id", user_id);
+      }).eq("user_id", userId);
 
       return new Response(JSON.stringify({ success: true }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    // ACTION: status — check connection status
     if (action === "status") {
-      if (!user_id) throw new Error("user_id required");
-      const sb = getSupabase();
+      const sb = getServiceClient();
       const { data: conn } = await sb
         .from("gsc_connections")
         .select("id, selected_property, connected_at, updated_at")
-        .eq("user_id", user_id)
+        .eq("user_id", userId)
         .single();
 
       return new Response(JSON.stringify({
@@ -191,13 +214,20 @@ Deno.serve(async (req) => {
       });
     }
 
-    // ACTION: disconnect
     if (action === "disconnect") {
-      if (!user_id) throw new Error("user_id required");
-      const sb = getSupabase();
-      await sb.from("gsc_connections").delete().eq("user_id", user_id);
-      // Also clear cached data
-      await sb.from("gsc_page_data").delete().neq("id", "00000000-0000-0000-0000-000000000000");
+      const sb = getServiceClient();
+      // Look up the user's selected property so we only clear THEIR cached page data.
+      const { data: conn } = await sb
+        .from("gsc_connections")
+        .select("selected_property")
+        .eq("user_id", userId)
+        .single();
+
+      await sb.from("gsc_connections").delete().eq("user_id", userId);
+
+      if (conn?.selected_property) {
+        await sb.from("gsc_page_data").delete().eq("property", conn.selected_property);
+      }
       return new Response(JSON.stringify({ success: true }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });

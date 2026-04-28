@@ -5,8 +5,32 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-function getSupabase() {
+function getServiceClient() {
   return createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+}
+
+async function authenticateCaller(req: Request): Promise<{ userId: string } | { error: Response }> {
+  const authHeader = req.headers.get("Authorization");
+  if (!authHeader?.startsWith("Bearer ")) {
+    return {
+      error: new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      }),
+    };
+  }
+  const token = authHeader.replace("Bearer ", "");
+  const anon = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_ANON_KEY")!);
+  const { data, error } = await anon.auth.getUser(token);
+  if (error || !data?.user) {
+    return {
+      error: new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      }),
+    };
+  }
+  return { userId: data.user.id };
 }
 
 async function refreshAccessToken(refreshToken: string): Promise<{ access_token: string; expires_in: number }> {
@@ -16,7 +40,7 @@ async function refreshAccessToken(refreshToken: string): Promise<{ access_token:
 }
 
 async function getValidToken(userId: string): Promise<{ accessToken: string; property: string }> {
-  const sb = getSupabase();
+  const sb = getServiceClient();
   const { data: conn } = await sb.from("gsc_connections").select("*").eq("user_id", userId).single();
   if (!conn) throw new Error("GSC not connected");
   if (!conn.selected_property) throw new Error("No GSC property selected");
@@ -49,12 +73,15 @@ function normalizeUrl(raw: string, propertyOrigin?: string): string {
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
   try {
-    const { action, user_id, page_url, urls } = await req.json();
+    // All actions require an authenticated caller; user_id comes from the JWT.
+    const auth = await authenticateCaller(req);
+    if ("error" in auth) return auth.error;
+    const userId = auth.userId;
 
-    // site-overview: aggregate KPIs + trend + top pages for KPI dashboard
+    const { action, page_url, urls } = await req.json();
+
     if (action === "site-overview") {
-      if (!user_id) throw new Error("user_id required");
-      const { accessToken, property } = await getValidToken(user_id);
+      const { accessToken, property } = await getValidToken(userId);
       const endDate = new Date();
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - 28);
@@ -76,10 +103,9 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ clicks, impressions, ctr, avgPosition, trend, topPages, dateRange: "last 28 days", property }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
-    // fetch-page-queries
     if (action === "fetch-page-queries") {
-      if (!user_id || !page_url) throw new Error("user_id and page_url required");
-      const { accessToken, property } = await getValidToken(user_id);
+      if (!page_url) throw new Error("page_url required");
+      const { accessToken, property } = await getValidToken(userId);
       let propertyOrigin = property;
       try { const pu = new URL(property.startsWith("sc-domain:") ? `https://${property.replace("sc-domain:", "")}` : property); propertyOrigin = pu.origin; } catch { /* keep */ }
       let absolutePageUrl = page_url;
@@ -90,7 +116,7 @@ Deno.serve(async (req) => {
       if (!res.ok) { const t = await res.text(); if (res.status === 403) throw new Error("Permission denied."); throw new Error(`GSC API error: ${res.status}`); }
       const data = await res.json();
       const queries = (data.rows || []).map((r: QueryRow) => ({ query: r.keys[0], clicks: r.clicks, impressions: r.impressions, ctr: Math.round(r.ctr * 10000) / 100, position: Math.round(r.position * 10) / 10 }));
-      const sb = getSupabase();
+      const sb = getServiceClient();
       if (queries.length > 0) {
         await sb.from("gsc_page_data").delete().eq("page_url", page_url).eq("property", property);
         await sb.from("gsc_page_data").insert(queries.map((q: any) => ({ property, page_url, query: q.query, clicks: q.clicks, impressions: q.impressions, ctr: q.ctr, position: q.position, fetched_at: new Date().toISOString(), date_range_start: startDate.toISOString().split("T")[0], date_range_end: endDate.toISOString().split("T")[0] })));
@@ -98,10 +124,9 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ queries, page_url }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
-    // fetch-all-pages
     if (action === "fetch-all-pages") {
-      if (!user_id || !urls || !Array.isArray(urls)) throw new Error("user_id and urls[] required");
-      const { accessToken, property } = await getValidToken(user_id);
+      if (!urls || !Array.isArray(urls)) throw new Error("urls[] required");
+      const { accessToken, property } = await getValidToken(userId);
       const endDate = new Date(); const startDate = new Date(); startDate.setDate(startDate.getDate() - 28);
       const apiUrl = `https://www.googleapis.com/webmasters/v3/sites/${encodeURIComponent(property)}/searchAnalytics/query`;
       const res = await fetch(apiUrl, { method: "POST", headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" }, body: JSON.stringify({ startDate: startDate.toISOString().split("T")[0], endDate: endDate.toISOString().split("T")[0], dimensions: ["page"], rowLimit: 500, dataState: "final" }) });
@@ -124,10 +149,14 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ results }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
-    // get-cached
     if (action === "get-cached") {
       if (!page_url) throw new Error("page_url required");
-      const { data } = await getSupabase().from("gsc_page_data").select("*").eq("page_url", page_url).order("impressions", { ascending: false }).limit(20);
+      // Scope cached lookups to the caller's selected property so users can't
+      // probe other tenants' cached GSC data.
+      const sb = getServiceClient();
+      const { data: conn } = await sb.from("gsc_connections").select("selected_property").eq("user_id", userId).single();
+      if (!conn?.selected_property) throw new Error("No GSC property selected");
+      const { data } = await sb.from("gsc_page_data").select("*").eq("page_url", page_url).eq("property", conn.selected_property).order("impressions", { ascending: false }).limit(20);
       return new Response(JSON.stringify({ queries: data || [] }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
