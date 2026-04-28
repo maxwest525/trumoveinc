@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
-import SharedSidebar from "@/components/layout/SharedSidebar";
+import AdminShell from "@/components/layout/AdminShell";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -125,10 +125,8 @@ export default function AdminAuditLog() {
         <title>Audit Log | Admin</title>
         <meta name="robots" content="noindex,nofollow" />
       </Helmet>
-      <div className="flex min-h-screen bg-background">
-        <SharedSidebar role="admin" />
-        <main className="flex-1 overflow-auto">
-          <div className="mx-auto max-w-7xl p-6 space-y-6">
+      <AdminShell>
+        <div className="mx-auto max-w-7xl p-6 space-y-6">
             <header className="flex items-start justify-between gap-4">
               <div className="flex items-center gap-3">
                 <div className="rounded-lg bg-primary/10 p-2">
@@ -239,9 +237,8 @@ export default function AdminAuditLog() {
                 </Table>
               </CardContent>
             </Card>
-          </div>
-        </main>
-      </div>
+        </div>
+      </AdminShell>
 
       <Sheet open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
         <SheetContent className="w-full sm:max-w-2xl overflow-y-auto">
