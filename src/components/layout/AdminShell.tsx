@@ -76,13 +76,15 @@ export default function AdminShell({ children, breadcrumb = "", breadcrumbs }: A
             <Link
               to="/admin/team-chat"
               className={cn(
-                "p-1.5 rounded-lg transition-colors relative flex items-center",
+                "p-1.5 rounded-lg transition-colors relative flex items-center gap-1",
                 location.pathname === "/admin/team-chat" ? "bg-primary/10 text-primary" : "hover:bg-muted text-muted-foreground"
               )}
               aria-label="Team Chat"
             >
               <MessageSquare className="w-4 h-4" />
+              <span className="text-xs font-medium">Chat</span>
             </Link>
+            <div className="w-px h-5 bg-border" />
             <Popover open={notifOpen} onOpenChange={setNotifOpen}>
               <PopoverTrigger asChild>
                 <button className="p-1.5 rounded-lg hover:bg-muted transition-colors relative">

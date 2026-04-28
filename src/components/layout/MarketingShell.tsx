@@ -78,7 +78,9 @@ export default function MarketingShell({ children, breadcrumb = "", breadcrumbs 
               aria-label="Team Chat"
             >
               <MessageSquare className="w-4 h-4" />
+              <span className="text-xs font-medium">Chat</span>
             </Link>
+            <div className="w-px h-5 bg-border" />
             <button className="p-1.5 rounded-lg hover:bg-muted transition-colors relative" aria-label="Notifications">
               <Bell className="w-4 h-4 text-muted-foreground" />
             </button>

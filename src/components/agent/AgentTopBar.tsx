@@ -86,12 +86,14 @@ export default function AgentTopBar({ crumbs, onLogout }: AgentTopBarProps) {
           <Button
             variant="ghost"
             size="sm"
-            className="h-8 w-8 p-0"
+            className="h-8 px-2 gap-1"
             onClick={() => navigate("/agent/team-chat")}
             aria-label="Team Chat"
           >
             <MessageSquare className="w-4 h-4 text-muted-foreground" />
+            <span className="text-xs font-medium text-muted-foreground">Chat</span>
           </Button>
+          <div className="w-px h-4 bg-border" />
 
           {/* Notifications popover */}
           <Popover open={notifOpen} onOpenChange={setNotifOpen}>
