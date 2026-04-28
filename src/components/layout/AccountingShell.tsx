@@ -132,13 +132,15 @@ export default function AccountingShell({ children, breadcrumb = "", breadcrumbs
             <Link
               to="/agent/team-chat"
               className={cn(
-                "p-1.5 rounded-lg transition-colors relative flex items-center",
+                "p-1.5 rounded-lg transition-colors relative flex items-center gap-1",
                 location.pathname === "/agent/team-chat" ? "bg-primary/10 text-primary" : "hover:bg-muted text-muted-foreground"
               )}
               aria-label="Team Chat"
             >
               <MessageSquare className="w-4 h-4" />
+              <span className="text-xs font-medium">Chat</span>
             </Link>
+            <div className="w-px h-5 bg-border" />
             <button className="p-1.5 rounded-lg hover:bg-muted transition-colors relative" aria-label="Notifications">
               <Bell className="w-4 h-4 text-muted-foreground" />
             </button>
