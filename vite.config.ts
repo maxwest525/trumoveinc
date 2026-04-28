@@ -4,6 +4,9 @@ import path from "path";
 import { componentTagger } from "lovable-tagger";
 import canonicalPrerender from "./vite-plugin-canonical";
 
+const SUPABASE_URL_FALLBACK = "https://fsxoskcionoobxuepqeg.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY_FALLBACK = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJIUzI1NiIsInJlZiI6ImZzeG9za2Npb25vb2J4dWVwcWVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA3MDA5MDUsImV4cCI6MjA4NjI3NjkwNX0.-blTL1lq4DJ92GCokkOIS3HeROGhMOiRMfZmufUHwZg";
+
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
@@ -18,6 +21,10 @@ export default defineConfig(({ mode }) => ({
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
+  },
+  define: {
+    "import.meta.env.VITE_SUPABASE_URL": JSON.stringify(process.env.VITE_SUPABASE_URL || SUPABASE_URL_FALLBACK),
+    "import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY": JSON.stringify(process.env.VITE_SUPABASE_PUBLISHABLE_KEY || SUPABASE_PUBLISHABLE_KEY_FALLBACK),
   },
   optimizeDeps: {
     include: [
