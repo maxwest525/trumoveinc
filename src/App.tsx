@@ -12,6 +12,7 @@ import WorkspaceHub from "./pages/WorkspaceHub";
 import RoleGuard from "./components/RoleGuard";
 import AgentDashboard from "./pages/AgentDashboard";
 import AdminDeveloper from "./pages/AdminDeveloper";
+import Diagnostics from "./pages/Diagnostics";
 import ScrollToTop from "./components/ScrollToTop";
 import { SeoOverrideProvider } from "./components/SeoOverrideProvider";
 import { captureUtmParams } from "./lib/leadEnrichment";
@@ -137,6 +138,9 @@ const App = () => (
             {/* Admin routes */}
             <Route path="/admin/dashboard" element={<RoleGuard allowedRoles={["admin"]}><AdminDashboard /></RoleGuard>} />
             <Route path="/admin/developer" element={<RoleGuard allowedRoles={["admin"]}><AdminDeveloper /></RoleGuard>} />
+            {/* Diagnostics — accessible without RoleGuard so it works even when other systems break */}
+            <Route path="/admin/diagnostics" element={<Diagnostics />} />
+            <Route path="/diagnostics" element={<Diagnostics />} />
             <Route path="/admin/employee-requests" element={<RoleGuard allowedRoles={["admin"]}><AdminSupportTickets /></RoleGuard>} />
             <Route path="/admin/users" element={<RoleGuard allowedRoles={["admin"]}><AdminUsersPage /></RoleGuard>} />
             <Route path="/admin/pricing" element={<RoleGuard allowedRoles={["admin"]}><AdminPricing /></RoleGuard>} />
