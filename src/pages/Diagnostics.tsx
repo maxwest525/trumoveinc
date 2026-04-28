@@ -37,18 +37,13 @@ export default function Diagnostics() {
   const [roles, setRoles] = useState<string[]>([]);
 
   useEffect(() => {
-    installErrorCapture();
+    installGlobalErrorCapture();
     loadErrors();
     runChecks();
   }, []);
 
   const loadErrors = () => {
-    try {
-      const raw = localStorage.getItem(ERROR_LOG_KEY);
-      setErrors(raw ? JSON.parse(raw) : []);
-    } catch {
-      setErrors([]);
-    }
+    setErrors(readCapturedErrors());
   };
 
   const setCheck = (name: string, status: CheckStatus, detail?: string) => {
