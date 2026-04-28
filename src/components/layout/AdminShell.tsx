@@ -61,17 +61,6 @@ export default function AdminShell({ children, breadcrumb = "", breadcrumbs }: A
                 <Menu className="w-4 h-4 text-muted-foreground" />
               </button>
             )}
-            <Link
-              to="/admin/team-chat"
-              className={cn(
-                "p-1.5 rounded-lg transition-colors relative flex items-center gap-1",
-                location.pathname === "/admin/team-chat" ? "bg-primary/10 text-primary" : "hover:bg-muted text-muted-foreground"
-              )}
-            >
-              <MessageSquare className="w-4 h-4" />
-              <span className="text-xs font-medium">Chat</span>
-            </Link>
-            <div className="w-px h-5 bg-border" />
             <Link to="/" className="p-1.5 rounded-lg hover:bg-muted transition-colors flex items-center gap-1">
               <Home className="w-4 h-4 text-muted-foreground" />
               <span className="text-xs font-medium text-muted-foreground">Home</span>
@@ -84,6 +73,16 @@ export default function AdminShell({ children, breadcrumb = "", breadcrumbs }: A
             />
           </div>
           <div className="flex items-center gap-1.5">
+            <Link
+              to="/admin/team-chat"
+              className={cn(
+                "p-1.5 rounded-lg transition-colors relative flex items-center",
+                location.pathname === "/admin/team-chat" ? "bg-primary/10 text-primary" : "hover:bg-muted text-muted-foreground"
+              )}
+              aria-label="Team Chat"
+            >
+              <MessageSquare className="w-4 h-4" />
+            </Link>
             <Popover open={notifOpen} onOpenChange={setNotifOpen}>
               <PopoverTrigger asChild>
                 <button className="p-1.5 rounded-lg hover:bg-muted transition-colors relative">

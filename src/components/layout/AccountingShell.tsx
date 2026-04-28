@@ -4,7 +4,7 @@ import { Link, useLocation } from "react-router-dom";
 import {
   Home, Sun, Moon, Bell, LayoutDashboard, DollarSign, Receipt,
   CreditCard, FileText, Users, TrendingDown, BarChart3,
-  Gauge, Menu, X,
+  Gauge, Menu, X, MessageSquare,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useTheme } from "next-themes";
@@ -129,7 +129,17 @@ export default function AccountingShell({ children, breadcrumb = "", breadcrumbs
             />
           </div>
           <div className="flex items-center gap-2">
-            <button className="p-1.5 rounded-lg hover:bg-muted transition-colors relative">
+            <Link
+              to="/agent/team-chat"
+              className={cn(
+                "p-1.5 rounded-lg transition-colors relative flex items-center",
+                location.pathname === "/agent/team-chat" ? "bg-primary/10 text-primary" : "hover:bg-muted text-muted-foreground"
+              )}
+              aria-label="Team Chat"
+            >
+              <MessageSquare className="w-4 h-4" />
+            </Link>
+            <button className="p-1.5 rounded-lg hover:bg-muted transition-colors relative" aria-label="Notifications">
               <Bell className="w-4 h-4 text-muted-foreground" />
             </button>
             <div className="w-7 h-7 rounded-full bg-muted flex items-center justify-center text-xs font-medium text-foreground ml-1">MW</div>
