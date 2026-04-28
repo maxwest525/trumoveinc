@@ -26,6 +26,7 @@ const ADMIN_ITEMS: NavItem[] = [
   { label: "Products & Pricing", subtitle: "Services, rates & rules", icon: DollarSign, href: "/admin/pricing" },
   { label: "Developer", subtitle: "API keys & integrations", icon: Code, href: "/admin/developer" },
   { label: "Pulse Settings", subtitle: "Compliance & call monitoring", icon: Activity, href: "/admin/pulse" },
+  { label: "Audit Log", subtitle: "System change history", icon: Shield, href: "/admin/audit-log" },
 ];
 
 // ─── Agent ───

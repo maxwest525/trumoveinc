@@ -126,6 +126,51 @@ export type Database = {
         }
         Relationships: []
       }
+      audit_logs: {
+        Row: {
+          action: string
+          actor_email: string | null
+          actor_id: string | null
+          changed_fields: string[] | null
+          created_at: string
+          id: string
+          ip_address: string | null
+          new_data: Json | null
+          old_data: Json | null
+          record_id: string | null
+          table_name: string
+          user_agent: string | null
+        }
+        Insert: {
+          action: string
+          actor_email?: string | null
+          actor_id?: string | null
+          changed_fields?: string[] | null
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          new_data?: Json | null
+          old_data?: Json | null
+          record_id?: string | null
+          table_name: string
+          user_agent?: string | null
+        }
+        Update: {
+          action?: string
+          actor_email?: string | null
+          actor_id?: string | null
+          changed_fields?: string[] | null
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          new_data?: Json | null
+          old_data?: Json | null
+          record_id?: string | null
+          table_name?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       backlinks: {
         Row: {
           anchor_text: string | null
@@ -2194,6 +2239,7 @@ export type Database = {
         }
         Returns: number
       }
+      purge_old_audit_logs: { Args: never; Returns: number }
       read_email_batch: {
         Args: { batch_size: number; queue_name: string; vt: number }
         Returns: {
