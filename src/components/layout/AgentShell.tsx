@@ -107,15 +107,6 @@ export default function AgentShell({ children, breadcrumb = "", breadcrumbs }: A
                 <Menu className="w-4 h-4 text-muted-foreground" />
               </button>
             )}
-            <Link
-              to="/agent/team-chat"
-              className={`p-1.5 rounded-lg transition-colors relative ${
-                location.pathname === "/agent/team-chat" ? "bg-primary/10 text-primary" : "hover:bg-muted text-muted-foreground"
-              }`}
-            >
-              <MessagesSquare className="w-4 h-4" />
-            </Link>
-            <div className="w-px h-5 bg-border" />
             <Link to="/" className="p-1.5 rounded-lg hover:bg-muted transition-colors">
               <Home className="w-4 h-4 text-muted-foreground" />
             </Link>
@@ -126,6 +117,15 @@ export default function AgentShell({ children, breadcrumb = "", breadcrumbs }: A
             />
           </div>
           <div className="flex items-center gap-1.5">
+            <Link
+              to="/agent/team-chat"
+              className={`p-1.5 rounded-lg transition-colors relative flex items-center ${
+                location.pathname === "/agent/team-chat" ? "bg-primary/10 text-primary" : "hover:bg-muted text-muted-foreground"
+              }`}
+              aria-label="Team Chat"
+            >
+              <MessagesSquare className="w-4 h-4" />
+            </Link>
             <Popover open={notifOpen} onOpenChange={setNotifOpen}>
               <PopoverTrigger asChild>
                 <button className="p-1.5 rounded-lg hover:bg-muted transition-colors relative">
