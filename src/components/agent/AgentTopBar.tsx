@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { ChevronRight, Home, LogOut, User, Settings, Bell, Sun, Moon, Monitor, Globe, MessageSquare } from "lucide-react";
 import logoImg from "@/assets/logo.png";
 import { Button } from "@/components/ui/button";
@@ -35,6 +35,8 @@ interface AgentTopBarProps {
 
 export default function AgentTopBar({ crumbs, onLogout }: AgentTopBarProps) {
   const navigate = useNavigate();
+  const location = useLocation();
+  const isChatActive = location.pathname === "/agent/team-chat";
   const { displayName, email, isLoggedIn } = useAgentProfile();
   const { theme, setTheme } = useTheme();
   const { notifications, unreadCount, loading, markAsRead, markAllAsRead, deleteNotification } = useNotifications();
@@ -86,12 +88,13 @@ export default function AgentTopBar({ crumbs, onLogout }: AgentTopBarProps) {
           <Button
             variant="ghost"
             size="sm"
-            className="h-8 px-2 gap-1"
+            className={`h-8 px-2 gap-1 ${isChatActive ? "bg-primary/10 text-primary hover:bg-primary/15 hover:text-primary" : ""}`}
             onClick={() => navigate("/agent/team-chat")}
             aria-label="Team Chat"
+            aria-current={isChatActive ? "page" : undefined}
           >
-            <MessageSquare className="w-4 h-4 text-muted-foreground" />
-            <span className="text-xs font-medium text-muted-foreground">Chat</span>
+            <MessageSquare className={`w-4 h-4 ${isChatActive ? "text-primary" : "text-muted-foreground"}`} />
+            <span className={`text-xs font-medium ${isChatActive ? "text-primary" : "text-muted-foreground"}`}>Chat</span>
           </Button>
           <div className="w-px h-4 bg-border" />
 
