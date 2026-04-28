@@ -58,17 +58,6 @@ export default function DispatchShell({ children, breadcrumb = "", breadcrumbs }
                 <Menu className="w-4 h-4 text-muted-foreground" />
               </button>
             )}
-            <Link
-              to="/dispatch/team-chat"
-              className={cn(
-                "p-1.5 rounded-lg transition-colors relative flex items-center gap-1",
-                location.pathname === "/dispatch/team-chat" ? "bg-primary/10 text-primary" : "hover:bg-muted text-muted-foreground"
-              )}
-            >
-              <MessageSquare className="w-4 h-4" />
-              <span className="text-xs font-medium">Chat</span>
-            </Link>
-            <div className="w-px h-5 bg-border" />
             <Link to="/" className="p-1.5 rounded-lg hover:bg-muted transition-colors flex items-center gap-1">
               <Home className="w-4 h-4 text-muted-foreground" />
               <span className="text-xs font-medium text-muted-foreground">Home</span>
@@ -87,7 +76,17 @@ export default function DispatchShell({ children, breadcrumb = "", breadcrumbs }
             >
               {theme === "dark" ? <Sun className="w-4 h-4 text-muted-foreground" /> : <Moon className="w-4 h-4 text-muted-foreground" />}
             </button>
-            <button className="p-1.5 rounded-lg hover:bg-muted transition-colors relative">
+            <Link
+              to="/dispatch/team-chat"
+              className={cn(
+                "p-1.5 rounded-lg transition-colors relative flex items-center",
+                location.pathname === "/dispatch/team-chat" ? "bg-primary/10 text-primary" : "hover:bg-muted text-muted-foreground"
+              )}
+              aria-label="Team Chat"
+            >
+              <MessageSquare className="w-4 h-4" />
+            </Link>
+            <button className="p-1.5 rounded-lg hover:bg-muted transition-colors relative" aria-label="Notifications">
               <Bell className="w-4 h-4 text-muted-foreground" />
             </button>
             <div className="w-7 h-7 rounded-full bg-muted flex items-center justify-center text-xs font-medium text-foreground ml-1">
