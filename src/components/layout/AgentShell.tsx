@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Home, Sun, Moon, Bell, MessagesSquare, Settings, LogOut, User, ChevronDown, Menu, X } from "lucide-react";
+import { Home, Sun, Moon, Bell, MessageSquare, Settings, LogOut, User, ChevronDown, Menu, X } from "lucide-react";
 import { useTheme } from "next-themes";
 import AgentSidebar from "@/components/agent/AgentSidebar";
 import { FloatingDialer } from "@/components/agent/FloatingDialer";
@@ -124,7 +124,7 @@ export default function AgentShell({ children, breadcrumb = "", breadcrumbs }: A
               }`}
               aria-label="Team Chat"
             >
-              <MessagesSquare className="w-4 h-4" />
+              <MessageSquare className="w-4 h-4" />
               <span className="text-xs font-medium">Chat</span>
             </Link>
             <div className="w-px h-5 bg-border" />
