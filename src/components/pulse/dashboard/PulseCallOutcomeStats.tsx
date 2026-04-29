@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
-import { DollarSign, PhoneOff, UserX, Clock } from 'lucide-react';
+import { DollarSign, PhoneOff, UserX, Clock, Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface PulseCall {
   id: string;
@@ -95,6 +96,14 @@ const PulseCallOutcomeStats: React.FC<Props> = ({ calls }) => {
       icon: DollarSign,
       tone: 'text-compliance-pass',
       bg: 'bg-compliance-pass/10 border-compliance-pass/30',
+      tooltip: {
+        title: 'Counted as a sales conversation when:',
+        rules: [
+          'Status = completed',
+          'Duration ≥ 90 seconds',
+          `Transcript mentions: ${SALES_HINTS.join(', ')}`,
+        ],
+      },
     },
     {
       label: 'Hang-ups',
@@ -103,6 +112,14 @@ const PulseCallOutcomeStats: React.FC<Props> = ({ calls }) => {
       icon: PhoneOff,
       tone: 'text-orange-500',
       bg: 'bg-orange-500/10 border-orange-500/30',
+      tooltip: {
+        title: 'Counted as a hang-up when any of these are true:',
+        rules: [
+          'Duration < 30 seconds (and > 0)',
+          'Status is one of: dropped, abandoned, hangup, no_answer',
+          `Transcript contains: ${HANGUP_HINTS.join(', ')}`,
+        ],
+      },
     },
     {
       label: 'Bad Leads',
@@ -111,6 +128,13 @@ const PulseCallOutcomeStats: React.FC<Props> = ({ calls }) => {
       icon: UserX,
       tone: 'text-destructive',
       bg: 'bg-destructive/10 border-destructive/30',
+      tooltip: {
+        title: 'Counted as a bad lead when:',
+        rules: [
+          'Status = bad_lead, OR',
+          `Transcript contains: ${BAD_LEAD_HINTS.join(', ')}`,
+        ],
+      },
     },
     {
       label: 'Avg Call Time',
@@ -119,36 +143,61 @@ const PulseCallOutcomeStats: React.FC<Props> = ({ calls }) => {
       icon: Clock,
       tone: 'text-primary',
       bg: 'bg-primary/10 border-primary/30',
+      tooltip: {
+        title: 'Calculated from:',
+        rules: [
+          'Mean of duration_seconds across recent calls',
+          'Calls with 0 duration excluded',
+          'Format shown as m:ss',
+        ],
+      },
     },
   ];
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-      {tiles.map((t) => {
-        const Icon = t.icon;
-        return (
-          <div
-            key={t.label}
-            className={cn(
-              'rounded-xl border p-3 flex items-start gap-3 bg-card shadow-sm',
-              'hover:shadow transition-shadow',
-            )}
-          >
-            <div className={cn('w-9 h-9 rounded-lg border flex items-center justify-center shrink-0', t.bg)}>
-              <Icon className={cn('w-4 h-4', t.tone)} />
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
-                {t.label}
-              </p>
-              <p className="text-xl font-bold leading-tight mt-0.5">{t.value}</p>
-              <p className="text-[10px] text-muted-foreground mt-0.5 truncate">{t.sub}</p>
-            </div>
-          </div>
-        );
-      })}
-    </div>
+    <TooltipProvider delayDuration={150}>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        {tiles.map((t) => {
+          const Icon = t.icon;
+          return (
+            <Tooltip key={t.label}>
+              <TooltipTrigger asChild>
+                <div
+                  className={cn(
+                    'rounded-xl border p-3 flex items-start gap-3 bg-card shadow-sm cursor-help',
+                    'hover:shadow transition-shadow',
+                  )}
+                >
+                  <div className={cn('w-9 h-9 rounded-lg border flex items-center justify-center shrink-0', t.bg)}>
+                    <Icon className={cn('w-4 h-4', t.tone)} />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-1">
+                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
+                        {t.label}
+                      </p>
+                      <Info className="w-2.5 h-2.5 text-muted-foreground/60" />
+                    </div>
+                    <p className="text-xl font-bold leading-tight mt-0.5">{t.value}</p>
+                    <p className="text-[10px] text-muted-foreground mt-0.5 truncate">{t.sub}</p>
+                  </div>
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" className="max-w-xs">
+                <p className="text-[11px] font-semibold mb-1">{t.tooltip.title}</p>
+                <ul className="space-y-0.5">
+                  {t.tooltip.rules.map((r, i) => (
+                    <li key={i} className="text-[10px] text-muted-foreground leading-snug">• {r}</li>
+                  ))}
+                </ul>
+              </TooltipContent>
+            </Tooltip>
+          );
+        })}
+      </div>
+    </TooltipProvider>
   );
 };
 
 export default PulseCallOutcomeStats;
+
