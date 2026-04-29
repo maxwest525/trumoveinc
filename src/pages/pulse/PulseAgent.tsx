@@ -108,6 +108,15 @@ const PulseAgent: React.FC<{ embedded?: boolean; showSummary?: boolean }> = ({ e
     return () => clearInterval(timer);
   }, [callActive, callStartTime]);
 
+  // Per-second ticker so live (active) call durations update in the call list
+  const [nowTs, setNowTs] = useState(() => Date.now());
+  const hasActiveCall = useMemo(() => dbCalls.some(c => c.status === 'active'), [dbCalls]);
+  useEffect(() => {
+    if (!hasActiveCall) return;
+    const t = setInterval(() => setNowTs(Date.now()), 1000);
+    return () => clearInterval(t);
+  }, [hasActiveCall]);
+
   const getWatchEntries = useCallback(async (): Promise<WatchEntry[]> => {
     try { const saved = localStorage.getItem('pulse-watch-entries'); if (saved) { const parsed = JSON.parse(saved); if (Array.isArray(parsed) && parsed.length > 0) return parsed; } } catch {}
     try {
