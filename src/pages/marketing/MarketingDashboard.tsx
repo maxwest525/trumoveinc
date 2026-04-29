@@ -13,6 +13,7 @@ import MarketingShell from "@/components/layout/MarketingShell";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
+import { TM_CHART } from "@/lib/marketingChartTheme";
 
 // ─── Static sample data ─────
 const trafficData = [
@@ -33,13 +34,13 @@ const leadData = [
   { month: "Mar", leads: 84, booked: 31 },
 ];
 
-// TruMove brand palette: Navy + Green accents
-const TM_NAVY = "#1A365D";
-const TM_NAVY_LIGHT = "#2C5282";
-const TM_GREEN = "#22C55E";
-const TM_GREEN_DEEP = "#15803D";
-const TM_GOLD = "#D69E2E";
-const TM_SLATE = "#94A3B8";
+// TruMove brand palette sourced from shared chart theme
+const TM_NAVY = TM_CHART.navy;
+const TM_NAVY_LIGHT = TM_CHART.navyLight;
+const TM_GREEN = TM_CHART.green;
+const TM_GREEN_DEEP = TM_CHART.greenDeep;
+const TM_GOLD = TM_CHART.gold;
+const TM_SLATE = TM_CHART.slate;
 
 const channelData = [
   { name: "Organic", value: 38, color: TM_GREEN },
