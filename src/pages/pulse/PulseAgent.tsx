@@ -491,6 +491,12 @@ const PulseAgent: React.FC<{ embedded?: boolean; showSummary?: boolean }> = ({ e
                               )}
                               <span className="text-muted-foreground/40 text-sm">→</span>
                               <span className="text-sm text-muted-foreground truncate">{call.client_name || 'Unknown'}</span>
+                              {hangup && (
+                                <Badge className="text-[9px] h-4 px-1.5 bg-orange-500/15 text-orange-500 border-orange-500/30 font-bold gap-0.5">
+                                  <PhoneOff className="w-2.5 h-2.5" />
+                                  HANG-UP
+                                </Badge>
+                              )}
                               {isActive && (
                                 <span className="flex items-center gap-1 text-[9px] font-bold text-compliance-pass ml-auto">
                                   <span className="relative flex h-1.5 w-1.5">
@@ -506,9 +512,11 @@ const PulseAgent: React.FC<{ embedded?: boolean; showSummary?: boolean }> = ({ e
 
                             {/* Metrics row — compact inline */}
                             <div className="flex items-center gap-4 ml-6 mb-1">
-                              <span className="inline-flex items-center gap-1 text-sm text-muted-foreground">
+                              <span className={cn("inline-flex items-center gap-1 text-sm",
+                                isActive ? "text-compliance-pass font-mono" : "text-muted-foreground"
+                              )}>
                                 <Clock className="w-3.5 h-3.5 shrink-0" />
-                                <span className="font-medium">{durLabel || '—'}</span>
+                                <span className="font-medium">{durLabel || '—'}{isActive && ' •'}</span>
                               </span>
                               <span className={cn("inline-flex items-center gap-1 text-sm font-bold",
                                 call.compliance_score != null
