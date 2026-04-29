@@ -83,9 +83,10 @@ export default function RecommendationsContent() {
   async function generate() {
     setGenerating(true);
     try {
+      const kpis = buildCurrentKpiSnapshot();
       const { data, error } = await supabase.functions.invoke(
         "generate-marketing-action-items",
-        { body: { kpis: CURRENT_KPIS, count: 6 } },
+        { body: { kpis, count: 6 } },
       );
       if (error) throw error;
       const items = (data?.items ?? []) as Omit<Recommendation, "id" | "status">[];
