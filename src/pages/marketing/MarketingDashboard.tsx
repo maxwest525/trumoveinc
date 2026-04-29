@@ -6,8 +6,8 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
 import {
-  TrendingUp, TrendingDown, Users, DollarSign, Target, Settings, Loader2, Save,
-  AlertCircle, CheckCircle, ArrowRight, Zap, ArrowUpRight, ArrowDownRight, Percent, BarChart3,
+  TrendingUp, Users, DollarSign, Target, Settings, Loader2, Save,
+  AlertCircle, CheckCircle, ArrowRight, Zap, ArrowUpRight, ArrowDownRight, Percent,
 } from "lucide-react";
 import MarketingShell from "@/components/layout/MarketingShell";
 import { supabase } from "@/integrations/supabase/client";
@@ -75,12 +75,6 @@ const INTEGRATION_LABELS: Record<string, string> = {
   google_ads: "Google Ads",
   meta: "Meta Ads",
 };
-
-const TOP_ACTIONS = [
-  { title: "Refresh 3 stale meta descriptions", type: "SEO", impact: "Medium", link: "/marketing/content-seo" },
-  { title: "Review 2 pending A/B test results", type: "CRO", impact: "High", link: "/marketing/conversion-lab" },
-  { title: "Approve keyword brief for 'cross country movers'", type: "Content", impact: "High", link: "/marketing/content-seo" },
-];
 
 function MetricCardRow() {
   const metrics = [
