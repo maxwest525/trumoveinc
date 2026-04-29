@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { buildCurrentKpiSnapshot } from "@/lib/marketingKpiSnapshot";
 
 type Priority = "critical" | "high" | "medium" | "low";
 type Category = "seo" | "ads" | "cro" | "content" | "technical" | "backlinks";
