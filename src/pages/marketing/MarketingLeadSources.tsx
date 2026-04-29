@@ -3,10 +3,11 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { ClipboardList, AlertTriangle, TrendingUp, TrendingDown, ArrowUpRight, ArrowDownRight, Target, Users, Percent, Award, ShieldCheck } from "lucide-react";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from "recharts";
+import { TM_CHART, TM_CHART_SEMANTIC } from "@/lib/marketingChartTheme";
 
 const depData = [
-  { name: "Owned", value: 38, color: "#16a34a" },
-  { name: "Bought", value: 62, color: "#3b82f6" },
+  { name: "Owned", value: 38, color: TM_CHART_SEMANTIC.owned },
+  { name: "Bought", value: 62, color: TM_CHART_SEMANTIC.bought },
 ];
 
 const VENDORS = [
@@ -41,8 +42,8 @@ function MetricCard({ label, value, icon: Icon }: { label: string; value: string
 
 function RingChart({ score, label }: { score: number; label: string }) {
   const data = [
-    { name: "Score", value: score, color: label === "Owned Leads" ? "#16a34a" : "#3b82f6" },
-    { name: "Rest", value: 100 - score, color: "#e5e7eb" },
+    { name: "Score", value: score, color: label === "Owned Leads" ? TM_CHART_SEMANTIC.owned : TM_CHART_SEMANTIC.bought },
+    { name: "Rest", value: 100 - score, color: TM_CHART.muted },
   ];
   return (
     <div className="flex flex-col items-center">
