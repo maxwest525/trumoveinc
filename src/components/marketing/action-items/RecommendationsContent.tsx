@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,11 +10,12 @@ import {
 import { useImplementationQueue } from "@/contexts/ImplementationQueueContext";
 import {
   Sparkles, CheckCircle2, XCircle, Search, Megaphone, Target,
-  PenTool, Link2, Wrench, Loader2, RefreshCw, Pencil, Save, X,
+  PenTool, Link2, Wrench, Loader2, RefreshCw, Pencil, Save, X, Activity,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { buildCurrentKpiSnapshot } from "@/lib/marketingKpiSnapshot";
+import { PULSE_ACTION_DRAFT_KEY } from "@/components/pulse/dashboard/PulseCallOutcomeStats";
 
 type Priority = "critical" | "high" | "medium" | "low";
 type Category = "seo" | "ads" | "cro" | "content" | "technical" | "backlinks";
@@ -30,6 +31,11 @@ interface Recommendation {
   expectedLift: string;
   reasoning: string;
   status: "pending" | "approved" | "dismissed" | "scheduled";
+  kpiContext?: {
+    label: string;
+    metrics: { label: string; value: string | number }[];
+    sourceLabel?: string;
+  };
 }
 
 // Seed examples shown before the user generates fresh items.
@@ -69,6 +75,56 @@ export default function RecommendationsContent() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [draft, setDraft] = useState<Recommendation | null>(null);
   const [hasGenerated, setHasGenerated] = useState(false);
+
+  // Consume a draft handed off from Pulse (or other KPI surfaces) and
+  // open it pre-filled in edit mode so the user can refine before approving.
+  useEffect(() => {
+    let raw: string | null = null;
+    try {
+      raw = localStorage.getItem(PULSE_ACTION_DRAFT_KEY);
+    } catch {
+      return;
+    }
+    if (!raw) return;
+    try {
+      const parsed = JSON.parse(raw) as {
+        kpiContext?: Record<string, number>;
+        recommendation: Omit<Recommendation, "id" | "status" | "kpiContext">;
+      };
+      const ctx = parsed.kpiContext || {};
+      const newRec: Recommendation = {
+        ...parsed.recommendation,
+        id: `pulse-${Date.now()}`,
+        status: "pending",
+        kpiContext: {
+          label: "Source: Pulse — Call Outcome KPIs",
+          sourceLabel: "Pulse Dashboard",
+          metrics: [
+            { label: "Sampled calls", value: ctx.sampledCalls ?? 0 },
+            { label: "Sales conversations", value: `${ctx.salesConversations ?? 0} (${ctx.salesPct ?? 0}%)` },
+            { label: "Hang-ups", value: `${ctx.hangups ?? 0} (${ctx.hangupPct ?? 0}%)` },
+            { label: "Bad leads", value: `${ctx.badLeads ?? 0} (${ctx.badPct ?? 0}%)` },
+            { label: "Avg call time", value: `${ctx.avgDurationSeconds ?? 0}s` },
+          ],
+        },
+      };
+      setRecs((prev) => [newRec, ...prev]);
+      setEditingId(newRec.id);
+      setDraft(newRec);
+      toast({
+        title: "Draft action item ready",
+        description: "Pre-filled from Pulse sales-flagged call moments. Edit and approve.",
+      });
+    } catch {
+      // ignore
+    } finally {
+      try {
+        localStorage.removeItem(PULSE_ACTION_DRAFT_KEY);
+      } catch {
+        // ignore
+      }
+    }
+  }, [toast]);
 
   const filtered = useMemo(() => {
     let list = filter === "all" ? recs : recs.filter((r) => r.category === filter);
@@ -283,12 +339,33 @@ export default function RecommendationsContent() {
                           {rec.priority}
                         </Badge>
                         <span className="text-[10px] text-muted-foreground">{EFFORT_LABELS[rec.effort]}</span>
+                        {rec.kpiContext && (
+                          <Badge variant="outline" className="text-[10px] gap-1 border-primary/40 text-primary">
+                            <Activity className="w-2.5 h-2.5" />
+                            {rec.kpiContext.sourceLabel ?? "KPI context"}
+                          </Badge>
+                        )}
                       </div>
                       <p className="text-xs text-muted-foreground mt-1">{rec.description}</p>
                       <div className="flex items-center gap-4 mt-2">
                         <span className="text-xs font-medium text-emerald-600">{rec.expectedLift}</span>
                         <span className="text-[10px] text-muted-foreground">{rec.reasoning}</span>
                       </div>
+                      {rec.kpiContext && (
+                        <div className="mt-2 rounded-md border border-primary/20 bg-primary/5 p-2">
+                          <p className="text-[10px] font-semibold uppercase tracking-wider text-primary mb-1">
+                            {rec.kpiContext.label}
+                          </p>
+                          <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+                            {rec.kpiContext.metrics.map((m) => (
+                              <div key={m.label} className="text-[10px]">
+                                <p className="text-muted-foreground">{m.label}</p>
+                                <p className="font-semibold text-foreground">{m.value}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
 
