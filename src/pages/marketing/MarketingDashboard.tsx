@@ -14,25 +14,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
 import { TM_CHART } from "@/lib/marketingChartTheme";
-
-// ─── Static sample data ─────
-const trafficData = [
-  { month: "Oct", organic: 0, paid: 0, direct: 40 },
-  { month: "Nov", organic: 120, paid: 80, direct: 55 },
-  { month: "Dec", organic: 180, paid: 140, direct: 70 },
-  { month: "Jan", organic: 240, paid: 190, direct: 85 },
-  { month: "Feb", organic: 310, paid: 220, direct: 90 },
-  { month: "Mar", organic: 420, paid: 280, direct: 110 },
-];
-
-const leadData = [
-  { month: "Oct", leads: 12, booked: 3 },
-  { month: "Nov", leads: 28, booked: 8 },
-  { month: "Dec", leads: 41, booked: 14 },
-  { month: "Jan", leads: 55, booked: 19 },
-  { month: "Feb", leads: 68, booked: 24 },
-  { month: "Mar", leads: 84, booked: 31 },
-];
+import {
+  trafficData,
+  leadData,
+  channelMix,
+  ownedVsBought,
+  costPerBookedSource,
+  headlineMetrics,
+} from "@/lib/marketingKpiSnapshot";
 
 // TruMove brand palette sourced from shared chart theme
 const TM_NAVY = TM_CHART.navy;
@@ -40,27 +29,16 @@ const TM_NAVY_LIGHT = TM_CHART.navyLight;
 const TM_GREEN = TM_CHART.green;
 const TM_GREEN_DEEP = TM_CHART.greenDeep;
 const TM_GOLD = TM_CHART.gold;
-const TM_SLATE = TM_CHART.slate;
 
-const channelData = [
-  { name: "Organic", value: 38, color: TM_GREEN },
-  { name: "Paid", value: 29, color: TM_NAVY },
-  { name: "Direct", value: 18, color: TM_GOLD },
-  { name: "Referral", value: 15, color: TM_NAVY_LIGHT },
-];
+const channelData = channelMix.map((c, i) => ({
+  ...c,
+  color: [TM_GREEN, TM_NAVY, TM_GOLD, TM_NAVY_LIGHT][i % 4],
+}));
 
-const sourceQualityPie = [
-  { name: "Owned", value: 38, color: TM_GREEN_DEEP },
-  { name: "Bought", value: 62, color: TM_NAVY },
-];
-
-const costPerBookedSource = [
-  { source: "Organic", cost: 42 },
-  { source: "Google Ads", cost: 185 },
-  { source: "Meta", cost: 210 },
-  { source: "Vendors", cost: 290 },
-  { source: "Referral", cost: 18 },
-];
+const sourceQualityPie = ownedVsBought.map((s) => ({
+  ...s,
+  color: s.name === "Owned" ? TM_GREEN_DEEP : TM_NAVY,
+}));
 
 type Integration = {
   id?: string;
