@@ -299,6 +299,7 @@ const PulseCallOutcomeStats: React.FC<Props> = ({ calls }) => {
             </Tooltip>
           );
         })}
+        </div>
       </div>
     </TooltipProvider>
   );
