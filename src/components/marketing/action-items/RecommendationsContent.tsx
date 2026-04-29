@@ -339,12 +339,33 @@ export default function RecommendationsContent() {
                           {rec.priority}
                         </Badge>
                         <span className="text-[10px] text-muted-foreground">{EFFORT_LABELS[rec.effort]}</span>
+                        {rec.kpiContext && (
+                          <Badge variant="outline" className="text-[10px] gap-1 border-primary/40 text-primary">
+                            <Activity className="w-2.5 h-2.5" />
+                            {rec.kpiContext.sourceLabel ?? "KPI context"}
+                          </Badge>
+                        )}
                       </div>
                       <p className="text-xs text-muted-foreground mt-1">{rec.description}</p>
                       <div className="flex items-center gap-4 mt-2">
                         <span className="text-xs font-medium text-emerald-600">{rec.expectedLift}</span>
                         <span className="text-[10px] text-muted-foreground">{rec.reasoning}</span>
                       </div>
+                      {rec.kpiContext && (
+                        <div className="mt-2 rounded-md border border-primary/20 bg-primary/5 p-2">
+                          <p className="text-[10px] font-semibold uppercase tracking-wider text-primary mb-1">
+                            {rec.kpiContext.label}
+                          </p>
+                          <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+                            {rec.kpiContext.metrics.map((m) => (
+                              <div key={m.label} className="text-[10px]">
+                                <p className="text-muted-foreground">{m.label}</p>
+                                <p className="font-semibold text-foreground">{m.value}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
 
