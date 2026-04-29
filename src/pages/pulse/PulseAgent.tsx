@@ -465,8 +465,12 @@ const PulseAgent: React.FC<{ embedded?: boolean; showSummary?: boolean }> = ({ e
                       const isActive = call.status === 'active';
                       const isSelected = selectedCallId === call.id;
                       const flagCount = call.flagged_keywords?.length || 0;
-                      const dur = call.duration_seconds;
-                      const durLabel = dur ? `${Math.floor(dur / 60)}:${(dur % 60).toString().padStart(2, '0')}` : null;
+                      // Live-tick duration for active calls; fall back to stored duration
+                      const liveDur = isActive
+                        ? Math.max(0, Math.round((nowTs - new Date(call.created_at).getTime()) / 1000))
+                        : (call.duration_seconds || 0);
+                      const durLabel = liveDur > 0 ? fmtDur(liveDur) : null;
+                      const hangup = isHangupCall(call);
                       const noteSnippet = call.summary || call.notes || null;
 
                         return (
