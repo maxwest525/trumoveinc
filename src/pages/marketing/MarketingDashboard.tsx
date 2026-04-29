@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
 import {
-  TrendingUp, Users, DollarSign, Target, Settings, Loader2, Save,
+  TrendingUp, DollarSign, Target, Settings, Loader2, Save,
   AlertCircle, CheckCircle, ArrowRight, Zap, ArrowUpRight, ArrowDownRight, Percent,
 } from "lucide-react";
 import MarketingShell from "@/components/layout/MarketingShell";
