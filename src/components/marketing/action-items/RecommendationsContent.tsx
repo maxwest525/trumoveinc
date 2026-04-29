@@ -39,23 +39,8 @@ const SEED: Recommendation[] = [
   { id: "seed-3", title: "A/B test CTA button color on /get-quote", description: "Test green vs orange CTA", category: "cro", priority: "medium", effort: "quick", expectedLift: "+5-8% conversions", reasoning: "Current CTA has low visibility", status: "pending" },
 ];
 
-// Placeholder KPI snapshot — wire to real dashboard data when available.
-// Keep keys descriptive so the AI can reason about them.
-const CURRENT_KPIS = {
-  organicTrafficLast30d: 420,
-  paidTrafficLast30d: 280,
-  directTrafficLast30d: 110,
-  totalLeadsLast30d: 84,
-  bookedJobsLast30d: 31,
-  costPerLead: 142,
-  costPerBookedJob: 385,
-  vendorDependencyPct: 62,
-  topPriorityIssues: [
-    "12 broken internal links detected",
-    "3 ad groups with $200+ spend and 0 conversions",
-    "DA stagnant at 24 vs competitors 55-72",
-  ],
-};
+// KPI snapshot is pulled live from the Metrics Dashboard data source
+// via buildCurrentKpiSnapshot() at generation time.
 
 const CAT_ICONS: Record<Category, React.ElementType> = {
   seo: Search, ads: Megaphone, cro: Target, content: PenTool, technical: Wrench, backlinks: Link2,
