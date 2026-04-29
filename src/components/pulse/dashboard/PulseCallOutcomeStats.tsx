@@ -52,12 +52,17 @@ function matchesAny(text: string, hints: string[]): boolean {
 }
 
 const PulseCallOutcomeStats: React.FC<Props> = ({ calls }) => {
-  const stats = useMemo(() => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const { stats, salesCalls } = useMemo(() => {
     const total = calls.length;
     let sales = 0;
     let hangups = 0;
     let badLeads = 0;
     let durationSum = 0;
+    let durationCount = 0;
+    const salesCalls: PulseCall[] = [];
     let durationCount = 0;
 
     for (const c of calls) {
