@@ -76,6 +76,56 @@ export default function RecommendationsContent() {
   const [draft, setDraft] = useState<Recommendation | null>(null);
   const [hasGenerated, setHasGenerated] = useState(false);
 
+  // Consume a draft handed off from Pulse (or other KPI surfaces) and
+  // open it pre-filled in edit mode so the user can refine before approving.
+  useEffect(() => {
+    let raw: string | null = null;
+    try {
+      raw = localStorage.getItem(PULSE_ACTION_DRAFT_KEY);
+    } catch {
+      return;
+    }
+    if (!raw) return;
+    try {
+      const parsed = JSON.parse(raw) as {
+        kpiContext?: Record<string, number>;
+        recommendation: Omit<Recommendation, "id" | "status" | "kpiContext">;
+      };
+      const ctx = parsed.kpiContext || {};
+      const newRec: Recommendation = {
+        ...parsed.recommendation,
+        id: `pulse-${Date.now()}`,
+        status: "pending",
+        kpiContext: {
+          label: "Source: Pulse — Call Outcome KPIs",
+          sourceLabel: "Pulse Dashboard",
+          metrics: [
+            { label: "Sampled calls", value: ctx.sampledCalls ?? 0 },
+            { label: "Sales conversations", value: `${ctx.salesConversations ?? 0} (${ctx.salesPct ?? 0}%)` },
+            { label: "Hang-ups", value: `${ctx.hangups ?? 0} (${ctx.hangupPct ?? 0}%)` },
+            { label: "Bad leads", value: `${ctx.badLeads ?? 0} (${ctx.badPct ?? 0}%)` },
+            { label: "Avg call time", value: `${ctx.avgDurationSeconds ?? 0}s` },
+          ],
+        },
+      };
+      setRecs((prev) => [newRec, ...prev]);
+      setEditingId(newRec.id);
+      setDraft(newRec);
+      toast({
+        title: "Draft action item ready",
+        description: "Pre-filled from Pulse sales-flagged call moments. Edit and approve.",
+      });
+    } catch {
+      // ignore
+    } finally {
+      try {
+        localStorage.removeItem(PULSE_ACTION_DRAFT_KEY);
+      } catch {
+        // ignore
+      }
+    }
+  }, [toast]);
+
   const filtered = useMemo(() => {
     let list = filter === "all" ? recs : recs.filter((r) => r.category === filter);
     if (sort === "quick") list = [...list].sort((a, b) => (a.effort === "quick" ? -1 : 1));
