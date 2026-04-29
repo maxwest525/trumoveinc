@@ -23,6 +23,23 @@ const SEVERITY_META: Record<Severity, { label: string; color: string; bg: string
   critical: { label: 'Critical', color: 'text-destructive', bg: 'bg-destructive/10', border: 'border-destructive/30', icon: AlertTriangle },
 };
 
+// Hang-up classification (mirrors PulseCallOutcomeStats)
+const HANGUP_TRANSCRIPT_HINTS = ['hung up', 'call ended', 'disconnected', '[hangup]'];
+const HANGUP_STATUSES = ['dropped', 'abandoned', 'hangup', 'no_answer'];
+function isHangupCall(call: { status?: string | null; duration_seconds?: number | null; transcript?: string | null }): boolean {
+  const dur = call.duration_seconds ?? 0;
+  const status = (call.status || '').toLowerCase();
+  if (status === 'active') return false;
+  if (HANGUP_STATUSES.includes(status)) return true;
+  if (dur > 0 && dur < 30) return true;
+  const tr = (call.transcript || '').toLowerCase();
+  return HANGUP_TRANSCRIPT_HINTS.some(h => tr.includes(h));
+}
+function fmtDur(sec: number): string {
+  const m = Math.floor(sec / 60);
+  const s = Math.floor(sec % 60);
+  return `${m}:${s.toString().padStart(2, '0')}`;
+}
 
 
 function checkMatch(text: string, entry: WatchEntry): string | null {
