@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,11 +10,12 @@ import {
 import { useImplementationQueue } from "@/contexts/ImplementationQueueContext";
 import {
   Sparkles, CheckCircle2, XCircle, Search, Megaphone, Target,
-  PenTool, Link2, Wrench, Loader2, RefreshCw, Pencil, Save, X,
+  PenTool, Link2, Wrench, Loader2, RefreshCw, Pencil, Save, X, Activity,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { buildCurrentKpiSnapshot } from "@/lib/marketingKpiSnapshot";
+import { PULSE_ACTION_DRAFT_KEY } from "@/components/pulse/dashboard/PulseCallOutcomeStats";
 
 type Priority = "critical" | "high" | "medium" | "low";
 type Category = "seo" | "ads" | "cro" | "content" | "technical" | "backlinks";
