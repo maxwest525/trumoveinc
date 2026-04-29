@@ -63,7 +63,6 @@ const PulseCallOutcomeStats: React.FC<Props> = ({ calls }) => {
     let durationSum = 0;
     let durationCount = 0;
     const salesCalls: PulseCall[] = [];
-    let durationCount = 0;
 
     for (const c of calls) {
       const dur = c.duration_seconds ?? 0;
@@ -91,11 +90,14 @@ const PulseCallOutcomeStats: React.FC<Props> = ({ calls }) => {
 
       if (isBadLead) badLeads += 1;
       else if (isHangup) hangups += 1;
-      else if (isSales) sales += 1;
+      else if (isSales) {
+        sales += 1;
+        salesCalls.push(c);
+      }
     }
 
     const avgDuration = durationCount ? Math.round(durationSum / durationCount) : 0;
-    return { total, sales, hangups, badLeads, avgDuration };
+    return { stats: { total, sales, hangups, badLeads, avgDuration }, salesCalls };
   }, [calls]);
 
   const tiles = [
