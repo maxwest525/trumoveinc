@@ -18,6 +18,7 @@ import PulseHighRiskAgents from '@/components/pulse/dashboard/PulseHighRiskAgent
 import PulseTopFlagsToday from '@/components/pulse/dashboard/PulseTopFlagsToday';
 import PulseSeverityBreakdown from '@/components/pulse/dashboard/PulseSeverityBreakdown';
 import PulseLiveActivityFeed, { PulseFeedItem } from '@/components/pulse/dashboard/PulseLiveActivityFeed';
+import PulseCallOutcomeStats from '@/components/pulse/dashboard/PulseCallOutcomeStats';
 import { ArrowLeft } from 'lucide-react';
 import { analyzeSentiment, type ToneLevel } from '@/hooks/useSentimentAnalysis';
 
