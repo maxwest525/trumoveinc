@@ -6,8 +6,8 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
 import {
-  TrendingUp, TrendingDown, Users, DollarSign, Target, Settings, Loader2, Save,
-  AlertCircle, CheckCircle, ArrowRight, Zap, ArrowUpRight, ArrowDownRight, Percent, BarChart3,
+  TrendingUp, DollarSign, Target, Settings, Loader2, Save,
+  AlertCircle, CheckCircle, ArrowRight, Zap, ArrowUpRight, ArrowDownRight, Percent,
 } from "lucide-react";
 import MarketingShell from "@/components/layout/MarketingShell";
 import { supabase } from "@/integrations/supabase/client";
@@ -33,16 +33,24 @@ const leadData = [
   { month: "Mar", leads: 84, booked: 31 },
 ];
 
+// TruMove brand palette: Navy + Green accents
+const TM_NAVY = "#1A365D";
+const TM_NAVY_LIGHT = "#2C5282";
+const TM_GREEN = "#22C55E";
+const TM_GREEN_DEEP = "#15803D";
+const TM_GOLD = "#D69E2E";
+const TM_SLATE = "#94A3B8";
+
 const channelData = [
-  { name: "Organic", value: 38, color: "#22c55e" },
-  { name: "Paid", value: 29, color: "#3b82f6" },
-  { name: "Direct", value: 18, color: "#f59e0b" },
-  { name: "Referral", value: 15, color: "#8b5cf6" },
+  { name: "Organic", value: 38, color: TM_GREEN },
+  { name: "Paid", value: 29, color: TM_NAVY },
+  { name: "Direct", value: 18, color: TM_GOLD },
+  { name: "Referral", value: 15, color: TM_NAVY_LIGHT },
 ];
 
 const sourceQualityPie = [
-  { name: "Owned", value: 38, color: "#16a34a" },
-  { name: "Bought", value: 62, color: "#3b82f6" },
+  { name: "Owned", value: 38, color: TM_GREEN_DEEP },
+  { name: "Bought", value: 62, color: TM_NAVY },
 ];
 
 const costPerBookedSource = [
@@ -67,12 +75,6 @@ const INTEGRATION_LABELS: Record<string, string> = {
   google_ads: "Google Ads",
   meta: "Meta Ads",
 };
-
-const TOP_ACTIONS = [
-  { title: "Refresh 3 stale meta descriptions", type: "SEO", impact: "Medium", link: "/marketing/content-seo" },
-  { title: "Review 2 pending A/B test results", type: "CRO", impact: "High", link: "/marketing/conversion-lab" },
-  { title: "Approve keyword brief for 'cross country movers'", type: "Content", impact: "High", link: "/marketing/content-seo" },
-];
 
 function MetricCardRow() {
   const metrics = [
@@ -149,63 +151,28 @@ export default function MarketingDashboard() {
     <MarketingShell>
       <div className="space-y-5">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-3">
           <div>
-            <h1 className="text-xl font-bold tracking-tight">Marketing Dashboard</h1>
-            <p className="text-muted-foreground text-xs">Performance, alerts & daily actions</p>
+            <h1 className="text-xl font-bold tracking-tight">Metrics Dashboard</h1>
+            <p className="text-muted-foreground text-xs">KPIs, analytics & channel performance</p>
           </div>
-          <Button variant="outline" size="sm" onClick={() => setShowIntegrations(true)}>
-            <Settings className="w-3.5 h-3.5 mr-1.5" /> Manage Connections
-          </Button>
+          <div className="flex items-center gap-2">
+            <Link
+              to="/marketing/action-items"
+              className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-md border border-border hover:bg-muted transition-colors"
+            >
+              <Zap className="w-3.5 h-3.5 text-primary" /> Action Items <ArrowRight className="w-3 h-3" />
+            </Link>
+            <Button variant="outline" size="sm" onClick={() => setShowIntegrations(true)}>
+              <Settings className="w-3.5 h-3.5 mr-1.5" /> Manage Connections
+            </Button>
+          </div>
         </div>
 
         {/* Top Metric Cards */}
         <MetricCardRow />
 
-        {/* Daily Marketing Review Placeholder */}
-        <Card className="border-primary/20 bg-primary/[0.02]">
-          <CardContent className="p-5 flex items-center justify-between">
-            <div>
-              <h2 className="text-sm font-bold text-foreground flex items-center gap-2">
-                <BarChart3 className="w-4 h-4 text-primary" />
-                Daily Marketing Review
-              </h2>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                Walk through your channels, performance, and action items in a guided 7-step flow.
-              </p>
-            </div>
-            <Button size="sm" className="gap-1.5 text-xs shrink-0">
-              Start Daily Review <ArrowRight className="w-3.5 h-3.5" />
-            </Button>
-          </CardContent>
-        </Card>
-
-        {/* Top Action Items */}
-        <Card>
-          <CardHeader className="pb-2">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-sm flex items-center gap-2">
-                <Zap className="w-4 h-4 text-primary" /> Top Action Items
-              </CardTitle>
-              <Link to="/marketing/action-items" className="text-xs text-primary hover:underline font-medium">View all →</Link>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            {TOP_ACTIONS.map((a, i) => (
-              <Link
-                key={i}
-                to={a.link}
-                className="flex items-center justify-between p-3 rounded-lg border border-border hover:border-primary/30 hover:bg-muted/30 transition-colors"
-              >
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${a.impact === "High" ? "bg-red-500" : "bg-amber-400"}`} />
-                  <span className="text-xs font-medium text-foreground truncate">{a.title}</span>
-                </div>
-                <span className="text-[10px] text-muted-foreground shrink-0 ml-3">{a.type}</span>
-              </Link>
-            ))}
-          </CardContent>
-        </Card>
+        {/* Action items moved to dedicated page: /marketing/action-items */}
 
         {/* Charts */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -221,9 +188,9 @@ export default function MarketingDashboard() {
                   <XAxis dataKey="month" tick={{ fontSize: 11 }} />
                   <YAxis tick={{ fontSize: 11 }} />
                   <Tooltip />
-                  <Area type="monotone" dataKey="organic" stackId="1" stroke="#22c55e" fill="#22c55e" fillOpacity={0.6} name="Organic" />
-                  <Area type="monotone" dataKey="paid" stackId="1" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.6} name="Paid" />
-                  <Area type="monotone" dataKey="direct" stackId="1" stroke="#f59e0b" fill="#f59e0b" fillOpacity={0.6} name="Direct" />
+                  <Area type="monotone" dataKey="organic" stackId="1" stroke={TM_GREEN} fill={TM_GREEN} fillOpacity={0.65} name="Organic" />
+                  <Area type="monotone" dataKey="paid" stackId="1" stroke={TM_NAVY} fill={TM_NAVY} fillOpacity={0.7} name="Paid" />
+                  <Area type="monotone" dataKey="direct" stackId="1" stroke={TM_GOLD} fill={TM_GOLD} fillOpacity={0.6} name="Direct" />
                 </AreaChart>
               </ResponsiveContainer>
             </CardContent>
@@ -241,8 +208,8 @@ export default function MarketingDashboard() {
                   <XAxis dataKey="month" tick={{ fontSize: 11 }} />
                   <YAxis tick={{ fontSize: 11 }} />
                   <Tooltip />
-                  <Bar dataKey="leads" fill="#3b82f6" name="Leads" radius={[2, 2, 0, 0]} />
-                  <Bar dataKey="booked" fill="#22c55e" name="Booked" radius={[2, 2, 0, 0]} />
+                  <Bar dataKey="leads" fill={TM_NAVY} name="Leads" radius={[2, 2, 0, 0]} />
+                  <Bar dataKey="booked" fill={TM_GREEN} name="Booked" radius={[2, 2, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
@@ -298,7 +265,7 @@ export default function MarketingDashboard() {
                   <XAxis type="number" tick={{ fontSize: 10 }} tickFormatter={(v) => `$${v}`} />
                   <YAxis dataKey="source" type="category" tick={{ fontSize: 10 }} width={70} />
                   <Tooltip formatter={(v: number) => `$${v}`} />
-                  <Bar dataKey="cost" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} />
+                  <Bar dataKey="cost" fill={TM_NAVY} radius={[0, 4, 4, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>

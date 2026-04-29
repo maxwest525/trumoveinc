@@ -61,7 +61,7 @@ const DISPATCH_ITEMS: NavItem[] = [
 
 // ─── Marketing (grouped) ───
 const MARKETING_HQ: NavItem[] = [
-  { label: "Dashboard", subtitle: "Performance, alerts & daily actions", icon: BarChart3, href: "/marketing/dashboard" },
+  { label: "Metrics Dashboard", subtitle: "KPIs, analytics & performance", icon: BarChart3, href: "/marketing/dashboard" },
 ];
 const MARKETING_ENGINES: NavItem[] = [
   { label: "Content & SEO", subtitle: "Keywords, briefs, blog & rankings", icon: PenTool, href: "/marketing/content-seo" },
