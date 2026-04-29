@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { Phone, Clock, User, AlertTriangle, Shield, ShieldAlert, ShieldCheck, Mic, MicOff, StopCircle, SendHorizonal, Keyboard, FileText, MessageSquare, ArrowLeft, ChevronRight, Calendar, X, Eye, Sparkles, Loader2, CheckCircle2, Search, ChevronDown, TrendingUp, BarChart3, Zap, Brain, Volume2, Gauge, SmilePlus, Frown, Meh, Smile, TrendingDown } from 'lucide-react';
+import { Phone, PhoneOff, Clock, User, AlertTriangle, Shield, ShieldAlert, ShieldCheck, Mic, MicOff, StopCircle, SendHorizonal, Keyboard, FileText, MessageSquare, ArrowLeft, ChevronRight, Calendar, X, Eye, Sparkles, Loader2, CheckCircle2, Search, ChevronDown, TrendingUp, BarChart3, Zap, Brain, Volume2, Gauge, SmilePlus, Frown, Meh, Smile, TrendingDown } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -23,6 +23,23 @@ const SEVERITY_META: Record<Severity, { label: string; color: string; bg: string
   critical: { label: 'Critical', color: 'text-destructive', bg: 'bg-destructive/10', border: 'border-destructive/30', icon: AlertTriangle },
 };
 
+// Hang-up classification (mirrors PulseCallOutcomeStats)
+const HANGUP_TRANSCRIPT_HINTS = ['hung up', 'call ended', 'disconnected', '[hangup]'];
+const HANGUP_STATUSES = ['dropped', 'abandoned', 'hangup', 'no_answer'];
+function isHangupCall(call: { status?: string | null; duration_seconds?: number | null; transcript?: string | null }): boolean {
+  const dur = call.duration_seconds ?? 0;
+  const status = (call.status || '').toLowerCase();
+  if (status === 'active') return false;
+  if (HANGUP_STATUSES.includes(status)) return true;
+  if (dur > 0 && dur < 30) return true;
+  const tr = (call.transcript || '').toLowerCase();
+  return HANGUP_TRANSCRIPT_HINTS.some(h => tr.includes(h));
+}
+function fmtDur(sec: number): string {
+  const m = Math.floor(sec / 60);
+  const s = Math.floor(sec % 60);
+  return `${m}:${s.toString().padStart(2, '0')}`;
+}
 
 
 function checkMatch(text: string, entry: WatchEntry): string | null {
@@ -90,6 +107,15 @@ const PulseAgent: React.FC<{ embedded?: boolean; showSummary?: boolean }> = ({ e
     }, 1000);
     return () => clearInterval(timer);
   }, [callActive, callStartTime]);
+
+  // Per-second ticker so live (active) call durations update in the call list
+  const [nowTs, setNowTs] = useState(() => Date.now());
+  const hasActiveCall = useMemo(() => dbCalls.some(c => c.status === 'active'), [dbCalls]);
+  useEffect(() => {
+    if (!hasActiveCall) return;
+    const t = setInterval(() => setNowTs(Date.now()), 1000);
+    return () => clearInterval(t);
+  }, [hasActiveCall]);
 
   const getWatchEntries = useCallback(async (): Promise<WatchEntry[]> => {
     try { const saved = localStorage.getItem('pulse-watch-entries'); if (saved) { const parsed = JSON.parse(saved); if (Array.isArray(parsed) && parsed.length > 0) return parsed; } } catch {}
@@ -439,8 +465,12 @@ const PulseAgent: React.FC<{ embedded?: boolean; showSummary?: boolean }> = ({ e
                       const isActive = call.status === 'active';
                       const isSelected = selectedCallId === call.id;
                       const flagCount = call.flagged_keywords?.length || 0;
-                      const dur = call.duration_seconds;
-                      const durLabel = dur ? `${Math.floor(dur / 60)}:${(dur % 60).toString().padStart(2, '0')}` : null;
+                      // Live-tick duration for active calls; fall back to stored duration
+                      const liveDur = isActive
+                        ? Math.max(0, Math.round((nowTs - new Date(call.created_at).getTime()) / 1000))
+                        : (call.duration_seconds || 0);
+                      const durLabel = liveDur > 0 ? fmtDur(liveDur) : null;
+                      const hangup = isHangupCall(call);
                       const noteSnippet = call.summary || call.notes || null;
 
                         return (
@@ -461,6 +491,12 @@ const PulseAgent: React.FC<{ embedded?: boolean; showSummary?: boolean }> = ({ e
                               )}
                               <span className="text-muted-foreground/40 text-sm">→</span>
                               <span className="text-sm text-muted-foreground truncate">{call.client_name || 'Unknown'}</span>
+                              {hangup && (
+                                <Badge className="text-[9px] h-4 px-1.5 bg-orange-500/15 text-orange-500 border-orange-500/30 font-bold gap-0.5">
+                                  <PhoneOff className="w-2.5 h-2.5" />
+                                  HANG-UP
+                                </Badge>
+                              )}
                               {isActive && (
                                 <span className="flex items-center gap-1 text-[9px] font-bold text-compliance-pass ml-auto">
                                   <span className="relative flex h-1.5 w-1.5">
@@ -476,9 +512,11 @@ const PulseAgent: React.FC<{ embedded?: boolean; showSummary?: boolean }> = ({ e
 
                             {/* Metrics row — compact inline */}
                             <div className="flex items-center gap-4 ml-6 mb-1">
-                              <span className="inline-flex items-center gap-1 text-sm text-muted-foreground">
+                              <span className={cn("inline-flex items-center gap-1 text-sm",
+                                isActive ? "text-compliance-pass font-mono" : "text-muted-foreground"
+                              )}>
                                 <Clock className="w-3.5 h-3.5 shrink-0" />
-                                <span className="font-medium">{durLabel || '—'}</span>
+                                <span className="font-medium">{durLabel || '—'}{isActive && ' •'}</span>
                               </span>
                               <span className={cn("inline-flex items-center gap-1 text-sm font-bold",
                                 call.compliance_score != null
