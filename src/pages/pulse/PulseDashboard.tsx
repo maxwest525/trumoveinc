@@ -18,6 +18,7 @@ import PulseHighRiskAgents from '@/components/pulse/dashboard/PulseHighRiskAgent
 import PulseTopFlagsToday from '@/components/pulse/dashboard/PulseTopFlagsToday';
 import PulseSeverityBreakdown from '@/components/pulse/dashboard/PulseSeverityBreakdown';
 import PulseLiveActivityFeed, { PulseFeedItem } from '@/components/pulse/dashboard/PulseLiveActivityFeed';
+import PulseCallOutcomeStats from '@/components/pulse/dashboard/PulseCallOutcomeStats';
 import { ArrowLeft } from 'lucide-react';
 import { analyzeSentiment, type ToneLevel } from '@/hooks/useSentimentAnalysis';
 
@@ -257,6 +258,8 @@ const PulseDashboard: React.FC<{ embedded?: boolean; basePath?: string }> = ({ e
       )}
 
       <main className="max-w-[1600px] mx-auto p-6 w-full flex-1 flex flex-col gap-5">
+        <PulseCallOutcomeStats calls={recentCalls} />
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" style={{ minHeight: '180px' }}>
           <PulseHighRiskAgents alerts={filteredAlerts} onAgentClick={(name) => setSelectedAgent(name)} />
           <PulseTopFlagsToday alerts={filteredAlerts} />
