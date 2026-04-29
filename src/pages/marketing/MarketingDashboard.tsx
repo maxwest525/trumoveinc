@@ -57,11 +57,11 @@ const INTEGRATION_LABELS: Record<string, string> = {
 
 function MetricCardRow() {
   const metrics = [
-    { label: "Booked Jobs (7d)", value: "31", change: "+12%", up: true, icon: CheckCircle },
-    { label: "Revenue (7d)", value: "$48,200", change: "+8%", up: true, icon: DollarSign },
-    { label: "Cost / Booked Job", value: "$142", change: "-6%", up: true, icon: Target },
-    { label: "ROAS", value: "3.4x", change: "+0.3x", up: true, icon: TrendingUp },
-    { label: "Owned Lead %", value: "38%", change: "+2%", up: true, icon: Percent },
+    { label: "Booked Jobs (7d)", value: String(headlineMetrics.bookedJobs7d), change: "+12%", up: true, icon: CheckCircle },
+    { label: "Revenue (7d)", value: `$${headlineMetrics.revenue7d.toLocaleString()}`, change: "+8%", up: true, icon: DollarSign },
+    { label: "Cost / Booked Job", value: `$${headlineMetrics.costPerBookedJob}`, change: "-6%", up: true, icon: Target },
+    { label: "ROAS", value: `${headlineMetrics.roas}x`, change: "+0.3x", up: true, icon: TrendingUp },
+    { label: "Owned Lead %", value: `${headlineMetrics.ownedLeadPct}%`, change: "+2%", up: true, icon: Percent },
   ];
 
   return (
