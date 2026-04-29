@@ -166,9 +166,102 @@ const PulseCallOutcomeStats: React.FC<Props> = ({ calls }) => {
     },
   ];
 
+  function draftActionItem() {
+    if (!salesCalls.length) {
+      toast({
+        title: 'No flagged sales moments yet',
+        description: 'No calls currently match the sales-conversation heuristic.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    const salesPct = stats.total ? Math.round((stats.sales / stats.total) * 100) : 0;
+    const hangupPct = stats.total ? Math.round((stats.hangups / stats.total) * 100) : 0;
+    const badPct = stats.total ? Math.round((stats.badLeads / stats.total) * 100) : 0;
+
+    // Pull a few transcript signals so the editor has real context, not placeholders.
+    const signalSnippets = salesCalls
+      .slice(0, 3)
+      .map((c) => {
+        const t = (c.transcript || '').toLowerCase();
+        const hit = SALES_HINTS.find((h) => t.includes(h));
+        return hit ? `"${hit}"` : null;
+      })
+      .filter(Boolean) as string[];
+
+    const draft = {
+      source: 'pulse:sales-moments' as const,
+      createdAt: new Date().toISOString(),
+      kpiContext: {
+        sampledCalls: stats.total,
+        salesConversations: stats.sales,
+        salesPct,
+        hangups: stats.hangups,
+        hangupPct,
+        badLeads: stats.badLeads,
+        badPct,
+        avgDurationSeconds: stats.avgDuration,
+      },
+      recommendation: {
+        title: `Double down on ${stats.sales} flagged sales moment${stats.sales === 1 ? '' : 's'}`,
+        description:
+          `Pulse flagged ${stats.sales} of ${stats.total} recent calls (${salesPct}%) as live sales conversations ` +
+          `(completed, ≥90s, transcript mentions price/quote/booking signals). ` +
+          (signalSnippets.length ? `Top signals: ${signalSnippets.join(', ')}. ` : '') +
+          `Build a follow-up play to convert these into booked deposits this week.`,
+        category: 'cro' as const,
+        priority: (salesPct >= 25 ? 'high' : salesPct >= 10 ? 'medium' : 'low') as
+          | 'critical' | 'high' | 'medium' | 'low',
+        effort: 'moderate' as const,
+        expectedLift: `+${Math.max(1, Math.round(stats.sales * 0.2))} bookings`,
+        reasoning:
+          `Derived from Pulse call-outcome KPIs: ${stats.sales} sales-flagged calls, ` +
+          `${stats.hangups} hang-ups (${hangupPct}%), ${stats.badLeads} bad leads (${badPct}%), ` +
+          `avg call ${fmtDuration(stats.avgDuration)}.`,
+      },
+    };
+
+    try {
+      localStorage.setItem(PULSE_ACTION_DRAFT_KEY, JSON.stringify(draft));
+    } catch {
+      // ignore storage errors
+    }
+
+    toast({
+      title: 'Draft action item created',
+      description: `Opening editor with KPI context from ${stats.sales} flagged sales call${stats.sales === 1 ? '' : 's'}.`,
+    });
+    navigate('/marketing/action-items');
+  }
+
   return (
     <TooltipProvider delayDuration={150}>
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="space-y-3">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <h3 className="text-sm font-semibold">Call outcome KPIs</h3>
+            <p className="text-[11px] text-muted-foreground">
+              Heuristic classification from recent call status, duration, and transcript.
+            </p>
+          </div>
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-8 gap-1.5 text-xs"
+            onClick={draftActionItem}
+            disabled={!salesCalls.length}
+          >
+            <Sparkles className="w-3.5 h-3.5 text-primary" />
+            Draft action item from sales moments
+            {salesCalls.length > 0 && (
+              <span className="ml-1 rounded bg-primary/10 text-primary px-1.5 py-0.5 text-[10px] font-semibold">
+                {salesCalls.length}
+              </span>
+            )}
+          </Button>
+        </div>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {tiles.map((t) => {
           const Icon = t.icon;
           return (
