@@ -1,7 +1,12 @@
 import React, { useMemo } from 'react';
-import { DollarSign, PhoneOff, UserX, Clock, Info } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { DollarSign, PhoneOff, UserX, Clock, Info, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
+
+export const PULSE_ACTION_DRAFT_KEY = 'pulse:actionItemDraft';
 
 interface PulseCall {
   id: string;
