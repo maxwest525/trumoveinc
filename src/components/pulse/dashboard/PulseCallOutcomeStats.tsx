@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
-import { DollarSign, PhoneOff, UserX, Clock } from 'lucide-react';
+import { DollarSign, PhoneOff, UserX, Clock, Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface PulseCall {
   id: string;
