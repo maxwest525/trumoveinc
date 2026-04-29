@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Link2, Shield, TrendingUp, AlertTriangle, Globe, ArrowUpRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { TM_CHART } from "@/lib/marketingChartTheme";
 
 const DA_HISTORY = [
   { month: "Oct", da: 12 }, { month: "Nov", da: 14 }, { month: "Dec", da: 16 },
@@ -54,7 +55,7 @@ export default function BacklinksAuthorityTab() {
                 <XAxis dataKey="month" tick={{ fontSize: 10 }} />
                 <YAxis tick={{ fontSize: 10 }} domain={[0, 40]} />
                 <Tooltip />
-                <Area type="monotone" dataKey="da" stroke="#16a34a" fill="#16a34a" fillOpacity={0.15} />
+                <Area type="monotone" dataKey="da" stroke={TM_CHART.green} fill={TM_CHART.green} fillOpacity={0.15} />
               </AreaChart>
             </ResponsiveContainer>
           </CardContent>
