@@ -31,6 +31,11 @@ interface Recommendation {
   expectedLift: string;
   reasoning: string;
   status: "pending" | "approved" | "dismissed" | "scheduled";
+  kpiContext?: {
+    label: string;
+    metrics: { label: string; value: string | number }[];
+    sourceLabel?: string;
+  };
 }
 
 // Seed examples shown before the user generates fresh items.
