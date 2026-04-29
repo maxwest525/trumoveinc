@@ -258,6 +258,8 @@ const PulseDashboard: React.FC<{ embedded?: boolean; basePath?: string }> = ({ e
       )}
 
       <main className="max-w-[1600px] mx-auto p-6 w-full flex-1 flex flex-col gap-5">
+        <PulseCallOutcomeStats calls={recentCalls} />
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" style={{ minHeight: '180px' }}>
           <PulseHighRiskAgents alerts={filteredAlerts} onAgentClick={(name) => setSelectedAgent(name)} />
           <PulseTopFlagsToday alerts={filteredAlerts} />
